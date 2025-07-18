@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,10 @@ const Index = () => {
       navigate('/auth');
     }
   }, [user, loading, navigate]);
+
+  const handleStartAnalysis = () => {
+    navigate('/soil-analysis');
+  };
 
   if (loading) {
     return (
@@ -75,7 +80,7 @@ const Index = () => {
                   <p className="text-muted-foreground mb-4">
                     Ready to explore soil data for your farming decisions?
                   </p>
-                  <Button size="lg" className="bg-primary hover:bg-primary/90">
+                  <Button size="lg" className="bg-primary hover:bg-primary/90" onClick={handleStartAnalysis}>
                     Start Soil Analysis
                   </Button>
                 </div>
