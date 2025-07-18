@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      counties: {
+        Row: {
+          county_name: string
+          created_at: string
+          fips_code: string
+          id: string
+          state_code: string
+          state_name: string
+        }
+        Insert: {
+          county_name: string
+          created_at?: string
+          fips_code: string
+          id?: string
+          state_code: string
+          state_name: string
+        }
+        Update: {
+          county_name?: string
+          created_at?: string
+          fips_code?: string
+          id?: string
+          state_code?: string
+          state_name?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -45,6 +72,57 @@ export type Database = {
           subscription_status?: string | null
           subscription_tier?: string | null
           trial_ends_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      soil_analyses: {
+        Row: {
+          analysis_data: Json | null
+          county_fips: string
+          county_name: string
+          created_at: string
+          id: string
+          nitrogen_level: string | null
+          organic_matter: number | null
+          ph_level: number | null
+          phosphorus_level: string | null
+          potassium_level: string | null
+          recommendations: string | null
+          state_code: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analysis_data?: Json | null
+          county_fips: string
+          county_name: string
+          created_at?: string
+          id?: string
+          nitrogen_level?: string | null
+          organic_matter?: number | null
+          ph_level?: number | null
+          phosphorus_level?: string | null
+          potassium_level?: string | null
+          recommendations?: string | null
+          state_code: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analysis_data?: Json | null
+          county_fips?: string
+          county_name?: string
+          created_at?: string
+          id?: string
+          nitrogen_level?: string | null
+          organic_matter?: number | null
+          ph_level?: number | null
+          phosphorus_level?: string | null
+          potassium_level?: string | null
+          recommendations?: string | null
+          state_code?: string
           updated_at?: string
           user_id?: string
         }
