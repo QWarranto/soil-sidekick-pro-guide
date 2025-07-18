@@ -3,9 +3,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
 import { ArrowLeft, Leaf, LogOut, Plus } from 'lucide-react';
 import { CountyLookup } from '@/components/CountyLookup';
+import { CountyMenuLookup } from '@/components/CountyMenuLookup';
 import { SoilAnalysisResults } from '@/components/SoilAnalysisResults';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -38,7 +40,9 @@ const SoilAnalysis = () => {
   const { toast } = useToast();
   const [selectedCounty, setSelectedCounty] = useState<County | null>(null);
   const [soilData, setSoilData] = useState<SoilData | null>(null);
+  const [soilDataList, setSoilDataList] = useState<SoilData[]>([]);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'search' | 'database'>('search');
 
   const handleBackHome = () => {
     navigate('/');
@@ -85,6 +89,21 @@ const SoilAnalysis = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDataFound = (data: SoilData[]) => {
+    setSoilDataList(data);
+    setSoilData(null); // Clear single soil data when showing list
+  };
+
+  const handleNoDataFound = () => {
+    setSoilDataList([]);
+    setSoilData(null);
+  };
+
+  const handleSelectFromList = (data: SoilData) => {
+    setSoilData(data);
+    setSoilDataList([]);
   };
 
   const handleExport = () => {
@@ -152,9 +171,44 @@ ${soilData.recommendations || 'No recommendations available'}
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-6">
-          {/* County Lookup Section */}
+          {/* Tab Selection */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Soil Data Lookup Options</CardTitle>
+              <CardDescription>
+                Choose how you want to search for soil analysis data
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-2 mb-4">
+                <Button 
+                  variant={activeTab === 'search' ? 'default' : 'outline'}
+                  onClick={() => setActiveTab('search')}
+                  size="sm"
+                >
+                  External Search
+                </Button>
+                <Button 
+                  variant={activeTab === 'database' ? 'default' : 'outline'}
+                  onClick={() => setActiveTab('database')}
+                  size="sm"
+                >
+                  Database Lookup
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Lookup Section */}
           <div className="grid lg:grid-cols-2 gap-6">
-            <CountyLookup onCountySelect={handleCountySelect} />
+            {activeTab === 'search' ? (
+              <CountyLookup onCountySelect={handleCountySelect} />
+            ) : (
+              <CountyMenuLookup 
+                onDataFound={handleDataFound}
+                onNoDataFound={handleNoDataFound}
+              />
+            )}
             
             {/* Quick Stats or Recent Analyses */}
             <Card>
@@ -204,6 +258,42 @@ ${soilData.recommendations || 'No recommendations available'}
                   <p className="text-muted-foreground">
                     Analyzing soil data for {selectedCounty?.county_name}...
                   </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Database Results List */}
+          {soilDataList.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Available Soil Analysis Data</CardTitle>
+                <CardDescription>
+                  Found {soilDataList.length} soil analysis record(s). Click to view details.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {soilDataList.map((data, index) => (
+                    <div
+                      key={data.id}
+                      className="p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                      onClick={() => handleSelectFromList(data)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium">{data.county_name}, {data.state_code}</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Analyzed on {new Date(data.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          {data.ph_level && <Badge variant="outline">pH: {data.ph_level}</Badge>}
+                          {data.organic_matter && <Badge variant="outline">OM: {data.organic_matter}%</Badge>}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
