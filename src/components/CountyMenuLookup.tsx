@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Database, Loader2 } from 'lucide-react';
+import { MapPin, Database, Loader2, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -45,6 +45,7 @@ export const CountyMenuLookup: React.FC<CountyMenuLookupProps> = ({
   const [loading, setLoading] = useState(false);
   const [statesLoading, setStatesLoading] = useState(true);
   const [countiesLoading, setCountiesLoading] = useState(false);
+  const [populatingCounties, setPopulatingCounties] = useState(false);
   const { toast } = useToast();
 
   // Load available states on component mount
@@ -67,6 +68,15 @@ export const CountyMenuLookup: React.FC<CountyMenuLookupProps> = ({
         }, []) || [];
 
         setStates(uniqueStates);
+        
+        // If no states found, suggest populating the database
+        if (uniqueStates.length === 0) {
+          toast({
+            title: "No County Data",
+            description: "County database is empty. Click 'Populate Counties' to add sample data.",
+            variant: "default",
+          });
+        }
       } catch (error) {
         console.error('Error loading states:', error);
         toast({
@@ -168,6 +178,45 @@ export const CountyMenuLookup: React.FC<CountyMenuLookupProps> = ({
     }
   };
 
+  const handlePopulateCounties = async () => {
+    setPopulatingCounties(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('populate-counties');
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Counties Populated",
+        description: data?.message || "County data has been added to the database.",
+      });
+      
+      // Reload states after populating
+      const { data: stateData, error: stateError } = await supabase
+        .from('counties')
+        .select('state_code, state_name')
+        .order('state_name');
+
+      if (!stateError && stateData) {
+        const uniqueStates = stateData.reduce((acc: Array<{state_code: string, state_name: string}>, curr) => {
+          if (!acc.find(state => state.state_code === curr.state_code)) {
+            acc.push({ state_code: curr.state_code, state_name: curr.state_name });
+          }
+          return acc;
+        }, []);
+        setStates(uniqueStates);
+      }
+    } catch (error) {
+      console.error('Error populating counties:', error);
+      toast({
+        title: "Error",
+        description: "Failed to populate counties. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setPopulatingCounties(false);
+    }
+  };
+
   const selectedStateName = states.find(s => s.state_code === selectedState)?.state_name;
 
   return (
@@ -182,6 +231,32 @@ export const CountyMenuLookup: React.FC<CountyMenuLookupProps> = ({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Show populate button if no states available */}
+        {states.length === 0 && !statesLoading && (
+          <div className="text-center py-6 space-y-4">
+            <p className="text-muted-foreground">No county data available in the database.</p>
+            <Button 
+              onClick={handlePopulateCounties}
+              disabled={populatingCounties}
+              variant="outline"
+            >
+              {populatingCounties ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Populating Counties...
+                </>
+              ) : (
+                <>
+                  <Download className="h-4 w-4 mr-2" />
+                  Populate Counties
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+
+        {states.length > 0 && (
+          <>
         {/* State Selection */}
         <div className="space-y-2">
           <label className="text-sm font-medium">State</label>
@@ -263,6 +338,8 @@ export const CountyMenuLookup: React.FC<CountyMenuLookupProps> = ({
           <div className="text-center text-sm text-muted-foreground">
             {counties.length} counties available in {selectedStateName}
           </div>
+        )}
+        </>
         )}
       </CardContent>
     </Card>
