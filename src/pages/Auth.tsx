@@ -179,7 +179,7 @@ const Auth = () => {
                   <button
                     type="button"
                     onClick={() => setShowResetForm(true)}
-                    className="text-sm text-primary hover:underline"
+                    className="text-base md:text-sm text-primary hover:underline p-2 min-h-[44px] rounded-md hover:bg-primary/10 transition-colors"
                   >
                     Forgot your password?
                   </button>
