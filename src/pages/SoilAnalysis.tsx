@@ -9,6 +9,7 @@ import { ArrowLeft, Leaf, LogOut, Plus } from 'lucide-react';
 import { CountyLookup } from '@/components/CountyLookup';
 import { CountyMenuLookup } from '@/components/CountyMenuLookup';
 import { SoilAnalysisResults } from '@/components/SoilAnalysisResults';
+import { EnhancedPDFExport } from '@/components/EnhancedPDFExport';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -301,7 +302,10 @@ ${soilData.recommendations || 'No recommendations available'}
 
           {/* Results Section */}
           {soilData && !loading && (
-            <SoilAnalysisResults soilData={soilData} onExport={handleExport} />
+            <div className="space-y-6">
+              <SoilAnalysisResults soilData={soilData} onExport={handleExport} />
+              <EnhancedPDFExport soilData={soilData} userTier="pro" />
+            </div>
           )}
         </div>
       </main>

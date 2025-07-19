@@ -45,6 +45,12 @@ const Index = () => {
             <span className="text-xl font-bold text-primary">SoilSidekick Pro</span>
           </div>
           <div className="flex items-center gap-4">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/pricing')}>
+              Pricing
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/api-docs')}>
+              API Docs
+            </Button>
             <span className="text-sm text-muted-foreground">
               Welcome, {user.email}
             </span>
