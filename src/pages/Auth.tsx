@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,15 +15,27 @@ const Auth = () => {
   const [resetEmail, setResetEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [showResetForm, setShowResetForm] = useState(false);
-  const { signIn, signUp, resetPassword, user } = useAuth();
+  const [showPasswordUpdate, setShowPasswordUpdate] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const { signIn, signUp, resetPassword, updatePassword, user, session } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  // Redirect if already authenticated
+  // Check for password reset mode
   useEffect(() => {
-    if (user) {
+    const mode = searchParams.get('mode');
+    if (mode === 'reset' && session) {
+      setShowPasswordUpdate(true);
+    }
+  }, [searchParams, session]);
+
+  // Redirect if already authenticated (but not in reset mode)
+  useEffect(() => {
+    if (user && !showPasswordUpdate) {
       navigate('/');
     }
-  }, [user, navigate]);
+  }, [user, navigate, showPasswordUpdate]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +68,25 @@ const Auth = () => {
     if (!error) {
       setShowResetForm(false);
       setResetEmail('');
+    }
+    
+    setLoading(false);
+  };
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (newPassword !== confirmPassword) {
+      return;
+    }
+    
+    setLoading(true);
+    
+    const { error } = await updatePassword(newPassword);
+    
+    if (!error) {
+      setShowPasswordUpdate(false);
+      navigate('/');
     }
     
     setLoading(false);
@@ -201,6 +232,58 @@ const Auth = () => {
           )}
         </CardContent>
       </Card>
+      
+      {/* Password Update Modal */}
+      {showPasswordUpdate && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-md">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Set New Password</CardTitle>
+              <CardDescription>
+                Please enter your new password
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleUpdatePassword} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="new-password">New Password</Label>
+                  <Input
+                    id="new-password"
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    autoComplete="new-password"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password">Confirm New Password</Label>
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    autoComplete="new-password"
+                  />
+                  {newPassword && confirmPassword && newPassword !== confirmPassword && (
+                    <p className="text-sm text-destructive">Passwords do not match</p>
+                  )}
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={loading || newPassword !== confirmPassword || !newPassword}
+                >
+                  {loading ? 'Updating...' : 'Update Password'}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
