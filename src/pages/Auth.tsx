@@ -25,17 +25,18 @@ const Auth = () => {
   // Check for password reset mode
   useEffect(() => {
     const mode = searchParams.get('mode');
-    if (mode === 'reset' && session) {
+    if (mode === 'reset') {
       setShowPasswordUpdate(true);
     }
-  }, [searchParams, session]);
+  }, [searchParams]);
 
   // Redirect if already authenticated (but not in reset mode)
   useEffect(() => {
-    if (user && !showPasswordUpdate) {
+    const mode = searchParams.get('mode');
+    if (user && mode !== 'reset' && !showPasswordUpdate) {
       navigate('/');
     }
-  }, [user, navigate, showPasswordUpdate]);
+  }, [user, navigate, showPasswordUpdate, searchParams]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
