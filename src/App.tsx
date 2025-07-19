@@ -11,6 +11,7 @@ import Auth from "./pages/Auth";
 import SoilAnalysis from "./pages/SoilAnalysis";
 import Pricing from "./pages/Pricing";
 import ApiDocs from "./pages/ApiDocs";
+import FAQ from "./pages/FAQ";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/soil-analysis" element={<SoilAnalysis />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/api-docs" element={<ApiDocs />} />
+            <Route path="/faq" element={<FAQ />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
