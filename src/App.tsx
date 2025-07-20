@@ -9,6 +9,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import SoilAnalysis from "./pages/SoilAnalysis";
+import PlantingCalendar from "./pages/PlantingCalendar";
 import Pricing from "./pages/Pricing";
 import ApiDocs from "./pages/ApiDocs";
 import FAQ from "./pages/FAQ";
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/soil-analysis" element={<SoilAnalysis />} />
+            <Route path="/planting-calendar" element={<PlantingCalendar />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/api-docs" element={<ApiDocs />} />
             <Route path="/faq" element={<FAQ />} />
