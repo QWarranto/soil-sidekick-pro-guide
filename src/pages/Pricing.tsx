@@ -1,10 +1,11 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
-import { ArrowLeft, Leaf, LogOut, Check, Star, Zap, Building2 } from 'lucide-react';
+import { ArrowLeft, Leaf, LogOut, Check, Star, Zap } from 'lucide-react';
 
 const Pricing = () => {
   const { user, signOut } = useAuth();
@@ -17,8 +18,8 @@ const Pricing = () => {
 
   const plans = [
     {
-      id: 'starter',
-      name: 'Starter',
+      id: 'free',
+      name: 'Free',
       price: '$0',
       period: 'forever',
       description: 'Perfect for hobby gardeners exploring soil basics',
@@ -26,45 +27,34 @@ const Pricing = () => {
       badge: 'Free',
       badgeVariant: 'secondary' as const,
       features: [
-        '5 county lookups per month',
-        'Basic soil metrics (pH, texture)',
-        'Basic water quality grades',
-        'County-level USDA data',
-        'Community support',
-        'Mobile-responsive interface'
-      ],
-      limitations: [
-        'No PDF export',
-        'No API access',
-        'Limited historical data'
+        'County soil snapshot',
+        'Basic water-quality grade',
+        'Up to 3 counties per month',
+        'Interactive map'
       ]
     },
     {
       id: 'pro',
-      name: 'Pro',
+      name: 'Pro — Agricultural Intelligence',
       price: '$9.99',
       period: 'per month',
+      yearlyPrice: '$99 / yr (save 17%)',
       description: 'Complete soil intelligence for serious growers',
       icon: <Star className="h-6 w-6" />,
       badge: 'Most Popular',
       badgeVariant: 'default' as const,
       features: [
-        'Unlimited county lookups',
-        'Complete soil analysis (NPK, OM, pH)',
-        'Full water quality analysis (EPA data)',
-        'Contaminant level tracking',
-        'Filter recommendations',
-        'Instant PDF export',
-        'Crop-specific recommendations',
-        'Historical soil trends',
-        'Priority email support',
-        'Mobile app access'
-      ],
-      limitations: []
+        'Unlimited counties',
+        'Full soil + water analysis',
+        'Planting calendar & frost dates',
+        'Fertilizer runoff risk + eco-scores',
+        'PDF & CSV exports (lender-ready)',
+        'Priority support'
+      ]
     },
     {
       id: 'api',
-      name: 'API Developer',
+      name: 'API',
       price: '$49',
       period: 'per month',
       description: 'Monetizable API for seed companies & ag-tech platforms',
@@ -72,37 +62,12 @@ const Pricing = () => {
       badge: 'Developer',
       badgeVariant: 'outline' as const,
       features: [
-        'Everything in Pro',
-        'REST API access (50,000 calls/mo)',
-        'JSON + PDF endpoints',
-        '15-minute integration guide',
-        'Webhook notifications',
-        'Usage analytics dashboard',
-        'White-label embed widgets',
-        'Dedicated technical support'
-      ],
-      limitations: []
-    },
-    {
-      id: 'enterprise',
-      name: 'Enterprise',
-      price: 'Custom',
-      period: 'contact us',
-      description: 'Scale across your entire operation',
-      icon: <Building2 className="h-6 w-6" />,
-      badge: 'Enterprise',
-      badgeVariant: 'outline' as const,
-      features: [
-        'Everything in API Developer',
-        'Unlimited API calls',
-        'Custom integrations',
-        'Multi-user management',
-        'SLA guarantees',
-        'On-premise deployment options',
-        'Revenue-share partnerships',
-        'Dedicated account manager'
-      ],
-      limitations: []
+        '10k calls per month',
+        'Soil + water endpoints',
+        'Revenue-share option for retailers',
+        'White-label ready',
+        '99.9% SLA'
+      ]
     }
   ];
 
@@ -141,7 +106,7 @@ const Pricing = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           {/* Header Section */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold mb-4">
@@ -165,7 +130,7 @@ const Pricing = () => {
               </div>
               <div className="text-center">
                 <div className="font-medium mb-2">EPA + USDA Data</div>
-                <div className="text-muted-foreground">Government-grade accuracy for all 3,143 counties</div>
+                <div className="text-muted-foreground">Government-grade accuracy for 297 counties (expanding)</div>
               </div>
               <div className="text-center">
                 <div className="font-medium mb-2">15-Minute Integration</div>
@@ -175,7 +140,7 @@ const Pricing = () => {
           </div>
 
           {/* Pricing Cards */}
-          <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-6">
+          <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-6 justify-center">
             {plans.map((plan) => (
               <Card 
                 key={plan.id} 
@@ -202,6 +167,11 @@ const Pricing = () => {
                       <span className="text-3xl font-bold text-primary">{plan.price}</span>
                       <span className="text-muted-foreground">/{plan.period}</span>
                     </div>
+                    {plan.yearlyPrice && (
+                      <div className="text-sm text-muted-foreground mt-1">
+                        or {plan.yearlyPrice}
+                      </div>
+                    )}
                   </div>
                   
                   <CardDescription className="text-sm">
@@ -211,7 +181,6 @@ const Pricing = () => {
 
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
-                    <div className="font-medium text-sm text-primary">✓ Features included:</div>
                     {plan.features.map((feature, index) => (
                       <div key={index} className="flex items-start gap-2 text-sm">
                         <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
@@ -220,27 +189,15 @@ const Pricing = () => {
                     ))}
                   </div>
 
-                  {plan.limitations.length > 0 && (
-                    <div className="space-y-2 pt-4 border-t">
-                      <div className="font-medium text-sm text-muted-foreground">Limitations:</div>
-                      {plan.limitations.map((limitation, index) => (
-                        <div key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
-                          <span className="w-4 h-4 text-center">-</span>
-                          <span>{limitation}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
                   <Button 
                     className="w-full mt-6" 
                     variant={plan.id === 'pro' ? 'default' : 'outline'}
                     onClick={() => handleSelectPlan(plan.id)}
-                    disabled={plan.id === 'starter'}
+                    disabled={plan.id === 'free'}
                   >
-                    {plan.id === 'starter' ? 'Current Plan' : 
-                     plan.id === 'enterprise' ? 'Contact Sales' : 
-                     'Upgrade Now'}
+                    {plan.id === 'free' ? 'Get Started' : 
+                     plan.id === 'api' ? 'Contact Sales' : 
+                     'Upgrade'}
                   </Button>
                 </CardContent>
               </Card>
@@ -251,7 +208,7 @@ const Pricing = () => {
           <div className="text-center mt-12 p-8 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg">
             <h3 className="text-2xl font-bold mb-4">Ready to Get Started?</h3>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Join thousands of growers making data-driven soil decisions. 
+              Join thousands of growers making data-driven soil decisions with our Agricultural Intelligence platform. 
               Start with our free tier and upgrade when you need more features.
             </p>
             <div className="flex gap-4 justify-center">

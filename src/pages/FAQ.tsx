@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ChevronDown } from "lucide-react";
@@ -12,64 +13,44 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 const FAQ = () => {
   const faqs = [
     {
-      question: "What makes SoilSidekick Pro different from other agricultural analysis tools?",
-      answer: "SoilSidekick Pro provides instant, county-level soil AND water quality data from USDA SSURGO and EPA SDWIS databases. Unlike other tools that require GIS expertise or provide only state-level averages, we deliver comprehensive agricultural intelligence for all 3,143 U.S. counties in plain English, with professional PDF exports ready for lenders and advisors."
+      question: "What exactly is \"Agricultural Intelligence\"?",
+      answer: "It's the new umbrella for SoilSidekick Pro's combined soil + water insights, planting calendars, and eco-fertilizer recommendations—delivered county-by-county, in plain English, with government-grade data from USDA & EPA."
     },
     {
-      question: "How accurate is the soil and water quality data?",
-      answer: "Our soil data comes directly from the USDA's Soil Survey Geographic Database (SSURGO), while water quality data comes from the EPA's Safe Drinking Water Information System (SDWIS). Both are the most comprehensive datasets available in the United States, collected by professional scientists and updated regularly by federal agencies."
+      question: "What water-quality information do I get?",
+      answer: "For every county you'll see: EPA SDWIS contaminant levels, comparison against Maximum Contaminant Levels (MCLs), impaired-water-body counts, and a 1-10 risk score for fertilizer runoff."
     },
     {
-      question: "What water quality information do you provide?",
-      answer: "We provide comprehensive water quality analysis including EPA contaminant levels for lead, chlorine, nitrates, fluoride, and other regulated substances. You'll see current levels vs. EPA Maximum Contaminant Levels (MCL), violation status, and receive personalized filter recommendations based on your county's specific water quality profile."
+      question: "Are the water-quality grades reliable for health decisions?",
+      answer: "The grades come from EPA's quarterly SDWIS database and are for educational purposes only. Always consult local water utilities or certified labs for final health decisions."
     },
     {
-      question: "What's included in the free tier?",
-      answer: "The free tier includes basic soil reports for any U.S. county, showing soil texture, pH levels, organic matter content, basic NPK information, and water quality grades. You can view up to 5 counties per month and access our interactive maps."
+      question: "How do personalized filter recommendations work?",
+      answer: "Based on your county's contaminant profile, we suggest 4 vetted filter types (activated-carbon, reverse-osmosis, etc.) and show expected contaminant-removal percentages and price ranges."
     },
     {
-      question: "What additional features do I get with Pro?",
-      answer: "Pro subscribers get unlimited county lookups, comprehensive water quality analysis with EPA contaminant data, filter recommendations, professional PDF exports perfect for lenders and advisors, historical trend data, soil amendment calculations, and priority customer support. Pro is ideal for serious gardeners, small farmers, and agricultural professionals."
+      question: "How often is water-quality data updated?",
+      answer: "EPA publishes SDWIS updates quarterly; our nightly job refreshes the cache every 24 h. Soil data continues to update monthly from USDA SSURGO."
     },
     {
-      question: "How does the API pricing work?",
-      answer: "Our API is designed for developers and businesses who want to integrate soil data into their applications. We offer usage-based pricing starting at $49/month for up to 1,000 API calls, with volume discounts available for enterprise customers. Revenue-sharing partnerships are available for qualified agricultural retailers."
+      question: "Is the planting calendar available in the free tier?",
+      answer: "Basic frost dates are shown, but the full planting-calendar widget (6 crops, harvest windows, color-coded badges) is in the Pro tier."
     },
     {
       question: "Can I use the PDF reports for loan applications?",
-      answer: "Yes! Our Pro-tier PDF reports are specifically formatted to meet the documentation requirements of agricultural lenders and include all the technical details needed for loan applications, insurance claims, and land assessments."
+      answer: "Yes. Pro-tier PDFs now include both soil and water-quality sections, formatted for agricultural lenders, insurers, and land appraisers."
     },
     {
-      question: "Do you offer white-label solutions?",
-      answer: "Yes, we provide white-label API solutions for agricultural software companies, seed retailers, and agronomy platforms. Contact our enterprise team to discuss custom branding, revenue-sharing arrangements, and integration support."
+      question: "Why only 297 counties for water data?",
+      answer: "EPA SDWIS 2024 covers public water systems in 297 counties first. We're rolling out the remaining ~2,800 counties in Q3–Q4 2025 as new EPA datasets arrive."
     },
     {
-      question: "What happens if the USDA database is unavailable?",
-      answer: "We maintain local cached copies of all county data with 30-day refresh cycles to ensure reliable service even during USDA system maintenance. Our edge caching infrastructure provides 99.9% uptime for critical soil data access."
+      question: "Do you still offer white-label solutions?",
+      answer: "Absolutely—now with dual soil + water endpoints. Contact enterprise@soilsidekick.com for custom branding and revenue-share agreements."
     },
     {
-      question: "Is my data secure and private?",
-      answer: "Absolutely. We follow GDPR and CCPA compliance standards, use enterprise-grade encryption, and never sell or share your personal information. All data is stored securely on Supabase's SOC-2 compliant infrastructure."
-    },
-    {
-      question: "Can I cancel my subscription anytime?",
-      answer: "Yes, you can cancel your Pro subscription at any time through your account dashboard. You'll continue to have Pro access through the end of your current billing period, after which you'll automatically return to our free tier."
-    },
-    {
-      question: "Do you offer discounts for annual subscriptions?",
-      answer: "Yes! Annual Pro subscribers save 20% compared to monthly billing. We also offer educational discounts for students and non-profit organizations - contact us for details."
-    },
-    {
-      question: "How often is the soil and water data updated?",
-      answer: "USDA SSURGO data is updated on a rolling basis as new soil surveys are completed. EPA water quality data is updated quarterly as utilities report their testing results. Our system automatically syncs with the latest government releases to ensure you always have access to the most current information available."
-    },
-    {
-      question: "Are filter recommendations based on my specific water quality?",
-      answer: "Yes! Our filter recommendations are personalized based on your county's specific contaminant profile. We analyze your water's lead, chlorine, nitrate, and other contaminant levels to recommend the most effective filtration solutions, potentially saving you money by avoiding unnecessary over-filtration."
-    },
-    {
-      question: "Can I trust the water quality grades for health decisions?",
-      answer: "Our water quality grades are based on EPA compliance data and Maximum Contaminant Levels (MCL). While this provides valuable insight into your water safety, we always recommend consulting with health professionals for specific health concerns and following EPA guidelines for safe drinking water practices."
+      question: "Can I cancel anytime?",
+      answer: "Yes. Cancel in the customer portal; access continues until the end of the current billing period, then you drop back to the free tier."
     }
   ];
 
@@ -91,7 +72,7 @@ const FAQ = () => {
               Frequently Asked Questions
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Everything you need to know about SoilSidekick Pro and how it can help optimize your soil and water quality decisions.
+              Everything you need to know about SoilSidekick Pro's Agricultural Intelligence platform and how it optimizes your soil and water quality decisions.
             </p>
           </div>
         </div>
@@ -125,7 +106,7 @@ const FAQ = () => {
           <CardContent className="pt-6">
             <h3 className="text-xl font-semibold mb-2">Still have questions?</h3>
             <p className="text-muted-foreground mb-4">
-              Our team is here to help you get the most out of SoilSidekick Pro.
+              Our team is here to help you get the most out of SoilSidekick Pro's Agricultural Intelligence platform.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
