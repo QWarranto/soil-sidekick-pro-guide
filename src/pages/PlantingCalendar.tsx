@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CountyMenuLookup } from '@/components/CountyMenuLookup';
+import { CountyLookup } from '@/components/CountyLookup';
 import { useAuth } from '@/hooks/useAuth';
 import { Leaf, LogOut, ArrowLeft, Calendar, Sprout, Thermometer, CloudRain } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface PlantingData {
   crop: string;
@@ -86,28 +87,94 @@ const PlantingCalendar = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [selectedCounty, setSelectedCounty] = useState<string>('');
+  const [selectedCounty, setSelectedCounty] = useState<any>(null);
   const [plantingData, setPlantingData] = useState<PlantingData[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleDataFound = (data: any[]) => {
-    // In a real implementation, this would fetch planting data based on the county
-    // For now, we'll use sample data
-    setPlantingData(samplePlantingData);
-    setShowResults(true);
-    toast({
-      title: "Planting calendar loaded",
-      description: `Found planting recommendations for your selected county.`,
-    });
+  const handleCountySelect = async (county: any) => {
+    setSelectedCounty(county);
+    setIsLoading(true);
+    
+    try {
+      // Generate soil analysis data for the county to inform planting recommendations
+      const { data: soilResponse, error } = await supabase.functions.invoke('get-soil-data', {
+        body: {
+          county_fips: county.fips_code,
+          county_name: county.county_name,
+          state_code: county.state_code
+        }
+      });
+
+      if (error) {
+        console.error('Error fetching soil data:', error);
+        toast({
+          title: "Error fetching soil data",
+          description: "Using default recommendations for your area.",
+          variant: "destructive",
+        });
+        // Fall back to sample data
+        setPlantingData(samplePlantingData);
+      } else {
+        // Generate planting recommendations based on soil data and county
+        const enhancedPlantingData = generatePlantingRecommendations(county, soilResponse.soilAnalysis);
+        setPlantingData(enhancedPlantingData);
+        toast({
+          title: "Planting calendar loaded",
+          description: `Found planting recommendations for ${county.county_name}, ${county.state_code}`,
+        });
+      }
+      
+      setShowResults(true);
+    } catch (error) {
+      console.error('Error:', error);
+      setPlantingData(samplePlantingData);
+      setShowResults(true);
+      toast({
+        title: "Using default data",
+        description: "County-specific data unavailable, showing general recommendations.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleNoDataFound = () => {
-    setShowResults(false);
-    toast({
-      title: "No planting data available",
-      description: "Planting calendar data not available for this county yet.",
-      variant: "destructive",
-    });
+  const generatePlantingRecommendations = (county: any, soilAnalysis: any) => {
+    // Enhanced planting data based on soil conditions and geographic location
+    const baseData = [...samplePlantingData];
+    
+    // Adjust recommendations based on soil pH
+    if (soilAnalysis?.ph_level) {
+      const ph = soilAnalysis.ph_level;
+      baseData.forEach(crop => {
+        if (ph < 6.0 && (crop.crop === 'Tomatoes' || crop.crop === 'Peppers')) {
+          crop.description += ' Note: Soil is acidic - consider lime application before planting.';
+        } else if (ph > 7.5 && crop.crop === 'Blueberries') {
+          crop.description += ' Note: Soil is alkaline - consider sulfur to lower pH for optimal growth.';
+        }
+      });
+    }
+
+    // Adjust planting windows based on state/climate zone
+    if (county.state_code === 'FL' || county.state_code === 'TX' || county.state_code === 'CA') {
+      // Warmer climate adjustments
+      baseData.forEach(crop => {
+        if (crop.category === 'cool-season') {
+          crop.plantingWindow.start = 'Oct 15';
+          crop.plantingWindow.end = 'Feb 15';
+        }
+      });
+    } else if (county.state_code === 'MN' || county.state_code === 'ND' || county.state_code === 'WI') {
+      // Colder climate adjustments
+      baseData.forEach(crop => {
+        if (crop.category === 'warm-season') {
+          crop.plantingWindow.start = 'May 15';
+          crop.plantingWindow.end = 'Jun 15';
+        }
+      });
+    }
+
+    return baseData;
   };
 
   const getCategoryColor = (category: string) => {
@@ -188,9 +255,8 @@ const PlantingCalendar = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <CountyMenuLookup
-                onDataFound={handleDataFound}
-                onNoDataFound={handleNoDataFound}
+              <CountyLookup
+                onCountySelect={handleCountySelect}
               />
             </CardContent>
           </Card>

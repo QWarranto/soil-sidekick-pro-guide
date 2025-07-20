@@ -5,10 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CountyMenuLookup } from '@/components/CountyMenuLookup';
+import { CountyLookup } from '@/components/CountyLookup';
 import { useAuth } from '@/hooks/useAuth';
 import { Leaf, LogOut, ArrowLeft, Droplets, AlertTriangle, CheckCircle, TrendingDown, Recycle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface FertilizerRecommendation {
   name: string;
@@ -95,29 +96,111 @@ const FertilizerFootprint = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [selectedCounty, setSelectedCounty] = useState<string>('');
+  const [selectedCounty, setSelectedCounty] = useState<any>(null);
   const [fertilizerData, setFertilizerData] = useState<FertilizerRecommendation[]>([]);
   const [waterData, setWaterData] = useState<WaterBodyData | null>(null);
   const [showResults, setShowResults] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleDataFound = (data: any[]) => {
-    // In a real implementation, this would fetch fertilizer and water body data
-    setFertilizerData(sampleFertilizerData);
-    setWaterData(sampleWaterData);
-    setShowResults(true);
-    toast({
-      title: "Fertilizer footprint analysis complete",
-      description: `Environmental impact assessment loaded for your county.`,
-    });
+  const handleCountySelect = async (county: any) => {
+    setSelectedCounty(county);
+    setIsLoading(true);
+    
+    try {
+      // Get soil analysis data to inform fertilizer recommendations
+      const { data: soilResponse, error } = await supabase.functions.invoke('get-soil-data', {
+        body: {
+          county_fips: county.fips_code,
+          county_name: county.county_name,
+          state_code: county.state_code
+        }
+      });
+
+      if (error) {
+        console.error('Error fetching soil data:', error);
+        toast({
+          title: "Error fetching soil data",
+          description: "Using default recommendations for your area.",
+          variant: "destructive",
+        });
+        // Fall back to sample data
+        setFertilizerData(sampleFertilizerData);
+        setWaterData(sampleWaterData);
+      } else {
+        // Generate fertilizer recommendations based on soil data and environmental factors
+        const enhancedFertilizerData = generateFertilizerRecommendations(county, soilResponse.soilAnalysis);
+        const enhancedWaterData = generateWaterBodyData(county);
+        setFertilizerData(enhancedFertilizerData);
+        setWaterData(enhancedWaterData);
+        toast({
+          title: "Fertilizer footprint analysis complete",
+          description: `Environmental impact assessment loaded for ${county.county_name}, ${county.state_code}`,
+        });
+      }
+      
+      setShowResults(true);
+    } catch (error) {
+      console.error('Error:', error);
+      setFertilizerData(sampleFertilizerData);
+      setWaterData(sampleWaterData);
+      setShowResults(true);
+      toast({
+        title: "Using default data",
+        description: "County-specific data unavailable, showing general recommendations.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleNoDataFound = () => {
-    setShowResults(false);
-    toast({
-      title: "No environmental data available",
-      description: "Fertilizer footprint data not available for this county yet.",
-      variant: "destructive",
-    });
+  const generateFertilizerRecommendations = (county: any, soilAnalysis: any) => {
+    const recommendations = [...sampleFertilizerData];
+    
+    // Adjust recommendations based on soil analysis
+    if (soilAnalysis?.nitrogen_level === 'high') {
+      // Prioritize low-nitrogen fertilizers
+      recommendations.forEach(fert => {
+        if (fert.name.includes('Low-Phosphorus')) {
+          fert.environmentalScore += 1;
+        }
+      });
+    }
+    
+    if (soilAnalysis?.phosphorus_level === 'high') {
+      // Emphasize low-phosphorus options due to runoff concerns
+      recommendations.forEach(fert => {
+        if (fert.pValue <= 2) {
+          fert.environmentalScore += 2;
+          fert.runoffReduction = (fert.runoffReduction || 0) + 10;
+        }
+      });
+    }
+
+    // Adjust based on geographic location
+    if (county.state_code === 'FL' || county.state_code === 'MN' || county.state_code === 'WI') {
+      // States with significant water body concerns
+      recommendations.forEach(fert => {
+        if (fert.type === 'organic' || fert.type === 'slow-release') {
+          fert.environmentalScore = Math.min(10, fert.environmentalScore + 1);
+        }
+      });
+    }
+
+    return recommendations.sort((a, b) => b.environmentalScore - a.environmentalScore);
+  };
+
+  const generateWaterBodyData = (county: any): WaterBodyData => {
+    // Simulate water body data based on state characteristics
+    const waterBodyCharacteristics: Record<string, Partial<WaterBodyData>> = {
+      'FL': { nearbyStreams: 5, impairedWaterBodies: 2, drainageBasin: 'Gulf of Mexico', runoffRiskLevel: 'high' },
+      'MN': { nearbyStreams: 8, impairedWaterBodies: 3, drainageBasin: 'Mississippi River Basin', runoffRiskLevel: 'medium' },
+      'CA': { nearbyStreams: 2, impairedWaterBodies: 1, drainageBasin: 'Pacific Ocean', runoffRiskLevel: 'medium' },
+      'TX': { nearbyStreams: 3, impairedWaterBodies: 1, drainageBasin: 'Gulf of Mexico', runoffRiskLevel: 'medium' },
+      'IA': { nearbyStreams: 6, impairedWaterBodies: 2, drainageBasin: 'Mississippi River Basin', runoffRiskLevel: 'high' },
+    };
+
+    const stateData = waterBodyCharacteristics[county.state_code] || sampleWaterData;
+    return { ...sampleWaterData, ...stateData };
   };
 
   const getRiskColor = (risk: string) => {
@@ -211,9 +294,8 @@ const FertilizerFootprint = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <CountyMenuLookup
-                onDataFound={handleDataFound}
-                onNoDataFound={handleNoDataFound}
+              <CountyLookup
+                onCountySelect={handleCountySelect}
               />
             </CardContent>
           </Card>
