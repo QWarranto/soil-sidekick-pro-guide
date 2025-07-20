@@ -86,9 +86,12 @@ const Index = () => {
                   <p className="text-muted-foreground">
                     Ready to explore soil data and plan your sustainable growing season?
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 max-w-3xl mx-auto">
                     <Button size="lg" className="bg-primary hover:bg-primary/90" onClick={handleStartAnalysis}>
                       Soil Analysis
+                    </Button>
+                    <Button size="lg" variant="outline" onClick={() => navigate('/water-quality')}>
+                      Water Quality
                     </Button>
                     <Button size="lg" variant="outline" onClick={() => navigate('/planting-calendar')}>
                       Planting Calendar

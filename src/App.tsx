@@ -9,6 +9,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import SoilAnalysis from "./pages/SoilAnalysis";
+import WaterQuality from "./pages/WaterQuality";
 import PlantingCalendar from "./pages/PlantingCalendar";
 import FertilizerFootprint from "./pages/FertilizerFootprint";
 import Pricing from "./pages/Pricing";
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/soil-analysis" element={<SoilAnalysis />} />
+            <Route path="/water-quality" element={<WaterQuality />} />
             <Route path="/planting-calendar" element={<PlantingCalendar />} />
             <Route path="/fertilizer-footprint" element={<FertilizerFootprint />} />
             <Route path="/pricing" element={<Pricing />} />
