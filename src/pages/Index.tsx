@@ -84,14 +84,17 @@ const Index = () => {
                 
                 <div className="text-center space-y-4">
                   <p className="text-muted-foreground">
-                    Ready to explore soil data and plan your growing season?
+                    Ready to explore soil data and plan your sustainable growing season?
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto">
                     <Button size="lg" className="bg-primary hover:bg-primary/90" onClick={handleStartAnalysis}>
-                      Start Soil Analysis
+                      Soil Analysis
                     </Button>
                     <Button size="lg" variant="outline" onClick={() => navigate('/planting-calendar')}>
-                      View Planting Calendar
+                      Planting Calendar
+                    </Button>
+                    <Button size="lg" variant="outline" onClick={() => navigate('/fertilizer-footprint')}>
+                      Fertilizer Footprint
                     </Button>
                   </div>
                 </div>
