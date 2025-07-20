@@ -41,6 +41,233 @@ export type Database = {
         }
         Relationships: []
       }
+      county_search_sessions: {
+        Row: {
+          created_at: string
+          database_results: Json | null
+          expires_at: string
+          external_results: Json | null
+          id: string
+          search_context: Json
+          selected_county: Json | null
+          session_token: string
+          state_transitions: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          database_results?: Json | null
+          expires_at?: string
+          external_results?: Json | null
+          id?: string
+          search_context: Json
+          selected_county?: Json | null
+          session_token: string
+          state_transitions?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          database_results?: Json | null
+          expires_at?: string
+          external_results?: Json | null
+          id?: string
+          search_context?: Json
+          selected_county?: Json | null
+          session_token?: string
+          state_transitions?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      environmental_impact_scores: {
+        Row: {
+          analysis_id: string | null
+          biodiversity_impact: string | null
+          carbon_footprint_score: number | null
+          contamination_risk: string | null
+          county_fips: string
+          created_at: string
+          eco_friendly_alternatives: Json | null
+          id: string
+          runoff_risk_score: number
+          updated_at: string
+          user_id: string
+          water_body_proximity: number | null
+        }
+        Insert: {
+          analysis_id?: string | null
+          biodiversity_impact?: string | null
+          carbon_footprint_score?: number | null
+          contamination_risk?: string | null
+          county_fips: string
+          created_at?: string
+          eco_friendly_alternatives?: Json | null
+          id?: string
+          runoff_risk_score: number
+          updated_at?: string
+          user_id: string
+          water_body_proximity?: number | null
+        }
+        Update: {
+          analysis_id?: string | null
+          biodiversity_impact?: string | null
+          carbon_footprint_score?: number | null
+          contamination_risk?: string | null
+          county_fips?: string
+          created_at?: string
+          eco_friendly_alternatives?: Json | null
+          id?: string
+          runoff_risk_score?: number
+          updated_at?: string
+          user_id?: string
+          water_body_proximity?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "environmental_impact_scores_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
+            referencedRelation: "soil_analyses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fips_data_cache: {
+        Row: {
+          access_count: number | null
+          cache_key: string
+          cache_level: number
+          cached_data: Json
+          county_fips: string
+          created_at: string
+          data_source: string
+          expires_at: string
+          id: string
+          last_accessed: string | null
+        }
+        Insert: {
+          access_count?: number | null
+          cache_key: string
+          cache_level: number
+          cached_data: Json
+          county_fips: string
+          created_at?: string
+          data_source: string
+          expires_at?: string
+          id?: string
+          last_accessed?: string | null
+        }
+        Update: {
+          access_count?: number | null
+          cache_key?: string
+          cache_level?: number
+          cached_data?: Json
+          county_fips?: string
+          created_at?: string
+          data_source?: string
+          expires_at?: string
+          id?: string
+          last_accessed?: string | null
+        }
+        Relationships: []
+      }
+      geo_consumption_analytics: {
+        Row: {
+          consumption_frequency: number | null
+          county_fips: string
+          created_at: string
+          geographic_cluster: string | null
+          id: string
+          month_year: string
+          seasonal_pattern: Json | null
+          state_code: string
+          tier_progression_score: number | null
+          updated_at: string
+          upgrade_probability: number | null
+          usage_pattern: Json
+          user_id: string
+        }
+        Insert: {
+          consumption_frequency?: number | null
+          county_fips: string
+          created_at?: string
+          geographic_cluster?: string | null
+          id?: string
+          month_year?: string
+          seasonal_pattern?: Json | null
+          state_code: string
+          tier_progression_score?: number | null
+          updated_at?: string
+          upgrade_probability?: number | null
+          usage_pattern: Json
+          user_id: string
+        }
+        Update: {
+          consumption_frequency?: number | null
+          county_fips?: string
+          created_at?: string
+          geographic_cluster?: string | null
+          id?: string
+          month_year?: string
+          seasonal_pattern?: Json | null
+          state_code?: string
+          tier_progression_score?: number | null
+          updated_at?: string
+          upgrade_probability?: number | null
+          usage_pattern?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      planting_optimizations: {
+        Row: {
+          alternative_crops: Json | null
+          climate_factors: Json
+          county_fips: string
+          created_at: string
+          crop_type: string
+          id: string
+          optimal_planting_window: Json
+          risk_assessment: Json | null
+          soil_factors: Json
+          sustainability_score: number | null
+          updated_at: string
+          user_id: string
+          yield_prediction: number | null
+        }
+        Insert: {
+          alternative_crops?: Json | null
+          climate_factors: Json
+          county_fips: string
+          created_at?: string
+          crop_type: string
+          id?: string
+          optimal_planting_window: Json
+          risk_assessment?: Json | null
+          soil_factors: Json
+          sustainability_score?: number | null
+          updated_at?: string
+          user_id: string
+          yield_prediction?: number | null
+        }
+        Update: {
+          alternative_crops?: Json | null
+          climate_factors?: Json
+          county_fips?: string
+          created_at?: string
+          crop_type?: string
+          id?: string
+          optimal_planting_window?: Json
+          risk_assessment?: Json | null
+          soil_factors?: Json
+          sustainability_score?: number | null
+          updated_at?: string
+          user_id?: string
+          yield_prediction?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
