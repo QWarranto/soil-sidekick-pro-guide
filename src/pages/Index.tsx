@@ -51,6 +51,9 @@ const Index = () => {
             <Button variant="ghost" size="sm" onClick={() => navigate('/api-docs')}>
               API Docs
             </Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/faq')}>
+              FAQ
+            </Button>
             <span className="text-sm text-muted-foreground">
               Welcome, {user.email}
             </span>
