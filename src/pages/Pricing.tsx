@@ -28,9 +28,10 @@ const Pricing = () => {
       badgeVariant: 'secondary' as const,
       features: [
         'County soil snapshot',
-        'Basic water-quality grade',
+        'Basic environmental assessment',
         'Up to 3 counties per month',
-        'Interactive map'
+        'Interactive map with FIPS lookup',
+        'Standard planting recommendations'
       ]
     },
     {
@@ -39,34 +40,40 @@ const Pricing = () => {
       price: '$9.99',
       period: 'per month',
       yearlyPrice: '$99 / yr (save 17%)',
-      description: 'Complete soil intelligence for serious growers',
+      description: 'Patent-protected agricultural intelligence for serious growers',
       icon: <Star className="h-6 w-6" />,
       badge: 'Most Popular',
       badgeVariant: 'default' as const,
       features: [
-        'Unlimited counties',
-        'Full soil + water analysis',
-        'Planting calendar & frost dates',
-        'Fertilizer runoff risk + eco-scores',
+        'Unlimited counties with smart caching',
+        'Environmental Impact Engine™ (Patent-Protected)',
+        'Multi-Parameter Planting Optimization™',
+        'Eco-Friendly Alternative Recommendations',
+        'Carbon Footprint & Sustainability Scoring',
+        'Hierarchical Geographic Intelligence',
+        'Adaptive Usage Analytics & Insights',
         'PDF & CSV exports (lender-ready)',
-        'Priority support'
+        'Priority support & consultation'
       ]
     },
     {
       id: 'api',
-      name: 'API',
+      name: 'API — Enterprise',
       price: '$49',
       period: 'per month',
-      description: 'Monetizable API for seed companies & ag-tech platforms',
+      description: 'Patent-protected APIs for ag-tech platforms & enterprises',
       icon: <Zap className="h-6 w-6" />,
-      badge: 'Developer',
+      badge: 'Enterprise',
       badgeVariant: 'outline' as const,
       features: [
         '10k calls per month',
-        'Soil + water endpoints',
+        'Patent-Protected Environmental Assessment APIs',
+        'Hierarchical Cache-Optimised Data Broker',
+        'Geo-Consumption Analytics Integration',
+        'Multi-Parameter Optimization Endpoints',
         'Revenue-share option for retailers',
-        'White-label ready',
-        '99.9% SLA'
+        'White-label ready with custom branding',
+        '99.9% SLA with enterprise support'
       ]
     }
   ];
@@ -110,31 +117,41 @@ const Pricing = () => {
           {/* Header Section */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold mb-4">
-              Choose Your <span className="text-primary">Agricultural Intelligence</span> Plan
+              Choose Your <span className="text-primary">Patent-Protected Agricultural Intelligence</span> Plan
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              From hobby gardeners to enterprise ag-tech platforms. County-level soil & water data 
-              with <span className="font-semibold text-primary">zero GIS skills required</span>.
+              From hobby gardeners to enterprise ag-tech platforms. <span className="font-semibold text-primary">4 patent-protected algorithms</span> delivering 
+              breakthrough environmental intelligence with <span className="font-semibold text-primary">zero GIS skills required</span>.
             </p>
           </div>
 
           {/* Competitive Advantages */}
-          <div className="bg-primary/5 rounded-lg p-6 mb-12 border border-primary/20">
-            <h3 className="text-lg font-semibold text-primary mb-4 text-center">
+          <div className="bg-primary/5 rounded-lg p-8 mb-12 border border-primary/20">
+            <h3 className="text-lg font-semibold text-primary mb-6 text-center">
               🏆 Why SoilSidekick Pro Leads the Market
             </h3>
-            <div className="grid md:grid-cols-3 gap-4 text-sm">
+            <div className="grid md:grid-cols-4 gap-6 text-sm">
               <div className="text-center">
-                <div className="font-medium mb-2">Soil + Water Analysis</div>
-                <div className="text-muted-foreground">Complete agricultural intelligence in one platform</div>
+                <div className="font-medium mb-2 text-primary">4 Patent-Protected Algorithms</div>
+                <div className="text-muted-foreground">Hierarchical caching, environmental impact engine, geo-analytics, multi-parameter optimization</div>
               </div>
               <div className="text-center">
-                <div className="font-medium mb-2">EPA + USDA Data</div>
-                <div className="text-muted-foreground">Government-grade accuracy for 297 counties (expanding)</div>
+                <div className="font-medium mb-2 text-primary">First Runoff Risk + Eco-Alternatives</div>
+                <div className="text-muted-foreground">Only platform combining environmental assessment with sustainable fertilizer recommendations</div>
               </div>
               <div className="text-center">
-                <div className="font-medium mb-2">15-Minute Integration</div>
-                <div className="text-muted-foreground">Plug-and-play vs. months with enterprise suites</div>
+                <div className="font-medium mb-2 text-primary">Advanced Geographic Intelligence</div>
+                <div className="text-muted-foreground">4-level hierarchical data broker (County→State→Regional→National) with smart fallback</div>
+              </div>
+              <div className="text-center">
+                <div className="font-medium mb-2 text-primary">Multi-Parameter Crop Optimization</div>
+                <div className="text-muted-foreground">5+ soil/climate factors with sustainability scoring vs. basic frost date calculators</div>
+              </div>
+            </div>
+            <div className="mt-6 text-center">
+              <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full text-sm font-medium text-primary">
+                <Star className="h-4 w-4" />
+                Defensible IP Portfolio • Enterprise-Ready • Government-Grade Data
               </div>
             </div>
           </div>
@@ -205,18 +222,32 @@ const Pricing = () => {
           </div>
 
           {/* Bottom CTA */}
-          <div className="text-center mt-12 p-8 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg">
-            <h3 className="text-2xl font-bold mb-4">Ready to Get Started?</h3>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Join thousands of growers making data-driven soil decisions with our Agricultural Intelligence platform. 
-              Start with our free tier and upgrade when you need more features.
+          <div className="text-center mt-12 p-8 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20">
+            <h3 className="text-2xl font-bold mb-4">Ready to Experience Patent-Protected Agricultural Intelligence?</h3>
+            <p className="text-muted-foreground mb-6 max-w-3xl mx-auto">
+              Join thousands of growers leveraging our breakthrough environmental impact algorithms and multi-parameter optimization systems. 
+              Experience the only platform that combines runoff risk assessment with eco-friendly alternatives.
             </p>
+            <div className="flex flex-wrap gap-4 justify-center mb-6">
+              <div className="inline-flex items-center gap-2 bg-background/80 px-3 py-1 rounded-full text-sm">
+                <Check className="h-3 w-3 text-green-500" />
+                Environmental Impact Engine™
+              </div>
+              <div className="inline-flex items-center gap-2 bg-background/80 px-3 py-1 rounded-full text-sm">
+                <Check className="h-3 w-3 text-green-500" />
+                Multi-Parameter Planting Optimization™
+              </div>
+              <div className="inline-flex items-center gap-2 bg-background/80 px-3 py-1 rounded-full text-sm">
+                <Check className="h-3 w-3 text-green-500" />
+                Hierarchical Geographic Intelligence
+              </div>
+            </div>
             <div className="flex gap-4 justify-center">
               <Button onClick={() => navigate('/soil-analysis')}>
-                Try Free Now
+                Try Patent-Protected Features Free
               </Button>
               <Button variant="outline" onClick={() => navigate('/api-docs')}>
-                View API Docs
+                Explore Enterprise APIs
               </Button>
             </div>
           </div>
