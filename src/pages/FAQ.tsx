@@ -12,20 +12,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 const FAQ = () => {
   const faqs = [
     {
-      question: "What makes SoilSidekick Pro different from other soil analysis tools?",
-      answer: "SoilSidekick Pro provides instant, county-level soil data directly from USDA SSURGO databases. Unlike other tools that require GIS expertise or provide only state-level averages, we deliver granular insights for all 3,143 U.S. counties in plain English, with professional PDF exports ready for lenders and advisors."
+      question: "What makes SoilSidekick Pro different from other agricultural analysis tools?",
+      answer: "SoilSidekick Pro provides instant, county-level soil AND water quality data from USDA SSURGO and EPA SDWIS databases. Unlike other tools that require GIS expertise or provide only state-level averages, we deliver comprehensive agricultural intelligence for all 3,143 U.S. counties in plain English, with professional PDF exports ready for lenders and advisors."
     },
     {
-      question: "How accurate is the soil data?",
-      answer: "Our data comes directly from the USDA's Soil Survey Geographic Database (SSURGO), the most comprehensive soil dataset available in the United States. This data is collected by professional soil scientists and is updated regularly by the USDA Natural Resources Conservation Service."
+      question: "How accurate is the soil and water quality data?",
+      answer: "Our soil data comes directly from the USDA's Soil Survey Geographic Database (SSURGO), while water quality data comes from the EPA's Safe Drinking Water Information System (SDWIS). Both are the most comprehensive datasets available in the United States, collected by professional scientists and updated regularly by federal agencies."
+    },
+    {
+      question: "What water quality information do you provide?",
+      answer: "We provide comprehensive water quality analysis including EPA contaminant levels for lead, chlorine, nitrates, fluoride, and other regulated substances. You'll see current levels vs. EPA Maximum Contaminant Levels (MCL), violation status, and receive personalized filter recommendations based on your county's specific water quality profile."
     },
     {
       question: "What's included in the free tier?",
-      answer: "The free tier includes basic soil reports for any U.S. county, showing soil texture, pH levels, organic matter content, and basic NPK information. You can view up to 5 counties per month and access our interactive soil map."
+      answer: "The free tier includes basic soil reports for any U.S. county, showing soil texture, pH levels, organic matter content, basic NPK information, and water quality grades. You can view up to 5 counties per month and access our interactive maps."
     },
     {
       question: "What additional features do I get with Pro?",
-      answer: "Pro subscribers get unlimited county lookups, professional PDF exports perfect for lenders and advisors, historical trend data, soil amendment calculations, and priority customer support. Pro is ideal for serious gardeners, small farmers, and agricultural professionals."
+      answer: "Pro subscribers get unlimited county lookups, comprehensive water quality analysis with EPA contaminant data, filter recommendations, professional PDF exports perfect for lenders and advisors, historical trend data, soil amendment calculations, and priority customer support. Pro is ideal for serious gardeners, small farmers, and agricultural professionals."
     },
     {
       question: "How does the API pricing work?",
@@ -56,8 +60,16 @@ const FAQ = () => {
       answer: "Yes! Annual Pro subscribers save 20% compared to monthly billing. We also offer educational discounts for students and non-profit organizations - contact us for details."
     },
     {
-      question: "How often is the soil data updated?",
-      answer: "USDA SSURGO data is updated on a rolling basis as new soil surveys are completed. Our system automatically syncs with the latest USDA releases monthly to ensure you always have access to the most current soil information available."
+      question: "How often is the soil and water data updated?",
+      answer: "USDA SSURGO data is updated on a rolling basis as new soil surveys are completed. EPA water quality data is updated quarterly as utilities report their testing results. Our system automatically syncs with the latest government releases to ensure you always have access to the most current information available."
+    },
+    {
+      question: "Are filter recommendations based on my specific water quality?",
+      answer: "Yes! Our filter recommendations are personalized based on your county's specific contaminant profile. We analyze your water's lead, chlorine, nitrate, and other contaminant levels to recommend the most effective filtration solutions, potentially saving you money by avoiding unnecessary over-filtration."
+    },
+    {
+      question: "Can I trust the water quality grades for health decisions?",
+      answer: "Our water quality grades are based on EPA compliance data and Maximum Contaminant Levels (MCL). While this provides valuable insight into your water safety, we always recommend consulting with health professionals for specific health concerns and following EPA guidelines for safe drinking water practices."
     }
   ];
 
@@ -79,7 +91,7 @@ const FAQ = () => {
               Frequently Asked Questions
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Everything you need to know about SoilSidekick Pro and how it can help optimize your soil management decisions.
+              Everything you need to know about SoilSidekick Pro and how it can help optimize your soil and water quality decisions.
             </p>
           </div>
         </div>

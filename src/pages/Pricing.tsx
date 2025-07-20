@@ -28,6 +28,7 @@ const Pricing = () => {
       features: [
         '5 county lookups per month',
         'Basic soil metrics (pH, texture)',
+        'Basic water quality grades',
         'County-level USDA data',
         'Community support',
         'Mobile-responsive interface'
@@ -50,6 +51,9 @@ const Pricing = () => {
       features: [
         'Unlimited county lookups',
         'Complete soil analysis (NPK, OM, pH)',
+        'Full water quality analysis (EPA data)',
+        'Contaminant level tracking',
+        'Filter recommendations',
         'Instant PDF export',
         'Crop-specific recommendations',
         'Historical soil trends',
@@ -141,10 +145,10 @@ const Pricing = () => {
           {/* Header Section */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold mb-4">
-              Choose Your <span className="text-primary">Soil Intelligence</span> Plan
+              Choose Your <span className="text-primary">Agricultural Intelligence</span> Plan
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              From hobby gardeners to enterprise ag-tech platforms. County-level USDA soil data 
+              From hobby gardeners to enterprise ag-tech platforms. County-level soil & water data 
               with <span className="font-semibold text-primary">zero GIS skills required</span>.
             </p>
           </div>
@@ -156,16 +160,16 @@ const Pricing = () => {
             </h3>
             <div className="grid md:grid-cols-3 gap-4 text-sm">
               <div className="text-center">
-                <div className="font-medium mb-2">County-Only API</div>
-                <div className="text-muted-foreground">3,143 granular snapshots vs. state averages</div>
+                <div className="font-medium mb-2">Soil + Water Analysis</div>
+                <div className="text-muted-foreground">Complete agricultural intelligence in one platform</div>
+              </div>
+              <div className="text-center">
+                <div className="font-medium mb-2">EPA + USDA Data</div>
+                <div className="text-muted-foreground">Government-grade accuracy for all 3,143 counties</div>
               </div>
               <div className="text-center">
                 <div className="font-medium mb-2">15-Minute Integration</div>
                 <div className="text-muted-foreground">Plug-and-play vs. months with enterprise suites</div>
-              </div>
-              <div className="text-center">
-                <div className="font-medium mb-2">Pay-As-You-Go &lt;$50/mo</div>
-                <div className="text-muted-foreground">No enterprise minimums or hardware costs</div>
               </div>
             </div>
           </div>
