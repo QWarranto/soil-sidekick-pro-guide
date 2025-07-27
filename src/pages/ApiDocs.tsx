@@ -4,13 +4,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
-import { ArrowLeft, Leaf, LogOut, Copy, Code2, Zap, Clock, Shield } from 'lucide-react';
+import { ArrowLeft, Leaf, LogOut, Copy, Code2, Zap, Clock, Shield, Key, Settings, BookOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const ApiDocs = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, subscriptionData } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const isApiSubscriber = subscriptionData?.subscription_tier === 'api';
 
   const handleBackHome = () => {
     navigate('/');
@@ -185,6 +187,113 @@ print(json.dumps(soil_data, indent=2))`,
               </CardContent>
             </Card>
           </div>
+
+          {/* API Installation Guide - Only for API Subscribers */}
+          {isApiSubscriber && (
+            <Card className="mb-8 border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BookOpen className="h-6 w-6" />
+                  API Installation Guide
+                  <Badge variant="outline" className="ml-2">Subscriber Access</Badge>
+                </CardTitle>
+                <CardDescription>
+                  Step-by-step guide to set up your API integration
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="bg-background/50 p-4 rounded-lg border">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Key className="h-5 w-5 text-primary" />
+                      <h4 className="font-semibold">Step 1: Get Your API Key</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Your unique API key is automatically generated with your subscription.
+                    </p>
+                    <div className="bg-muted p-2 rounded text-xs font-mono">
+                      sk_live_abc123...xyz789
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Check your email for your complete API key, or contact support.
+                    </p>
+                  </div>
+
+                  <div className="bg-background/50 p-4 rounded-lg border">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Settings className="h-5 w-5 text-primary" />
+                      <h4 className="font-semibold">Step 2: Configure Headers</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Include your API key in the Authorization header for all requests.
+                    </p>
+                    <div className="bg-muted p-2 rounded text-xs font-mono">
+                      Authorization: Bearer sk_live_...
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Always use HTTPS for secure transmission.
+                    </p>
+                  </div>
+
+                  <div className="bg-background/50 p-4 rounded-lg border">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Code2 className="h-5 w-5 text-primary" />
+                      <h4 className="font-semibold">Step 3: Make First Call</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Test your integration with a sample county lookup.
+                    </p>
+                    <div className="bg-muted p-2 rounded text-xs font-mono">
+                      GET /soil/48453
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Travis County, TX - Perfect for testing.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-background/80 p-4 rounded-lg border border-orange-200">
+                  <h4 className="font-semibold text-orange-800 mb-2">Quick Start Checklist</h4>
+                  <ul className="text-sm space-y-1">
+                    <li className="flex items-center gap-2">
+                      <span className="w-4 h-4 rounded border border-primary bg-primary/10"></span>
+                      Save your API key securely (never commit to version control)
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-4 h-4 rounded border border-primary bg-primary/10"></span>
+                      Set up proper error handling for rate limits and timeouts
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-4 h-4 rounded border border-primary bg-primary/10"></span>
+                      Use county FIPS codes for precise data lookup
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-4 h-4 rounded border border-primary bg-primary/10"></span>
+                      Cache responses when appropriate to optimize performance
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <h4 className="font-semibold text-blue-800 mb-2">Need Help?</h4>
+                  <p className="text-sm text-blue-700 mb-3">
+                    Our technical support team is ready to help you get started.
+                  </p>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline">
+                      Email Support
+                    </Button>
+                    <Button size="sm" variant="outline">
+                      Schedule Call
+                    </Button>
+                    <Button size="sm" variant="outline">
+                      View Samples
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* API Documentation */}
           <Card className="mb-8">
