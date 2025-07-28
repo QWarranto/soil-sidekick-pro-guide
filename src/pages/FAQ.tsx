@@ -51,6 +51,10 @@ const FAQ = () => {
     {
       question: "Can I cancel anytime?",
       answer: "Yes. Cancel in the customer portal; access continues until the end of the current billing period, then you drop back to the free tier."
+    },
+    {
+      question: "Does your API have end-to-end encryption?",
+      answer: "Our API uses industry-standard encryption in transit (HTTPS/TLS) and encryption at rest for all data storage. While not true end-to-end encryption (where data is encrypted client-side), our security model provides robust protection suitable for agricultural and environmental data with authentication, secure transmission, and encrypted database storage."
     }
   ];
 
