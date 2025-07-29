@@ -14,6 +14,220 @@ export type Database = {
   }
   public: {
     Tables: {
+      adapt_api_usage: {
+        Row: {
+          created_at: string
+          data_type: string
+          endpoint: string
+          error_message: string | null
+          id: string
+          integration_id: string | null
+          request_size_kb: number | null
+          request_type: string
+          response_time_ms: number | null
+          subscription_tier: string
+          success: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_type: string
+          endpoint: string
+          error_message?: string | null
+          id?: string
+          integration_id?: string | null
+          request_size_kb?: number | null
+          request_type: string
+          response_time_ms?: number | null
+          subscription_tier: string
+          success?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data_type?: string
+          endpoint?: string
+          error_message?: string | null
+          id?: string
+          integration_id?: string | null
+          request_size_kb?: number | null
+          request_type?: string
+          response_time_ms?: number | null
+          subscription_tier?: string
+          success?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "adapt_api_usage_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "adapt_integrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      adapt_field_boundaries: {
+        Row: {
+          adapt_field_id: string | null
+          area_acres: number | null
+          boundary_geometry: Json
+          created_at: string
+          crop_type: string | null
+          field_name: string
+          field_reference: string | null
+          id: string
+          integration_id: string | null
+          last_updated_external: string | null
+          planting_year: number | null
+          soil_type: string | null
+          sync_status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          adapt_field_id?: string | null
+          area_acres?: number | null
+          boundary_geometry: Json
+          created_at?: string
+          crop_type?: string | null
+          field_name: string
+          field_reference?: string | null
+          id?: string
+          integration_id?: string | null
+          last_updated_external?: string | null
+          planting_year?: number | null
+          soil_type?: string | null
+          sync_status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          adapt_field_id?: string | null
+          area_acres?: number | null
+          boundary_geometry?: Json
+          created_at?: string
+          crop_type?: string | null
+          field_name?: string
+          field_reference?: string | null
+          id?: string
+          integration_id?: string | null
+          last_updated_external?: string | null
+          planting_year?: number | null
+          soil_type?: string | null
+          sync_status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "adapt_field_boundaries_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "adapt_integrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      adapt_integrations: {
+        Row: {
+          api_credentials: Json | null
+          created_at: string
+          id: string
+          integration_name: string
+          integration_status: string
+          integration_type: string
+          last_sync_at: string | null
+          subscription_tier: string
+          sync_frequency: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          api_credentials?: Json | null
+          created_at?: string
+          id?: string
+          integration_name: string
+          integration_status?: string
+          integration_type: string
+          last_sync_at?: string | null
+          subscription_tier?: string
+          sync_frequency?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          api_credentials?: Json | null
+          created_at?: string
+          id?: string
+          integration_name?: string
+          integration_status?: string
+          integration_type?: string
+          last_sync_at?: string | null
+          subscription_tier?: string
+          sync_frequency?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      adapt_soil_exports: {
+        Row: {
+          created_at: string
+          export_data: Json
+          export_format: string
+          export_status: string
+          external_reference: string | null
+          file_path: string | null
+          id: string
+          integration_id: string | null
+          soil_analysis_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          export_data: Json
+          export_format?: string
+          export_status?: string
+          external_reference?: string | null
+          file_path?: string | null
+          id?: string
+          integration_id?: string | null
+          soil_analysis_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          export_data?: Json
+          export_format?: string
+          export_status?: string
+          external_reference?: string | null
+          file_path?: string | null
+          id?: string
+          integration_id?: string | null
+          soil_analysis_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "adapt_soil_exports_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "adapt_integrations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "adapt_soil_exports_soil_analysis_id_fkey"
+            columns: ["soil_analysis_id"]
+            isOneToOne: false
+            referencedRelation: "soil_analyses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       counties: {
         Row: {
           county_name: string

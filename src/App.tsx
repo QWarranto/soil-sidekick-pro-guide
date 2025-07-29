@@ -16,6 +16,7 @@ import FertilizerFootprint from "./pages/FertilizerFootprint";
 import Pricing from "./pages/Pricing";
 import ApiDocs from "./pages/ApiDocs";
 import FAQ from "./pages/FAQ";
+import AdaptIntegration from "./pages/AdaptIntegration";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/api-docs" element={<ApiDocs />} />
             <Route path="/faq" element={<FAQ />} />
+            <Route path="/adapt-integration" element={<AdaptIntegration />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
