@@ -107,6 +107,31 @@ const SoilAnalysis = () => {
     setSoilDataList([]);
   };
 
+  const handlePopulateCounties = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('populate-counties', {
+        body: {}
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Counties Populated",
+        description: `Successfully populated counties: ${data.message}`,
+      });
+    } catch (error) {
+      console.error('Error populating counties:', error);
+      toast({
+        title: "Population Failed",
+        description: "Unable to populate counties. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleExport = () => {
     if (!soilData) return;
     
@@ -238,16 +263,27 @@ ${soilData.recommendations || 'No recommendations available'}
                       <p className="text-muted-foreground">Receive detailed soil composition data</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
-                    <div className="w-2 h-2 bg-muted-foreground rounded-full"></div>
-                    <div className="text-sm">
-                      <p className="font-medium">View recommendations</p>
-                      <p className="text-muted-foreground">Get agricultural guidance</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                   <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+                     <div className="w-2 h-2 bg-muted-foreground rounded-full"></div>
+                     <div className="text-sm">
+                       <p className="font-medium">View recommendations</p>
+                       <p className="text-muted-foreground">Get agricultural guidance</p>
+                     </div>
+                   </div>
+                   <div className="pt-4 border-t">
+                     <Button 
+                       onClick={handlePopulateCounties}
+                       variant="outline" 
+                       size="sm"
+                       disabled={loading}
+                       className="w-full"
+                     >
+                       Populate Counties from Census API
+                     </Button>
+                   </div>
+                 </div>
+               </CardContent>
+             </Card>
           </div>
 
           {/* Loading State */}
