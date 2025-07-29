@@ -45,7 +45,7 @@ export const CountyLookup: React.FC<CountyLookupProps> = ({ onCountySelect }) =>
       // Search county names first (primary search)
       const { data: countyData, error: countyError } = await query
         .ilike('county_name', `%${cleanTerm}%`)
-        .limit(8);
+        .limit(50); // Increased limit to show more counties
 
       if (countyError) throw countyError;
 
@@ -57,7 +57,7 @@ export const CountyLookup: React.FC<CountyLookupProps> = ({ onCountySelect }) =>
           .from('counties')
           .select('*')
           .ilike('state_name', `%${cleanTerm}%`)
-          .limit(5);
+          .limit(50); // Increased limit to show more counties
 
         if (stateError) throw stateError;
         
