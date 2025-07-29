@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, AreaChart, Area, BarChart, Bar } from "recharts";
+import { AddFieldDialog } from "@/components/AddFieldDialog";
 import { 
   MapPin, 
   TrendingUp, 
@@ -21,6 +22,10 @@ import {
 } from "lucide-react";
 
 const Dashboard = () => {
+  const handleFieldAdded = (field: any) => {
+    console.log("New field added:", field);
+    // Here you would typically save to database or state management
+  };
   // Mock data for demonstration
   const soilHealthData = [
     { month: "Jan", health: 82 },
@@ -93,10 +98,7 @@ const Dashboard = () => {
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
-            <Button size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Field
-            </Button>
+            <AddFieldDialog onFieldAdded={handleFieldAdded} />
           </div>
         </div>
       </div>
