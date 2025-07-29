@@ -70,6 +70,8 @@ const Pricing = () => {
       badgeVariant: 'default' as const,
       features: [
         'Unlimited counties with smart caching',
+        'GPS field mapping & location capture',
+        'Advanced field management dashboard',
         'Environmental Impact Engine™ (Patent-Protected)',
         'Multi-Parameter Planting Optimization™',
         'Eco-Friendly Alternative Recommendations',
@@ -91,6 +93,8 @@ const Pricing = () => {
       badgeVariant: 'outline' as const,
       features: [
         '10k calls per month',
+        'GPS-enabled field management APIs',
+        'Mobile-ready location services',
         'Patent-Protected Environmental Assessment APIs',
         'Hierarchical Cache-Optimised Data Broker',
         'Geo-Consumption Analytics Integration',
