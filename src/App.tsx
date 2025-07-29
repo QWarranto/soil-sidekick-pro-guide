@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
 import SoilAnalysis from "./pages/SoilAnalysis";
 import WaterQuality from "./pages/WaterQuality";
 import PlantingCalendar from "./pages/PlantingCalendar";
@@ -29,6 +30,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/soil-analysis" element={<SoilAnalysis />} />
             <Route path="/water-quality" element={<WaterQuality />} />
             <Route path="/planting-calendar" element={<PlantingCalendar />} />

@@ -45,6 +45,9 @@ const Index = () => {
             <span className="text-xl font-bold text-primary">SoilSidekick Pro</span>
           </div>
           <div className="flex items-center gap-4">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
+              Dashboard
+            </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate('/pricing')}>
               Pricing
             </Button>
@@ -90,7 +93,10 @@ const Index = () => {
                     Ready to explore soil data and plan your sustainable growing season?
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 max-w-3xl mx-auto">
-                    <Button size="lg" className="bg-primary hover:bg-primary/90" onClick={handleStartAnalysis}>
+                    <Button size="lg" className="bg-primary hover:bg-primary/90" onClick={() => navigate('/dashboard')}>
+                      Dashboard
+                    </Button>
+                    <Button size="lg" variant="outline" onClick={handleStartAnalysis}>
                       Soil Analysis
                     </Button>
                     <Button size="lg" variant="outline" onClick={() => navigate('/water-quality')}>
