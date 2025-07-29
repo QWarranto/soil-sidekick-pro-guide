@@ -56,7 +56,8 @@ const Pricing = () => {
         'Basic environmental assessment',
         'Up to 3 counties per month',
         'Interactive map with FIPS lookup',
-        'Standard planting recommendations'
+        'Standard planting recommendations',
+        'Basic ADAPT export (soil data only)'
       ]
     },
     {
@@ -72,6 +73,9 @@ const Pricing = () => {
         'Unlimited counties with smart caching',
         'GPS field mapping & location capture',
         'Advanced field management dashboard',
+        'ADAPT Standard 1.0 Integration',
+        'Bidirectional sync with John Deere, Case IH, AGCO',
+        'Field boundary import/export',
         'Environmental Impact Engine™ (Patent-Protected)',
         'Multi-Parameter Planting Optimization™',
         'Eco-Friendly Alternative Recommendations',
@@ -93,6 +97,10 @@ const Pricing = () => {
       badgeVariant: 'outline' as const,
       features: [
         '10k calls per month',
+        'Full ADAPT Standard 1.0 API Suite',
+        'Custom integration support',
+        'Real-time bidirectional sync',
+        'Batch processing capabilities',
         'GPS-enabled field management APIs',
         'Mobile-ready location services',
         'Patent-Protected Environmental Assessment APIs',
@@ -357,9 +365,13 @@ const Pricing = () => {
             <h3 className="text-2xl font-bold mb-4">Ready to Experience Patent-Protected Agricultural Intelligence?</h3>
             <p className="text-muted-foreground mb-6 max-w-3xl mx-auto">
               Join thousands of growers leveraging our breakthrough environmental impact algorithms and multi-parameter optimization systems. 
-              Experience the only platform that combines runoff risk assessment with eco-friendly alternatives.
+              Now with ADAPT Standard 1.0 integration—break free from vendor lock-in and connect your soil intelligence to any farm management system.
             </p>
             <div className="flex flex-wrap gap-4 justify-center mb-6">
+              <div className="inline-flex items-center gap-2 bg-background/80 px-3 py-1 rounded-full text-sm">
+                <Check className="h-3 w-3 text-green-500" />
+                ADAPT Standard 1.0 Certified
+              </div>
               <div className="inline-flex items-center gap-2 bg-background/80 px-3 py-1 rounded-full text-sm">
                 <Check className="h-3 w-3 text-green-500" />
                 Environmental Impact Engine™

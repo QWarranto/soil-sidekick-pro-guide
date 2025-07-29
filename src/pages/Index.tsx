@@ -54,6 +54,9 @@ const Index = () => {
             <Button variant="ghost" size="sm" onClick={() => navigate('/api-docs')}>
               API Docs
             </Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/adapt-integration')}>
+              ADAPT Integration
+            </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate('/faq')}>
               FAQ
             </Button>
@@ -75,7 +78,7 @@ const Index = () => {
             <CardHeader>
               <CardTitle className="text-2xl">Welcome to SoilSidekick Pro</CardTitle>
               <CardDescription>
-                Your premium soil analysis platform for informed agricultural decisions
+                Your premium soil analysis platform with ADAPT Standard 1.0 integration for seamless farm management connectivity
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -92,7 +95,7 @@ const Index = () => {
                   <p className="text-muted-foreground">
                     Ready to explore soil data and plan your sustainable growing season?
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 max-w-3xl mx-auto">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 max-w-4xl mx-auto">
                     <Button size="lg" className="bg-primary hover:bg-primary/90" onClick={() => navigate('/dashboard')}>
                       Dashboard
                     </Button>
@@ -107,6 +110,9 @@ const Index = () => {
                     </Button>
                     <Button size="lg" variant="outline" onClick={() => navigate('/fertilizer-footprint')}>
                       Fertilizer Footprint
+                    </Button>
+                    <Button size="lg" variant="secondary" onClick={() => navigate('/adapt-integration')}>
+                      ADAPT Integration
                     </Button>
                   </div>
                 </div>
