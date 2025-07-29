@@ -29,7 +29,7 @@ const ApiDocs = () => {
   const codeExamples = {
     javascript: `// SoilSidekick Pro API - JavaScript/Node.js
 const API_KEY = 'your_api_key_here';
-const BASE_URL = 'https://api.soilsidekick.com/v1';
+const BASE_URL = 'https://api.soilsidekickpro.com/v1';
 
 async function getSoilData(countyFips) {
   const response = await fetch(\`\${BASE_URL}/soil/\${countyFips}\`, {
@@ -63,7 +63,7 @@ import requests
 import json
 
 API_KEY = 'your_api_key_here'
-BASE_URL = 'https://api.soilsidekick.com/v1'
+BASE_URL = 'https://api.soilsidekickpro.com/v1'
 
 def get_soil_data(county_fips):
     headers = {
@@ -80,7 +80,7 @@ print(json.dumps(soil_data, indent=2))`,
 
     embed: `<!-- SoilSidekick Pro Embed Widget -->
 <div id="soilsidekick-widget" data-api-key="your_api_key_here"></div>
-<script src="https://cdn.soilsidekick.com/widget/v1/embed.js"></script>
+<script src="https://cdn.soilsidekickpro.com/widget/v1/embed.js"></script>
 
 <script>
   SoilSidekick.init({
@@ -320,7 +320,7 @@ print(json.dumps(soil_data, indent=2))`,
                   <div>
                     <h3 className="text-lg font-semibold mb-3">Base URL</h3>
                     <div className="bg-muted p-3 rounded-lg font-mono text-sm">
-                      https://api.soilsidekick.com/v1
+                      https://api.soilsidekickpro.com/v1
                     </div>
                   </div>
 

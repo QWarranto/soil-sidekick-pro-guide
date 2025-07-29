@@ -149,7 +149,7 @@ API INTEGRATION READY
 This report data is available via our REST API for seamless
 integration into your farm management systems.
 
-Contact: api@soilsidekick.com
+Contact: api@soilsidekickpro.com
 Documentation: https://docs.soilsidekick.com
 
 ` : ''}

@@ -46,7 +46,7 @@ const FAQ = () => {
     },
     {
       question: "Do you still offer white-label solutions?",
-      answer: "Absolutely—now with dual soil + water endpoints. Contact enterprise@soilsidekick.com for custom branding and revenue-share agreements."
+      answer: "Absolutely—now with dual soil + water endpoints. Contact enterprise@soilsidekickpro.com for custom branding and revenue-share agreements."
     },
     {
       question: "Can I cancel anytime?",
