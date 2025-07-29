@@ -197,6 +197,26 @@ ${soilData.recommendations || 'No recommendations available'}
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-6">
+          {/* County Population Button */}
+          <Card>
+            <CardHeader>
+              <CardTitle>County Database Management</CardTitle>
+              <CardDescription>
+                Populate the database with all counties from the US Census Bureau
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={handlePopulateCounties}
+                variant="default" 
+                disabled={loading}
+                className="w-full"
+              >
+                {loading ? "Populating..." : "Populate Counties from Census API"}
+              </Button>
+            </CardContent>
+          </Card>
+
           {/* Tab Selection */}
           <Card>
             <CardHeader>
