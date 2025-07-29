@@ -107,12 +107,12 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Fetch all counties from Census Bureau API
+    // Fetch all counties from Census Bureau API using the more comprehensive endpoint
     const apiUrl = censusApiKey 
-      ? `https://api.census.gov/data/2021/gazetteer/county?get=GEOID,NAME,STATE&key=${censusApiKey}`
-      : `https://api.census.gov/data/2021/gazetteer/county?get=GEOID,NAME,STATE`;
+      ? `https://api.census.gov/data/2021/pep/population?get=NAME,STATE&for=county:*&key=${censusApiKey}`
+      : `https://api.census.gov/data/2021/pep/population?get=NAME,STATE&for=county:*`;
     
-    console.log('Fetching counties from Census Bureau API...');
+    console.log('Fetching counties from Census Bureau Population API...');
     const response = await fetch(apiUrl);
     
     if (!response.ok) {
@@ -122,15 +122,18 @@ Deno.serve(async (req) => {
     const rawData = await response.json();
     console.log(`Received ${rawData.length} records from Census API`);
 
-    // Skip header row and process data
+    // Skip header row and process data - Population API format: [NAME, STATE, state, county]
     const countyRecords = rawData.slice(1).map((row: string[]) => {
-      const [geoid, countyName, stateFips] = row;
+      const [countyName, stateFips, stateCode, countyCode] = row;
       const stateInfo = stateMapping[stateFips];
       
       if (!stateInfo) {
         console.warn(`Unknown state FIPS: ${stateFips} for county ${countyName}`);
         return null;
       }
+
+      // Create FIPS code by combining state and county codes
+      const fipsCode = `${stateFips}${countyCode.padStart(3, '0')}`;
 
       // Clean county name (remove "County" suffix if present)
       let cleanCountyName = countyName;
@@ -148,7 +151,7 @@ Deno.serve(async (req) => {
         county_name: cleanCountyName,
         state_name: stateInfo.name,
         state_code: stateInfo.code,
-        fips_code: geoid
+        fips_code: fipsCode
       };
     }).filter(Boolean); // Remove null entries
 
