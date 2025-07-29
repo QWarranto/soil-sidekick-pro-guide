@@ -150,7 +150,7 @@ This report data is available via our REST API for seamless
 integration into your farm management systems.
 
 Contact: api@soilsidekickpro.com
-Documentation: https://docs.soilsidekick.com
+Documentation: https://docs.soilsidekickpro.com
 
 ` : ''}
 
