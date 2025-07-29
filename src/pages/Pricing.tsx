@@ -114,6 +114,79 @@ const Pricing = () => {
     }
   ];
 
+  const whitelabelPlans = [
+    {
+      id: 'partner',
+      name: 'Partner — White-Label',
+      monthlyPrice: 199.99,
+      yearlyPrice: 1999.99,
+      description: 'Turn-key agricultural intelligence for resellers & integrators',
+      icon: <Settings className="h-6 w-6" />,
+      badge: 'Reseller Ready',
+      badgeVariant: 'default' as const,
+      features: [
+        'Complete white-label rebrand capability',
+        'Custom domain & SSL hosting included',
+        'Your logo, colors, and brand messaging',
+        'Reseller dashboard with client management',
+        '50k API calls per month included',
+        'Revenue-share model: 60/40 split',
+        'Dedicated onboarding & training',
+        'Marketing materials & sales support',
+        'Custom ADAPT integrations',
+        'Priority technical support',
+        'Co-branded partnership opportunities'
+      ]
+    },
+    {
+      id: 'enterprise-white-label',
+      name: 'Enterprise — Custom Platform',
+      monthlyPrice: 999.99,
+      yearlyPrice: 9999.99,
+      description: 'Fully customized agricultural intelligence platform',
+      icon: <Zap className="h-6 w-6" />,
+      badge: 'Custom Build',
+      badgeVariant: 'outline' as const,
+      features: [
+        'Completely custom platform development',
+        'Your brand identity throughout',
+        'Custom domain & infrastructure',
+        'Unlimited API calls & storage',
+        'Custom feature development',
+        'Multi-tenant architecture',
+        'Advanced analytics & reporting',
+        'Custom ADAPT workflows',
+        'Dedicated development team',
+        '24/7 enterprise support',
+        'SLA guarantees & uptime monitoring',
+        'Custom revenue models available'
+      ]
+    },
+    {
+      id: 'licensing',
+      name: 'Technology Licensing',
+      monthlyPrice: 'Custom',
+      yearlyPrice: 'Custom',
+      description: 'License our patent-protected algorithms for your platform',
+      icon: <Leaf className="h-6 w-6" />,
+      badge: 'IP Licensing',
+      badgeVariant: 'secondary' as const,
+      features: [
+        'Environmental Impact Engine™ licensing',
+        'Multi-Parameter Optimization™ licensing',
+        'Hierarchical Geographic Intelligence licensing',
+        'ADAPT Standard 1.0 implementation rights',
+        'Patent portfolio sub-licensing',
+        'Source code access & documentation',
+        'Integration consulting & support',
+        'Ongoing algorithm updates',
+        'Geographic territory licensing',
+        'Exclusive industry vertical options',
+        'Custom terms & revenue models'
+      ]
+    }
+  ];
+
   const handleSelectPlan = async (planId: string) => {
     if (planId === 'free') return;
     
@@ -276,8 +349,8 @@ const Pricing = () => {
             </div>
           )}
 
-          {/* Pricing Cards */}
-          <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-6 justify-center">
+          {/* Standard Pricing Cards */}
+          <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-6 justify-center mb-16">
             {plans.map((plan) => {
               const price = getPrice(plan);
               const isCurrentUserPlan = isCurrentPlan(plan.id);
@@ -358,6 +431,89 @@ const Pricing = () => {
                 </Card>
               );
             })}
+          </div>
+
+          {/* White-Label Partnership Section */}
+          <div className="border-t border-border pt-16">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">
+                <span className="text-primary">White-Label & Partnership</span> Solutions
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Turn our patent-protected agricultural intelligence into your branded platform. 
+                Perfect for resellers, integrators, and enterprises building custom solutions.
+              </p>
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-6 justify-center">
+              {whitelabelPlans.map((plan) => {
+                const price = typeof plan.monthlyPrice === 'string' ? plan.monthlyPrice : (isAnnual ? plan.yearlyPrice : plan.monthlyPrice);
+                
+                return (
+                  <Card 
+                    key={plan.id} 
+                    className="relative overflow-hidden transition-all duration-300 hover:shadow-lg border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5"
+                  >
+                    <div className="absolute top-4 right-4">
+                      <Badge variant={plan.badgeVariant}>{plan.badge}</Badge>
+                    </div>
+                    
+                    <CardHeader className="pb-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                          {plan.icon}
+                        </div>
+                        <CardTitle className="text-xl">{plan.name}</CardTitle>
+                      </div>
+                      
+                      <div className="mb-4">
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-3xl font-bold text-primary">
+                            {typeof price === 'string' ? price : `$${price}`}
+                          </span>
+                          {typeof price !== 'string' && (
+                            <span className="text-muted-foreground">
+                              /{isAnnual ? 'year' : 'month'}
+                            </span>
+                          )}
+                        </div>
+                        {isAnnual && typeof plan.monthlyPrice === 'number' && typeof plan.yearlyPrice === 'number' && (
+                          <div className="text-sm text-green-600 font-medium mt-1">
+                            Save ${((plan.monthlyPrice * 12) - plan.yearlyPrice).toFixed(2)} per year
+                          </div>
+                        )}
+                      </div>
+                      
+                      <CardDescription className="text-sm">
+                        {plan.description}
+                      </CardDescription>
+                    </CardHeader>
+
+                    <CardContent className="space-y-4">
+                      <div className="space-y-3">
+                        {plan.features.map((feature, index) => (
+                          <div key={index} className="flex items-start gap-2 text-sm">
+                            <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                            <span>{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <Button 
+                        className="w-full mt-6" 
+                        variant="default"
+                        onClick={() => {
+                          // Contact sales for white-label options
+                          window.open('mailto:sales@soilsidekick.com?subject=White-Label Partnership Inquiry&body=I am interested in learning more about your white-label and partnership solutions.', '_blank');
+                        }}
+                      >
+                        Contact Partnership Team
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
           </div>
 
           {/* Bottom CTA */}
