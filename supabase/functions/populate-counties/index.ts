@@ -349,6 +349,15 @@ Deno.serve(async (req) => {
       { county_name: 'Nye', state_name: 'Nevada', state_code: 'NV', fips_code: '32023' },
       { county_name: 'Douglas', state_name: 'Nevada', state_code: 'NV', fips_code: '32005' },
       { county_name: 'Elko', state_name: 'Nevada', state_code: 'NV', fips_code: '32007' },
+      
+      // New Mexico
+      { county_name: 'Bernalillo', state_name: 'New Mexico', state_code: 'NM', fips_code: '35001' },
+      { county_name: 'Dona Ana', state_name: 'New Mexico', state_code: 'NM', fips_code: '35013' },
+      { county_name: 'Santa Fe', state_name: 'New Mexico', state_code: 'NM', fips_code: '35049' },
+      { county_name: 'Sandoval', state_name: 'New Mexico', state_code: 'NM', fips_code: '35043' },
+      { county_name: 'San Juan', state_name: 'New Mexico', state_code: 'NM', fips_code: '35045' },
+      { county_name: 'Valencia', state_name: 'New Mexico', state_code: 'NM', fips_code: '35061' },
+      { county_name: 'Chaves', state_name: 'New Mexico', state_code: 'NM', fips_code: '35005' },
     ];
 
     console.log(`Populating ${sampleCounties.length} counties...`);
