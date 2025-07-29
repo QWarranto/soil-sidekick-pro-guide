@@ -44,3 +44,9 @@ verify_jwt = true
 
 [functions.populate-counties]
 verify_jwt = false
+
+[functions.territorial-water-quality]
+verify_jwt = false
+
+[functions.territorial-water-analytics]
+verify_jwt = false

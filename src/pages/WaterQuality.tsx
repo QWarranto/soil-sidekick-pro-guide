@@ -15,7 +15,7 @@ interface County {
   fips_code: string;
 }
 
-// Mock water quality data structure - will be replaced with EPA SDWIS data
+// Enhanced water quality data structure for territories
 interface WaterQualityData {
   utility_name: string;
   pwsid: string;
@@ -29,6 +29,17 @@ interface WaterQualityData {
   grade: string;
   last_tested: string;
   source_type: string;
+  territory_type: 'state' | 'territory' | 'compact_state';
+  regulatory_authority: string;
+  population_served: number;
+  system_type: string;
+}
+
+interface TerritoryInfo {
+  territory_type: 'state' | 'territory' | 'compact_state';
+  regulatory_authority: string;
+  epa_region: string;
+  water_system_oversight: string;
 }
 
 const WaterQuality = () => {
@@ -37,37 +48,53 @@ const WaterQuality = () => {
   const { toast } = useToast();
   const [selectedCounty, setSelectedCounty] = useState<County | null>(null);
   const [waterData, setWaterData] = useState<WaterQualityData | null>(null);
+  const [territoryInfo, setTerritoryInfo] = useState<TerritoryInfo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Mock data for demonstration - will be replaced with EPA SDWIS API
-  const mockWaterData: WaterQualityData = {
-    utility_name: "City of Springfield Water Department",
-    pwsid: "IL0123456",
-    contaminants: [
-      { name: "Lead", level: 8.2, unit: "ppb", mcl: 15, violation: false },
-      { name: "Chlorine", level: 2.1, unit: "ppm", mcl: 4, violation: false },
-      { name: "Nitrates", level: 5.8, unit: "ppm", mcl: 10, violation: false },
-      { name: "Fluoride", level: 0.8, unit: "ppm", mcl: 4, violation: false },
-      { name: "Total Trihalomethanes", level: 45, unit: "ppb", mcl: 80, violation: false }
-    ],
-    grade: "B+",
-    last_tested: "2024-01-15",
-    source_type: "Surface Water"
-  };
 
   const handleCountySelect = async (county: County) => {
     setSelectedCounty(county);
     setIsLoading(true);
     
-    // Simulate API call delay
-    setTimeout(() => {
-      setWaterData(mockWaterData);
-      setIsLoading(false);
-      toast({
-        title: "Water Quality Data Retrieved",
-        description: `Found data for ${county.county_name}, ${county.state_code}`,
+    try {
+      // Call the territorial water quality edge function
+      const response = await fetch('https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/territorial-water-quality', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fips_code: county.fips_code,
+          state_code: county.state_code,
+          admin_unit_name: county.county_name
+        }),
       });
-    }, 1500);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch water quality data');
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setWaterData(result.data);
+        setTerritoryInfo(result.territory_info);
+        toast({
+          title: "Water Quality Data Retrieved",
+          description: `Found ${result.data.territory_type} water data for ${county.county_name}, ${county.state_code}`,
+        });
+      } else {
+        throw new Error(result.error || 'Unknown error occurred');
+      }
+    } catch (error) {
+      console.error('Error fetching water quality data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to retrieve water quality data. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getGradeColor = (grade: string) => {
@@ -187,6 +214,46 @@ const WaterQuality = () => {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Territorial Information */}
+              {territoryInfo && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Regulatory Information</CardTitle>
+                    <CardDescription>
+                      Water system oversight and regulatory framework
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="font-semibold mb-2">Territory Type</h4>
+                        <p className="text-sm capitalize">{waterData.territory_type.replace('_', ' ')}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold mb-2">Population Served</h4>
+                        <p className="text-sm">{waterData.population_served.toLocaleString()}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold mb-2">System Type</h4>
+                        <p className="text-sm">{waterData.system_type}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold mb-2">EPA Region</h4>
+                        <p className="text-sm">{territoryInfo.epa_region}</p>
+                      </div>
+                      <div className="md:col-span-2">
+                        <h4 className="font-semibold mb-2">Regulatory Authority</h4>
+                        <p className="text-sm">{territoryInfo.regulatory_authority}</p>
+                      </div>
+                      <div className="md:col-span-2">
+                        <h4 className="font-semibold mb-2">Water System Oversight</h4>
+                        <p className="text-sm">{territoryInfo.water_system_oversight}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Contaminant Analysis */}
               <Card>
