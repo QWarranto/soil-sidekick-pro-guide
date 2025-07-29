@@ -41,8 +41,8 @@ const FAQ = () => {
       answer: "Yes. Pro-tier PDFs now include both soil and water-quality sections, formatted for agricultural lenders, insurers, and land appraisers."
     },
     {
-      question: "Why only 297 counties for water data?",
-      answer: "EPA SDWIS 2024 covers public water systems in 297 counties first. We're rolling out the remaining ~2,800 counties in Q3–Q4 2025 as new EPA datasets arrive."
+      question: "What geographic areas does SoilSidekick Pro cover?",
+      answer: "Our SSURGO soil database covers all US states and territories including Alaska, Hawaii, American Samoa, Republic of the Marshall Islands, Federated States of Micronesia, Republic of Palau, Guam, and Northern Mariana Islands. EPA SDWIS water data currently covers 297 counties with full territorial expansion rolling out in Q3–Q4 2025."
     },
     {
       question: "Do you still offer white-label solutions?",
