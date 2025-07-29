@@ -105,10 +105,171 @@ const WaterQuality = () => {
   };
 
   const exportToPDF = () => {
-    toast({
-      title: "PDF Export",
-      description: "Water quality report will be generated and downloaded",
-    });
+    if (!waterData || !selectedCounty) {
+      toast({
+        title: "No Data Available",
+        description: "Please select a location and retrieve water quality data first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Generate comprehensive water quality PDF report
+      const reportContent = generateWaterQualityPDFContent();
+      
+      // Create and download PDF
+      const blob = new Blob([reportContent], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `water-quality-report-${selectedCounty.county_name}-${selectedCounty.state_code}-${new Date().toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: "PDF Downloaded",
+        description: `Water quality report for ${selectedCounty.county_name}, ${selectedCounty.state_code} has been downloaded.`,
+      });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast({
+        title: "Export Failed",
+        description: "Failed to generate PDF report. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const generateWaterQualityPDFContent = (): string => {
+    if (!waterData || !selectedCounty) return '';
+
+    const currentDate = new Date().toLocaleDateString();
+    const contaminantRows = waterData.contaminants.map(c => 
+      `${c.name}|${c.level} ${c.unit}|${c.mcl} ${c.unit}|${c.violation ? 'VIOLATION' : 'SAFE'}`
+    ).join('\n');
+
+    const territoryDisplay = waterData.territory_type === 'state' ? 'US State' : 
+                           waterData.territory_type === 'territory' ? 'US Territory' : 
+                           'Compact State';
+
+    return `%PDF-1.4
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+
+2 0 obj
+<<
+/Type /Pages
+/Kids [3 0 R]
+/Count 1
+>>
+endobj
+
+3 0 obj
+<<
+/Type /Page
+/Parent 2 0 R
+/MediaBox [0 0 612 792]
+/Resources <<
+/Font <<
+/F1 4 0 R
+>>
+>>
+/Contents 5 0 R
+>>
+endobj
+
+4 0 obj
+<<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica
+>>
+endobj
+
+5 0 obj
+<<
+/Length 2000
+>>
+stream
+BT
+/F1 16 Tf
+50 720 Td
+(WATER QUALITY ANALYSIS REPORT) Tj
+0 -30 Td
+/F1 12 Tf
+(Generated: ${currentDate}) Tj
+0 -40 Td
+/F1 14 Tf
+(Location: ${selectedCounty.county_name}, ${selectedCounty.state_code}) Tj
+0 -20 Td
+(FIPS Code: ${selectedCounty.fips_code}) Tj
+0 -20 Td
+(Territory Type: ${territoryDisplay}) Tj
+0 -40 Td
+/F1 12 Tf
+(Utility: ${waterData.utility_name}) Tj
+0 -15 Td
+(PWSID: ${waterData.pwsid}) Tj
+0 -15 Td
+(Water Source: ${waterData.source_type}) Tj
+0 -15 Td
+(Population Served: ${waterData.population_served.toLocaleString()}) Tj
+0 -15 Td
+(System Type: ${waterData.system_type}) Tj
+0 -15 Td
+(Last Tested: ${waterData.last_tested}) Tj
+0 -30 Td
+/F1 14 Tf
+(OVERALL GRADE: ${waterData.grade}) Tj
+0 -40 Td
+/F1 12 Tf
+(CONTAMINANT ANALYSIS:) Tj
+0 -20 Td
+(Contaminant | Current Level | MCL | Status) Tj
+0 -15 Td
+(${contaminantRows.replace(/\n/g, ') Tj\n0 -15 Td\n(')}) Tj
+${territoryInfo ? `
+0 -40 Td
+/F1 12 Tf
+(REGULATORY INFORMATION:) Tj
+0 -15 Td
+(Authority: ${territoryInfo.regulatory_authority}) Tj
+0 -15 Td
+(EPA Region: ${territoryInfo.epa_region}) Tj
+0 -15 Td
+(Oversight: ${territoryInfo.water_system_oversight}) Tj
+` : ''}
+0 -40 Td
+(This report is based on the most recent available data.) Tj
+0 -15 Td
+(Consult your local water utility for the most current information.) Tj
+ET
+endstream
+endobj
+
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000245 00000 n 
+0000000323 00000 n 
+trailer
+<<
+/Size 6
+/Root 1 0 R
+>>
+startxref
+2400
+%%EOF`;
   };
 
   return (
