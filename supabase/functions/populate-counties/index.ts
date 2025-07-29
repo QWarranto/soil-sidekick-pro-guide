@@ -107,24 +107,27 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Fetch all counties from Census Bureau API using the more comprehensive endpoint
+    // Fetch all counties from Census Bureau API using the geography endpoint
     const apiUrl = censusApiKey 
-      ? `https://api.census.gov/data/2021/pep/population?get=NAME,STATE&for=county:*&key=${censusApiKey}`
-      : `https://api.census.gov/data/2021/pep/population?get=NAME,STATE&for=county:*`;
+      ? `https://api.census.gov/data/2019/acs/acs5?get=NAME&for=county:*&key=${censusApiKey}`
+      : `https://api.census.gov/data/2019/acs/acs5?get=NAME&for=county:*`;
     
-    console.log('Fetching counties from Census Bureau Population API...');
+    console.log('Fetching counties from Census Bureau ACS API...');
     const response = await fetch(apiUrl);
     
     if (!response.ok) {
+      console.error(`Census API error: ${response.status} ${response.statusText}`);
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
       throw new Error(`Census API error: ${response.status} ${response.statusText}`);
     }
 
     const rawData = await response.json();
     console.log(`Received ${rawData.length} records from Census API`);
 
-    // Skip header row and process data - Population API format: [NAME, STATE, state, county]
+    // Skip header row and process data - ACS format: [NAME, state, county]
     const countyRecords = rawData.slice(1).map((row: string[]) => {
-      const [countyName, stateFips, stateCode, countyCode] = row;
+      const [countyName, stateFips, countyCode] = row;
       const stateInfo = stateMapping[stateFips];
       
       if (!stateInfo) {
