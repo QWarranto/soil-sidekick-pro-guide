@@ -158,7 +158,24 @@ async function generateTerritorialWaterData(
   territoryInfo: any
 ): Promise<WaterQualityData> {
   
-  // Territory-specific water quality profiles
+  // Try to fetch real water quality data from WQP API first
+  try {
+    const realData = await fetchWQPData(fips_code, state_code, admin_unit_name);
+    if (realData) {
+      console.log(`Retrieved real water quality data for ${admin_unit_name}, ${state_code}`);
+      return {
+        ...realData,
+        territory_type: territoryInfo.territory_type,
+        regulatory_authority: territoryInfo.regulatory_authority,
+      };
+    }
+  } catch (error) {
+    console.warn(`Failed to fetch real water quality data for ${admin_unit_name}: ${error.message}`);
+  }
+
+  console.log(`Using simulated water quality data for ${admin_unit_name}, ${state_code}`);
+  
+  // Fallback to simulated territory-specific water quality profiles
   const territorialProfiles: Record<string, Partial<WaterQualityData>> = {
     'PR': {
       utility_name: `${admin_unit_name} Water Authority`,
@@ -320,6 +337,158 @@ function getRandomRecentDate(): string {
   const daysAgo = Math.floor(Math.random() * 90); // Random date within last 90 days
   const testDate = new Date(now.getTime() - (daysAgo * 24 * 60 * 60 * 1000));
   return testDate.toISOString().split('T')[0];
+}
+
+async function fetchWQPData(fips_code: string, state_code: string, admin_unit_name: string): Promise<WaterQualityData | null> {
+  try {
+    // Water Quality Portal API endpoint for stations in the county
+    const wqpUrl = `https://www.waterqualitydata.us/data/Station/search?countrycode=US&statecode=${state_code}&countycode=${fips_code.slice(-3)}&siteType=Well&siteType=Spring&siteType=Tap&mimeType=json&zip=no`;
+    
+    console.log(`Fetching WQP station data from: ${wqpUrl}`);
+    
+    const stationResponse = await fetch(wqpUrl);
+    if (!stationResponse.ok) {
+      throw new Error(`WQP Station API responded with status: ${stationResponse.status}`);
+    }
+    
+    const stations = await stationResponse.json();
+    if (!stations || stations.length === 0) {
+      console.log(`No water quality stations found for ${admin_unit_name}, ${state_code}`);
+      return null;
+    }
+
+    // Get the first few stations to query for results
+    const stationIds = stations.slice(0, 3).map((station: any) => station.MonitoringLocationIdentifier);
+    
+    if (stationIds.length === 0) {
+      return null;
+    }
+
+    // Query for recent water quality results from these stations
+    const resultsUrl = `https://www.waterqualitydata.us/data/Result/search?siteid=${stationIds.join(';')}&characteristicType=Physical&characteristicType=Inorganics&startDateLo=01-01-2020&mimeType=json&zip=no&sorted=no&summaryYears=no`;
+    
+    console.log(`Fetching WQP results data for ${stationIds.length} stations`);
+    
+    const resultsResponse = await fetch(resultsUrl);
+    if (!resultsResponse.ok) {
+      throw new Error(`WQP Results API responded with status: ${resultsResponse.status}`);
+    }
+    
+    const results = await resultsResponse.json();
+    if (!results || results.length === 0) {
+      console.log(`No recent water quality results found for stations in ${admin_unit_name}`);
+      return null;
+    }
+
+    // Process and normalize the WQP data
+    return processWQPResults(results, stations[0], admin_unit_name, state_code);
+    
+  } catch (error) {
+    console.error(`Error fetching WQP data: ${error.message}`);
+    return null;
+  }
+}
+
+function processWQPResults(results: any[], primaryStation: any, admin_unit_name: string, state_code: string): WaterQualityData {
+  // Group results by characteristic name and get latest values
+  const contaminantMap = new Map();
+  
+  results.forEach(result => {
+    const name = result.CharacteristicName;
+    const value = parseFloat(result.ResultMeasureValue);
+    const unit = result.ResultMeasure?.MeasureUnitCode || 'Unknown';
+    const date = new Date(result.ActivityStartDate);
+    
+    if (!isNaN(value) && name) {
+      const existing = contaminantMap.get(name);
+      if (!existing || date > existing.date) {
+        contaminantMap.set(name, {
+          name,
+          level: value,
+          unit,
+          date,
+          violation: false // We'll set this based on known MCLs
+        });
+      }
+    }
+  });
+
+  // Convert to contaminants array and add MCL data
+  const contaminants = Array.from(contaminantMap.values()).slice(0, 8).map(c => {
+    const mclData = getMCLForContaminant(c.name);
+    return {
+      name: c.name,
+      level: c.level,
+      unit: c.unit,
+      mcl: mclData.mcl,
+      violation: mclData.mcl > 0 && c.level > mclData.mcl
+    };
+  });
+
+  // Calculate grade based on real data
+  const grade = calculateWaterGrade(contaminants);
+
+  // Extract utility information from station data
+  const utilityName = primaryStation.OrganizationFormalName || `${admin_unit_name} Water Authority`;
+  const pwsid = primaryStation.MonitoringLocationIdentifier || `${state_code}${Date.now().toString().slice(-6)}`;
+
+  return {
+    utility_name: utilityName,
+    pwsid: pwsid,
+    contaminants: contaminants,
+    grade: grade,
+    last_tested: contaminants.length > 0 ? 
+      Math.max(...contaminants.map(c => contaminantMap.get(c.name)?.date?.getTime() || 0)) > 0 ?
+        new Date(Math.max(...contaminants.map(c => contaminantMap.get(c.name)?.date?.getTime() || 0))).toISOString().split('T')[0] :
+        getRandomRecentDate() : 
+      getRandomRecentDate(),
+    source_type: primaryStation.AquiferName ? 'Groundwater' : 'Surface Water',
+    territory_type: 'state', // Will be overridden by calling function
+    regulatory_authority: 'State EPA & Local Health Department', // Will be overridden
+    population_served: getPopulationEstimate(primaryStation.CountyCode || '001'),
+    system_type: 'Community Water System'
+  };
+}
+
+function getMCLForContaminant(name: string): { mcl: number; unit: string } {
+  // Common Maximum Contaminant Levels (MCLs) for drinking water
+  const mclDatabase: Record<string, { mcl: number; unit: string }> = {
+    'Lead': { mcl: 15, unit: 'ppb' },
+    'Copper': { mcl: 1300, unit: 'ppb' },
+    'Nitrate': { mcl: 10, unit: 'ppm' },
+    'Nitrite': { mcl: 1, unit: 'ppm' },
+    'Fluoride': { mcl: 4, unit: 'ppm' },
+    'Chlorine': { mcl: 4, unit: 'ppm' },
+    'Total Trihalomethanes': { mcl: 80, unit: 'ppb' },
+    'Total Haloacetic Acids': { mcl: 60, unit: 'ppb' },
+    'Arsenic': { mcl: 10, unit: 'ppb' },
+    'Barium': { mcl: 2, unit: 'ppm' },
+    'Cadmium': { mcl: 5, unit: 'ppb' },
+    'Chromium': { mcl: 100, unit: 'ppb' },
+    'Mercury': { mcl: 2, unit: 'ppb' },
+    'Selenium': { mcl: 50, unit: 'ppb' },
+    'Iron': { mcl: 0.3, unit: 'ppm' },
+    'Manganese': { mcl: 0.05, unit: 'ppm' },
+    'pH': { mcl: 8.5, unit: 'pH' },
+    'Total Dissolved Solids': { mcl: 500, unit: 'ppm' },
+    'Sulfate': { mcl: 250, unit: 'ppm' },
+    'Chloride': { mcl: 250, unit: 'ppm' }
+  };
+
+  // Try exact match first
+  if (mclDatabase[name]) {
+    return mclDatabase[name];
+  }
+
+  // Try partial matches
+  for (const [key, value] of Object.entries(mclDatabase)) {
+    if (name.toLowerCase().includes(key.toLowerCase()) || key.toLowerCase().includes(name.toLowerCase())) {
+      return value;
+    }
+  }
+
+  // Default for unknown contaminants
+  return { mcl: 0, unit: 'Unknown' };
 }
 
 async function logWaterQualityUsage(supabase: any, fips_code: string, state_code: string) {
