@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CountyLookup } from '@/components/CountyLookup';
+import FertilizerDetailsDialog from '@/components/FertilizerDetailsDialog';
 import { useAuth } from '@/hooks/useAuth';
 import { Leaf, LogOut, ArrowLeft, Droplets, AlertTriangle, CheckCircle, TrendingDown, Recycle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -101,6 +102,8 @@ const FertilizerFootprint = () => {
   const [waterData, setWaterData] = useState<WaterBodyData | null>(null);
   const [showResults, setShowResults] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedFertilizer, setSelectedFertilizer] = useState<FertilizerRecommendation | null>(null);
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
 
   const handleCountySelect = async (county: any) => {
     setSelectedCounty(county);
@@ -424,7 +427,14 @@ const FertilizerFootprint = () => {
 
                           <div className="flex justify-between items-center pt-2 border-t">
                             <span className="font-semibold text-lg">{fertilizer.price}</span>
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => {
+                                setSelectedFertilizer(fertilizer);
+                                setIsDetailsDialogOpen(true);
+                              }}
+                            >
                               View Details
                             </Button>
                           </div>
@@ -462,6 +472,16 @@ const FertilizerFootprint = () => {
           )}
         </div>
       </main>
+
+      {/* Fertilizer Details Dialog */}
+      <FertilizerDetailsDialog 
+        fertilizer={selectedFertilizer}
+        isOpen={isDetailsDialogOpen}
+        onClose={() => {
+          setIsDetailsDialogOpen(false);
+          setSelectedFertilizer(null);
+        }}
+      />
     </div>
   );
 };
