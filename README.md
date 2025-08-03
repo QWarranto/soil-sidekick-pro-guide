@@ -59,6 +59,26 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Supabase (Backend & Database)
+- Google Earth Engine (AlphaEarth Satellite Intelligence)
+- EPA Water Quality Portal Integration
+
+## Key Features
+
+### 🛰️ AlphaEarth Satellite Intelligence
+- Real-time vegetation health monitoring via Google Earth Engine
+- Satellite-enhanced soil moisture analysis
+- Environmental risk assessment with satellite data
+
+### 🌊 Real-Time Environmental Data
+- EPA Water Quality Portal integration (400+ monitoring agencies)
+- Live water quality assessment and contamination detection
+- Environmental impact scoring and eco-friendly recommendations
+
+### 🌱 Precision Agriculture
+- County-level USDA soil analysis
+- Multi-parameter planting calendar optimization
+- Fertilizer footprint calculation and sustainable alternatives
 
 ## How can I deploy this project?
 

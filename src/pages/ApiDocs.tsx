@@ -364,6 +364,24 @@ print(json.dumps(soil_data, indent=2))`,
                           Search for counties by name or state to get FIPS codes.
                         </p>
                       </div>
+                      <div className="border rounded-lg p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline">POST</Badge>
+                          <code className="font-mono">/alpha-earth-environmental-enhancement</code>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Enhance environmental analysis using AlphaEarth satellite intelligence and Google Earth Engine data.
+                        </p>
+                      </div>
+                      <div className="border rounded-lg p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline">GET</Badge>
+                          <code className="font-mono">/water-quality/&#123;county_fips&#125;</code>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Get real-time water quality data from EPA monitoring stations for environmental assessment.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </TabsContent>
