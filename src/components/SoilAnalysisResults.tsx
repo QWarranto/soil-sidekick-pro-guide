@@ -192,6 +192,28 @@ export const SoilAnalysisResults: React.FC<SoilAnalysisResultsProps> = ({
           </CardContent>
         </Card>
       )}
+
+      {/* Lending & Valuation Notice */}
+      <Card className="border-primary/20 bg-primary/5">
+        <CardContent className="pt-6">
+          <div className="flex items-start gap-3">
+            <FileText className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+            <div className="space-y-2">
+              <h4 className="font-semibold text-primary">Professional Report Value</h4>
+              <p className="text-sm text-muted-foreground">
+                Professional soil analysis reports like this support loan applications and property valuations 
+                under federal agricultural lending standards (USDA 7 CFR 4279.244, Farm Credit 12 CFR 614.4265). 
+                These reports provide essential environmental due diligence documentation required by most agricultural lenders.
+              </p>
+              <p className="text-sm">
+                <a href="/faq" className="text-primary hover:underline">
+                  View complete regulatory references in our FAQ →
+                </a>
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

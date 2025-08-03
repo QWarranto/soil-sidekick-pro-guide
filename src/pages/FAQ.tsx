@@ -57,6 +57,10 @@ const FAQ = () => {
       answer: "Yes. Pro-tier PDFs now include both soil and water-quality sections, formatted for agricultural lenders, insurers, and land appraisers. ADAPT-formatted data exports provide additional technical documentation for precision agriculture loan applications."
     },
     {
+      question: "What official references support using professional soil and water reports for loan applications?",
+      answer: "Multiple federal regulations mandate or recognize professional environmental assessments for agricultural lending: USDA Rural Development (7 CFR 4279.244) requires comprehensive property assessments including environmental factors for loans over $250,000. Farm Credit Administration (12 CFR 614.4265) mandates environmental risk assessment. ASTM E1527-21 sets industry standards for environmental due diligence required by most lenders. EPA Water Quality Standards (40 CFR 131) establish federal compliance benchmarks. These regulations establish that professional soil and water quality reports provide essential risk mitigation, regulatory compliance, and liability protection - making them valuable assets for loan applications, property valuations, and agricultural insurance."
+    },
+    {
       question: "What geographic areas does SoilSidekick Pro cover?",
       answer: "Our SSURGO soil database covers all US states and territories including Alaska, Hawaii, American Samoa, Republic of the Marshall Islands, Federated States of Micronesia, Republic of Palau, Guam, and Northern Mariana Islands. EPA SDWIS water data currently covers 297 counties with full territorial expansion rolling out in Q3–Q4 2025."
     },

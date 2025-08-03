@@ -286,6 +286,15 @@ and should be used in conjunction with local utility communications.
             : "Upgrade to Pro for professional PDF export capabilities"
           }
         </CardDescription>
+        {canExportPDF && (
+          <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <p className="text-sm text-blue-800 dark:text-blue-200">
+              <strong>Property Valuation & Lending Support:</strong> This EPA-verified report supports property 
+              assessments under ASTM E1527-21 environmental due diligence standards required by agricultural lenders. 
+              See our <a href="/faq" className="underline hover:text-blue-600">FAQ section</a> for complete regulatory references.
+            </p>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Features showcase */}

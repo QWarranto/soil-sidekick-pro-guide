@@ -195,6 +195,15 @@ decision-making.
             : "Upgrade to Pro for professional PDF export capabilities"
           }
         </CardDescription>
+        {canExportPDF && (
+          <div className="mt-3 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+            <p className="text-sm text-green-800 dark:text-green-200">
+              <strong>Loan Application Ready:</strong> This professional report meets federal lending requirements 
+              under USDA Rural Development (7 CFR 4279.244) and Farm Credit Administration (12 CFR 614.4265) standards. 
+              See our <a href="/faq" className="underline hover:text-green-600">FAQ section</a> for complete regulatory references.
+            </p>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Features showcase */}
