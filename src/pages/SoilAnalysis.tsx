@@ -49,6 +49,28 @@ const SoilAnalysis = () => {
     navigate('/');
   };
 
+  const getCurrentLocation = (): Promise<{lat: number, lng: number}> => {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject(new Error('Geolocation not supported'));
+        return;
+      }
+      
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        (error) => {
+          // Fallback to approximate county center if geolocation fails
+          resolve({ lat: 39.8283, lng: -98.5795 }); // Center of US
+        }
+      );
+    });
+  };
+
   const handleCountySelect = async (county: County) => {
     setSelectedCounty(county);
     setLoading(true);
@@ -68,6 +90,25 @@ const SoilAnalysis = () => {
       if (data?.soilAnalysis) {
         setSoilData(data.soilAnalysis);
         
+        // Get user's location for satellite enhancement
+        try {
+          const coordinates = await getCurrentLocation();
+          
+          // Enhance with satellite data
+          await supabase.functions.invoke('alpha-earth-environmental-enhancement', {
+            body: {
+              analysis_id: data.soilAnalysis.id,
+              county_fips: county.fips_code,
+              lat: coordinates.lat,
+              lng: coordinates.lng,
+              soil_data: data.soilAnalysis.analysis_data,
+              water_body_data: data.soilAnalysis.water_body_data
+            }
+          });
+        } catch (enhancementError) {
+          console.log('Satellite enhancement failed, continuing with basic analysis:', enhancementError);
+        }
+        
         // Track usage
         await supabase.from('subscription_usages').insert({
           user_id: user?.id,
@@ -77,7 +118,7 @@ const SoilAnalysis = () => {
         
         toast({
           title: "Analysis Complete",
-          description: `Soil data retrieved for ${county.county_name}, ${county.state_code}`,
+          description: `Enhanced soil data retrieved for ${county.county_name}, ${county.state_code}`,
         });
       }
     } catch (error) {

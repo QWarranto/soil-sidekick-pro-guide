@@ -1,5 +1,8 @@
 project_id = "wzgnxkoeqzvueypwzvyn"
 
+[functions.alpha-earth-environmental-enhancement]
+verify_jwt = true
+
 [api]
 enabled = true
 port = 54321
