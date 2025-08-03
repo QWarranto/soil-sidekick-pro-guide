@@ -18,7 +18,9 @@ import {
   Zap,
   Filter,
   Plus,
-  RefreshCw
+  RefreshCw,
+  Satellite,
+  Eye
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -329,12 +331,77 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Environmental Monitoring */}
+        {/* Satellite-Enhanced Environmental Monitoring */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Satellite className="h-5 w-5 mr-2 text-purple-600" />
+              AlphaEarth Satellite Intelligence
+            </CardTitle>
+            <p className="text-sm text-muted-foreground mt-2">
+              Real-time environmental insights powered by Google's AlphaEarth satellite embeddings
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className="text-center">
+                <Eye className="h-6 w-6 mx-auto text-green-500 mb-2" />
+                <div className="text-lg font-bold">High</div>
+                <p className="text-xs text-muted-foreground">Vegetation Health</p>
+                <p className="text-xs text-green-600">92% confidence</p>
+              </div>
+              <div className="text-center">
+                <Droplets className="h-6 w-6 mx-auto text-blue-500 mb-2" />
+                <div className="text-lg font-bold">Moderate</div>
+                <p className="text-xs text-muted-foreground">Soil Moisture</p>
+                <p className="text-xs text-blue-600">85% confidence</p>
+              </div>
+              <div className="text-center">
+                <AlertTriangle className="h-6 w-6 mx-auto text-yellow-500 mb-2" />
+                <div className="text-lg font-bold">Low</div>
+                <p className="text-xs text-muted-foreground">Water Stress</p>
+                <p className="text-xs text-yellow-600">78% confidence</p>
+              </div>
+              <div className="text-center">
+                <TrendingUp className="h-6 w-6 mx-auto text-green-600 mb-2" />
+                <div className="text-lg font-bold">Low</div>
+                <p className="text-xs text-muted-foreground">Erosion Risk</p>
+                <p className="text-xs text-green-600">88% confidence</p>
+              </div>
+              <div className="text-center">
+                <Leaf className="h-6 w-6 mx-auto text-green-500 mb-2" />
+                <div className="text-lg font-bold">0.23</div>
+                <p className="text-xs text-muted-foreground">Carbon Score</p>
+                <p className="text-xs text-green-600">Above avg.</p>
+              </div>
+              <div className="text-center">
+                <Zap className="h-6 w-6 mx-auto text-orange-500 mb-2" />
+                <div className="text-lg font-bold">0.18</div>
+                <p className="text-xs text-muted-foreground">Impact Score</p>
+                <p className="text-xs text-orange-600">Low impact</p>
+              </div>
+            </div>
+            <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+              <h4 className="font-medium text-sm mb-2 flex items-center">
+                <Satellite className="h-4 w-4 mr-2 text-purple-600" />
+                Satellite-Enhanced Recommendations
+              </h4>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• Vegetation health is excellent - continue current practices</li>
+                <li>• Consider drought-resistant crops for water conservation</li>
+                <li>• Low erosion risk allows for standard tillage practices</li>
+                <li>• Carbon sequestration opportunities identified in East Field</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Traditional Environmental Monitoring */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
               <Leaf className="h-5 w-5 mr-2 text-green-600" />
-              Environmental Monitoring
+              Weather & Climate Monitoring
             </CardTitle>
           </CardHeader>
           <CardContent>
