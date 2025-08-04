@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, AreaChart, Area, BarChart, Bar } from "recharts";
 import { AddFieldDialog } from "@/components/AddFieldDialog";
+import AgriculturalChat from "@/components/AgriculturalChat";
 import { 
   MapPin, 
   TrendingUp, 
@@ -433,6 +434,16 @@ const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Agricultural Intelligence Chat */}
+        <div className="space-y-6">
+          <AgriculturalChat 
+            context={{
+              county_fips: "18097", // Example FIPS for demonstration
+              user_location: "Indiana, USA"
+            }}
+          />
+        </div>
 
         {/* Recent Alerts */}
         <Card>
