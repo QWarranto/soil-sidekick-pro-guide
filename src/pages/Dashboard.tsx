@@ -8,6 +8,8 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, AreaChart, Area, Ba
 import { AddFieldDialog } from "@/components/AddFieldDialog";
 import AgriculturalChat from "@/components/AgriculturalChat";
 import { LocationIndicator } from "@/components/LocationIndicator";
+import { CarbonCreditDashboard } from "@/components/CarbonCreditDashboard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   MapPin, 
   TrendingUp, 
@@ -111,7 +113,15 @@ const Dashboard = () => {
         {/* Location Indicator */}
         <LocationIndicator />
 
-        {/* Main Metrics */}
+        {/* Dashboard Tabs */}
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="overview">Farm Overview</TabsTrigger>
+            <TabsTrigger value="carbon-credits">Carbon Credits</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            {/* Main Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -483,6 +493,12 @@ const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
+          </TabsContent>
+
+          <TabsContent value="carbon-credits">
+            <CarbonCreditDashboard />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

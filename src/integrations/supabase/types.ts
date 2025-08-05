@@ -273,6 +273,98 @@ export type Database = {
         }
         Relationships: []
       }
+      carbon_credit_transactions: {
+        Row: {
+          amount: number
+          blockchain_tx_hash: string | null
+          created_at: string
+          credit_id: string
+          from_user_id: string | null
+          id: string
+          price_per_credit: number | null
+          status: string
+          to_user_id: string | null
+          transaction_type: string
+        }
+        Insert: {
+          amount: number
+          blockchain_tx_hash?: string | null
+          created_at?: string
+          credit_id: string
+          from_user_id?: string | null
+          id?: string
+          price_per_credit?: number | null
+          status?: string
+          to_user_id?: string | null
+          transaction_type: string
+        }
+        Update: {
+          amount?: number
+          blockchain_tx_hash?: string | null
+          created_at?: string
+          credit_id?: string
+          from_user_id?: string | null
+          id?: string
+          price_per_credit?: number | null
+          status?: string
+          to_user_id?: string | null
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "carbon_credit_transactions_credit_id_fkey"
+            columns: ["credit_id"]
+            isOneToOne: false
+            referencedRelation: "carbon_credits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      carbon_credits: {
+        Row: {
+          blockchain_tx_hash: string | null
+          calculation_date: string
+          created_at: string
+          credits_earned: number
+          field_name: string
+          field_size_acres: number
+          id: string
+          metadata: Json | null
+          soil_organic_matter: number | null
+          updated_at: string
+          user_id: string
+          verification_status: string
+        }
+        Insert: {
+          blockchain_tx_hash?: string | null
+          calculation_date?: string
+          created_at?: string
+          credits_earned: number
+          field_name: string
+          field_size_acres: number
+          id?: string
+          metadata?: Json | null
+          soil_organic_matter?: number | null
+          updated_at?: string
+          user_id: string
+          verification_status?: string
+        }
+        Update: {
+          blockchain_tx_hash?: string | null
+          calculation_date?: string
+          created_at?: string
+          credits_earned?: number
+          field_name?: string
+          field_size_acres?: number
+          id?: string
+          metadata?: Json | null
+          soil_organic_matter?: number | null
+          updated_at?: string
+          user_id?: string
+          verification_status?: string
+        }
+        Relationships: []
+      }
       counties: {
         Row: {
           county_name: string

@@ -68,3 +68,6 @@ verify_jwt = true
 
 [functions.enhanced-threat-detection]
 verify_jwt = false
+
+[functions.carbon-credit-calculator]
+verify_jwt = true
