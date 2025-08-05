@@ -1,5 +1,75 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 
+// Security utilities (inline)
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+
+function sanitizeError(error: any): string {
+  if (error.message?.includes('JWT') || error.message?.includes('auth')) {
+    return 'Authentication failed';
+  }
+  if (error.message?.includes('database') || error.message?.includes('SQL')) {
+    return 'Database operation failed';
+  }
+  if (error.message?.includes('API key') || error.message?.includes('secret')) {
+    return 'External service unavailable';
+  }
+  return 'Service temporarily unavailable';
+}
+
+function checkRateLimit(identifier: string, limit: number = 50, windowMs: number = 60000): boolean {
+  const now = Date.now();
+  const entry = rateLimitStore.get(identifier);
+  
+  if (!entry || now > entry.resetTime) {
+    rateLimitStore.set(identifier, { count: 1, resetTime: now + windowMs });
+    return true;
+  }
+  
+  if (entry.count >= limit) {
+    return false;
+  }
+  
+  entry.count++;
+  return true;
+}
+
+async function logSecurityEvent(supabase: any, event: any, request?: Request): Promise<void> {
+  try {
+    const ip_address = request?.headers.get('x-forwarded-for') || 'unknown';
+    const user_agent = request?.headers.get('user-agent') || 'unknown';
+    
+    await supabase.from('security_audit_log').insert({
+      event_type: event.event_type,
+      user_id: event.user_id,
+      ip_address,
+      user_agent,
+      details: event.details
+    });
+  } catch (logError) {
+    console.error('Failed to log security event:', logError);
+  }
+}
+
+async function authenticateUser(supabase: any, request: Request): Promise<{ user: any; error?: string }> {
+  try {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return { user: null, error: 'Authentication required' };
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    
+    if (error || !user) {
+      return { user: null, error: 'Invalid authentication' };
+    }
+    
+    return { user };
+  } catch (error) {
+    return { user: null, error: 'Authentication failed' };
+  }
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -37,11 +107,54 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Rate limiting
+    const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
+    if (!checkRateLimit(clientIP, 50, 60000)) {
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: 'Too many requests' 
+      }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { fips_code, state_code, admin_unit_name }: TerritorialWaterQualityRequest = await req.json();
+    // Authenticate user
+    const { user, error: authError } = await authenticateUser(supabase, req);
+    
+    if (!user) {
+      await logSecurityEvent(supabase, {
+        event_type: 'authentication_failure',
+        details: { endpoint: 'territorial-water-quality', error: authError },
+        severity: 'medium'
+      }, req);
+      
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: 'Authentication required' 
+      }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const requestBody = await req.json();
+    const { fips_code, state_code, admin_unit_name } = requestBody;
+
+    // Input validation
+    if (!fips_code || !state_code || !admin_unit_name) {
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: 'Missing required parameters' 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     console.log(`Processing water quality request for: ${admin_unit_name}, ${state_code} (FIPS: ${fips_code})`);
 
@@ -73,13 +186,32 @@ Deno.serve(async (req) => {
 
   } catch (error) {
     console.error('Error in territorial-water-quality function:', error);
+    
+    // Log security event
+    const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+    await logSecurityEvent(supabase, {
+      event_type: 'function_error',
+      details: { 
+        endpoint: 'territorial-water-quality', 
+        sanitized_error: sanitizeError(error)
+      },
+      severity: 'high'
+    }, req);
+    
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: 'Failed to retrieve territorial water quality data',
-        details: error.message 
+        error: sanitizeError(error)
       }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { 
+        status: 500, 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json',
+          'X-Content-Type-Options': 'nosniff',
+          'X-Frame-Options': 'DENY'
+        } 
+      }
     );
   }
 });
