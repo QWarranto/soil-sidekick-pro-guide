@@ -19,7 +19,11 @@ import {
   AlertTriangle,
   CheckCircle,
   Info,
-  Target
+  Target,
+  Zap,
+  Settings,
+  Wifi,
+  HardDrive
 } from 'lucide-react';
 
 const UserGuide = () => {
@@ -127,11 +131,12 @@ const UserGuide = () => {
 
           {/* Main Guide Content */}
           <Tabs defaultValue="getting-started" className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
+            <TabsList className="grid w-full grid-cols-7">
               <TabsTrigger value="getting-started">Getting Started</TabsTrigger>
               <TabsTrigger value="alpha-earth">AlphaEarth</TabsTrigger>
               <TabsTrigger value="soil-analysis">Soil Analysis</TabsTrigger>
               <TabsTrigger value="environmental">Environmental</TabsTrigger>
+              <TabsTrigger value="sensor-integration">Sensor Setup</TabsTrigger>
               <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
               <TabsTrigger value="troubleshooting">Help</TabsTrigger>
             </TabsList>
@@ -618,6 +623,291 @@ const UserGuide = () => {
                                 </ul>
                               </div>
                             </div>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="sensor-integration" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <HardDrive className="h-6 w-6" />
+                    Soil Sensor Integration & Installation
+                    <Badge variant="outline" className="ml-2">ADVANCED</Badge>
+                  </CardTitle>
+                  <CardDescription>
+                    Connect physical soil sensors to activate real-time data feeds for Soil Health Trends and Weather Forecast
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="compatible-sensors">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <Wifi className="h-5 w-5" />
+                          Compatible Soil Sensor Systems
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h4 className="font-semibold text-green-800 mb-2">Professional IoT Sensors</h4>
+                            <ul className="text-sm text-green-700 space-y-1">
+                              <li>• <strong>Davis Instruments WeatherLink:</strong> Weather + soil moisture</li>
+                              <li>• <strong>Onset HOBO:</strong> Multi-parameter data loggers</li>
+                              <li>• <strong>Campbell Scientific:</strong> Research-grade stations</li>
+                              <li>• <strong>Sentek Drill & Drop:</strong> Profile moisture sensors</li>
+                            </ul>
+                          </div>
+                          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <h4 className="font-semibold text-blue-800 mb-2">DIY & Arduino-Based</h4>
+                            <ul className="text-sm text-blue-700 space-y-1">
+                              <li>• <strong>Arduino + DHT22:</strong> Temperature/humidity</li>
+                              <li>• <strong>Raspberry Pi + sensors:</strong> Custom monitoring</li>
+                              <li>• <strong>ESP32 + soil probes:</strong> Wireless soil monitoring</li>
+                              <li>• <strong>LoRaWAN networks:</strong> Long-range field sensors</li>
+                            </ul>
+                          </div>
+                        </div>
+                        <div className="bg-muted/50 p-4 rounded-lg">
+                          <h4 className="font-medium mb-2">Required Sensor Capabilities:</h4>
+                          <ul className="text-sm text-muted-foreground space-y-1">
+                            <li>• <strong>API or webhook output:</strong> Must provide real-time data feeds</li>
+                            <li>• <strong>JSON/REST compatibility:</strong> For integration with SoilSidekick Pro</li>
+                            <li>• <strong>Minimum measurements:</strong> Soil moisture, temperature, pH (optional)</li>
+                            <li>• <strong>Data logging:</strong> 15-minute or hourly intervals recommended</li>
+                          </ul>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="physical-installation">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <Settings className="h-5 w-5" />
+                          Physical Sensor Installation
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="space-y-4">
+                          <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                            <h4 className="font-semibold text-yellow-800 mb-2">⚠️ Installation Safety</h4>
+                            <ul className="text-sm text-yellow-700 space-y-1">
+                              <li>• Call 811 before digging to locate underground utilities</li>
+                              <li>• Use weatherproof enclosures for electronics</li>
+                              <li>• Ground all electrical components properly</li>
+                              <li>• Install lightning protection for exposed sensors</li>
+                            </ul>
+                          </div>
+                          
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <h4 className="font-semibold mb-3">Soil Sensor Placement</h4>
+                              <div className="space-y-2">
+                                <div className="flex items-start gap-2">
+                                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                                  <div>
+                                    <p className="text-sm font-medium">Depth: 6-12 inches</p>
+                                    <p className="text-xs text-muted-foreground">Root zone monitoring depth</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                                  <div>
+                                    <p className="text-sm font-medium">Representative location</p>
+                                    <p className="text-xs text-muted-foreground">Avoid field edges, drainage areas</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                                  <div>
+                                    <p className="text-sm font-medium">Multiple sensors</p>
+                                    <p className="text-xs text-muted-foreground">1 per 10-20 acres recommended</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div>
+                              <h4 className="font-semibold mb-3">Weather Station Setup</h4>
+                              <div className="space-y-2">
+                                <div className="flex items-start gap-2">
+                                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                                  <div>
+                                    <p className="text-sm font-medium">Height: 5-6 feet</p>
+                                    <p className="text-xs text-muted-foreground">Standard weather measurement height</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                                  <div>
+                                    <p className="text-sm font-medium">Open area</p>
+                                    <p className="text-xs text-muted-foreground">No obstructions within 30 feet</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                                  <div>
+                                    <p className="text-sm font-medium">Radiation shield</p>
+                                    <p className="text-xs text-muted-foreground">Protect temperature/humidity sensors</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="api-integration">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <Zap className="h-5 w-5" />
+                          API Integration & Data Pipeline
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                          <h4 className="font-semibold text-blue-800 mb-2">Integration Methods</h4>
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <h5 className="font-medium mb-2">1. Webhook Integration</h5>
+                              <p className="text-sm text-blue-700 mb-2">
+                                Configure your sensor system to send real-time data to SoilSidekick Pro endpoints.
+                              </p>
+                              <div className="bg-blue-100 p-2 rounded text-xs font-mono">
+                                POST /api/sensor-data<br/>
+                                Authorization: Bearer YOUR_API_KEY
+                              </div>
+                            </div>
+                            <div>
+                              <h5 className="font-medium mb-2">2. Polling Integration</h5>
+                              <p className="text-sm text-blue-700 mb-2">
+                                SoilSidekick Pro pulls data from your sensor API on a scheduled basis.
+                              </p>
+                              <div className="bg-blue-100 p-2 rounded text-xs font-mono">
+                                GET /your-sensor-api/data<br/>
+                                Content-Type: application/json
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <h4 className="font-semibold">Required Data Format</h4>
+                          <div className="bg-muted/50 p-3 rounded-lg">
+                            <pre className="text-xs overflow-x-auto">{`{
+  "timestamp": "2024-01-15T14:30:00Z",
+  "location": {
+    "latitude": 40.7128,
+    "longitude": -74.0060,
+    "field_id": "north_field_1"
+  },
+  "soil_data": {
+    "moisture_percent": 55.2,
+    "temperature_c": 18.5,
+    "ph": 6.8,
+    "electrical_conductivity": 1.2
+  },
+  "weather_data": {
+    "air_temperature_c": 24.1,
+    "humidity_percent": 67,
+    "wind_speed_mps": 3.2,
+    "precipitation_mm": 0.0
+  }
+}`}</pre>
+                          </div>
+                        </div>
+
+                        <div className="bg-muted/50 p-4 rounded-lg">
+                          <h4 className="font-medium mb-2">Integration Steps:</h4>
+                          <ol className="text-sm text-muted-foreground space-y-1">
+                            <li>1. <strong>Generate API Key:</strong> Go to Settings → API Keys in your dashboard</li>
+                            <li>2. <strong>Configure Sensor Output:</strong> Set your sensor system to output JSON data</li>
+                            <li>3. <strong>Test Integration:</strong> Use our API testing tool to verify data flow</li>
+                            <li>4. <strong>Enable Live Data:</strong> Toggle "Live Sensor Data" in dashboard settings</li>
+                            <li>5. <strong>Verify Charts:</strong> Check that Soil Health Trends shows real sensor data</li>
+                          </ol>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="troubleshooting-sensors">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="h-5 w-5" />
+                          Sensor Troubleshooting & Maintenance
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-semibold mb-3 text-red-600">Common Issues</h4>
+                            <div className="space-y-3">
+                              <div>
+                                <h5 className="font-medium text-sm">Data Not Appearing in Dashboard</h5>
+                                <ul className="text-xs text-muted-foreground space-y-1">
+                                  <li>• Check API key authentication</li>
+                                  <li>• Verify JSON format matches requirements</li>
+                                  <li>• Ensure timestamps are in UTC</li>
+                                  <li>• Check network connectivity</li>
+                                </ul>
+                              </div>
+                              <div>
+                                <h5 className="font-medium text-sm">Inconsistent Readings</h5>
+                                <ul className="text-xs text-muted-foreground space-y-1">
+                                  <li>• Calibrate sensors quarterly</li>
+                                  <li>• Clean soil contact surfaces</li>
+                                  <li>• Check for physical damage</li>
+                                  <li>• Verify sensor placement depth</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold mb-3 text-green-600">Maintenance Schedule</h4>
+                            <div className="space-y-3">
+                              <div>
+                                <h5 className="font-medium text-sm">Monthly</h5>
+                                <ul className="text-xs text-muted-foreground space-y-1">
+                                  <li>• Check battery levels</li>
+                                  <li>• Verify data transmission</li>
+                                  <li>• Clean weather station components</li>
+                                </ul>
+                              </div>
+                              <div>
+                                <h5 className="font-medium text-sm">Quarterly</h5>
+                                <ul className="text-xs text-muted-foreground space-y-1">
+                                  <li>• Calibrate soil sensors</li>
+                                  <li>• Update firmware if available</li>
+                                  <li>• Check mounting stability</li>
+                                </ul>
+                              </div>
+                              <div>
+                                <h5 className="font-medium text-sm">Annually</h5>
+                                <ul className="text-xs text-muted-foreground space-y-1">
+                                  <li>• Replace batteries</li>
+                                  <li>• Inspect cables and connections</li>
+                                  <li>• Update sensor calibration constants</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                          <h4 className="font-semibold text-blue-800 mb-2">Professional Installation</h4>
+                          <p className="text-sm text-blue-700 mb-3">
+                            For large-scale operations or complex installations, we recommend working with certified agricultural technology providers.
+                          </p>
+                          <div className="flex gap-2">
+                            <Button size="sm" variant="outline">Find Installers</Button>
+                            <Button size="sm" variant="outline">Request Quote</Button>
                           </div>
                         </div>
                       </AccordionContent>
