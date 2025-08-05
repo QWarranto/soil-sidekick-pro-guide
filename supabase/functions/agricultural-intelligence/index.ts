@@ -247,7 +247,7 @@ If asked about technical capabilities, explain how you combine satellite data wi
   const dataContext = analyticsData ? `Available agricultural data for this query:
 ${JSON.stringify(analyticsData, null, 2)}
 
-Data sources used: ${analyticsData.sources?.join(', ') || 'General agricultural knowledge'}` : 'No specific data available for this query.';
+Data sources used: ${analyticsData.sources?.length > 0 ? analyticsData.sources.join(', ') : 'General agricultural knowledge'}` : 'No specific data available for this query.';
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
