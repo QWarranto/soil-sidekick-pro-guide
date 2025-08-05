@@ -7,6 +7,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, AreaChart, Area, BarChart, Bar } from "recharts";
 import { AddFieldDialog } from "@/components/AddFieldDialog";
 import AgriculturalChat from "@/components/AgriculturalChat";
+import { LocationIndicator } from "@/components/LocationIndicator";
 import { 
   MapPin, 
   TrendingUp, 
@@ -107,6 +108,9 @@ const Dashboard = () => {
       </div>
 
       <div className="p-6 space-y-6">
+        {/* Location Indicator */}
+        <LocationIndicator />
+
         {/* Main Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
