@@ -228,6 +228,51 @@ export type Database = {
           },
         ]
       }
+      api_keys: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          key_hash: string
+          key_name: string
+          last_used_at: string | null
+          permissions: Json | null
+          rate_limit: number | null
+          rate_window_minutes: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          key_hash: string
+          key_name: string
+          last_used_at?: string | null
+          permissions?: Json | null
+          rate_limit?: number | null
+          rate_window_minutes?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          key_hash?: string
+          key_name?: string
+          last_used_at?: string | null
+          permissions?: Json | null
+          rate_limit?: number | null
+          rate_window_minutes?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       counties: {
         Row: {
           county_name: string
@@ -518,6 +563,36 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limit_tracking: {
+        Row: {
+          created_at: string | null
+          endpoint: string
+          id: string
+          identifier: string
+          request_count: number | null
+          window_end: string | null
+          window_start: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          endpoint: string
+          id?: string
+          identifier: string
+          request_count?: number | null
+          window_end?: string | null
+          window_start?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          endpoint?: string
+          id?: string
+          identifier?: string
+          request_count?: number | null
+          window_end?: string | null
+          window_start?: string | null
+        }
+        Relationships: []
+      }
       security_audit_log: {
         Row: {
           created_at: string
@@ -543,6 +618,51 @@ export type Database = {
           event_type?: string
           id?: string
           ip_address?: unknown | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      security_incidents: {
+        Row: {
+          created_at: string | null
+          endpoint: string | null
+          id: string
+          incident_details: Json | null
+          incident_type: string
+          request_payload: Json | null
+          resolved_at: string | null
+          response_status: number | null
+          severity: string
+          source_ip: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          endpoint?: string | null
+          id?: string
+          incident_details?: Json | null
+          incident_type: string
+          request_payload?: Json | null
+          resolved_at?: string | null
+          response_status?: number | null
+          severity: string
+          source_ip?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          endpoint?: string | null
+          id?: string
+          incident_details?: Json | null
+          incident_type?: string
+          request_payload?: Json | null
+          resolved_at?: string | null
+          response_status?: number | null
+          severity?: string
+          source_ip?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
@@ -670,9 +790,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_rate_limit_tracking: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       is_service_role: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      validate_api_key: {
+        Args: { key_hash: string }
+        Returns: {
+          user_id: string
+          permissions: Json
+          rate_limit: number
+          rate_window_minutes: number
+          is_valid: boolean
+        }[]
       }
     }
     Enums: {

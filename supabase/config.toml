@@ -61,4 +61,10 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.security-monitoring]
+verify_jwt = false
+
+[functions.api-key-management]
 verify_jwt = true
+
+[functions.enhanced-threat-detection]
+verify_jwt = false

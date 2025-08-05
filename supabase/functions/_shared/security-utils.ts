@@ -1,4 +1,4 @@
-// Security utilities for edge functions
+// Enhanced security utilities for edge functions
 
 export interface SecurityLogEntry {
   event_type: string;
@@ -7,6 +7,28 @@ export interface SecurityLogEntry {
   user_agent?: string;
   details?: any;
   severity: 'low' | 'medium' | 'high' | 'critical';
+}
+
+export interface SecurityIncident {
+  incident_type: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  source_ip?: string;
+  user_id?: string;
+  user_agent?: string;
+  endpoint?: string;
+  request_payload?: any;
+  response_status?: number;
+  incident_details?: any;
+}
+
+export interface InputValidationRule {
+  field: string;
+  type: 'string' | 'number' | 'email' | 'uuid' | 'json' | 'array';
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  pattern?: RegExp;
+  allowedValues?: string[];
 }
 
 // Rate limiting store (in-memory for basic implementation)
@@ -163,5 +185,302 @@ export async function authenticateUser(supabase: any, request: Request): Promise
     return { user };
   } catch (error) {
     return { user: null, error: 'Authentication failed' };
+  }
+}
+
+/**
+ * Advanced input validation with comprehensive rules
+ */
+export function validateInput(data: any, rules: InputValidationRule[]): { isValid: boolean; errors: string[]; sanitized: any } {
+  const errors: string[] = [];
+  const sanitized: any = {};
+
+  for (const rule of rules) {
+    const value = data[rule.field];
+
+    // Check required fields
+    if (rule.required && (value === undefined || value === null || value === '')) {
+      errors.push(`${rule.field} is required`);
+      continue;
+    }
+
+    // Skip validation for optional empty fields
+    if (!rule.required && (value === undefined || value === null || value === '')) {
+      continue;
+    }
+
+    // Type validation
+    switch (rule.type) {
+      case 'string':
+        if (typeof value !== 'string') {
+          errors.push(`${rule.field} must be a string`);
+          continue;
+        }
+        let sanitizedString = value.trim();
+        
+        // Length validation
+        if (rule.minLength && sanitizedString.length < rule.minLength) {
+          errors.push(`${rule.field} must be at least ${rule.minLength} characters`);
+          continue;
+        }
+        if (rule.maxLength && sanitizedString.length > rule.maxLength) {
+          sanitizedString = sanitizedString.slice(0, rule.maxLength);
+        }
+        
+        // Pattern validation
+        if (rule.pattern && !rule.pattern.test(sanitizedString)) {
+          errors.push(`${rule.field} format is invalid`);
+          continue;
+        }
+        
+        // Allowed values validation
+        if (rule.allowedValues && !rule.allowedValues.includes(sanitizedString)) {
+          errors.push(`${rule.field} must be one of: ${rule.allowedValues.join(', ')}`);
+          continue;
+        }
+        
+        sanitized[rule.field] = sanitizedString;
+        break;
+
+      case 'number':
+        const num = Number(value);
+        if (isNaN(num)) {
+          errors.push(`${rule.field} must be a valid number`);
+          continue;
+        }
+        sanitized[rule.field] = num;
+        break;
+
+      case 'email':
+        if (typeof value !== 'string') {
+          errors.push(`${rule.field} must be a string`);
+          continue;
+        }
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(value.trim())) {
+          errors.push(`${rule.field} must be a valid email address`);
+          continue;
+        }
+        sanitized[rule.field] = value.trim().toLowerCase();
+        break;
+
+      case 'uuid':
+        if (typeof value !== 'string') {
+          errors.push(`${rule.field} must be a string`);
+          continue;
+        }
+        const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!uuidPattern.test(value.trim())) {
+          errors.push(`${rule.field} must be a valid UUID`);
+          continue;
+        }
+        sanitized[rule.field] = value.trim().toLowerCase();
+        break;
+
+      case 'json':
+        try {
+          if (typeof value === 'object') {
+            sanitized[rule.field] = value;
+          } else if (typeof value === 'string') {
+            sanitized[rule.field] = JSON.parse(value);
+          } else {
+            errors.push(`${rule.field} must be valid JSON`);
+            continue;
+          }
+        } catch {
+          errors.push(`${rule.field} must be valid JSON`);
+          continue;
+        }
+        break;
+
+      case 'array':
+        if (!Array.isArray(value)) {
+          errors.push(`${rule.field} must be an array`);
+          continue;
+        }
+        sanitized[rule.field] = value;
+        break;
+
+      default:
+        sanitized[rule.field] = value;
+    }
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    sanitized
+  };
+}
+
+/**
+ * Advanced rate limiting with database persistence
+ */
+export async function advancedRateLimit(
+  supabase: any,
+  identifier: string,
+  endpoint: string,
+  limit: number = 100,
+  windowMinutes: number = 60
+): Promise<{ allowed: boolean; remaining: number; resetTime: number }> {
+  try {
+    const windowStart = new Date();
+    const windowEnd = new Date(windowStart.getTime() + (windowMinutes * 60 * 1000));
+
+    // Check existing rate limit record
+    const { data: existing } = await supabase
+      .from('rate_limit_tracking')
+      .select('*')
+      .eq('identifier', identifier)
+      .eq('endpoint', endpoint)
+      .gt('window_end', new Date().toISOString())
+      .single();
+
+    if (existing) {
+      // Update existing record
+      if (existing.request_count >= limit) {
+        return {
+          allowed: false,
+          remaining: 0,
+          resetTime: new Date(existing.window_end).getTime()
+        };
+      }
+
+      const { error } = await supabase
+        .from('rate_limit_tracking')
+        .update({ request_count: existing.request_count + 1 })
+        .eq('id', existing.id);
+
+      if (error) {
+        console.error('Rate limit update error:', error);
+        return { allowed: true, remaining: limit - 1, resetTime: windowEnd.getTime() };
+      }
+
+      return {
+        allowed: true,
+        remaining: limit - (existing.request_count + 1),
+        resetTime: new Date(existing.window_end).getTime()
+      };
+    } else {
+      // Create new rate limit record
+      const { error } = await supabase
+        .from('rate_limit_tracking')
+        .insert({
+          identifier,
+          endpoint,
+          request_count: 1,
+          window_start: windowStart.toISOString(),
+          window_end: windowEnd.toISOString()
+        });
+
+      if (error) {
+        console.error('Rate limit insert error:', error);
+        return { allowed: true, remaining: limit - 1, resetTime: windowEnd.getTime() };
+      }
+
+      return {
+        allowed: true,
+        remaining: limit - 1,
+        resetTime: windowEnd.getTime()
+      };
+    }
+  } catch (error) {
+    console.error('Advanced rate limit error:', error);
+    // Fallback to in-memory rate limiting
+    return {
+      allowed: checkRateLimit(identifier + endpoint, limit, windowMinutes * 60 * 1000),
+      remaining: limit - 1,
+      resetTime: Date.now() + (windowMinutes * 60 * 1000)
+    };
+  }
+}
+
+/**
+ * Logs security incidents for monitoring
+ */
+export async function logSecurityIncident(
+  supabase: any,
+  incident: SecurityIncident,
+  request?: Request
+): Promise<void> {
+  try {
+    const ip_address = request?.headers.get('x-forwarded-for') || 
+                      request?.headers.get('x-real-ip') || 
+                      'unknown';
+    
+    const user_agent = request?.headers.get('user-agent') || 'unknown';
+
+    await supabase
+      .from('security_incidents')
+      .insert({
+        incident_type: incident.incident_type,
+        severity: incident.severity,
+        source_ip: incident.source_ip || ip_address,
+        user_id: incident.user_id,
+        user_agent: incident.user_agent || user_agent,
+        endpoint: incident.endpoint,
+        request_payload: incident.request_payload,
+        response_status: incident.response_status,
+        incident_details: incident.incident_details
+      });
+  } catch (error) {
+    console.error('Failed to log security incident:', error);
+  }
+}
+
+/**
+ * Enhanced security headers for all responses
+ */
+export function getSecurityHeaders(corsHeaders: any): any {
+  return {
+    ...corsHeaders,
+    'Content-Type': 'application/json',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'X-XSS-Protection': '1; mode=block',
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
+    'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.openai.com https://*.supabase.co;"
+  };
+}
+
+/**
+ * API key authentication for enhanced security
+ */
+export async function authenticateApiKey(
+  supabase: any,
+  request: Request
+): Promise<{ user: any; permissions: any; error?: string }> {
+  try {
+    const apiKey = request.headers.get('x-api-key');
+    if (!apiKey) {
+      return { user: null, permissions: null, error: 'API key required' };
+    }
+
+    // Hash the API key for lookup
+    const keyHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(apiKey));
+    const hashArray = Array.from(new Uint8Array(keyHash));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    const { data: keyData, error } = await supabase.rpc('validate_api_key', { key_hash: hashHex });
+
+    if (error || !keyData || keyData.length === 0) {
+      return { user: null, permissions: null, error: 'Invalid API key' };
+    }
+
+    const keyInfo = keyData[0];
+    if (!keyInfo.is_valid) {
+      return { user: null, permissions: null, error: 'API key expired or inactive' };
+    }
+
+    return {
+      user: { id: keyInfo.user_id },
+      permissions: keyInfo.permissions,
+      error: undefined
+    };
+  } catch (error) {
+    console.error('API key authentication error:', error);
+    return { user: null, permissions: null, error: 'Authentication failed' };
   }
 }
