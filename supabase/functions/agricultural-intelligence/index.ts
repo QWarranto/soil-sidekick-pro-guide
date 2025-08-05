@@ -218,6 +218,29 @@ async function gatherRelevantData(intentAnalysis: any, context: any, supabase: a
       }
     }
 
+    // Get live agricultural data for enhanced insights
+    if (context?.county_fips) {
+      try {
+        const liveDataResponse = await supabase.functions.invoke('live-agricultural-data', {
+          body: {
+            county_fips: context.county_fips,
+            data_types: ['weather', 'soil', 'crop', 'environmental'],
+            state_code: context?.state_code || 'US',
+            county_name: context?.county_name || 'Unknown County'
+          }
+        });
+
+        if (liveDataResponse.data && !liveDataResponse.error) {
+          data.live_agricultural_data = liveDataResponse.data;
+          const liveSources = liveDataResponse.data.sources || [];
+          data.sources.push(...liveSources);
+          console.log(`Live agricultural data integrated from: ${liveSources.join(', ')}`);
+        }
+      } catch (e) {
+        console.log('Live agricultural data not available:', e.message);
+      }
+    }
+
   } catch (error) {
     console.error('Error gathering data:', error);
   }
@@ -244,10 +267,13 @@ Provide helpful, specific, and actionable agricultural advice based on the avail
 
 If asked about technical capabilities, explain how you combine satellite data with federal agricultural databases to provide comprehensive insights.`;
 
-  const dataContext = analyticsData ? `Available agricultural data for this query:
+  // Prepare context with available data
+  const dataContext = analyticsData ? `Available agricultural data:
 ${JSON.stringify(analyticsData, null, 2)}
 
-Data sources used: ${analyticsData.sources?.length > 0 ? analyticsData.sources.join(', ') : 'General agricultural knowledge'}` : 'No specific data available for this query.';
+Data sources used: ${analyticsData.sources?.length > 0 ? analyticsData.sources.join(', ') : 'General agricultural knowledge'}
+
+IMPORTANT: ${analyticsData.live_agricultural_data?.sources ? 'This includes LIVE data from: ' + analyticsData.live_agricultural_data.sources.join(', ') : 'This uses cached or simulated data'}. Please indicate the data source and freshness in your response.` : 'No specific data available for this query.';
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
