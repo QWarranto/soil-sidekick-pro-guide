@@ -7,6 +7,7 @@ import { Droplets, LogOut, ArrowLeft } from 'lucide-react';
 import { CountyLookup } from '@/components/CountyLookup';
 import { WaterQualityPDFExport } from '@/components/WaterQualityPDFExport';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface County {
   id: string;
@@ -57,24 +58,18 @@ const WaterQuality = () => {
     setIsLoading(true);
     
     try {
-      // Call the territorial water quality edge function
-      const response = await fetch('https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/territorial-water-quality', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      // Call the territorial water quality edge function using Supabase client
+      const { data: result, error } = await supabase.functions.invoke('territorial-water-quality', {
+        body: {
           fips_code: county.fips_code,
           state_code: county.state_code,
           admin_unit_name: county.county_name
-        }),
+        }
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch water quality data');
+      if (error) {
+        throw new Error(error.message || 'Failed to fetch water quality data');
       }
-
-      const result = await response.json();
       
       if (result.success) {
         setWaterData(result.data);
