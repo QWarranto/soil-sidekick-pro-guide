@@ -23,7 +23,11 @@ import {
   Zap,
   Settings,
   Wifi,
-  HardDrive
+  HardDrive,
+  Webhook,
+  Shield,
+  Key,
+  RefreshCw
 } from 'lucide-react';
 
 const UserGuide = () => {
@@ -131,12 +135,13 @@ const UserGuide = () => {
 
           {/* Main Guide Content */}
           <Tabs defaultValue="getting-started" className="w-full">
-            <TabsList className="grid w-full grid-cols-7">
+            <TabsList className="grid w-full grid-cols-8">
               <TabsTrigger value="getting-started">Getting Started</TabsTrigger>
               <TabsTrigger value="alpha-earth">AlphaEarth</TabsTrigger>
               <TabsTrigger value="soil-analysis">Soil Analysis</TabsTrigger>
               <TabsTrigger value="environmental">Environmental</TabsTrigger>
               <TabsTrigger value="sensor-integration">Sensor Setup</TabsTrigger>
+              <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
               <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
               <TabsTrigger value="troubleshooting">Help</TabsTrigger>
             </TabsList>
@@ -909,6 +914,511 @@ const UserGuide = () => {
                             <Button size="sm" variant="outline">Find Installers</Button>
                             <Button size="sm" variant="outline">Request Quote</Button>
                           </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="webhooks" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Webhook className="h-6 w-6" />
+                    Webhooks & Integrations
+                    <Badge variant="outline" className="ml-2">API</Badge>
+                  </CardTitle>
+                  <CardDescription>
+                    Configure webhooks for real-time notifications, third-party integrations, and automated workflows
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="webhook-overview">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <Webhook className="h-5 w-5" />
+                          What Are Webhooks?
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                          <h4 className="font-semibold text-blue-800 mb-2">Webhook Basics</h4>
+                          <p className="text-sm text-blue-700 mb-3">
+                            Webhooks are HTTP callbacks that SoilSidekick Pro sends to your external systems when specific events occur. 
+                            Think of them as "reverse APIs" - instead of you asking for data, we push it to you in real-time.
+                          </p>
+                          <div className="grid md:grid-cols-2 gap-3">
+                            <div>
+                              <h5 className="font-medium mb-1">Traditional API Call</h5>
+                              <p className="text-xs text-blue-600">Your system → SoilSidekick Pro</p>
+                              <p className="text-xs text-blue-700">"Give me the latest soil data"</p>
+                            </div>
+                            <div>
+                              <h5 className="font-medium mb-1">Webhook</h5>
+                              <p className="text-xs text-blue-600">SoilSidekick Pro → Your system</p>
+                              <p className="text-xs text-blue-700">"Here's new soil data as it happens"</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-3 gap-4">
+                          <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h4 className="font-semibold text-green-800 mb-2">Agricultural Events</h4>
+                            <ul className="text-sm text-green-700 space-y-1">
+                              <li>• Soil moisture alerts</li>
+                              <li>• Weather warnings</li>
+                              <li>• Crop health changes</li>
+                              <li>• pH threshold violations</li>
+                            </ul>
+                          </div>
+                          <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                            <h4 className="font-semibold text-orange-800 mb-2">System Events</h4>
+                            <ul className="text-sm text-orange-700 space-y-1">
+                              <li>• Analysis completions</li>
+                              <li>• Report generations</li>
+                              <li>• API rate limit warnings</li>
+                              <li>• Data sync events</li>
+                            </ul>
+                          </div>
+                          <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                            <h4 className="font-semibold text-purple-800 mb-2">Integration Events</h4>
+                            <ul className="text-sm text-purple-700 space-y-1">
+                              <li>• Third-party data updates</li>
+                              <li>• Equipment status changes</li>
+                              <li>• Market price alerts</li>
+                              <li>• Carbon credit updates</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="webhook-setup">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <Settings className="h-5 w-5" />
+                          Setting Up Webhooks
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="space-y-4">
+                          <div className="bg-muted/50 p-4 rounded-lg">
+                            <h4 className="font-medium mb-2">Step-by-Step Setup</h4>
+                            <ol className="text-sm text-muted-foreground space-y-2">
+                              <li className="flex items-start gap-2">
+                                <span className="bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center mt-0.5">1</span>
+                                <div>
+                                  <strong>Create Webhook Endpoint:</strong> Set up an HTTPS endpoint on your server to receive webhook data
+                                </div>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <span className="bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center mt-0.5">2</span>
+                                <div>
+                                  <strong>Configure in Dashboard:</strong> Go to Settings → Webhooks and add your endpoint URL
+                                </div>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <span className="bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center mt-0.5">3</span>
+                                <div>
+                                  <strong>Select Events:</strong> Choose which events should trigger webhooks to your endpoint
+                                </div>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <span className="bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center mt-0.5">4</span>
+                                <div>
+                                  <strong>Test Integration:</strong> Use our webhook testing tool to verify your endpoint works
+                                </div>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <span className="bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center mt-0.5">5</span>
+                                <div>
+                                  <strong>Go Live:</strong> Enable the webhook and start receiving real-time events
+                                </div>
+                              </li>
+                            </ol>
+                          </div>
+
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <h4 className="font-semibold mb-3">Required Endpoint Properties</h4>
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <CheckCircle className="h-4 w-4 text-green-600" />
+                                  <span className="text-sm">HTTPS only (SSL required)</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <CheckCircle className="h-4 w-4 text-green-600" />
+                                  <span className="text-sm">Responds with 200 status</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <CheckCircle className="h-4 w-4 text-green-600" />
+                                  <span className="text-sm">Responds within 30 seconds</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <CheckCircle className="h-4 w-4 text-green-600" />
+                                  <span className="text-sm">Accepts POST requests</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div>
+                              <h4 className="font-semibold mb-3">Example Endpoint Code</h4>
+                              <div className="bg-muted/50 p-3 rounded-lg">
+                                <pre className="text-xs overflow-x-auto">{`// Node.js Express example
+app.post('/webhook', (req, res) => {
+  const signature = req.headers['x-signature'];
+  const payload = req.body;
+  
+  // Verify signature (see security section)
+  if (verifySignature(payload, signature)) {
+    // Process the webhook event
+    console.log('Event:', payload.event);
+    console.log('Data:', payload.data);
+    
+    res.status(200).send('OK');
+  } else {
+    res.status(401).send('Unauthorized');
+  }
+});`}</pre>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="webhook-security">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <Shield className="h-5 w-5" />
+                          Webhook Security & Verification
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                          <h4 className="font-semibold text-red-800 mb-2">🔒 Security Best Practices</h4>
+                          <ul className="text-sm text-red-700 space-y-1">
+                            <li>• <strong>Always verify webhook signatures</strong> to ensure requests come from SoilSidekick Pro</li>
+                            <li>• <strong>Use HTTPS endpoints only</strong> to protect data in transit</li>
+                            <li>• <strong>Implement rate limiting</strong> to prevent abuse</li>
+                            <li>• <strong>Log webhook events</strong> for debugging and audit trails</li>
+                          </ul>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-semibold mb-3">Signature Verification</h4>
+                            <p className="text-sm text-muted-foreground mb-3">
+                              Each webhook includes an <code>X-Signature</code> header containing an HMAC SHA-256 signature of the payload.
+                            </p>
+                            <div className="bg-muted/50 p-3 rounded-lg">
+                              <pre className="text-xs overflow-x-auto">{`// JavaScript verification
+const crypto = require('crypto');
+
+function verifySignature(payload, signature, secret) {
+  const expected = crypto
+    .createHmac('sha256', secret)
+    .update(JSON.stringify(payload))
+    .digest('hex');
+  
+  return signature === \`sha256=\${expected}\`;
+}`}</pre>
+                            </div>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold mb-3">IP Whitelisting</h4>
+                            <p className="text-sm text-muted-foreground mb-3">
+                              For additional security, whitelist these SoilSidekick Pro IP ranges:
+                            </p>
+                            <div className="space-y-2">
+                              <div className="bg-muted/50 p-2 rounded text-xs font-mono">
+                                198.51.100.0/24
+                              </div>
+                              <div className="bg-muted/50 p-2 rounded text-xs font-mono">
+                                203.0.113.0/24
+                              </div>
+                              <div className="bg-muted/50 p-2 rounded text-xs font-mono">
+                                192.0.2.0/24
+                              </div>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-2">
+                              <strong>Note:</strong> IP ranges may change. Check dashboard for current list.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                          <h4 className="font-semibold text-blue-800 mb-2">Webhook Secret Management</h4>
+                          <p className="text-sm text-blue-700 mb-3">
+                            Each webhook endpoint gets a unique secret key for signature verification. You can:
+                          </p>
+                          <div className="flex gap-2">
+                            <Button size="sm" variant="outline">
+                              <Key className="h-4 w-4 mr-2" />
+                              Regenerate Secret
+                            </Button>
+                            <Button size="sm" variant="outline">
+                              <RefreshCw className="h-4 w-4 mr-2" />
+                              Test Webhook
+                            </Button>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="webhook-payloads">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-5 w-5" />
+                          Webhook Payloads & Event Types
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="space-y-4">
+                          <div className="bg-muted/50 p-4 rounded-lg">
+                            <h4 className="font-medium mb-2">Common Payload Structure</h4>
+                            <pre className="text-xs overflow-x-auto">{`{
+  "event": "soil.moisture.alert",
+  "timestamp": "2024-01-15T14:30:00Z",
+  "webhook_id": "wh_123456789",
+  "data": {
+    "field_id": "north_field_1",
+    "county_fips": "48453",
+    "alert_type": "low_moisture",
+    "current_value": 25.3,
+    "threshold": 30.0,
+    "location": {
+      "latitude": 30.2672,
+      "longitude": -97.7431
+    }
+  },
+  "metadata": {
+    "user_id": "usr_abc123",
+    "subscription_tier": "pro",
+    "delivery_attempt": 1
+  }
+}`}</pre>
+                          </div>
+
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <h4 className="font-semibold mb-3 text-green-600">Agricultural Events</h4>
+                              <div className="space-y-3">
+                                <div>
+                                  <h5 className="font-medium text-sm">soil.moisture.alert</h5>
+                                  <p className="text-xs text-muted-foreground">Triggered when soil moisture falls below/above thresholds</p>
+                                </div>
+                                <div>
+                                  <h5 className="font-medium text-sm">weather.severe.warning</h5>
+                                  <p className="text-xs text-muted-foreground">Severe weather alerts for your fields</p>
+                                </div>
+                                <div>
+                                  <h5 className="font-medium text-sm">crop.health.change</h5>
+                                  <p className="text-xs text-muted-foreground">Significant vegetation health changes detected</p>
+                                </div>
+                                <div>
+                                  <h5 className="font-medium text-sm">ph.threshold.violation</h5>
+                                  <p className="text-xs text-muted-foreground">Soil pH outside optimal range</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div>
+                              <h4 className="font-semibold mb-3 text-blue-600">System Events</h4>
+                              <div className="space-y-3">
+                                <div>
+                                  <h5 className="font-medium text-sm">analysis.completed</h5>
+                                  <p className="text-xs text-muted-foreground">Soil or water analysis finished processing</p>
+                                </div>
+                                <div>
+                                  <h5 className="font-medium text-sm">report.generated</h5>
+                                  <p className="text-xs text-muted-foreground">PDF report ready for download</p>
+                                </div>
+                                <div>
+                                  <h5 className="font-medium text-sm">api.rate.limit.warning</h5>
+                                  <p className="text-xs text-muted-foreground">Approaching API rate limits</p>
+                                </div>
+                                <div>
+                                  <h5 className="font-medium text-sm">carbon.credit.update</h5>
+                                  <p className="text-xs text-muted-foreground">Carbon credit calculation completed</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="webhook-integrations">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <Zap className="h-5 w-5" />
+                          Popular Integration Examples
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h4 className="font-semibold text-green-800 mb-2">Farm Management Systems</h4>
+                            <p className="text-sm text-green-700 mb-3">
+                              Integrate with John Deere Operations Center, Climate FieldView, or custom farm management platforms.
+                            </p>
+                            <div className="space-y-2">
+                              <div className="text-xs">
+                                <strong>Use Case:</strong> Auto-sync soil data to update field records
+                              </div>
+                              <div className="text-xs">
+                                <strong>Events:</strong> soil.analysis.completed, moisture.alert
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <h4 className="font-semibold text-blue-800 mb-2">Irrigation Systems</h4>
+                            <p className="text-sm text-blue-700 mb-3">
+                              Connect with smart irrigation controllers for automated water management.
+                            </p>
+                            <div className="space-y-2">
+                              <div className="text-xs">
+                                <strong>Use Case:</strong> Trigger irrigation when soil moisture drops
+                              </div>
+                              <div className="text-xs">
+                                <strong>Events:</strong> soil.moisture.alert, weather.forecast.update
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                            <h4 className="font-semibold text-orange-800 mb-2">Slack/Teams Notifications</h4>
+                            <p className="text-sm text-orange-700 mb-3">
+                              Send real-time agricultural alerts to your team communication channels.
+                            </p>
+                            <div className="space-y-2">
+                              <div className="text-xs">
+                                <strong>Use Case:</strong> Instant alerts for critical field conditions
+                              </div>
+                              <div className="text-xs">
+                                <strong>Events:</strong> weather.severe.warning, ph.threshold.violation
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                            <h4 className="font-semibold text-purple-800 mb-2">Business Intelligence</h4>
+                            <p className="text-sm text-purple-700 mb-3">
+                              Feed data into Power BI, Tableau, or custom analytics dashboards.
+                            </p>
+                            <div className="space-y-2">
+                              <div className="text-xs">
+                                <strong>Use Case:</strong> Real-time agricultural KPI monitoring
+                              </div>
+                              <div className="text-xs">
+                                <strong>Events:</strong> analysis.completed, carbon.credit.update
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-muted/50 p-4 rounded-lg">
+                          <h4 className="font-medium mb-2">Integration Templates</h4>
+                          <p className="text-sm text-muted-foreground mb-3">
+                            We provide ready-to-use webhook integration templates for popular platforms:
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            <Button size="sm" variant="outline">Zapier Template</Button>
+                            <Button size="sm" variant="outline">Power Automate</Button>
+                            <Button size="sm" variant="outline">IFTTT Recipe</Button>
+                            <Button size="sm" variant="outline">AWS Lambda</Button>
+                            <Button size="sm" variant="outline">Google Cloud</Button>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="webhook-troubleshooting">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="h-5 w-5" />
+                          Troubleshooting Webhooks
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-semibold mb-3 text-red-600">Common Issues</h4>
+                            <div className="space-y-3">
+                              <div>
+                                <h5 className="font-medium text-sm">Webhooks Not Arriving</h5>
+                                <ul className="text-xs text-muted-foreground space-y-1">
+                                  <li>• Check endpoint HTTPS certificate</li>
+                                  <li>• Verify endpoint returns 200 status</li>
+                                  <li>• Check firewall/IP restrictions</li>
+                                  <li>• Review webhook delivery logs</li>
+                                </ul>
+                              </div>
+                              <div>
+                                <h5 className="font-medium text-sm">Signature Verification Failing</h5>
+                                <ul className="text-xs text-muted-foreground space-y-1">
+                                  <li>• Ensure using correct webhook secret</li>
+                                  <li>• Check payload encoding (UTF-8)</li>
+                                  <li>• Verify HMAC implementation</li>
+                                  <li>• Test with webhook testing tool</li>
+                                </ul>
+                              </div>
+                              <div>
+                                <h5 className="font-medium text-sm">Duplicate Events</h5>
+                                <ul className="text-xs text-muted-foreground space-y-1">
+                                  <li>• Implement idempotency using webhook_id</li>
+                                  <li>• Check for multiple webhook configurations</li>
+                                  <li>• Review retry/timeout settings</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold mb-3 text-green-600">Debugging Tools</h4>
+                            <div className="space-y-3">
+                              <div>
+                                <h5 className="font-medium text-sm">Webhook Inspector</h5>
+                                <p className="text-xs text-muted-foreground mb-2">
+                                  Real-time webhook delivery monitoring in your dashboard
+                                </p>
+                                <Button size="sm" variant="outline">Open Inspector</Button>
+                              </div>
+                              <div>
+                                <h5 className="font-medium text-sm">Test Webhook</h5>
+                                <p className="text-xs text-muted-foreground mb-2">
+                                  Send test events to verify your endpoint setup
+                                </p>
+                                <Button size="sm" variant="outline">Send Test Event</Button>
+                              </div>
+                              <div>
+                                <h5 className="font-medium text-sm">Delivery Logs</h5>
+                                <p className="text-xs text-muted-foreground mb-2">
+                                  View detailed logs of webhook delivery attempts
+                                </p>
+                                <Button size="sm" variant="outline">View Logs</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                          <h4 className="font-semibold text-yellow-800 mb-2">Retry Policy</h4>
+                          <p className="text-sm text-yellow-700 mb-3">
+                            If your endpoint fails to respond with a 200 status, we'll retry delivery with exponential backoff:
+                          </p>
+                          <ul className="text-sm text-yellow-700 space-y-1">
+                            <li>• <strong>Attempt 1:</strong> Immediate</li>
+                            <li>• <strong>Attempt 2:</strong> After 1 minute</li>
+                            <li>• <strong>Attempt 3:</strong> After 5 minutes</li>
+                            <li>• <strong>Attempt 4:</strong> After 30 minutes</li>
+                            <li>• <strong>Attempt 5:</strong> After 2 hours (final attempt)</li>
+                          </ul>
+                          <p className="text-xs text-yellow-600 mt-2">
+                            After 5 failed attempts, the webhook will be disabled and you'll receive an email notification.
+                          </p>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
