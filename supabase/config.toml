@@ -46,10 +46,16 @@ port = 54329
 verify_jwt = true
 
 [functions.populate-counties]
-verify_jwt = false
+verify_jwt = true
 
 [functions.territorial-water-quality]
-verify_jwt = false
+verify_jwt = true
 
 [functions.territorial-water-analytics]
-verify_jwt = false
+verify_jwt = true
+
+[functions.agricultural-intelligence]
+verify_jwt = true
+
+[functions.live-agricultural-data]
+verify_jwt = true
