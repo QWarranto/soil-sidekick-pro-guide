@@ -27,7 +27,8 @@ import {
   Webhook,
   Shield,
   Key,
-  RefreshCw
+  RefreshCw,
+  Calendar
 } from 'lucide-react';
 
 const UserGuide = () => {
@@ -137,12 +138,12 @@ const UserGuide = () => {
           <Tabs defaultValue="getting-started" className="w-full">
             <TabsList className="grid w-full grid-cols-8">
               <TabsTrigger value="getting-started">Getting Started</TabsTrigger>
+              <TabsTrigger value="gpt5-features">GPT-5 Features</TabsTrigger>
               <TabsTrigger value="alpha-earth">AlphaEarth</TabsTrigger>
               <TabsTrigger value="soil-analysis">Soil Analysis</TabsTrigger>
               <TabsTrigger value="environmental">Environmental</TabsTrigger>
               <TabsTrigger value="sensor-integration">Sensor Setup</TabsTrigger>
               <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
-              <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
               <TabsTrigger value="troubleshooting">Help</TabsTrigger>
             </TabsList>
 
@@ -223,6 +224,189 @@ const UserGuide = () => {
                       </div>
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="gpt5-features" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Zap className="h-6 w-6" />
+                    GPT-5 Enhanced Features Guide
+                    <Badge variant="outline" className="ml-2">NEW</Badge>
+                  </CardTitle>
+                  <CardDescription>
+                    Master the three powerful GPT-5 enhanced features for advanced agricultural intelligence
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="enhanced-chat">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <Zap className="h-5 w-5" />
+                          Enhanced Agricultural Q&A Chat
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg border">
+                          <h4 className="font-semibold mb-2">What's Enhanced?</h4>
+                          <p className="text-sm text-muted-foreground">
+                            The Enhanced Agricultural Q&A Chat uses GPT-5's advanced reasoning to provide sophisticated agricultural insights. 
+                            Ask complex questions about soil health, crop management, pest control, and sustainability practices.
+                          </p>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-semibold mb-2">How to Use:</h4>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• Navigate to Dashboard → AI Assistant tab</li>
+                              <li>• Toggle "GPT-5 Enhanced Reasoning" for advanced analysis</li>
+                              <li>• Ask complex, multi-part agricultural questions</li>
+                              <li>• Request specific recommendations for your location</li>
+                              <li>• Compare different farming strategies</li>
+                            </ul>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold mb-2">Example Questions:</h4>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• "How should I adjust fertilizer based on my soil pH and upcoming weather?"</li>
+                              <li>• "What crop rotation would optimize soil health for my county?"</li>
+                              <li>• "Analyze the pest management options for corn in my region"</li>
+                              <li>• "How do my soil conditions affect carbon sequestration potential?"</li>
+                            </ul>
+                          </div>
+                        </div>
+                        <div className="bg-muted/50 p-4 rounded-lg">
+                          <h4 className="font-medium mb-2">Pro Tips:</h4>
+                          <ul className="text-sm text-muted-foreground space-y-1">
+                            <li>• Provide context about your specific location, crops, and goals</li>
+                            <li>• Ask follow-up questions to dive deeper into recommendations</li>
+                            <li>• Use the enhanced reasoning for complex decision-making scenarios</li>
+                            <li>• The system automatically falls back to GPT-4o if GPT-5 is unavailable</li>
+                          </ul>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="smart-summaries">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-5 w-5" />
+                          Smart Report Summaries
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg border">
+                          <h4 className="font-semibold mb-2">Auto-Generated Intelligence</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Smart Report Summaries automatically generate executive summaries for both soil analysis and water quality reports, 
+                            highlighting key findings, critical issues, and actionable recommendations.
+                          </p>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-semibold mb-2">For Soil Reports:</h4>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• Overall soil health assessment</li>
+                              <li>• Key nutrient deficiencies or excesses</li>
+                              <li>• Priority improvement recommendations</li>
+                              <li>• Economic impact analysis</li>
+                              <li>• ROI considerations for amendments</li>
+                            </ul>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold mb-2">For Water Reports:</h4>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• Overall water safety assessment</li>
+                              <li>• Contaminant violations and concerns</li>
+                              <li>• Health and safety recommendations</li>
+                              <li>• Property and lending implications</li>
+                              <li>• Filter and treatment suggestions</li>
+                            </ul>
+                          </div>
+                        </div>
+                        <div className="bg-muted/50 p-4 rounded-lg">
+                          <h4 className="font-medium mb-2">When Summaries Appear:</h4>
+                          <ul className="text-sm text-muted-foreground space-y-1">
+                            <li>• Automatically generated when viewing soil analysis results</li>
+                            <li>• Appear at the top of water quality reports</li>
+                            <li>• Can be refreshed to generate new perspectives</li>
+                            <li>• Include model information (GPT-5 or GPT-4o fallback)</li>
+                          </ul>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="seasonal-planning">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-5 w-5" />
+                          Seasonal Planning Assistant
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="bg-gradient-to-r from-orange-50 to-green-50 p-4 rounded-lg border">
+                          <h4 className="font-semibold mb-2">Intelligent Crop Planning</h4>
+                          <p className="text-sm text-muted-foreground">
+                            The Seasonal Planning Assistant uses GPT-5 to create comprehensive seasonal strategies including 
+                            crop rotation plans, planting schedules, and sustainability practices tailored to your location and conditions.
+                          </p>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-semibold mb-2">Planning Types:</h4>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• <strong>Crop Rotation Planning:</strong> 3-4 year sequences</li>
+                              <li>• <strong>Seasonal Calendar:</strong> Month-by-month timing</li>
+                              <li>• <strong>Soil Improvement:</strong> Long-term fertility</li>
+                              <li>• <strong>Market Optimization:</strong> Economic benefits</li>
+                              <li>• <strong>Sustainable Practices:</strong> Environmental focus</li>
+                            </ul>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold mb-2">How to Access:</h4>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• Visit the Dashboard and click the Seasonal Planning card</li>
+                              <li>• Or navigate directly to /seasonal-planning</li>
+                              <li>• Select your county for location-specific recommendations</li>
+                              <li>• Choose planning focus and timeframe (1, 3, or 5 years)</li>
+                              <li>• Optionally select preferred crops</li>
+                            </ul>
+                          </div>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-4">
+                          <div className="bg-blue-50 p-3 rounded border border-blue-200">
+                            <h5 className="font-medium text-blue-800 mb-1">Weather Integration</h5>
+                            <p className="text-xs text-blue-700">
+                              Considers USDA zones, frost dates, growing season length, and seasonal patterns
+                            </p>
+                          </div>
+                          <div className="bg-green-50 p-3 rounded border border-green-200">
+                            <h5 className="font-medium text-green-800 mb-1">Soil Context</h5>
+                            <p className="text-xs text-green-700">
+                              Integrates your soil analysis data for personalized recommendations
+                            </p>
+                          </div>
+                          <div className="bg-purple-50 p-3 rounded border border-purple-200">
+                            <h5 className="font-medium text-purple-800 mb-1">GPT-5 Analysis</h5>
+                            <p className="text-xs text-purple-700">
+                              Advanced reasoning for complex multi-year planning strategies
+                            </p>
+                          </div>
+                        </div>
+                        <div className="bg-muted/50 p-4 rounded-lg">
+                          <h4 className="font-medium mb-2">Sample Planning Output:</h4>
+                          <p className="text-sm text-muted-foreground">
+                            The assistant provides detailed markdown-formatted plans including crop rotation sequences, 
+                            monthly planting/harvesting schedules, soil management practices, weather considerations, 
+                            economic optimization strategies, and sustainability recommendations.
+                          </p>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
                 </CardContent>
               </Card>
             </TabsContent>
