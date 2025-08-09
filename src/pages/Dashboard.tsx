@@ -24,7 +24,8 @@ import {
   Plus,
   RefreshCw,
   Satellite,
-  Eye
+  Eye,
+  Brain
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -115,8 +116,9 @@ const Dashboard = () => {
 
         {/* Dashboard Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Farm Overview</TabsTrigger>
+            <TabsTrigger value="ai-assistant">AI Assistant</TabsTrigger>
             <TabsTrigger value="carbon-credits">Carbon Credits</TabsTrigger>
           </TabsList>
 
@@ -493,6 +495,30 @@ const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
+          </TabsContent>
+
+          <TabsContent value="ai-assistant">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Brain className="h-5 w-5 text-purple-600" />
+                    GPT-5 Enhanced Agricultural Intelligence
+                  </CardTitle>
+                  <p className="text-muted-foreground">
+                    Get sophisticated agricultural insights powered by GPT-5's advanced reasoning capabilities. 
+                    Ask complex questions about soil health, crop management, sustainability planning, and more.
+                  </p>
+                </CardHeader>
+              </Card>
+              
+              <AgriculturalChat 
+                context={{
+                  county_fips: "18097", // Example FIPS for demonstration
+                  user_location: "Indiana, USA"
+                }}
+              />
+            </div>
           </TabsContent>
 
           <TabsContent value="carbon-credits">

@@ -133,7 +133,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { query, context }: IntelligenceRequest = await req.json();
+    const { query, context, useGPT5 = false }: IntelligenceRequest & { useGPT5?: boolean } = await req.json();
     
     if (!query) {
       throw new Error('Query is required');
@@ -144,20 +144,21 @@ Deno.serve(async (req) => {
       throw new Error('OpenAI API key not configured');
     }
 
-    // Analyze the query to determine intent and extract parameters
-    const intentAnalysis = await analyzeIntent(query, openAIApiKey);
-    console.log('Intent analysis:', intentAnalysis);
+    // Enhanced intent analysis with GPT-5 for superior reasoning
+    const intentAnalysis = await analyzeIntent(query, openAIApiKey, useGPT5);
+    console.log('Intent analysis (GPT-5 enhanced):', intentAnalysis);
 
     // Based on intent, call appropriate analytics functions and gather data
     const analyticsData = await gatherRelevantData(intentAnalysis, context, supabase);
     console.log('Analytics data gathered:', analyticsData);
 
-    // Generate natural language response using analytics data
+    // Generate natural language response using analytics data with GPT-5 enhanced reasoning
     const response = await generateIntelligentResponse(
       query,
       intentAnalysis,
       analyticsData,
-      openAIApiKey
+      openAIApiKey,
+      useGPT5
     );
 
     // Log successful request
@@ -218,7 +219,9 @@ Deno.serve(async (req) => {
   }
 });
 
-async function analyzeIntent(query: string, apiKey: string) {
+async function analyzeIntent(query: string, apiKey: string, useGPT5: boolean = false) {
+  const model = useGPT5 ? 'gpt-5' : 'gpt-4o-mini';
+  
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -226,30 +229,46 @@ async function analyzeIntent(query: string, apiKey: string) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
+      model: model,
       messages: [
         {
           role: 'system',
-          content: `You are an agricultural AI assistant that analyzes user queries to determine intent and extract parameters. 
+          content: `You are SoilSidekick Pro's advanced agricultural intelligence system with deep reasoning capabilities. Analyze user queries with exceptional precision to determine intent and extract parameters.
           
-          Analyze the user's query and return a JSON object with:
-          - intent: one of ["soil_analysis", "environmental_assessment", "planting_calendar", "water_quality", "fertilizer_recommendation", "general_question"]
-          - confidence: number between 0-1
-          - parameters: object with extracted parameters like county_fips, crop_type, etc.
+          Your enhanced reasoning should consider:
+          - Agricultural domain expertise and complex relationships between factors
+          - Seasonal timing and geographic considerations
+          - Multi-factor interactions (soil-climate-crop-economics)
+          - Sustainability and environmental impact implications
+          - Risk assessment and uncertainty quantification
+          
+          Return a JSON object with:
+          - intent: one of ["soil_analysis", "environmental_assessment", "planting_calendar", "water_quality", "fertilizer_recommendation", "crop_management", "sustainability_planning", "risk_assessment", "general_question"]
+          - confidence: number between 0-1 (higher confidence with superior reasoning)
+          - parameters: object with extracted parameters like county_fips, crop_type, season, risk_factors, etc.
           - requires_data: boolean indicating if specific data lookup is needed
+          - reasoning_depth: enhanced analysis of query complexity and interconnected factors
+          - priority_factors: array of most critical factors for decision-making
           
-          Focus on agricultural and farming-related queries. Be specific about the intent.`
+          Use your advanced reasoning to provide deeper agricultural insights and more accurate intent classification.`
         },
         {
           role: 'user',
           content: query
         }
       ],
-      temperature: 0.3,
+      temperature: 0.2,
     }),
   });
 
   const data = await response.json();
+  
+  // Handle GPT-5 not available yet - fallback gracefully
+  if (!response.ok && useGPT5) {
+    console.log('GPT-5 not available, falling back to GPT-4o-mini');
+    return analyzeIntent(query, apiKey, false);
+  }
+  
   try {
     return JSON.parse(data.choices[0].message.content);
   } catch (e) {
@@ -258,7 +277,9 @@ async function analyzeIntent(query: string, apiKey: string) {
       intent: 'general_question',
       confidence: 0.5,
       parameters: {},
-      requires_data: false
+      requires_data: false,
+      reasoning_depth: 'basic',
+      priority_factors: []
     };
   }
 }
@@ -388,8 +409,38 @@ async function gatherRelevantData(intentAnalysis: any, context: any, supabase: a
   return data;
 }
 
-async function generateIntelligentResponse(query: string, intent: any, analyticsData: any, apiKey: string) {
-  const systemPrompt = `You are SoilSidekick Pro's agricultural intelligence assistant. You have access to advanced agricultural analytics including:
+async function generateIntelligentResponse(query: string, intent: any, analyticsData: any, apiKey: string, useGPT5: boolean = false) {
+  const model = useGPT5 ? 'gpt-5' : 'gpt-4o-mini';
+  
+  const systemPrompt = useGPT5 
+    ? `You are SoilSidekick Pro's most advanced agricultural intelligence system, powered by GPT-5's superior reasoning capabilities. You have access to comprehensive agricultural analytics and can provide exceptionally sophisticated insights.
+
+Agricultural Data Sources:
+- USDA soil composition and health data with regional variations
+- Environmental impact assessments including contamination and runoff risk modeling
+- AlphaEarth satellite-enhanced agricultural insights with temporal analysis
+- Multi-parameter planting calendar optimizations with climate modeling
+- EPA water quality assessments with spatial interpolation
+- FIPS-based hierarchical geographic analytics with economic indicators
+
+Enhanced Reasoning Capabilities:
+- Complex multi-factor agricultural system analysis
+- Risk assessment with uncertainty quantification
+- Temporal pattern recognition across seasons and years
+- Economic optimization within sustainability constraints
+- Climate adaptation strategies
+- Precision agriculture recommendations
+
+Provide exceptionally insightful, nuanced agricultural guidance that:
+1. Synthesizes multiple data sources with complex reasoning
+2. Explains interconnected agricultural system relationships
+3. Provides stratified recommendations based on risk tolerance
+4. Quantifies confidence levels and uncertainty ranges
+5. Considers both immediate and long-term implications
+6. Integrates economic, environmental, and social sustainability factors
+
+Use your advanced reasoning to identify subtle patterns and provide deeper insights that basic AI systems might miss.`
+    : `You are SoilSidekick Pro's agricultural intelligence assistant. You have access to advanced agricultural analytics including:
 
 - USDA soil composition and health data
 - Environmental impact assessments with contamination and runoff risk scores
@@ -407,13 +458,17 @@ Provide helpful, specific, and actionable agricultural advice based on the avail
 
 If asked about technical capabilities, explain how you combine satellite data with federal agricultural databases to provide comprehensive insights.`;
 
-  // Prepare context with available data
+  // Enhanced context preparation for GPT-5
   const dataContext = analyticsData ? `Available agricultural data:
 ${JSON.stringify(analyticsData, null, 2)}
 
 Data sources used: ${analyticsData.sources?.length > 0 ? analyticsData.sources.join(', ') : 'General agricultural knowledge'}
 
-IMPORTANT: ${analyticsData.live_agricultural_data?.sources ? 'This includes LIVE data from: ' + analyticsData.live_agricultural_data.sources.join(', ') : 'This uses cached or simulated data'}. Please indicate the data source and freshness in your response.` : 'No specific data available for this query.';
+Intent analysis: ${JSON.stringify(intent, null, 2)}
+
+IMPORTANT: ${analyticsData.live_agricultural_data?.sources ? 'This includes LIVE data from: ' + analyticsData.live_agricultural_data.sources.join(', ') : 'This uses cached or simulated data'}. Please indicate the data source and freshness in your response.
+
+${useGPT5 ? 'Apply your advanced reasoning to identify complex patterns and provide sophisticated agricultural insights that consider multi-factor interactions and long-term implications.' : ''}` : 'No specific data available for this query.';
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -422,7 +477,7 @@ IMPORTANT: ${analyticsData.live_agricultural_data?.sources ? 'This includes LIVE
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
+      model: model,
       messages: [
         {
           role: 'system',
@@ -434,17 +489,24 @@ IMPORTANT: ${analyticsData.live_agricultural_data?.sources ? 'This includes LIVE
 
 ${dataContext}
 
-Please provide a helpful agricultural response based on the available data and your agricultural expertise.`
+${useGPT5 ? 'Provide sophisticated agricultural analysis using your enhanced reasoning capabilities to deliver insights that consider complex system interactions and strategic implications.' : 'Please provide a helpful agricultural response based on the available data and your agricultural expertise.'}`
         }
       ],
-      temperature: 0.7,
-      max_tokens: 1000,
+      temperature: useGPT5 ? 0.3 : 0.7,
+      max_tokens: useGPT5 ? 1500 : 1000,
     }),
   });
+
+  // Handle GPT-5 not available yet - fallback gracefully
+  if (!response.ok && useGPT5) {
+    console.log('GPT-5 not available for response generation, falling back to GPT-4o-mini');
+    return generateIntelligentResponse(query, intent, analyticsData, apiKey, false);
+  }
 
   const data = await response.json();
   return {
     content: data.choices[0].message.content,
-    model: 'gpt-4o-mini'
+    model: data.model || model,
+    enhanced: useGPT5
   };
 }

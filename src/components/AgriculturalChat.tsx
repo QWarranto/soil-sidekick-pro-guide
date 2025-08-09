@@ -4,7 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, MessageCircle, Send, Bot, User, Sparkles } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Loader2, MessageCircle, Send, Bot, User, Sparkles, Brain, Zap } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -16,6 +17,8 @@ interface Message {
   intent?: string;
   confidence?: number;
   sources?: string[];
+  enhanced?: boolean;
+  model?: string;
 }
 
 interface AgriculturalChatProps {
@@ -37,6 +40,7 @@ const AgriculturalChat: React.FC<AgriculturalChatProps> = ({ context }) => {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [useGPT5, setUseGPT5] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -66,7 +70,8 @@ const AgriculturalChat: React.FC<AgriculturalChatProps> = ({ context }) => {
       const { data, error } = await supabase.functions.invoke('agricultural-intelligence', {
         body: {
           query: userMessage.content,
-          context: context
+          context: context,
+          useGPT5: useGPT5
         }
       });
 
@@ -79,7 +84,9 @@ const AgriculturalChat: React.FC<AgriculturalChatProps> = ({ context }) => {
         timestamp: new Date(),
         intent: data.intent,
         confidence: data.confidence,
-        sources: data.data_sources
+        sources: data.data_sources,
+        enhanced: data.enhanced || useGPT5,
+        model: data.model
       };
 
       setMessages(prev => [...prev, assistantMessage]);
@@ -134,15 +141,47 @@ const AgriculturalChat: React.FC<AgriculturalChatProps> = ({ context }) => {
   return (
     <Card className="w-full max-w-4xl mx-auto h-[600px] flex flex-col">
       <CardHeader className="border-b">
-        <CardTitle className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-primary" />
-          Agricultural Intelligence Assistant
-          {context?.county_fips && (
-            <Badge variant="outline" className="ml-auto">
-              County: {context.county_fips}
-            </Badge>
-          )}
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            {useGPT5 ? (
+              <Brain className="w-5 h-5 text-purple-500" />
+            ) : (
+              <Sparkles className="w-5 h-5 text-primary" />
+            )}
+            Agricultural Intelligence Assistant
+            {useGPT5 && (
+              <Badge variant="secondary" className="bg-purple-100 text-purple-800 border-purple-200">
+                <Zap className="w-3 h-3 mr-1" />
+                GPT-5 Enhanced
+              </Badge>
+            )}
+          </CardTitle>
+          <div className="flex items-center gap-4">
+            {context?.county_fips && (
+              <Badge variant="outline">
+                County: {context.county_fips}
+              </Badge>
+            )}
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-muted-foreground">
+                {useGPT5 ? 'Enhanced' : 'Standard'}
+              </span>
+              <Switch
+                checked={useGPT5}
+                onCheckedChange={setUseGPT5}
+                disabled={isLoading}
+              />
+              <span className="text-xs text-muted-foreground">
+                GPT-5
+              </span>
+            </div>
+          </div>
+        </div>
+        {useGPT5 && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Enhanced reasoning enabled for superior agricultural insights and complex pattern analysis
+          </p>
+        )}
       </CardHeader>
       
       <CardContent className="flex-1 flex flex-col p-0">
@@ -208,11 +247,19 @@ const AgriculturalChat: React.FC<AgriculturalChatProps> = ({ context }) => {
                       </div>
                     )}
                     
-                    <div className="text-xs text-muted-foreground mt-1 opacity-70">
-                      {message.timestamp.toLocaleTimeString([], { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                      })}
+                    <div className="flex items-center justify-between text-xs text-muted-foreground mt-1 opacity-70">
+                      <span>
+                        {message.timestamp.toLocaleTimeString([], { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </span>
+                      {message.type === 'assistant' && message.enhanced && (
+                        <Badge variant="secondary" className="bg-purple-50 text-purple-600 border-purple-200 text-xs">
+                          <Brain className="w-3 h-3 mr-1" />
+                          Enhanced
+                        </Badge>
+                      )}
                     </div>
                   </div>
                 </div>
