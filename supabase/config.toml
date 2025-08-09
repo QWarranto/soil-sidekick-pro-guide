@@ -77,3 +77,6 @@ verify_jwt = true
 
 [functions.smart-report-summary]
 verify_jwt = true
+
+[functions.seasonal-planning-assistant]
+verify_jwt = true

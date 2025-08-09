@@ -9,6 +9,7 @@ import { AddFieldDialog } from "@/components/AddFieldDialog";
 import AgriculturalChat from "@/components/AgriculturalChat";
 import { LocationIndicator } from "@/components/LocationIndicator";
 import { CarbonCreditDashboard } from "@/components/CarbonCreditDashboard";
+import { SeasonalPlanningCard } from "@/components/SeasonalPlanningCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   MapPin, 
@@ -346,6 +347,34 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Seasonal Planning Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <SeasonalPlanningCard />
+          </div>
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">Quick Planning Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button variant="outline" size="sm" className="w-full justify-start">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  View Planting Calendar
+                </Button>
+                <Button variant="outline" size="sm" className="w-full justify-start">
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Crop Rotation Planning
+                </Button>
+                <Button variant="outline" size="sm" className="w-full justify-start">
+                  <Leaf className="h-4 w-4 mr-2" />
+                  Soil Improvement Plan
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Satellite-Enhanced Environmental Monitoring */}
