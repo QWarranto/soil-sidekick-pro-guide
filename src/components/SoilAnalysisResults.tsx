@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Download, FileText, TrendingUp, Droplet } from 'lucide-react';
+import { SmartReportSummary } from './SmartReportSummary';
 
 interface SoilData {
   id: string;
@@ -52,6 +53,13 @@ export const SoilAnalysisResults: React.FC<SoilAnalysisResultsProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* AI Executive Summary */}
+      <SmartReportSummary 
+        reportType="soil" 
+        reportData={soilData} 
+        autoGenerate={true} 
+      />
+
       {/* Header */}
       <Card>
         <CardHeader>

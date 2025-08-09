@@ -74,3 +74,6 @@ verify_jwt = false
 
 [functions.carbon-credit-calculator]
 verify_jwt = true
+
+[functions.smart-report-summary]
+verify_jwt = true

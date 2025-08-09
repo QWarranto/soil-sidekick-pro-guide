@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Droplets, LogOut, ArrowLeft } from 'lucide-react';
 import { CountyLookup } from '@/components/CountyLookup';
 import { WaterQualityPDFExport } from '@/components/WaterQualityPDFExport';
+import { SmartReportSummary } from '@/components/SmartReportSummary';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -179,6 +180,13 @@ const WaterQuality = () => {
 
           {waterData && !isLoading && selectedCounty && (
             <>
+              {/* AI Executive Summary */}
+              <SmartReportSummary 
+                reportType="water" 
+                reportData={waterData} 
+                autoGenerate={true} 
+              />
+
               {/* Water Quality Grade */}
               <Card>
                 <CardHeader className="pb-4">
