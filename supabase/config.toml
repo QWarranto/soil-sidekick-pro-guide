@@ -1,5 +1,8 @@
 project_id = "wzgnxkoeqzvueypwzvyn"
 
+[functions.gpt5-chat]
+verify_jwt = true
+
 [functions.alpha-earth-environmental-enhancement]
 verify_jwt = true
 
