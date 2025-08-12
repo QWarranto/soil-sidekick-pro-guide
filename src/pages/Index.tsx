@@ -42,7 +42,10 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Leaf className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold text-primary">SoilSidekick Pro</span>
+            <div className="flex flex-col">
+              <span className="text-xl font-bold text-primary">SoilSidekick Pro</span>
+              <span className="text-xs text-muted-foreground">Patent Pending, Application Number 63/861,944</span>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
