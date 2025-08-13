@@ -20,6 +20,7 @@ import UserGuide from "./pages/UserGuide";
 import AdaptIntegration from "./pages/AdaptIntegration";
 import BusinessCase from "./pages/BusinessCase";
 import SeasonalPlanning from "./pages/SeasonalPlanning";
+import TourGuide from "./pages/TourGuide";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,7 @@ const App = () => (
         <Route path="/adapt-integration" element={<AdaptIntegration />} />
         <Route path="/business-case" element={<BusinessCase />} />
         <Route path="/seasonal-planning" element={<SeasonalPlanning />} />
+        <Route path="/tour-guide" element={<TourGuide />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
