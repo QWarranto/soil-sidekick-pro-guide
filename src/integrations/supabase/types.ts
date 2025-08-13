@@ -228,46 +228,126 @@ export type Database = {
           },
         ]
       }
+      api_key_access_log: {
+        Row: {
+          access_time: string
+          api_key_id: string | null
+          endpoint: string | null
+          failure_reason: string | null
+          id: string
+          ip_address: unknown | null
+          rate_limited: boolean | null
+          request_size_bytes: number | null
+          response_time_ms: number | null
+          success: boolean
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          access_time?: string
+          api_key_id?: string | null
+          endpoint?: string | null
+          failure_reason?: string | null
+          id?: string
+          ip_address?: unknown | null
+          rate_limited?: boolean | null
+          request_size_bytes?: number | null
+          response_time_ms?: number | null
+          success: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          access_time?: string
+          api_key_id?: string | null
+          endpoint?: string | null
+          failure_reason?: string | null
+          id?: string
+          ip_address?: unknown | null
+          rate_limited?: boolean | null
+          request_size_bytes?: number | null
+          response_time_ms?: number | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_key_access_log_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       api_keys: {
         Row: {
+          access_count: number | null
+          allowed_ips: string[] | null
           created_at: string | null
           expires_at: string | null
+          failed_attempts: number | null
           id: string
           is_active: boolean | null
+          is_locked: boolean | null
           key_hash: string
           key_name: string
+          last_access_ip: unknown | null
+          last_failed_attempt: string | null
           last_used_at: string | null
+          lock_reason: string | null
+          max_uses: number | null
           permissions: Json | null
           rate_limit: number | null
           rate_window_minutes: number | null
+          rotation_required: boolean | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          access_count?: number | null
+          allowed_ips?: string[] | null
           created_at?: string | null
           expires_at?: string | null
+          failed_attempts?: number | null
           id?: string
           is_active?: boolean | null
+          is_locked?: boolean | null
           key_hash: string
           key_name: string
+          last_access_ip?: unknown | null
+          last_failed_attempt?: string | null
           last_used_at?: string | null
+          lock_reason?: string | null
+          max_uses?: number | null
           permissions?: Json | null
           rate_limit?: number | null
           rate_window_minutes?: number | null
+          rotation_required?: boolean | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          access_count?: number | null
+          allowed_ips?: string[] | null
           created_at?: string | null
           expires_at?: string | null
+          failed_attempts?: number | null
           id?: string
           is_active?: boolean | null
+          is_locked?: boolean | null
           key_hash?: string
           key_name?: string
+          last_access_ip?: unknown | null
+          last_failed_attempt?: string | null
           last_used_at?: string | null
+          lock_reason?: string | null
+          max_uses?: number | null
           permissions?: Json | null
           rate_limit?: number | null
           rate_window_minutes?: number | null
+          rotation_required?: boolean | null
           updated_at?: string | null
           user_id?: string
         }
@@ -918,8 +998,12 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      rotate_api_key: {
+        Args: { old_key_id: string; new_key_hash: string }
+        Returns: string
+      }
       validate_api_key: {
-        Args: { key_hash: string }
+        Args: { key_hash: string } | { key_hash: string; client_ip?: unknown }
         Returns: {
           user_id: string
           permissions: Json
