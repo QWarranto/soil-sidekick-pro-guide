@@ -562,6 +562,60 @@ export type Database = {
         }
         Relationships: []
       }
+      comprehensive_audit_log: {
+        Row: {
+          changed_fields: string[] | null
+          compliance_tags: string[] | null
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          new_values: Json | null
+          old_values: Json | null
+          operation: string
+          record_id: string | null
+          retention_period: unknown | null
+          risk_level: string | null
+          session_id: string | null
+          table_name: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          changed_fields?: string[] | null
+          compliance_tags?: string[] | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          operation: string
+          record_id?: string | null
+          retention_period?: unknown | null
+          risk_level?: string | null
+          session_id?: string | null
+          table_name: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          changed_fields?: string[] | null
+          compliance_tags?: string[] | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          operation?: string
+          record_id?: string | null
+          retention_period?: unknown | null
+          risk_level?: string | null
+          session_id?: string | null
+          table_name?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       counties: {
         Row: {
           county_name: string
@@ -625,6 +679,45 @@ export type Database = {
           session_token?: string
           state_transitions?: Json | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      data_classification: {
+        Row: {
+          access_logging_required: boolean | null
+          approval_required_for_access: boolean | null
+          classification_level: string
+          compliance_requirements: string[] | null
+          created_at: string
+          data_retention_days: number | null
+          encryption_required: boolean | null
+          id: string
+          table_name: string
+          updated_at: string
+        }
+        Insert: {
+          access_logging_required?: boolean | null
+          approval_required_for_access?: boolean | null
+          classification_level: string
+          compliance_requirements?: string[] | null
+          created_at?: string
+          data_retention_days?: number | null
+          encryption_required?: boolean | null
+          id?: string
+          table_name: string
+          updated_at?: string
+        }
+        Update: {
+          access_logging_required?: boolean | null
+          approval_required_for_access?: boolean | null
+          classification_level?: string
+          compliance_requirements?: string[] | null
+          created_at?: string
+          data_retention_days?: number | null
+          encryption_required?: boolean | null
+          id?: string
+          table_name?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -957,6 +1050,51 @@ export type Database = {
         }
         Relationships: []
       }
+      security_monitoring: {
+        Row: {
+          auto_blocked: boolean | null
+          created_at: string
+          detection_rules: Json | null
+          id: string
+          investigation_status: string | null
+          mitigation_actions: Json | null
+          monitoring_type: string
+          target_ip: unknown | null
+          target_resource: string | null
+          target_user_id: string | null
+          threat_level: string
+          updated_at: string
+        }
+        Insert: {
+          auto_blocked?: boolean | null
+          created_at?: string
+          detection_rules?: Json | null
+          id?: string
+          investigation_status?: string | null
+          mitigation_actions?: Json | null
+          monitoring_type: string
+          target_ip?: unknown | null
+          target_resource?: string | null
+          target_user_id?: string | null
+          threat_level: string
+          updated_at?: string
+        }
+        Update: {
+          auto_blocked?: boolean | null
+          created_at?: string
+          detection_rules?: Json | null
+          id?: string
+          investigation_status?: string | null
+          mitigation_actions?: Json | null
+          monitoring_type?: string
+          target_ip?: unknown | null
+          target_resource?: string | null
+          target_user_id?: string | null
+          threat_level?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       soil_analyses: {
         Row: {
           analysis_data: Json | null
@@ -1140,6 +1278,14 @@ export type Database = {
       unlock_account: {
         Args: { target_user_id: string }
         Returns: boolean
+      }
+      validate_and_sanitize_input: {
+        Args: {
+          input_value: string
+          validation_type?: string
+          max_length?: number
+        }
+        Returns: string
       }
       validate_api_key: {
         Args: { key_hash: string } | { key_hash: string; client_ip?: unknown }
