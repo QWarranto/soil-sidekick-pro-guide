@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_security: {
+        Row: {
+          account_locked: boolean | null
+          backup_codes_generated: boolean | null
+          created_at: string
+          email: string
+          failed_login_attempts: number | null
+          id: string
+          last_failed_login: string | null
+          last_suspicious_activity: string | null
+          lock_reason: string | null
+          locked_until: string | null
+          password_changed_at: string | null
+          password_strength_score: number | null
+          recovery_email: string | null
+          requires_password_change: boolean | null
+          security_questions: Json | null
+          suspicious_activity_count: number | null
+          trusted_devices: Json | null
+          two_factor_enabled: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_locked?: boolean | null
+          backup_codes_generated?: boolean | null
+          created_at?: string
+          email: string
+          failed_login_attempts?: number | null
+          id?: string
+          last_failed_login?: string | null
+          last_suspicious_activity?: string | null
+          lock_reason?: string | null
+          locked_until?: string | null
+          password_changed_at?: string | null
+          password_strength_score?: number | null
+          recovery_email?: string | null
+          requires_password_change?: boolean | null
+          security_questions?: Json | null
+          suspicious_activity_count?: number | null
+          trusted_devices?: Json | null
+          two_factor_enabled?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_locked?: boolean | null
+          backup_codes_generated?: boolean | null
+          created_at?: string
+          email?: string
+          failed_login_attempts?: number | null
+          id?: string
+          last_failed_login?: string | null
+          last_suspicious_activity?: string | null
+          lock_reason?: string | null
+          locked_until?: string | null
+          password_changed_at?: string | null
+          password_strength_score?: number | null
+          recovery_email?: string | null
+          requires_password_change?: boolean | null
+          security_questions?: Json | null
+          suspicious_activity_count?: number | null
+          trusted_devices?: Json | null
+          two_factor_enabled?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       adapt_api_usage: {
         Row: {
           created_at: string
@@ -350,6 +419,54 @@ export type Database = {
           rotation_required?: boolean | null
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      auth_security_log: {
+        Row: {
+          created_at: string
+          device_fingerprint: string | null
+          email: string | null
+          event_type: string
+          failure_reason: string | null
+          id: string
+          ip_address: unknown | null
+          location_data: Json | null
+          metadata: Json | null
+          risk_score: number | null
+          success: boolean
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          device_fingerprint?: string | null
+          email?: string | null
+          event_type: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: unknown | null
+          location_data?: Json | null
+          metadata?: Json | null
+          risk_score?: number | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          device_fingerprint?: string | null
+          email?: string | null
+          event_type?: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: unknown | null
+          location_data?: Json | null
+          metadata?: Json | null
+          risk_score?: number | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -986,9 +1103,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_password_strength: {
+        Args: { password_text: string }
+        Returns: number
+      }
       cleanup_rate_limit_tracking: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      handle_login_attempt: {
+        Args: {
+          user_email: string
+          attempt_success: boolean
+          client_ip?: unknown
+          user_agent_string?: string
+          failure_reason_text?: string
+        }
+        Returns: Json
+      }
+      is_account_locked: {
+        Args: { user_email: string }
+        Returns: boolean
       }
       is_admin: {
         Args: { _user_id?: string }
@@ -1001,6 +1136,10 @@ export type Database = {
       rotate_api_key: {
         Args: { old_key_id: string; new_key_hash: string }
         Returns: string
+      }
+      unlock_account: {
+        Args: { target_user_id: string }
+        Returns: boolean
       }
       validate_api_key: {
         Args: { key_hash: string } | { key_hash: string; client_ip?: unknown }
