@@ -1253,69 +1253,7 @@ export type Database = {
       }
     }
     Views: {
-      secure_account_security_view: {
-        Row: {
-          account_locked: boolean | null
-          backup_codes_generated: boolean | null
-          created_at: string | null
-          email_encryption_version: number | null
-          failed_login_attempts: number | null
-          id: string | null
-          last_suspicious_activity: string | null
-          lock_reason: string | null
-          locked_until: string | null
-          masked_email: string | null
-          masked_recovery_email: string | null
-          password_changed_at: string | null
-          password_strength_score: number | null
-          requires_password_change: boolean | null
-          suspicious_activity_count: number | null
-          two_factor_enabled: boolean | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          account_locked?: boolean | null
-          backup_codes_generated?: boolean | null
-          created_at?: string | null
-          email_encryption_version?: number | null
-          failed_login_attempts?: number | null
-          id?: string | null
-          last_suspicious_activity?: string | null
-          lock_reason?: string | null
-          locked_until?: string | null
-          masked_email?: never
-          masked_recovery_email?: never
-          password_changed_at?: string | null
-          password_strength_score?: number | null
-          requires_password_change?: boolean | null
-          suspicious_activity_count?: number | null
-          two_factor_enabled?: boolean | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          account_locked?: boolean | null
-          backup_codes_generated?: boolean | null
-          created_at?: string | null
-          email_encryption_version?: number | null
-          failed_login_attempts?: number | null
-          id?: string | null
-          last_suspicious_activity?: string | null
-          lock_reason?: string | null
-          locked_until?: string | null
-          masked_email?: never
-          masked_recovery_email?: never
-          password_changed_at?: string | null
-          password_strength_score?: number | null
-          requires_password_change?: boolean | null
-          suspicious_activity_count?: number | null
-          two_factor_enabled?: boolean | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       check_password_strength: {
@@ -1341,6 +1279,29 @@ export type Database = {
       get_decrypted_stripe_customer_id: {
         Args: { subscriber_id: string }
         Returns: string
+      }
+      get_secure_account_security_info: {
+        Args: { target_user_id?: string }
+        Returns: {
+          id: string
+          user_id: string
+          failed_login_attempts: number
+          account_locked: boolean
+          locked_until: string
+          password_changed_at: string
+          password_strength_score: number
+          requires_password_change: boolean
+          two_factor_enabled: boolean
+          backup_codes_generated: boolean
+          suspicious_activity_count: number
+          last_suspicious_activity: string
+          created_at: string
+          updated_at: string
+          email_encryption_version: number
+          lock_reason: string
+          masked_email: string
+          masked_recovery_email: string
+        }[]
       }
       get_user_email_for_security: {
         Args: { target_user_id: string }
