@@ -16,6 +16,7 @@ export default function Features() {
         { name: 'Basic environmental assessment', basic: true, starter: true, pro: true, api: true },
         { name: 'Interactive map with FIPS lookup', basic: true, starter: true, pro: true, api: true },
         { name: 'Standard planting recommendations', basic: true, starter: true, pro: true, api: true },
+        { name: 'Basic soil/water analysis data', basic: true, starter: true, pro: true, api: true },
         { name: 'AI soil analysis with basic recommendations', basic: false, starter: true, pro: true, api: true },
         { name: 'Multi-Parameter Planting Optimization™', basic: false, starter: true, pro: true, api: true },
         { name: 'Eco-Friendly Alternative Recommendations', basic: false, starter: true, pro: true, api: true },
