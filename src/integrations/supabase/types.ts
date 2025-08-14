@@ -19,7 +19,6 @@ export type Database = {
           account_locked: boolean | null
           backup_codes_generated: boolean | null
           created_at: string
-          email: string
           email_encryption_version: number | null
           encrypted_email: string | null
           encrypted_recovery_email: string | null
@@ -31,7 +30,6 @@ export type Database = {
           locked_until: string | null
           password_changed_at: string | null
           password_strength_score: number | null
-          recovery_email: string | null
           requires_password_change: boolean | null
           security_questions: Json | null
           suspicious_activity_count: number | null
@@ -44,7 +42,6 @@ export type Database = {
           account_locked?: boolean | null
           backup_codes_generated?: boolean | null
           created_at?: string
-          email: string
           email_encryption_version?: number | null
           encrypted_email?: string | null
           encrypted_recovery_email?: string | null
@@ -56,7 +53,6 @@ export type Database = {
           locked_until?: string | null
           password_changed_at?: string | null
           password_strength_score?: number | null
-          recovery_email?: string | null
           requires_password_change?: boolean | null
           security_questions?: Json | null
           suspicious_activity_count?: number | null
@@ -69,7 +65,6 @@ export type Database = {
           account_locked?: boolean | null
           backup_codes_generated?: boolean | null
           created_at?: string
-          email?: string
           email_encryption_version?: number | null
           encrypted_email?: string | null
           encrypted_recovery_email?: string | null
@@ -81,7 +76,6 @@ export type Database = {
           locked_until?: string | null
           password_changed_at?: string | null
           password_strength_score?: number | null
-          recovery_email?: string | null
           requires_password_change?: boolean | null
           security_questions?: Json | null
           suspicious_activity_count?: number | null
@@ -1353,6 +1347,10 @@ export type Database = {
         Returns: string
       }
       get_user_email_secure: {
+        Args: { target_user_id?: string }
+        Returns: string
+      }
+      get_user_email_secure_only: {
         Args: { target_user_id?: string }
         Returns: string
       }
