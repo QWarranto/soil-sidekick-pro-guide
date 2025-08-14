@@ -12,63 +12,69 @@ export default function Features() {
     {
       category: 'Core Agricultural Intelligence',
       items: [
-        { name: 'County soil snapshot', basic: true, pro: true, api: true },
-        { name: 'Basic environmental assessment', basic: true, pro: true, api: true },
-        { name: 'Interactive map with FIPS lookup', basic: true, pro: true, api: true },
-        { name: 'Standard planting recommendations', basic: true, pro: true, api: true },
-        { name: 'Patent-Protected agricultural intelligence', basic: false, pro: true, api: true },
-        { name: 'Environmental Impact Engine (Patent-Protected)', basic: false, pro: true, api: true },
-        { name: 'Multi-Parameter Planting Optimization™', basic: false, pro: true, api: true },
-        { name: 'Eco-Friendly Alternative Recommendations', basic: false, pro: true, api: true },
-        { name: 'Carbon Footprint & Sustainability Scoring', basic: false, pro: true, api: true },
+        { name: 'County soil snapshot', basic: true, starter: true, pro: true, api: true },
+        { name: 'Basic environmental assessment', basic: true, starter: true, pro: true, api: true },
+        { name: 'Interactive map with FIPS lookup', basic: true, starter: true, pro: true, api: true },
+        { name: 'Standard planting recommendations', basic: true, starter: true, pro: true, api: true },
+        { name: 'AI soil analysis with basic recommendations', basic: false, starter: true, pro: true, api: true },
+        { name: 'Multi-Parameter Planting Optimization™', basic: false, starter: true, pro: true, api: true },
+        { name: 'Eco-Friendly Alternative Recommendations', basic: false, starter: true, pro: true, api: true },
+        { name: 'Environmental Impact Engine (Patent-Protected)', basic: false, starter: false, pro: true, api: true },
+        { name: 'Carbon Footprint & Sustainability Scoring', basic: false, starter: false, pro: true, api: true },
       ]
     },
     {
       category: 'Advanced Analysis & Monitoring',
       items: [
-        { name: 'Satellite-enhanced environmental analysis', basic: false, pro: true, api: true },
-        { name: 'AlphaEarth integration with confidence scores', basic: false, pro: true, api: true },
-        { name: 'GPS field mapping & location capture', basic: false, pro: true, api: true },
-        { name: 'Advanced field management dashboard', basic: false, pro: true, api: true },
-        { name: 'Hierarchical Geographic Intelligence', basic: false, pro: true, api: true },
-        { name: 'Adaptive Usage Analytics & Insights', basic: false, pro: true, api: true },
-        { name: 'Precision Livestock Farming', basic: false, pro: false, api: true },
+        { name: 'Basic soil/water analysis data', basic: false, starter: true, pro: true, api: true },
+        { name: 'Advanced soil/water analysis data', basic: false, starter: false, pro: true, api: true },
+        { name: 'Visual crop analysis', basic: false, starter: false, pro: true, api: true },
+        { name: 'Satellite-enhanced environmental analysis', basic: false, starter: false, pro: true, api: true },
+        { name: 'AlphaEarth integration with confidence scores', basic: false, starter: false, pro: true, api: true },
+        { name: 'GPS field mapping & location capture', basic: false, starter: true, pro: true, api: true },
+        { name: 'Advanced field management dashboard', basic: false, starter: true, pro: true, api: true },
+        { name: 'Hierarchical Geographic Intelligence', basic: false, starter: false, pro: true, api: true },
+        { name: 'Adaptive Usage Analytics & Insights', basic: false, starter: false, pro: true, api: true },
+        { name: 'Precision Livestock Farming', basic: false, starter: false, pro: false, api: true },
       ]
     },
     {
       category: 'Data Export & Integration',
       items: [
-        { name: 'PDF & CSV exports (lender-ready)', basic: false, pro: true, api: true },
-        { name: 'ADAPT Standard 1.0 Integration', basic: false, pro: true, api: true },
-        { name: 'Bidirectional sync with John Deere', basic: false, pro: true, api: true },
-        { name: 'Case IH sync', basic: false, pro: true, api: true },
-        { name: 'AGCO sync', basic: false, pro: true, api: true },
-        { name: 'Field boundary import/export', basic: false, pro: true, api: true },
-        { name: 'Full ADAPT Standard 1.0 API Suite', basic: false, pro: false, api: true },
-        { name: 'Batch processing capabilities', basic: false, pro: false, api: true },
+        { name: 'Basic PDF reporting', basic: true, starter: false, pro: false, api: false },
+        { name: 'Enhanced PDF & CSV reports', basic: false, starter: true, pro: false, api: false },
+        { name: 'PDF & CSV exports (lender-ready)', basic: false, starter: false, pro: true, api: true },
+        { name: 'ADAPT Standard 1.0 Integration', basic: false, starter: false, pro: false, api: true },
+        { name: 'Bidirectional sync with John Deere', basic: false, starter: false, pro: false, api: true },
+        { name: 'Case IH sync', basic: false, starter: false, pro: false, api: true },
+        { name: 'AGCO sync', basic: false, starter: false, pro: false, api: true },
+        { name: 'Field boundary import/export', basic: false, starter: false, pro: false, api: true },
+        { name: 'Full ADAPT Standard 1.0 API Suite', basic: false, starter: false, pro: false, api: true },
+        { name: 'Batch processing capabilities', basic: false, starter: false, pro: false, api: true },
       ]
     },
     {
       category: 'API & Enterprise Features',
       items: [
-        { name: 'Patent-protected environmental assessment APIs', basic: false, pro: false, api: true },
-        { name: 'Hierarchical Cache-Optimized Data Broker', basic: false, pro: false, api: true },
-        { name: 'Geo-Consumption Analytics Integration', basic: false, pro: false, api: true },
-        { name: 'Revenue-sharing option for retailers', basic: false, pro: false, api: true },
-        { name: 'White-label ready with custom branding', basic: false, pro: false, api: true },
-        { name: 'Multi-Parameter Optimization Endpoints', basic: false, pro: false, api: true },
-        { name: 'Mobile-ready location services', basic: false, pro: false, api: true },
-        { name: 'Real-time bidirectional sync', basic: false, pro: false, api: true },
+        { name: 'Patent-protected environmental assessment APIs', basic: false, starter: false, pro: false, api: true },
+        { name: 'Hierarchical Cache-Optimized Data Broker', basic: false, starter: false, pro: false, api: true },
+        { name: 'Geo-Consumption Analytics Integration', basic: false, starter: false, pro: false, api: true },
+        { name: 'Revenue-sharing option for retailers', basic: false, starter: false, pro: false, api: true },
+        { name: 'White-label ready with custom branding', basic: false, starter: false, pro: false, api: true },
+        { name: 'Multi-Parameter Optimization Endpoints', basic: false, starter: false, pro: false, api: true },
+        { name: 'Mobile-ready location services', basic: false, starter: false, pro: false, api: true },
+        { name: 'Real-time bidirectional sync', basic: false, starter: false, pro: false, api: true },
       ]
     },
     {
       category: 'Usage Limits & Support',
       items: [
-        { name: 'Counties per month', basic: '3', pro: 'Unlimited', api: 'Unlimited' },
-        { name: 'API calls per month', basic: 'N/A', pro: 'N/A', api: '10k' },
-        { name: 'Support level', basic: 'Community', pro: 'Priority support & consultation', api: '99.9% SLA with enterprise support' },
-        { name: 'Smart caching', basic: false, pro: true, api: true },
-        { name: 'Custom integration support', basic: false, pro: false, api: true },
+        { name: 'Counties per month', basic: '3', starter: 'Unlimited', pro: 'Unlimited', api: 'Unlimited' },
+        { name: 'AI analysis per month', basic: 'N/A', starter: '5', pro: 'Unlimited', api: 'Unlimited' },
+        { name: 'API calls per month', basic: 'N/A', starter: 'N/A', pro: 'N/A', api: '10k' },
+        { name: 'Support level', basic: 'Community', starter: 'Email support', pro: 'Priority support & consultation', api: '99.9% SLA with enterprise support' },
+        { name: 'Smart caching', basic: false, starter: true, pro: true, api: true },
+        { name: 'Custom integration support', basic: false, starter: false, pro: false, api: true },
       ]
     }
   ];
@@ -83,20 +89,27 @@ export default function Features() {
       color: 'text-gray-600' 
     },
     { 
-      id: 'pro', 
-      name: 'Pro-Agricultural Intelligence', 
-      price: '$9.99/mo • $99/yr', 
-      description: 'Patent-Protected agricultural intelligence for serious growers',
+      id: 'starter', 
+      name: 'Agricultural Intelligence Starter', 
+      price: '$29/mo • $290/yr', 
+      description: 'AI soil analysis with basic recommendations and email support',
       popular: true,
+      icon: Zap, 
+      color: 'text-blue-600' 
+    },
+    { 
+      id: 'pro', 
+      name: 'Agricultural Intelligence Pro', 
+      price: '$79/mo • $790/yr', 
+      description: 'Unlimited AI features with visual crop analysis & advanced analytics',
       icon: Crown, 
       color: 'text-primary' 
     },
     { 
       id: 'api', 
       name: 'API-Enterprise', 
-      price: '$49.99/mo • $499/yr', 
+      price: '$149/mo • $1,490/yr', 
       description: 'Patent-protected APIs for ag-tech platforms & enterprises',
-      popular: true,
       icon: Sparkles, 
       color: 'text-purple-600' 
     }
@@ -129,7 +142,7 @@ export default function Features() {
         </div>
 
         {/* Plans Header */}
-        <div className="grid grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-5 gap-4 mb-8">
           <div></div>
           {plans.map((plan) => {
             const Icon = plan.icon;
@@ -163,10 +176,13 @@ export default function Features() {
               <CardContent>
                 <div className="space-y-3">
                   {category.items.map((feature, featureIndex) => (
-                    <div key={featureIndex} className="grid grid-cols-4 gap-4 items-center py-2 border-b border-border/50 last:border-b-0">
+                    <div key={featureIndex} className="grid grid-cols-5 gap-4 items-center py-2 border-b border-border/50 last:border-b-0">
                       <div className="font-medium text-sm">{feature.name}</div>
                       <div className="flex justify-center">
                         {renderFeatureValue(feature.basic)}
+                      </div>
+                      <div className="flex justify-center">
+                        {renderFeatureValue(feature.starter)}
                       </div>
                       <div className="flex justify-center">
                         {renderFeatureValue(feature.pro)}
