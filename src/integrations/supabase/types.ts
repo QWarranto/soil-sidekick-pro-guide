@@ -1251,6 +1251,45 @@ export type Database = {
         }
         Relationships: []
       }
+      visual_analysis_results: {
+        Row: {
+          analysis_result: Json
+          analysis_type: string
+          confidence_score: number | null
+          created_at: string
+          crop_type: string | null
+          id: string
+          image_data: string | null
+          location_data: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analysis_result: Json
+          analysis_type: string
+          confidence_score?: number | null
+          created_at?: string
+          crop_type?: string | null
+          id?: string
+          image_data?: string | null
+          location_data?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analysis_result?: Json
+          analysis_type?: string
+          confidence_score?: number | null
+          created_at?: string
+          crop_type?: string | null
+          id?: string
+          image_data?: string | null
+          location_data?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
