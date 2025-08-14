@@ -625,6 +625,96 @@ export type Database = {
         }
         Relationships: []
       }
+      cost_alerts: {
+        Row: {
+          alert_frequency: string
+          alert_name: string
+          created_at: string
+          current_amount: number
+          id: string
+          is_active: boolean
+          last_triggered_at: string | null
+          notification_emails: string[] | null
+          service_provider: string | null
+          threshold_amount: number
+          threshold_percentage: number
+          threshold_type: string
+          updated_at: string
+        }
+        Insert: {
+          alert_frequency?: string
+          alert_name: string
+          created_at?: string
+          current_amount?: number
+          id?: string
+          is_active?: boolean
+          last_triggered_at?: string | null
+          notification_emails?: string[] | null
+          service_provider?: string | null
+          threshold_amount: number
+          threshold_percentage?: number
+          threshold_type: string
+          updated_at?: string
+        }
+        Update: {
+          alert_frequency?: string
+          alert_name?: string
+          created_at?: string
+          current_amount?: number
+          id?: string
+          is_active?: boolean
+          last_triggered_at?: string | null
+          notification_emails?: string[] | null
+          service_provider?: string | null
+          threshold_amount?: number
+          threshold_percentage?: number
+          threshold_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      cost_tracking: {
+        Row: {
+          cost_usd: number
+          created_at: string
+          date_bucket: string
+          feature_name: string
+          hour_bucket: string
+          id: string
+          request_details: Json | null
+          service_provider: string
+          service_type: string
+          usage_count: number
+          user_id: string | null
+        }
+        Insert: {
+          cost_usd?: number
+          created_at?: string
+          date_bucket?: string
+          feature_name: string
+          hour_bucket?: string
+          id?: string
+          request_details?: Json | null
+          service_provider: string
+          service_type: string
+          usage_count?: number
+          user_id?: string | null
+        }
+        Update: {
+          cost_usd?: number
+          created_at?: string
+          date_bucket?: string
+          feature_name?: string
+          hour_bucket?: string
+          id?: string
+          request_details?: Json | null
+          service_provider?: string
+          service_type?: string
+          usage_count?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       counties: {
         Row: {
           county_name: string
@@ -1233,6 +1323,54 @@ export type Database = {
         }
         Relationships: []
       }
+      usage_analytics: {
+        Row: {
+          action_type: string
+          created_at: string
+          date_bucket: string
+          duration_seconds: number | null
+          error_details: Json | null
+          feature_name: string
+          hour_bucket: string
+          id: string
+          metadata: Json | null
+          session_id: string
+          subscription_tier: string
+          success_rate: number | null
+          user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          date_bucket?: string
+          duration_seconds?: number | null
+          error_details?: Json | null
+          feature_name: string
+          hour_bucket?: string
+          id?: string
+          metadata?: Json | null
+          session_id: string
+          subscription_tier: string
+          success_rate?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          date_bucket?: string
+          duration_seconds?: number | null
+          error_details?: Json | null
+          feature_name?: string
+          hour_bucket?: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string
+          subscription_tier?: string
+          success_rate?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       usage_quotas: {
         Row: {
           created_at: string
@@ -1355,12 +1493,46 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      cost_summary: {
+        Row: {
+          avg_cost_per_request: number | null
+          date_bucket: string | null
+          service_provider: string | null
+          service_type: string | null
+          total_cost: number | null
+          total_usage: number | null
+          unique_users: number | null
+        }
+        Relationships: []
+      }
+      usage_summary: {
+        Row: {
+          action_type: string | null
+          avg_duration: number | null
+          avg_success_rate: number | null
+          date_bucket: string | null
+          event_count: number | null
+          feature_name: string | null
+          subscription_tier: string | null
+          unique_users: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       can_use_feature: {
         Args: { p_user_id: string; p_feature_name: string }
         Returns: boolean
+      }
+      check_cost_alerts: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          alert_id: string
+          alert_name: string
+          current_amount: number
+          threshold_amount: number
+          percentage_used: number
+        }[]
       }
       check_password_strength: {
         Args: { password_text: string }
@@ -1459,6 +1631,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      refresh_cost_summaries: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       rotate_api_key: {
         Args: { old_key_id: string; new_key_hash: string }
         Returns: string
@@ -1469,6 +1645,31 @@ export type Database = {
       }
       simple_email_mask: {
         Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      track_api_cost: {
+        Args: {
+          p_service_provider: string
+          p_service_type: string
+          p_cost_usd: number
+          p_user_id: string
+          p_feature_name: string
+          p_request_details?: Json
+        }
+        Returns: string
+      }
+      track_usage_event: {
+        Args: {
+          p_user_id: string
+          p_session_id: string
+          p_feature_name: string
+          p_action_type: string
+          p_subscription_tier: string
+          p_duration_seconds?: number
+          p_success_rate?: number
+          p_error_details?: Json
+          p_metadata?: Json
+        }
         Returns: string
       }
       unlock_account: {
