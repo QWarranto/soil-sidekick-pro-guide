@@ -1332,6 +1332,10 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: string
       }
+      get_user_email_securely: {
+        Args: { target_user_id?: string }
+        Returns: string
+      }
       handle_login_attempt: {
         Args: {
           user_email: string
