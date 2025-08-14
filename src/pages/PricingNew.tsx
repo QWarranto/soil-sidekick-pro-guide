@@ -148,6 +148,9 @@ export default function PricingNew() {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
             Scale your agricultural success with AI-powered insights and comprehensive farm management tools
           </p>
+          <Button variant="outline" onClick={() => window.location.href = '/features'} className="mb-6">
+            View Detailed Feature Comparison
+          </Button>
           
           {subscription?.isTrialActive && (
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg">

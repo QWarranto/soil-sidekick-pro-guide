@@ -285,10 +285,13 @@ const Pricing = () => {
             <h1 className="text-4xl font-bold mb-4">
               Choose Your <span className="text-primary">Patent-Protected Agricultural Intelligence</span> Plan
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-6">
               From hobby gardeners to enterprise ag-tech platforms. <span className="font-semibold text-primary">4 patent-protected algorithms</span> delivering 
               breakthrough environmental intelligence with <span className="font-semibold text-primary">zero GIS skills required</span>.
             </p>
+            <Button variant="outline" onClick={() => window.location.href = '/features'} className="mb-8">
+              View Detailed Feature Comparison
+            </Button>
             
             {/* Annual/Monthly Toggle */}
             <div className="flex items-center justify-center gap-4 mb-8">
