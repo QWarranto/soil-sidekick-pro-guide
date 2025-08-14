@@ -1249,6 +1249,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      encrypt_existing_sensitive_data: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      get_decrypted_stripe_customer_id: {
+        Args: { subscriber_id: string }
+        Returns: string
+      }
       handle_login_attempt: {
         Args: {
           user_email: string
