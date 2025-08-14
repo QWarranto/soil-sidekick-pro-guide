@@ -1297,6 +1297,10 @@ export type Database = {
           is_valid: boolean
         }[]
       }
+      validate_service_operation: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
