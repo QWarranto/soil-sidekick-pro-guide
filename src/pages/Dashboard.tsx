@@ -10,6 +10,8 @@ import AgriculturalChat from "@/components/AgriculturalChat";
 import { LocationIndicator } from "@/components/LocationIndicator";
 import { CarbonCreditDashboard } from "@/components/CarbonCreditDashboard";
 import { SeasonalPlanningCard } from "@/components/SeasonalPlanningCard";
+import CostMonitoringDashboard from "@/components/CostMonitoringDashboard";
+import UsageDashboard from "@/components/UsageDashboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   MapPin, 
@@ -117,10 +119,12 @@ const Dashboard = () => {
 
         {/* Dashboard Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Farm Overview</TabsTrigger>
             <TabsTrigger value="ai-assistant">AI Assistant</TabsTrigger>
             <TabsTrigger value="carbon-credits">Carbon Credits</TabsTrigger>
+            <TabsTrigger value="cost-monitoring">Cost Analytics</TabsTrigger>
+            <TabsTrigger value="usage-analytics">Usage Stats</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -552,6 +556,14 @@ const Dashboard = () => {
 
           <TabsContent value="carbon-credits">
             <CarbonCreditDashboard />
+          </TabsContent>
+
+          <TabsContent value="cost-monitoring">
+            <CostMonitoringDashboard />
+          </TabsContent>
+
+          <TabsContent value="usage-analytics">
+            <UsageDashboard />
           </TabsContent>
         </Tabs>
       </div>

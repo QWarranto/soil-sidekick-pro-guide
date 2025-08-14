@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import FeatureGate from '@/components/FeatureGate';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useCostMonitoring } from '@/hooks/useCostMonitoring';
 
 interface VisualAnalysisProps {
   location?: {
@@ -37,6 +38,8 @@ const VisualCropAnalysis: React.FC<VisualAnalysisProps> = ({ location }) => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const { toast } = useToast();
+  const { subscription } = useSubscription();
+  const { trackCost, trackUsage } = useCostMonitoring();
 
   const analysisTypes = [
     { value: 'pest_detection', label: 'Pest Detection', description: 'Identify pests and damage' },
@@ -81,7 +84,20 @@ const VisualCropAnalysis: React.FC<VisualAnalysisProps> = ({ location }) => {
     }
 
     setIsAnalyzing(true);
+    const startTime = Date.now();
     
+    // Track usage event start
+    const sessionId = crypto.randomUUID();
+    await trackUsage(
+      'visual_analysis',
+      'started',
+      subscription?.tier || 'free',
+      sessionId,
+      undefined,
+      undefined,
+      undefined,
+      { analysis_type: analysisType, crop_type: cropType }
+    );
     try {
       const { data, error } = await supabase.functions.invoke('visual-crop-analysis', {
         body: {
@@ -96,6 +112,18 @@ const VisualCropAnalysis: React.FC<VisualAnalysisProps> = ({ location }) => {
 
       if (data.success) {
         setAnalysisResult(data.analysis);
+        
+        // Track successful completion and cost
+        const duration = Math.round((Date.now() - startTime) / 1000);
+        await trackUsage('visual_analysis', 'completed', subscription?.tier || 'free', sessionId, duration, 100);
+        
+        // Track OpenAI Vision API cost (approximately $0.50 per image)
+        await trackCost('openai', 'vision-analysis', 1, 'visual_analysis', {
+          analysis_type: analysisType,
+          crop_type: cropType,
+          image_size: selectedImage?.length || 0
+        });
+        
         toast({
           title: "Analysis complete",
           description: "Your crop analysis has been completed successfully"
@@ -105,6 +133,13 @@ const VisualCropAnalysis: React.FC<VisualAnalysisProps> = ({ location }) => {
       }
     } catch (error) {
       console.error('Analysis error:', error);
+      
+      // Track failed usage
+      const duration = Math.round((Date.now() - startTime) / 1000);
+      await trackUsage('visual_analysis', 'failed', subscription?.tier || 'free', sessionId, duration, 0, {
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+      
       toast({
         title: "Analysis failed",
         description: "Unable to analyze the image. Please try again.",
