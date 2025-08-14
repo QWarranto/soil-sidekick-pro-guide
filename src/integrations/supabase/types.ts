@@ -20,6 +20,9 @@ export type Database = {
           backup_codes_generated: boolean | null
           created_at: string
           email: string
+          email_encryption_version: number | null
+          encrypted_email: string | null
+          encrypted_recovery_email: string | null
           failed_login_attempts: number | null
           id: string
           last_failed_login: string | null
@@ -42,6 +45,9 @@ export type Database = {
           backup_codes_generated?: boolean | null
           created_at?: string
           email: string
+          email_encryption_version?: number | null
+          encrypted_email?: string | null
+          encrypted_recovery_email?: string | null
           failed_login_attempts?: number | null
           id?: string
           last_failed_login?: string | null
@@ -64,6 +70,9 @@ export type Database = {
           backup_codes_generated?: boolean | null
           created_at?: string
           email?: string
+          email_encryption_version?: number | null
+          encrypted_email?: string | null
+          encrypted_recovery_email?: string | null
           failed_login_attempts?: number | null
           id?: string
           last_failed_login?: string | null
@@ -1255,6 +1264,7 @@ export type Database = {
           account_locked: boolean | null
           backup_codes_generated: boolean | null
           created_at: string | null
+          email_encryption_version: number | null
           failed_login_attempts: number | null
           id: string | null
           last_suspicious_activity: string | null
@@ -1274,6 +1284,7 @@ export type Database = {
           account_locked?: boolean | null
           backup_codes_generated?: boolean | null
           created_at?: string | null
+          email_encryption_version?: number | null
           failed_login_attempts?: number | null
           id?: string | null
           last_suspicious_activity?: string | null
@@ -1293,6 +1304,7 @@ export type Database = {
           account_locked?: boolean | null
           backup_codes_generated?: boolean | null
           created_at?: string | null
+          email_encryption_version?: number | null
           failed_login_attempts?: number | null
           id?: string | null
           last_suspicious_activity?: string | null
@@ -1320,6 +1332,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      decrypt_email_address: {
+        Args: { encrypted_email: string }
+        Returns: string
+      }
+      encrypt_email_address: {
+        Args: { email_to_encrypt: string }
+        Returns: string
+      }
       encrypt_existing_sensitive_data: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -1330,6 +1350,10 @@ export type Database = {
       }
       get_user_email_for_security: {
         Args: { target_user_id: string }
+        Returns: string
+      }
+      get_user_email_secure: {
+        Args: { target_user_id?: string }
         Returns: string
       }
       get_user_email_securely: {
@@ -1357,6 +1381,10 @@ export type Database = {
       is_service_role: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      migrate_account_security_emails: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       rotate_api_key: {
         Args: { old_key_id: string; new_key_hash: string }
