@@ -924,6 +924,8 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          subscription_ends_at: string | null
+          subscription_starts_at: string | null
           subscription_status: string | null
           subscription_tier: string | null
           trial_ends_at: string | null
@@ -935,6 +937,8 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          subscription_ends_at?: string | null
+          subscription_starts_at?: string | null
           subscription_status?: string | null
           subscription_tier?: string | null
           trial_ends_at?: string | null
@@ -946,6 +950,8 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          subscription_ends_at?: string | null
+          subscription_starts_at?: string | null
           subscription_status?: string | null
           subscription_tier?: string | null
           trial_ends_at?: string | null
@@ -1227,6 +1233,33 @@ export type Database = {
         }
         Relationships: []
       }
+      usage_quotas: {
+        Row: {
+          created_at: string
+          feature_name: string
+          id: string
+          monthly_limit: number
+          tier: Database["public"]["Enums"]["subscription_tier"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          feature_name: string
+          id?: string
+          monthly_limit: number
+          tier: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          feature_name?: string
+          id?: string
+          monthly_limit?: number
+          tier?: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1247,6 +1280,36 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_usage: {
+        Row: {
+          created_at: string
+          feature_name: string
+          id: string
+          month_year: string
+          updated_at: string
+          usage_count: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feature_name: string
+          id?: string
+          month_year?: string
+          updated_at?: string
+          usage_count?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feature_name?: string
+          id?: string
+          month_year?: string
+          updated_at?: string
+          usage_count?: number
           user_id?: string
         }
         Relationships: []
@@ -1295,6 +1358,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_use_feature: {
+        Args: { p_user_id: string; p_feature_name: string }
+        Returns: boolean
+      }
       check_password_strength: {
         Args: { password_text: string }
         Returns: number
@@ -1368,6 +1435,14 @@ export type Database = {
         }
         Returns: Json
       }
+      increment_usage: {
+        Args: {
+          p_user_id: string
+          p_feature_name: string
+          p_increment?: number
+        }
+        Returns: boolean
+      }
       is_account_locked: {
         Args: { user_email: string }
         Returns: boolean
@@ -1425,6 +1500,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      subscription_tier: "free" | "starter" | "pro" | "enterprise"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1553,6 +1629,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      subscription_tier: ["free", "starter", "pro", "enterprise"],
     },
   },
 } as const

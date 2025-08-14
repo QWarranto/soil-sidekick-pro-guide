@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import FeatureGate from '@/components/FeatureGate';
+import { useSubscription } from '@/hooks/useSubscription';
 
 interface VisualAnalysisProps {
   location?: {
@@ -133,6 +135,12 @@ const VisualCropAnalysis: React.FC<VisualAnalysisProps> = ({ location }) => {
   };
 
   return (
+    <FeatureGate 
+      feature="visual_analysis"
+      title="Visual Crop Analysis"
+      description="AI-powered image analysis for pest detection and crop health assessment"
+      requiredTier="pro"
+    >
     <div className="space-y-6">
       <Card>
         <CardHeader>
@@ -364,6 +372,7 @@ const VisualCropAnalysis: React.FC<VisualAnalysisProps> = ({ location }) => {
         </Card>
       )}
     </div>
+    </FeatureGate>
   );
 };
 
