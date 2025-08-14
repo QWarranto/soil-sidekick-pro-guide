@@ -22,7 +22,8 @@ import {
   CheckCircle,
   PlayCircle,
   Lightbulb,
-  Target
+  Target,
+  Camera
 } from 'lucide-react';
 
 interface TourStep {
@@ -132,6 +133,21 @@ const tourSteps: TourStep[] = [
   },
   {
     id: 7,
+    title: "Visual Crop Analysis",
+    description: "AI-powered image analysis for pest detection, crop health assessment, and disease screening.",
+    features: [
+      "Pest identification and detection",
+      "Crop health status assessment",
+      "Disease screening and diagnosis",
+      "AI-powered visual analysis",
+      "Actionable recommendations"
+    ],
+    icon: Camera,
+    color: "text-pink-600",
+    badge: "AI Vision"
+  },
+  {
+    id: 8,
     title: "Seasonal Planning Assistant",
     description: "Plan your entire growing season with AI-powered insights and recommendations.",
     features: [
@@ -146,7 +162,7 @@ const tourSteps: TourStep[] = [
     color: "text-orange-600"
   },
   {
-    id: 8,
+    id: 9,
     title: "ADAPT Integration Hub",
     description: "Seamlessly connect with existing farm management systems through ADAPT Standard 1.0 compatibility.",
     features: [
