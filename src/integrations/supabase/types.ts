@@ -1554,6 +1554,22 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      get_cost_summary: {
+        Args: {
+          p_start_date?: string
+          p_end_date?: string
+          p_service_provider?: string
+        }
+        Returns: {
+          date_bucket: string
+          service_provider: string
+          service_type: string
+          total_cost: number
+          total_usage: number
+          unique_users: number
+          avg_cost_per_request: number
+        }[]
+      }
       get_decrypted_stripe_customer_id: {
         Args: { subscriber_id: string }
         Returns: string
@@ -1579,6 +1595,23 @@ export type Database = {
           lock_reason: string
           masked_email: string
           masked_recovery_email: string
+        }[]
+      }
+      get_usage_summary: {
+        Args: {
+          p_start_date?: string
+          p_end_date?: string
+          p_subscription_tier?: string
+        }
+        Returns: {
+          date_bucket: string
+          subscription_tier: string
+          feature_name: string
+          action_type: string
+          event_count: number
+          unique_users: number
+          avg_duration: number
+          avg_success_rate: number
         }[]
       }
       get_user_email_for_security: {
