@@ -53,97 +53,75 @@ export default function PricingNew() {
       name: 'Free',
       price: '$0',
       period: 'forever',
-      description: 'Perfect for getting started with basic agricultural data',
+      description: 'Essential soil data for hobby farmers and garden enthusiasts',
       icon: Shield,
       features: [
-        '50 county lookups per month',
-        '2 PDF reports per month',
-        'Basic soil data access',
-        'Simple planting calendar',
-        'Community support',
-        '14-day trial of paid features'
+        '5 county lookups per month',
+        '1 PDF report per month',
+        'Basic soil pH and nutrient data',
+        'Simple planting recommendations',
+        'Community forum access',
+        '7-day trial of Pro features'
       ],
       limitations: [
-        'No AI soil analysis',
-        'No visual crop analysis',
-        'No carbon credit calculations',
-        'Limited water quality data'
+        'No AI-powered analysis',
+        'No satellite imagery',
+        'No carbon credit tracking',
+        'Limited historical data'
       ],
       cta: 'Get Started Free',
       popular: false,
       priceId: null
     },
     {
-      id: 'starter',
-      name: 'Starter',
-      price: '$29',
-      period: 'month',
-      description: 'Ideal for small farms and individual growers',
-      icon: Zap,
-      features: [
-        'Everything in Free',
-        '5 AI soil analyses per month',
-        '3 carbon credit calculations',
-        '200 county lookups per month',
-        '10 PDF reports per month',
-        '2 water quality tests',
-        'Email support',
-        '14-day free trial'
-      ],
-      limitations: [
-        'No visual crop analysis',
-        'Limited advanced features'
-      ],
-      cta: 'Start Free Trial',
-      popular: true,
-      priceId: 'price_starter_monthly'
-    },
-    {
       id: 'pro',
       name: 'Pro',
-      price: '$79',
+      price: '$19',
       period: 'month',
-      description: 'Perfect for commercial farms and agricultural consultants',
+      description: 'Complete agricultural intelligence for serious growers',
       icon: Crown,
       features: [
-        'Everything in Starter',
-        'Unlimited AI soil analyses',
-        '50 visual crop analyses per month',
+        'Everything in Free',
         'Unlimited county lookups',
-        '100 PDF reports per month',
-        '25 water quality tests',
-        '50 carbon credit calculations',
-        'Advanced analytics dashboard',
+        'AI-powered soil analysis',
+        'Satellite crop monitoring',
+        'Carbon credit calculations',
+        'Water quality assessments',
+        'Advanced planting calendar',
+        'Environmental impact scoring',
+        'Export to ADAPT Standard 1.0',
         'Priority email support',
-        '14-day free trial'
+        'Mobile app access'
       ],
       limitations: [],
-      cta: 'Start Free Trial',
-      popular: false,
+      cta: 'Start 7-Day Trial',
+      popular: true,
       priceId: 'price_pro_monthly'
     },
     {
       id: 'enterprise',
       name: 'Enterprise',
-      price: '$149',
-      period: 'month',
-      description: 'For large farms and agricultural organizations',
+      price: 'Custom',
+      period: 'pricing',
+      description: 'Tailored solutions for large operations and organizations',
       icon: Sparkles,
       features: [
         'Everything in Pro',
-        'Unlimited all features',
-        'ADAPT Standard 1.0 integration',
-        'Custom feature development',
+        'Unlimited API access',
+        'Custom integrations',
+        'Multi-farm management',
+        'Team collaboration tools',
+        'Advanced analytics dashboard',
+        'White-label options',
         'Dedicated account manager',
-        'Phone support',
-        'SLA guarantee',
-        'Custom reporting',
-        'White-label options'
+        'Phone & priority support',
+        'Custom feature development',
+        'SLA guarantees'
       ],
       limitations: [],
       cta: 'Contact Sales',
       popular: false,
-      priceId: 'price_enterprise_monthly'
+      priceId: null
     }
   ];
 
@@ -174,7 +152,7 @@ export default function PricingNew() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {plans.map((plan) => {
             const Icon = plan.icon;
             const currentStatus = getCurrentPlanStatus(plan.id);
@@ -200,15 +178,13 @@ export default function PricingNew() {
                 
                 <CardHeader className="text-center pb-4">
                   <div className="flex justify-center mb-4">
-                    <div className={`p-3 rounded-full ${
+                     <div className={`p-3 rounded-full ${
                       plan.id === 'free' ? 'bg-gray-100' :
-                      plan.id === 'starter' ? 'bg-blue-100' :
-                      plan.id === 'pro' ? 'bg-green-100' : 'bg-purple-100'
+                      plan.id === 'pro' ? 'bg-primary/10' : 'bg-purple-100'
                     }`}>
                       <Icon className={`h-6 w-6 ${
                         plan.id === 'free' ? 'text-gray-600' :
-                        plan.id === 'starter' ? 'text-blue-600' :
-                        plan.id === 'pro' ? 'text-green-600' : 'text-purple-600'
+                        plan.id === 'pro' ? 'text-primary' : 'text-purple-600'
                       }`} />
                     </div>
                   </div>
@@ -276,40 +252,40 @@ export default function PricingNew() {
           <div className="max-w-3xl mx-auto space-y-6">
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold mb-2">What happens during the free trial?</h3>
+                <h3 className="font-semibold mb-2">How does the 7-day trial work?</h3>
                 <p className="text-muted-foreground">
-                  All new accounts get a 14-day free trial with access to your chosen plan's features. 
-                  After the trial, free users keep access to basic features with usage limits.
+                  Start your 7-day Pro trial immediately with full access to all Pro features. 
+                  No credit card required. After the trial, you can continue with the Free plan or upgrade to Pro.
                 </p>
               </CardContent>
             </Card>
             
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold mb-2">Can I change plans anytime?</h3>
+                <h3 className="font-semibold mb-2">Can I cancel anytime?</h3>
                 <p className="text-muted-foreground">
-                  Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, 
-                  and billing is prorated.
+                  Yes! Cancel your subscription anytime with no cancellation fees. 
+                  You'll retain access to Pro features until the end of your billing period.
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold mb-2">What happens if I exceed my usage limits?</h3>
+                <h3 className="font-semibold mb-2">What makes SoilSidekick Pro different?</h3>
                 <p className="text-muted-foreground">
-                  When you reach your monthly limit, you'll be prompted to upgrade. Your data is never lost, 
-                  and you can access all features immediately after upgrading.
+                  We're the only platform combining real-time satellite data, AI-powered soil analysis, 
+                  and carbon credit tracking in one simple interface. No GIS expertise required.
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold mb-2">What is ADAPT Standard 1.0 integration?</h3>
+                <h3 className="font-semibold mb-2">Do you offer volume discounts?</h3>
                 <p className="text-muted-foreground">
-                  ADAPT is the industry standard for agricultural data exchange. Our integration allows 
-                  seamless data sharing with major farm management systems and equipment manufacturers.
+                  Yes! Enterprise customers receive custom pricing based on farm size, number of users, 
+                  and required integrations. Contact our sales team for a personalized quote.
                 </p>
               </CardContent>
             </Card>

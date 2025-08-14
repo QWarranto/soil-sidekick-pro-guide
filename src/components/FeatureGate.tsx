@@ -11,7 +11,7 @@ interface FeatureGateProps {
   children: React.ReactNode;
   title?: string;
   description?: string;
-  requiredTier?: 'starter' | 'pro' | 'enterprise';
+  requiredTier?: 'pro' | 'enterprise';
 }
 
 const FeatureGate: React.FC<FeatureGateProps> = ({
@@ -19,7 +19,7 @@ const FeatureGate: React.FC<FeatureGateProps> = ({
   children,
   title,
   description,
-  requiredTier = 'starter'
+  requiredTier = 'pro'
 }) => {
   const { checkFeatureAccess, showUpgradePrompt, subscription, usage } = useSubscription();
   const [canAccess, setCanAccess] = useState<boolean | null>(null);
@@ -55,8 +55,7 @@ const FeatureGate: React.FC<FeatureGateProps> = ({
 
   const getTierIcon = (tier: string) => {
     switch (tier) {
-      case 'starter': return <Zap className="h-5 w-5 text-blue-600" />;
-      case 'pro': return <Crown className="h-5 w-5 text-green-600" />;
+      case 'pro': return <Crown className="h-5 w-5 text-primary" />;
       case 'enterprise': return <Crown className="h-5 w-5 text-purple-600" />;
       default: return <Lock className="h-5 w-5" />;
     }
@@ -64,9 +63,9 @@ const FeatureGate: React.FC<FeatureGateProps> = ({
 
   const getTierPrice = (tier: string) => {
     switch (tier) {
-      case 'starter': return '$29';
-      case 'pro': return '$79';
-      case 'enterprise': return '$149';
+      case 'starter': return '$19';
+      case 'pro': return '$19';
+      case 'enterprise': return 'Custom';
       default: return '';
     }
   };
@@ -110,27 +109,20 @@ const FeatureGate: React.FC<FeatureGateProps> = ({
           </Badge>
 
           <div className="grid grid-cols-1 gap-2 text-sm text-left">
-            {requiredTier === 'starter' && (
-              <>
-                <div>✓ 5 AI soil analyses</div>
-                <div>✓ 3 carbon calculations</div>
-                <div>✓ 200 county lookups</div>
-                <div>✓ Email support</div>
-              </>
-            )}
             {requiredTier === 'pro' && (
               <>
-                <div>✓ Unlimited AI soil analyses</div>
-                <div>✓ Visual crop analysis</div>
-                <div>✓ Advanced water quality testing</div>
+                <div>✓ Unlimited county lookups</div>
+                <div>✓ AI-powered soil analysis</div>
+                <div>✓ Satellite crop monitoring</div>
+                <div>✓ Carbon credit calculations</div>
                 <div>✓ Priority support</div>
               </>
             )}
             {requiredTier === 'enterprise' && (
               <>
                 <div>✓ All Pro features</div>
-                <div>✓ ADAPT integration</div>
-                <div>✓ Custom features</div>
+                <div>✓ Unlimited API access</div>
+                <div>✓ Custom integrations</div>
                 <div>✓ Dedicated support</div>
               </>
             )}
@@ -142,7 +134,7 @@ const FeatureGate: React.FC<FeatureGateProps> = ({
             onClick={() => navigate('/pricing')}
             className="w-full"
           >
-            Upgrade to {requiredTier.charAt(0).toUpperCase() + requiredTier.slice(1)}
+            Upgrade to {requiredTier === 'pro' ? 'Pro' : 'Enterprise'}
           </Button>
           <Button 
             variant="outline" 

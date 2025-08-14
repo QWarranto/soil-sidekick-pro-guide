@@ -47,74 +47,66 @@ const Pricing = () => {
       name: 'Free',
       monthlyPrice: 0,
       yearlyPrice: 0,
-      description: 'Perfect for hobby gardeners exploring soil basics',
+      description: 'Essential soil data for hobby farmers and garden enthusiasts',
       icon: <Leaf className="h-6 w-6" />,
       badge: 'Free',
       badgeVariant: 'secondary' as const,
       features: [
-        'County soil snapshot',
-        'Basic environmental assessment',
-        'Up to 3 counties per month',
-        'Interactive map with FIPS lookup',
-        'Standard planting recommendations',
-        'Basic ADAPT export (soil data only)'
+        '5 county lookups per month',
+        '1 PDF report per month',
+        'Basic soil pH and nutrient data',
+        'Simple planting recommendations',
+        'Community forum access',
+        '7-day trial of Pro features'
       ]
     },
     {
       id: 'pro',
-      name: 'Pro — Agricultural Intelligence',
-      monthlyPrice: 9.99,
-      yearlyPrice: 99.99,
-      description: 'Patent-protected agricultural intelligence for serious growers',
+      name: 'Pro',
+      monthlyPrice: 19.99,
+      yearlyPrice: 199.99,
+      description: 'Complete agricultural intelligence for serious growers',
       icon: <Star className="h-6 w-6" />,
       badge: 'Most Popular',
       badgeVariant: 'default' as const,
       features: [
-        'Unlimited counties with smart caching',
-        'GPS field mapping & location capture',
-        'Advanced field management dashboard',
-        'ADAPT Standard 1.0 Integration',
-        'Bidirectional sync with John Deere, Case IH, AGCO',
-        'Field boundary import/export',
-        'AlphaEarth Satellite Intelligence™ (NEW)',
-        'Real-time vegetation health monitoring',
-        'Satellite-enhanced soil moisture analysis',
-        'Environmental Impact Engine™ (Patent-Protected)',
-        'Multi-Parameter Planting Optimization™',
-        'Eco-Friendly Alternative Recommendations',
-        'Carbon Footprint & Sustainability Scoring',
-        'Hierarchical Geographic Intelligence',
-        'Adaptive Usage Analytics & Insights',
-        'PDF & CSV exports (lender-ready)',
-        'Priority support & consultation'
+        'Everything in Free',
+        'Unlimited county lookups',
+        'AI-powered soil analysis',
+        'Satellite crop monitoring',
+        'Carbon credit calculations',
+        'Water quality assessments',
+        'Advanced planting calendar',
+        'Environmental impact scoring',
+        'Export to ADAPT Standard 1.0',
+        'Priority email support',
+        'Mobile app access',
+        'Historical data trends',
+        'Custom report generation'
       ]
     },
     {
-      id: 'api',
-      name: 'API — Enterprise',
-      monthlyPrice: 49.99,
-      yearlyPrice: 499.99,
-      description: 'Patent-protected APIs for ag-tech platforms & enterprises',
+      id: 'enterprise',
+      name: 'Enterprise',
+      monthlyPrice: 'Custom',
+      yearlyPrice: 'Custom',
+      description: 'Tailored solutions for large operations and organizations',
       icon: <Zap className="h-6 w-6" />,
-      badge: 'Enterprise',
+      badge: 'Custom',
       badgeVariant: 'outline' as const,
       features: [
-        '10k calls per month',
-        'Full ADAPT Standard 1.0 API Suite',
-        'Custom integration support',
-        'Real-time bidirectional sync',
-        'Batch processing capabilities',
-        'GPS-enabled field management APIs',
-        'Mobile-ready location services',
-        'AlphaEarth Satellite API Integration',
-        'Satellite-enhanced environmental assessment',
-        'Patent-Protected Environmental Assessment APIs',
-        'Hierarchical Cache-Optimised Data Broker',
-        'Geo-Consumption Analytics Integration',
-        'Multi-Parameter Optimization Endpoints',
-        'Revenue-share option for retailers',
-        'White-label ready with custom branding',
-        '99.9% SLA with enterprise support'
+        'Everything in Pro',
+        'Unlimited API access',
+        'Custom integrations',
+        'Multi-farm management',
+        'Team collaboration tools',
+        'Advanced analytics dashboard',
+        'White-label options',
+        'Dedicated account manager',
+        'Phone & priority support',
+        'Custom feature development',
+        'SLA guarantees',
+        'Volume discounts available'
       ]
     }
   ];
@@ -355,7 +347,7 @@ const Pricing = () => {
           )}
 
           {/* Standard Pricing Cards */}
-          <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-6 justify-center mb-16">
+          <div className="grid lg:grid-cols-3 gap-6 justify-center mb-16">
             {plans.map((plan) => {
               const price = getPrice(plan);
               const isCurrentUserPlan = isCurrentPlan(plan.id);
@@ -392,15 +384,17 @@ const Pricing = () => {
                     <div className="mb-4">
                       <div className="flex items-baseline gap-1">
                         <span className="text-3xl font-bold text-primary">
-                          ${price}
+                          {typeof price === 'number' ? `$${price}` : price}
                         </span>
-                        <span className="text-muted-foreground">
-                          /{isAnnual ? 'year' : 'month'}
-                        </span>
+                        {typeof price === 'number' && (
+                          <span className="text-muted-foreground">
+                            /{isAnnual ? 'year' : 'month'}
+                          </span>
+                        )}
                       </div>
-                      {isAnnual && plan.id !== 'free' && (
+                      {isAnnual && plan.id === 'pro' && (
                         <div className="text-sm text-green-600 font-medium mt-1">
-                          Save ${((plan.monthlyPrice * 12) - plan.yearlyPrice).toFixed(2)} per year
+                          Save $40 per year
                         </div>
                       )}
                     </div>
@@ -429,8 +423,8 @@ const Pricing = () => {
                       {loading ? 'Processing...' :
                        isCurrentUserPlan ? 'Current Plan' :
                        plan.id === 'free' ? 'Get Started' : 
-                       plan.id === 'api' ? 'Contact Sales' : 
-                       'Upgrade'}
+                       plan.id === 'enterprise' ? 'Contact Sales' : 
+                       'Start 7-Day Trial'}
                     </Button>
                   </CardContent>
                 </Card>
