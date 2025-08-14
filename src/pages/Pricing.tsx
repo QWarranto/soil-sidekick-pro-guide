@@ -47,66 +47,60 @@ const Pricing = () => {
       name: 'Free',
       monthlyPrice: 0,
       yearlyPrice: 0,
-      description: 'Essential soil data for hobby farmers and garden enthusiasts',
+      description: 'Basic data access with limited features and community support',
       icon: <Leaf className="h-6 w-6" />,
       badge: 'Free',
       badgeVariant: 'secondary' as const,
       features: [
-        '5 county lookups per month',
-        '1 PDF report per month',
-        'Basic soil pH and nutrient data',
-        'Simple planting recommendations',
-        'Community forum access',
-        '7-day trial of Pro features'
+        'Basic data access',
+        'Limited features',
+        'Community support'
+      ]
+    },
+    {
+      id: 'starter',
+      name: 'Starter',
+      monthlyPrice: 29,
+      yearlyPrice: 290,
+      description: 'AI soil analysis with basic recommendations and email support',
+      icon: <Zap className="h-6 w-6" />,
+      badge: 'Popular',
+      badgeVariant: 'default' as const,
+      features: [
+        'AI soil analysis (5/month)',
+        'Basic recommendations',
+        'Email support'
       ]
     },
     {
       id: 'pro',
       name: 'Pro',
-      monthlyPrice: 19.99,
-      yearlyPrice: 199.99,
-      description: 'Complete agricultural intelligence for serious growers',
+      monthlyPrice: 79,
+      yearlyPrice: 790,
+      description: 'Unlimited AI features with visual crop analysis and advanced analytics',
       icon: <Star className="h-6 w-6" />,
-      badge: 'Most Popular',
+      badge: 'Best Value',
       badgeVariant: 'default' as const,
       features: [
-        'Everything in Free',
-        'Unlimited county lookups',
-        'AI-powered soil analysis',
-        'Satellite crop monitoring',
-        'Carbon credit calculations',
-        'Water quality assessments',
-        'Advanced planting calendar',
-        'Environmental impact scoring',
-        'Export to ADAPT Standard 1.0',
-        'Priority email support',
-        'Mobile app access',
-        'Historical data trends',
-        'Custom report generation'
+        'Unlimited AI features',
+        'Visual crop analysis',
+        'Advanced analytics',
+        'Priority support'
       ]
     },
     {
       id: 'enterprise',
       name: 'Enterprise',
-      monthlyPrice: 'Custom',
-      yearlyPrice: 'Custom',
-      description: 'Tailored solutions for large operations and organizations',
-      icon: <Zap className="h-6 w-6" />,
-      badge: 'Custom',
+      monthlyPrice: 149,
+      yearlyPrice: 1490,
+      description: 'Complete solution with ADAPT integration and dedicated support',
+      icon: <Settings className="h-6 w-6" />,
+      badge: 'Full Suite',
       badgeVariant: 'outline' as const,
       features: [
-        'Everything in Pro',
-        'Unlimited API access',
-        'Custom integrations',
-        'Multi-farm management',
-        'Team collaboration tools',
-        'Advanced analytics dashboard',
-        'White-label options',
-        'Dedicated account manager',
-        'Phone & priority support',
-        'Custom feature development',
-        'SLA guarantees',
-        'Volume discounts available'
+        'ADAPT integration',
+        'Custom features',
+        'Dedicated support'
       ]
     }
   ];
@@ -347,7 +341,7 @@ const Pricing = () => {
           )}
 
           {/* Standard Pricing Cards */}
-          <div className="grid lg:grid-cols-3 gap-6 justify-center mb-16">
+          <div className="grid lg:grid-cols-4 gap-6 justify-center mb-16">
             {plans.map((plan) => {
               const price = getPrice(plan);
               const isCurrentUserPlan = isCurrentPlan(plan.id);

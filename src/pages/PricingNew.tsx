@@ -52,76 +52,83 @@ export default function PricingNew() {
       id: 'free',
       name: 'Free',
       price: '$0',
-      period: 'forever',
-      description: 'Essential soil data for hobby farmers and garden enthusiasts',
+      period: 'month',
+      description: 'Basic data access with limited features and community support',
       icon: Shield,
       features: [
-        '5 county lookups per month',
-        '1 PDF report per month',
-        'Basic soil pH and nutrient data',
-        'Simple planting recommendations',
-        'Community forum access',
-        '7-day trial of Pro features'
+        'Basic data access',
+        'Limited features',
+        'Community support'
       ],
       limitations: [
-        'No AI-powered analysis',
-        'No satellite imagery',
-        'No carbon credit tracking',
-        'Limited historical data'
+        'No AI analysis',
+        'No visual crop analysis',
+        'No priority support',
+        'No ADAPT integration'
       ],
       cta: 'Get Started Free',
       popular: false,
       priceId: null
     },
     {
+      id: 'starter',
+      name: 'Starter',
+      price: '$29',
+      period: 'month',
+      description: 'AI soil analysis with basic recommendations and email support',
+      icon: Zap,
+      features: [
+        'AI soil analysis (5/month)',
+        'Basic recommendations',
+        'Email support'
+      ],
+      limitations: [
+        'Limited AI usage',
+        'No visual crop analysis',
+        'No advanced analytics',
+        'No ADAPT integration'
+      ],
+      cta: 'Start Starter Plan',
+      popular: false,
+      priceId: 'price_starter_monthly'
+    },
+    {
       id: 'pro',
       name: 'Pro',
-      price: '$19',
+      price: '$79',
       period: 'month',
-      description: 'Complete agricultural intelligence for serious growers',
+      description: 'Unlimited AI features with visual crop analysis and advanced analytics',
       icon: Crown,
       features: [
-        'Everything in Free',
-        'Unlimited county lookups',
-        'AI-powered soil analysis',
-        'Satellite crop monitoring',
-        'Carbon credit calculations',
-        'Water quality assessments',
-        'Advanced planting calendar',
-        'Environmental impact scoring',
-        'Export to ADAPT Standard 1.0',
-        'Priority email support',
-        'Mobile app access'
+        'Unlimited AI features',
+        'Visual crop analysis',
+        'Advanced analytics',
+        'Priority support'
       ],
-      limitations: [],
-      cta: 'Start 7-Day Trial',
+      limitations: [
+        'No ADAPT integration',
+        'No custom features'
+      ],
+      cta: 'Start Pro Plan',
       popular: true,
       priceId: 'price_pro_monthly'
     },
     {
       id: 'enterprise',
       name: 'Enterprise',
-      price: 'Custom',
-      period: 'pricing',
-      description: 'Tailored solutions for large operations and organizations',
+      price: '$149',
+      period: 'month',
+      description: 'Complete solution with ADAPT integration and dedicated support',
       icon: Sparkles,
       features: [
-        'Everything in Pro',
-        'Unlimited API access',
-        'Custom integrations',
-        'Multi-farm management',
-        'Team collaboration tools',
-        'Advanced analytics dashboard',
-        'White-label options',
-        'Dedicated account manager',
-        'Phone & priority support',
-        'Custom feature development',
-        'SLA guarantees'
+        'ADAPT integration',
+        'Custom features',
+        'Dedicated support'
       ],
       limitations: [],
       cta: 'Contact Sales',
       popular: false,
-      priceId: null
+      priceId: 'price_enterprise_monthly'
     }
   ];
 
@@ -152,7 +159,7 @@ export default function PricingNew() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {plans.map((plan) => {
             const Icon = plan.icon;
             const currentStatus = getCurrentPlanStatus(plan.id);
@@ -180,12 +187,14 @@ export default function PricingNew() {
                   <div className="flex justify-center mb-4">
                      <div className={`p-3 rounded-full ${
                       plan.id === 'free' ? 'bg-gray-100' :
+                      plan.id === 'starter' ? 'bg-blue-100' :
                       plan.id === 'pro' ? 'bg-primary/10' : 'bg-purple-100'
                     }`}>
-                      <Icon className={`h-6 w-6 ${
-                        plan.id === 'free' ? 'text-gray-600' :
-                        plan.id === 'pro' ? 'text-primary' : 'text-purple-600'
-                      }`} />
+                       <Icon className={`h-6 w-6 ${
+                         plan.id === 'free' ? 'text-gray-600' :
+                         plan.id === 'starter' ? 'text-blue-600' :
+                         plan.id === 'pro' ? 'text-primary' : 'text-purple-600'
+                       }`} />
                     </div>
                   </div>
                   <CardTitle className="text-2xl">{plan.name}</CardTitle>
