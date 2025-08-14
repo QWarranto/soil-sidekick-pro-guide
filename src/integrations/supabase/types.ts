@@ -202,6 +202,8 @@ export type Database = {
         Row: {
           api_credentials: Json | null
           created_at: string
+          encrypted_api_credentials: string | null
+          encryption_version: number | null
           id: string
           integration_name: string
           integration_status: string
@@ -215,6 +217,8 @@ export type Database = {
         Insert: {
           api_credentials?: Json | null
           created_at?: string
+          encrypted_api_credentials?: string | null
+          encryption_version?: number | null
           id?: string
           integration_name: string
           integration_status?: string
@@ -228,6 +232,8 @@ export type Database = {
         Update: {
           api_credentials?: Json | null
           created_at?: string
+          encrypted_api_credentials?: string | null
+          encryption_version?: number | null
           id?: string
           integration_name?: string
           integration_status?: string
@@ -1150,6 +1156,8 @@ export type Database = {
         Row: {
           created_at: string
           email: string
+          encrypted_stripe_customer_id: string | null
+          encryption_version: number | null
           id: string
           stripe_customer_id: string | null
           subscribed: boolean
@@ -1162,6 +1170,8 @@ export type Database = {
         Insert: {
           created_at?: string
           email: string
+          encrypted_stripe_customer_id?: string | null
+          encryption_version?: number | null
           id?: string
           stripe_customer_id?: string | null
           subscribed?: boolean
@@ -1174,6 +1184,8 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string
+          encrypted_stripe_customer_id?: string | null
+          encryption_version?: number | null
           id?: string
           stripe_customer_id?: string | null
           subscribed?: boolean
