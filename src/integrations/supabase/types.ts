@@ -1394,6 +1394,10 @@ export type Database = {
         Args: { email_address: string }
         Returns: string
       }
+      simple_email_mask: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       unlock_account: {
         Args: { target_user_id: string }
         Returns: boolean
