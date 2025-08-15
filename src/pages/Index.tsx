@@ -1,39 +1,17 @@
 
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
-import { Leaf, LogOut } from 'lucide-react';
+import { Leaf, LogOut, LogIn } from 'lucide-react';
 
 const Index = () => {
-  const { user, loading, signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth');
-    }
-  }, [user, loading, navigate]);
 
   const handleStartAnalysis = () => {
     navigate('/soil-analysis');
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null; // Will redirect to auth page
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-primary/5">
@@ -69,13 +47,22 @@ const Index = () => {
             <Button variant="ghost" size="sm" onClick={() => navigate('/tour-guide')}>
               Tour Guide
             </Button>
-            <span className="text-sm text-muted-foreground">
-              Welcome, {user.email}
-            </span>
-            <Button variant="outline" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
+            {user ? (
+              <>
+                <span className="text-sm text-muted-foreground">
+                  Welcome, {user.email}
+                </span>
+                <Button variant="outline" size="sm" onClick={signOut}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <Button variant="outline" size="sm" onClick={() => navigate('/auth')}>
+                <LogIn className="h-4 w-4 mr-2" />
+                Sign In
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -92,13 +79,22 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                <div className="bg-primary/5 p-6 rounded-lg border border-primary/20">
-                  <h3 className="text-lg font-semibold text-primary mb-2">🌱 Free Trial Active</h3>
-                  <p className="text-muted-foreground">
-                    You're on a 7-day free trial with access to premium features. 
-                    After your trial, upgrade to maintain unlimited county lookups and export capabilities.
-                  </p>
-                </div>
+                {user ? (
+                  <div className="bg-primary/5 p-6 rounded-lg border border-primary/20">
+                    <h3 className="text-lg font-semibold text-primary mb-2">🌱 Free Trial Active</h3>
+                    <p className="text-muted-foreground">
+                      You're on a 7-day free trial with access to premium features. 
+                      After your trial, upgrade to maintain unlimited county lookups and export capabilities.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-secondary/5 p-6 rounded-lg border border-secondary/20">
+                    <h3 className="text-lg font-semibold text-secondary-foreground mb-2">🌾 Welcome to SoilSidekick Pro</h3>
+                    <p className="text-muted-foreground">
+                      Sign in to access premium features including unlimited county lookups, detailed analysis, and export capabilities.
+                    </p>
+                  </div>
+                )}
                 
                 <div className="text-center space-y-4">
                   <p className="text-muted-foreground">
