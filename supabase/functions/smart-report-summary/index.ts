@@ -37,18 +37,37 @@ serve(async (req) => {
       throw new Error('Missing reportType or reportData');
     }
 
-    // Try GPT-5 first, fall back to GPT-4o
+    // Use reliable GPT models with fallback chain
     const openaiKey = Deno.env.get('OPENAI_API_KEY') || Deno.env.get('GPT5_API_KEY');
     if (!openaiKey) {
       throw new Error('OpenAI API key not configured');
     }
 
     let summary;
+    let lastError;
+    
+    // Try GPT-4.1 first (most reliable)
     try {
-      summary = await generateSummaryWithGPT5(reportType, reportData, openaiKey);
-    } catch (gpt5Error) {
-      console.log('GPT-5 failed, falling back to GPT-4o:', gpt5Error);
-      summary = await generateSummaryWithGPT4(reportType, reportData, openaiKey);
+      summary = await generateSummaryWithGPT4_1(reportType, reportData, openaiKey);
+    } catch (gpt4_1Error) {
+      console.log('GPT-4.1 failed, trying GPT-5:', gpt4_1Error);
+      lastError = gpt4_1Error;
+      
+      // Fallback to GPT-5
+      try {
+        summary = await generateSummaryWithGPT5(reportType, reportData, openaiKey);
+      } catch (gpt5Error) {
+        console.log('GPT-5 failed, falling back to GPT-4o-mini:', gpt5Error);
+        lastError = gpt5Error;
+        
+        // Final fallback to GPT-4o-mini
+        try {
+          summary = await generateSummaryWithGPT4Mini(reportType, reportData, openaiKey);
+        } catch (finalError) {
+          console.error('All models failed:', finalError);
+          throw new Error(`All AI models failed. Last error: ${finalError.message}`);
+        }
+      }
     }
 
     return new Response(JSON.stringify({ 
@@ -70,6 +89,43 @@ serve(async (req) => {
   }
 });
 
+async function generateSummaryWithGPT4_1(reportType: string, reportData: any, apiKey: string) {
+  const systemPrompt = reportType === 'soil' 
+    ? getSoilReportSystemPrompt() 
+    : getWaterQualitySystemPrompt();
+
+  const userPrompt = reportType === 'soil'
+    ? formatSoilReportData(reportData)
+    : formatWaterQualityData(reportData);
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'gpt-4.1-2025-04-14',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
+      max_completion_tokens: 800
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`GPT-4.1 API error: ${response.status} - ${errorText}`);
+  }
+
+  const data = await response.json();
+  return {
+    content: data.choices[0].message.content,
+    modelUsed: 'gpt-4.1-2025-04-14'
+  };
+}
+
 async function generateSummaryWithGPT5(reportType: string, reportData: any, apiKey: string) {
   const systemPrompt = reportType === 'soil' 
     ? getSoilReportSystemPrompt() 
@@ -86,28 +142,28 @@ async function generateSummaryWithGPT5(reportType: string, reportData: any, apiK
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'gpt-5-turbo',
+      model: 'gpt-5-2025-08-07',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
       ],
-      temperature: 0.3,
-      max_tokens: 800
+      max_completion_tokens: 800
     }),
   });
 
   if (!response.ok) {
-    throw new Error(`GPT-5 API error: ${response.status}`);
+    const errorText = await response.text();
+    throw new Error(`GPT-5 API error: ${response.status} - ${errorText}`);
   }
 
   const data = await response.json();
   return {
     content: data.choices[0].message.content,
-    modelUsed: 'gpt-5-turbo'
+    modelUsed: 'gpt-5-2025-08-07'
   };
 }
 
-async function generateSummaryWithGPT4(reportType: string, reportData: any, apiKey: string) {
+async function generateSummaryWithGPT4Mini(reportType: string, reportData: any, apiKey: string) {
   const systemPrompt = reportType === 'soil' 
     ? getSoilReportSystemPrompt() 
     : getWaterQualitySystemPrompt();
@@ -123,7 +179,7 @@ async function generateSummaryWithGPT4(reportType: string, reportData: any, apiK
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'gpt-4o',
+      model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
@@ -134,13 +190,14 @@ async function generateSummaryWithGPT4(reportType: string, reportData: any, apiK
   });
 
   if (!response.ok) {
-    throw new Error(`GPT-4o API error: ${response.status}`);
+    const errorText = await response.text();
+    throw new Error(`GPT-4o-mini API error: ${response.status} - ${errorText}`);
   }
 
   const data = await response.json();
   return {
     content: data.choices[0].message.content,
-    modelUsed: 'gpt-4o'
+    modelUsed: 'gpt-4o-mini'
   };
 }
 
