@@ -3,9 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Brain, Sparkles, RefreshCw, AlertCircle } from 'lucide-react';
+import { Brain, Sparkles, RefreshCw, AlertCircle, Cpu, Wifi } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { LocalLLMToggle } from './LocalLLMToggle';
+import { localLLMService, LocalLLMConfig } from '@/services/localLLMService';
 
 interface SmartReportSummaryProps {
   reportType: 'soil' | 'water';
@@ -22,6 +24,12 @@ export const SmartReportSummary: React.FC<SmartReportSummaryProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [modelUsed, setModelUsed] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [useLocalLLM, setUseLocalLLM] = useState(false);
+  const [localLLMConfig, setLocalLLMConfig] = useState<LocalLLMConfig>({
+    model: 'gemma-2b',
+    maxTokens: 256,
+    temperature: 0.7
+  });
   const { toast } = useToast();
 
   const generateSummary = async () => {
@@ -29,32 +37,48 @@ export const SmartReportSummary: React.FC<SmartReportSummaryProps> = ({
     setError('');
     
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        throw new Error('Authentication required');
-      }
-
-      const response = await supabase.functions.invoke('smart-report-summary', {
-        body: {
+      if (useLocalLLM) {
+        // Use local LLM
+        const summary = await localLLMService.generateSummary(
           reportType,
-          reportData
-        }
-      });
-
-      if (response.error) {
-        throw new Error(response.error.message || 'Failed to generate summary');
-      }
-
-      if (response.data?.success) {
-        setSummary(response.data.summary.content);
-        setModelUsed(response.data.modelUsed);
+          reportData,
+          localLLMConfig
+        );
+        setSummary(summary);
+        setModelUsed(`${localLLMConfig.model}-local`);
         toast({
           title: "Summary Generated",
-          description: `Executive summary created using ${response.data.modelUsed.toUpperCase()}`,
+          description: `Executive summary created using local ${localLLMConfig.model} model`,
         });
       } else {
-        throw new Error(response.data?.error || 'Failed to generate summary');
+        // Use cloud LLM
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          throw new Error('Authentication required');
+        }
+
+        const response = await supabase.functions.invoke('smart-report-summary', {
+          body: {
+            reportType,
+            reportData
+          }
+        });
+
+        if (response.error) {
+          throw new Error(response.error.message || 'Failed to generate summary');
+        }
+
+        if (response.data?.success) {
+          setSummary(response.data.summary.content);
+          setModelUsed(response.data.modelUsed);
+          toast({
+            title: "Summary Generated",
+            description: `Executive summary created using ${response.data.modelUsed.toUpperCase()}`,
+          });
+        } else {
+          throw new Error(response.data?.error || 'Failed to generate summary');
+        }
       }
     } catch (err: any) {
       const errorMessage = err.message || 'Failed to generate summary';
@@ -77,58 +101,78 @@ export const SmartReportSummary: React.FC<SmartReportSummaryProps> = ({
 
   if (!summary && !isLoading && !error) {
     return (
-      <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Brain className="h-5 w-5 text-primary" />
-            AI Executive Summary
-            <Badge variant="outline" className="ml-2">
-              GPT-5 Enhanced
-            </Badge>
-          </CardTitle>
-          <CardDescription>
-            Generate an intelligent executive summary of your {reportType} analysis using advanced AI reasoning
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button onClick={generateSummary} className="w-full">
-            <Sparkles className="h-4 w-4 mr-2" />
-            Generate Smart Summary
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="space-y-4">
+        <LocalLLMToggle
+          enabled={useLocalLLM}
+          onToggle={setUseLocalLLM}
+          onConfigChange={setLocalLLMConfig}
+          currentConfig={localLLMConfig}
+        />
+        
+        <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              {useLocalLLM ? <Cpu className="h-5 w-5 text-primary" /> : <Brain className="h-5 w-5 text-primary" />}
+              AI Executive Summary
+              <Badge variant="outline" className="ml-2">
+                {useLocalLLM ? `${localLLMConfig.model} Local` : 'GPT-5 Enhanced'}
+              </Badge>
+            </CardTitle>
+            <CardDescription>
+              Generate an intelligent executive summary of your {reportType} analysis using {useLocalLLM ? 'local offline AI' : 'advanced cloud AI reasoning'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={generateSummary} className="w-full" disabled={useLocalLLM && !localLLMService.isAvailable()}>
+              {useLocalLLM ? <Cpu className="h-4 w-4 mr-2" /> : <Sparkles className="h-4 w-4 mr-2" />}
+              Generate Smart Summary
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="h-5 w-5 text-primary" />
-              AI Executive Summary
-              {modelUsed && (
-                <Badge variant={modelUsed.includes('gpt-5') ? 'default' : 'secondary'}>
-                  {modelUsed.toUpperCase()}
-                </Badge>
-              )}
-            </CardTitle>
-            <CardDescription>
-              Intelligent analysis powered by advanced AI reasoning
-            </CardDescription>
+    <div className="space-y-4">
+      <LocalLLMToggle
+        enabled={useLocalLLM}
+        onToggle={setUseLocalLLM}
+        onConfigChange={setLocalLLMConfig}
+        currentConfig={localLLMConfig}
+      />
+      
+      <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                {modelUsed.includes('local') ? <Cpu className="h-5 w-5 text-primary" /> : <Brain className="h-5 w-5 text-primary" />}
+                AI Executive Summary
+                {modelUsed && (
+                  <Badge variant={modelUsed.includes('gpt-5') ? 'default' : modelUsed.includes('local') ? 'outline' : 'secondary'}>
+                    {modelUsed.includes('local') ? 
+                      modelUsed.replace('-local', '').toUpperCase() + ' (Local)' : 
+                      modelUsed.toUpperCase()
+                    }
+                  </Badge>
+                )}
+              </CardTitle>
+              <CardDescription>
+                Intelligent analysis powered by {modelUsed.includes('local') ? 'local offline AI' : 'advanced cloud AI reasoning'}
+              </CardDescription>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={generateSummary}
+              disabled={isLoading || (useLocalLLM && !localLLMService.isAvailable())}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={generateSummary}
-            disabled={isLoading}
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
-        </div>
-      </CardHeader>
+        </CardHeader>
       <CardContent>
         {isLoading ? (
           <div className="space-y-3">
@@ -166,5 +210,6 @@ export const SmartReportSummary: React.FC<SmartReportSummaryProps> = ({
         )}
       </CardContent>
     </Card>
+    </div>
   );
 };
