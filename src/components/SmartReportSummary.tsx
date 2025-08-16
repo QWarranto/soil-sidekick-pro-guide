@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { LocalLLMToggle } from './LocalLLMToggle';
 import { localLLMService, LocalLLMConfig } from '@/services/localLLMService';
+import { useSmartLLMSelection } from '@/hooks/useSmartLLMSelection';
 
 interface SmartReportSummaryProps {
   reportType: 'soil' | 'water';
@@ -24,12 +25,23 @@ export const SmartReportSummary: React.FC<SmartReportSummaryProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [modelUsed, setModelUsed] = useState<string>('');
   const [error, setError] = useState<string>('');
-  const [useLocalLLM, setUseLocalLLM] = useState(false);
-  const [localLLMConfig, setLocalLLMConfig] = useState<LocalLLMConfig>({
+  
+  const {
+    state: smartState,
+    localLLMConfig,
+    setLocalLLMConfig,
+    setManualMode,
+    enableAutoMode,
+    enablePrivacyMode,
+    enableBatterySavingMode,
+    getStatusMessage,
+    isAutoMode
+  } = useSmartLLMSelection({
     model: 'gemma-2b',
     maxTokens: 256,
     temperature: 0.7
   });
+  
   const { toast } = useToast();
 
   const generateSummary = async () => {
@@ -37,7 +49,7 @@ export const SmartReportSummary: React.FC<SmartReportSummaryProps> = ({
     setError('');
     
     try {
-      if (useLocalLLM) {
+      if (smartState.useLocalLLM) {
         // Use local LLM
         const summary = await localLLMService.generateSummary(
           reportType,
@@ -103,28 +115,33 @@ export const SmartReportSummary: React.FC<SmartReportSummaryProps> = ({
     return (
       <div className="space-y-4">
         <LocalLLMToggle
-          enabled={useLocalLLM}
-          onToggle={setUseLocalLLM}
+          enabled={smartState.useLocalLLM}
+          onToggle={setManualMode}
           onConfigChange={setLocalLLMConfig}
           currentConfig={localLLMConfig}
+          smartState={smartState}
+          onEnableAutoMode={enableAutoMode}
+          onEnablePrivacyMode={enablePrivacyMode}
+          onEnableBatterySaving={enableBatterySavingMode}
+          isAutoMode={isAutoMode}
         />
         
         <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              {useLocalLLM ? <Cpu className="h-5 w-5 text-primary" /> : <Brain className="h-5 w-5 text-primary" />}
+              {smartState.useLocalLLM ? <Cpu className="h-5 w-5 text-primary" /> : <Brain className="h-5 w-5 text-primary" />}
               AI Executive Summary
               <Badge variant="outline" className="ml-2">
-                {useLocalLLM ? `${localLLMConfig.model} Local` : 'GPT-5 Enhanced'}
+                {smartState.useLocalLLM ? `${localLLMConfig.model} Local` : 'GPT-5 Enhanced'}
               </Badge>
             </CardTitle>
             <CardDescription>
-              Generate an intelligent executive summary of your {reportType} analysis using {useLocalLLM ? 'local offline AI' : 'advanced cloud AI reasoning'}
+              Generate an intelligent executive summary of your {reportType} analysis using {smartState.useLocalLLM ? 'local offline AI' : 'advanced cloud AI reasoning'}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={generateSummary} className="w-full" disabled={useLocalLLM && !localLLMService.isAvailable()}>
-              {useLocalLLM ? <Cpu className="h-4 w-4 mr-2" /> : <Sparkles className="h-4 w-4 mr-2" />}
+            <Button onClick={generateSummary} className="w-full" disabled={smartState.useLocalLLM && !localLLMService.isAvailable()}>
+              {smartState.useLocalLLM ? <Cpu className="h-4 w-4 mr-2" /> : <Sparkles className="h-4 w-4 mr-2" />}
               Generate Smart Summary
             </Button>
           </CardContent>
@@ -136,10 +153,15 @@ export const SmartReportSummary: React.FC<SmartReportSummaryProps> = ({
   return (
     <div className="space-y-4">
       <LocalLLMToggle
-        enabled={useLocalLLM}
-        onToggle={setUseLocalLLM}
+        enabled={smartState.useLocalLLM}
+        onToggle={setManualMode}
         onConfigChange={setLocalLLMConfig}
         currentConfig={localLLMConfig}
+        smartState={smartState}
+        onEnableAutoMode={enableAutoMode}
+        onEnablePrivacyMode={enablePrivacyMode}
+        onEnableBatterySaving={enableBatterySavingMode}
+        isAutoMode={isAutoMode}
       />
       
       <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
@@ -166,7 +188,7 @@ export const SmartReportSummary: React.FC<SmartReportSummaryProps> = ({
               variant="outline"
               size="sm"
               onClick={generateSummary}
-              disabled={isLoading || (useLocalLLM && !localLLMService.isAvailable())}
+              disabled={isLoading || (smartState.useLocalLLM && !localLLMService.isAvailable())}
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
               Refresh
