@@ -18,6 +18,10 @@ Master USDA soil data interpretation, pH optimization, and nutrient recommendati
 **EPA data integration**
 Understand water quality monitoring, contamination detection, and eco-friendly farming practices.
 
+### Local AI Processing
+**Offline agricultural intelligence**
+Use Google Gemma models for privacy-preserving AI analysis that works without internet connectivity.
+
 ---
 
 ## Getting Started
@@ -38,7 +42,7 @@ Get comprehensive soil analysis with pH levels, organic matter, and nutrient rec
 #### 3. Explore Features
 Navigate between Soil Analysis, Water Quality, Planting Calendar, and Fertilizer Footprint tools. Each provides specialized agricultural intelligence.
 
-**Remember:** All features integrate with real-time EPA and satellite data for accuracy.
+**Remember:** All features integrate with real-time EPA and satellite data for accuracy. Local AI processing is available for offline analysis.
 
 #### 4. Export & Share
 Generate professional PDF reports for your analysis. Pro subscribers get enhanced exports with detailed recommendations and environmental impact assessments.
@@ -336,6 +340,92 @@ Content-Type: application/json
 
 **Professional Installation**
 For large-scale operations or complex installations, we recommend working with certified agricultural technology providers.
+
+---
+
+## Local AI Processing Guide
+
+### Gemma Language Model Integration
+
+SoilSidekick Pro now includes Google's Gemma language models for local processing, providing offline agricultural intelligence capabilities with complete privacy protection.
+
+#### Available Models
+
+**Gemma 2B (Summary Model)**
+- Optimized for quick soil analysis summaries
+- Fast processing on mobile devices
+- Low memory requirements (2-4 GB)
+- Ideal for basic recommendations
+
+**Gemma 7B (Chat Model)**
+- Advanced agricultural Q&A capabilities
+- Detailed crop guidance and planning
+- Higher accuracy for complex queries
+- Requires 8-16 GB RAM for optimal performance
+
+#### Smart Model Selection
+
+The system automatically chooses between cloud GPT-5 and local Gemma models based on:
+
+**Auto-Switch Conditions:**
+- **Offline Detection:** Automatically uses local models when internet is unavailable
+- **Slow Connection:** Switches to local processing when internet speed is below 1 Mbps
+- **Battery Saving Mode:** Uses efficient local models to preserve device battery
+- **Privacy Mode:** Keeps all agricultural data on your device
+
+**Manual Controls:**
+- **Auto Mode:** Let the system choose the best model automatically
+- **Privacy Mode:** Force all processing to stay local
+- **Battery Mode:** Optimize for power efficiency
+- **Cloud Mode:** Always use cloud GPT-5 when available
+
+#### Using Local AI Features
+
+**Offline Soil Analysis**
+1. Enable local processing in Settings → AI Processing
+2. Allow model download (2-8 GB depending on model)
+3. Generate soil analysis summaries without internet
+4. Export reports with local AI recommendations
+
+**Agricultural Chat Assistant**
+1. Toggle to "Local Mode" in the chat interface
+2. Ask questions about crops, soil, and farming practices
+3. Get instant responses without sending data to the cloud
+4. Access historical knowledge base offline
+
+#### Privacy & Security Benefits
+
+**Complete Data Privacy**
+- No agricultural data sent to external servers
+- All AI processing happens on your device
+- Sensitive farm information remains confidential
+- No dependency on cloud service availability
+
+**Offline Capabilities**
+- Work in remote field locations without internet
+- Continue analysis during network outages
+- Reduced data usage for mobile connections
+- No latency from network requests
+
+#### Performance Optimization
+
+**WebGPU Acceleration**
+- Requires modern browser with WebGPU support
+- Chrome 94+, Edge 94+, Firefox with experimental features
+- Significantly faster processing than CPU-only
+- Automatic fallback to CPU if WebGPU unavailable
+
+**Model Caching**
+- Models download once and cache locally
+- Persistent storage across browser sessions
+- Automatic updates for model improvements
+- Option to clear cache if storage space needed
+
+**System Requirements**
+- Minimum 4 GB RAM for Gemma 2B
+- Recommended 8+ GB RAM for Gemma 7B
+- WebGPU-compatible graphics card preferred
+- 5-10 GB free storage for model caching
 
 ---
 

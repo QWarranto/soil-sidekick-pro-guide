@@ -28,7 +28,9 @@ import {
   Shield,
   Key,
   RefreshCw,
-  Calendar
+  Calendar,
+  Brain,
+  Battery
 } from 'lucide-react';
 
 const UserGuide = () => {
@@ -136,9 +138,10 @@ const UserGuide = () => {
 
           {/* Main Guide Content */}
           <Tabs defaultValue="getting-started" className="w-full">
-            <TabsList className="grid w-full grid-cols-8">
+            <TabsList className="grid w-full grid-cols-9">
               <TabsTrigger value="getting-started">Getting Started</TabsTrigger>
               <TabsTrigger value="gpt5-features">GPT-5 Features</TabsTrigger>
+              <TabsTrigger value="local-ai">Local AI</TabsTrigger>
               <TabsTrigger value="alpha-earth">AlphaEarth</TabsTrigger>
               <TabsTrigger value="soil-analysis">Soil Analysis</TabsTrigger>
               <TabsTrigger value="environmental">Environmental</TabsTrigger>

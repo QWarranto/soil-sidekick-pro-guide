@@ -23,7 +23,8 @@ import {
   PlayCircle,
   Lightbulb,
   Target,
-  Camera
+  Camera,
+  Brain
 } from 'lucide-react';
 
 interface TourStep {
@@ -163,6 +164,23 @@ const tourSteps: TourStep[] = [
   },
   {
     id: 9,
+    title: "Local AI Processing",
+    description: "Privacy-preserving agricultural intelligence using Google Gemma models that run on your device.",
+    features: [
+      "Offline AI capabilities",
+      "Complete data privacy",
+      "Google Gemma 2B/7B models",
+      "WebGPU acceleration",
+      "Smart model selection",
+      "Battery saving mode"
+    ],
+    icon: Brain,
+    route: "/soil-analysis",
+    color: "text-purple-600",
+    badge: "Privacy First"
+  },
+  {
+    id: 10,
     title: "ADAPT Integration Hub",
     description: "Seamlessly connect with existing farm management systems through ADAPT Standard 1.0 compatibility.",
     features: [

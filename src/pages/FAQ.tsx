@@ -42,7 +42,15 @@ const FAQ = () => {
     },
     {
       question: "What exactly is \"Agricultural Intelligence\"?",
-      answer: "It's the new umbrella for SoilSidekick Pro's combined soil + water insights, planting calendars, and eco-fertilizer recommendations—delivered county-by-county, in plain English, with government-grade data from USDA & EPA. Now enhanced with ADAPT Standard 1.0 integration, Google AlphaEarth satellite intelligence, and GPT-5 powered agricultural intelligence for comprehensive environmental impact analysis."
+      answer: "It's the new umbrella for SoilSidekick Pro's combined soil + water insights, planting calendars, and eco-fertilizer recommendations—delivered county-by-county, in plain English, with government-grade data from USDA & EPA. Now enhanced with ADAPT Standard 1.0 integration, Google AlphaEarth satellite intelligence, local Gemma AI processing, and GPT-5 powered agricultural intelligence for comprehensive environmental impact analysis."
+    },
+    {
+      question: "What is local AI processing and how does it protect my privacy?",
+      answer: "Local AI processing uses Google's Gemma language models that run directly on your device. This means your agricultural data never leaves your computer - all AI analysis happens locally. You get intelligent recommendations and summaries while maintaining complete data privacy, and it works even without internet connectivity."
+    },
+    {
+      question: "Do I need internet connectivity to use SoilSidekick Pro?",
+      answer: "While internet connectivity is required for real-time EPA data and satellite imagery, our local AI processing allows you to generate soil analysis summaries and get agricultural guidance offline. The system automatically switches between cloud and local processing based on your connection status and privacy preferences."
     },
     {
       question: "What is AlphaEarth satellite enhancement and how does it work?",
