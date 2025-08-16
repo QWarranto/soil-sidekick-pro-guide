@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { Leaf, LogOut, LogIn } from 'lucide-react';
+import LeadCapture from '@/components/LeadCapture';
 
 const Index = () => {
   const { user, signOut } = useAuth();
@@ -79,6 +80,11 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
+                {/* Lead Capture Section - Show for non-authenticated users */}
+                {!user && (
+                  <LeadCapture />
+                )}
+                
                 {user ? (
                   <div className="bg-primary/5 p-6 rounded-lg border border-primary/20">
                     <h3 className="text-lg font-semibold text-primary mb-2">🌱 Free Trial Active</h3>
