@@ -23,6 +23,7 @@ import BusinessCase from "./pages/BusinessCase";
 import SeasonalPlanning from "./pages/SeasonalPlanning";
 import TourGuide from "./pages/TourGuide";
 import Disclaimer from "./pages/Disclaimer";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import { FieldMapping } from "./pages/FieldMapping";
 import NotFound from "./pages/NotFound";
 
@@ -54,6 +55,7 @@ const App = () => (
         <Route path="/field-mapping" element={<FieldMapping />} />
         <Route path="/tour-guide" element={<TourGuide />} />
         <Route path="/disclaimer" element={<Disclaimer />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
