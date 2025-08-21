@@ -18,7 +18,10 @@ const Auth = () => {
   const [showPasswordUpdate, setShowPasswordUpdate] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const { signIn, signUp, signInWithGoogle, signInWithApple, resetPassword, updatePassword, user, session } = useAuth();
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+  const [showPhoneVerification, setShowPhoneVerification] = useState(false);
+  const { signIn, signUp, signInWithGoogle, signInWithApple, signInWithPhone, verifyOtp, resetPassword, updatePassword, user, session } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -105,6 +108,32 @@ const Auth = () => {
     setLoading(false);
   };
 
+  const handlePhoneSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    const { error } = await signInWithPhone(phone);
+    
+    if (!error) {
+      setShowPhoneVerification(true);
+    }
+    
+    setLoading(false);
+  };
+
+  const handleOtpVerification = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    const { error } = await verifyOtp(phone, otp);
+    
+    if (!error) {
+      navigate('/');
+    }
+    
+    setLoading(false);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-primary/5 p-4">
       <Card className="w-full max-w-md">
@@ -156,9 +185,10 @@ const Auth = () => {
             </div>
           ) : (
           <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="signin">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              <TabsTrigger value="phone">Phone</TabsTrigger>
             </TabsList>
             
             <TabsContent value="signin">
@@ -360,6 +390,62 @@ const Auth = () => {
                   Start your 7-day free trial • No credit card required
                 </p>
               </form>
+            </TabsContent>
+
+            <TabsContent value="phone">
+              {!showPhoneVerification ? (
+                <form onSubmit={handlePhoneSignIn} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+1234567890"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Include country code (e.g., +1 for US)
+                    </p>
+                  </div>
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? 'Sending OTP...' : 'Send Verification Code'}
+                  </Button>
+                </form>
+              ) : (
+                <form onSubmit={handleOtpVerification} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="otp">Verification Code</Label>
+                    <Input
+                      id="otp"
+                      type="text"
+                      placeholder="123456"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      required
+                      maxLength={6}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Enter the 6-digit code sent to {phone}
+                    </p>
+                  </div>
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? 'Verifying...' : 'Verify Code'}
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => {
+                      setShowPhoneVerification(false);
+                      setOtp('');
+                    }}
+                  >
+                    Back to Phone Number
+                  </Button>
+                </form>
+              )}
             </TabsContent>
           </Tabs>
           )}

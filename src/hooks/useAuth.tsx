@@ -20,6 +20,8 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName?: string) => Promise<{ error: any }>;
   signInWithGoogle: () => Promise<{ error: any }>;
   signInWithApple: () => Promise<{ error: any }>;
+  signInWithPhone: (phone: string) => Promise<{ error: any }>;
+  verifyOtp: (phone: string, token: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: any }>;
   updatePassword: (newPassword: string) => Promise<{ error: any }>;
@@ -241,6 +243,71 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signInWithPhone = async (phone: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        phone,
+        options: {
+          shouldCreateUser: true,
+        }
+      });
+      
+      if (error) {
+        toast({
+          title: "Phone sign in failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "OTP sent!",
+          description: "Check your phone for the verification code.",
+        });
+      }
+      
+      return { error };
+    } catch (error: any) {
+      toast({
+        title: "Phone sign in failed",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+      return { error };
+    }
+  };
+
+  const verifyOtp = async (phone: string, token: string) => {
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        phone,
+        token,
+        type: 'sms'
+      });
+      
+      if (error) {
+        toast({
+          title: "Verification failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Phone verified successfully!",
+          description: "You are now signed in.",
+        });
+      }
+      
+      return { error };
+    } catch (error: any) {
+      toast({
+        title: "Verification failed",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+      return { error };
+    }
+  };
+
   const updatePassword = async (newPassword: string) => {
     try {
       const { error } = await supabase.auth.updateUser({
@@ -281,6 +348,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signInWithGoogle,
     signInWithApple,
+    signInWithPhone,
+    verifyOtp,
     signOut,
     resetPassword,
     updatePassword,
