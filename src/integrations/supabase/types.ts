@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -873,6 +873,48 @@ export type Database = {
           },
         ]
       }
+      fields: {
+        Row: {
+          area_acres: number | null
+          boundary_coordinates: Json
+          created_at: string
+          crop_type: string | null
+          description: string | null
+          harvest_date: string | null
+          id: string
+          name: string
+          planting_date: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          area_acres?: number | null
+          boundary_coordinates: Json
+          created_at?: string
+          crop_type?: string | null
+          description?: string | null
+          harvest_date?: string | null
+          id?: string
+          name: string
+          planting_date?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          area_acres?: number | null
+          boundary_coordinates?: Json
+          created_at?: string
+          crop_type?: string | null
+          description?: string | null
+          harvest_date?: string | null
+          id?: string
+          name?: string
+          planting_date?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       fips_data_cache: {
         Row: {
           access_count: number | null
@@ -1521,7 +1563,7 @@ export type Database = {
     }
     Functions: {
       can_use_feature: {
-        Args: { p_user_id: string; p_feature_name: string }
+        Args: { p_feature_name: string; p_user_id: string }
         Returns: boolean
       }
       check_cost_alerts: {
@@ -1530,8 +1572,8 @@ export type Database = {
           alert_id: string
           alert_name: string
           current_amount: number
-          threshold_amount: number
           percentage_used: number
+          threshold_amount: number
         }[]
       }
       check_password_strength: {
@@ -1556,18 +1598,18 @@ export type Database = {
       }
       get_cost_summary: {
         Args: {
-          p_start_date?: string
           p_end_date?: string
           p_service_provider?: string
+          p_start_date?: string
         }
         Returns: {
+          avg_cost_per_request: number
           date_bucket: string
           service_provider: string
           service_type: string
           total_cost: number
           total_usage: number
           unique_users: number
-          avg_cost_per_request: number
         }[]
       }
       get_decrypted_stripe_customer_id: {
@@ -1577,41 +1619,41 @@ export type Database = {
       get_secure_account_security_info: {
         Args: { target_user_id?: string }
         Returns: {
-          id: string
-          user_id: string
-          failed_login_attempts: number
           account_locked: boolean
+          backup_codes_generated: boolean
+          created_at: string
+          email_encryption_version: number
+          failed_login_attempts: number
+          id: string
+          last_suspicious_activity: string
+          lock_reason: string
           locked_until: string
+          masked_email: string
+          masked_recovery_email: string
           password_changed_at: string
           password_strength_score: number
           requires_password_change: boolean
-          two_factor_enabled: boolean
-          backup_codes_generated: boolean
           suspicious_activity_count: number
-          last_suspicious_activity: string
-          created_at: string
+          two_factor_enabled: boolean
           updated_at: string
-          email_encryption_version: number
-          lock_reason: string
-          masked_email: string
-          masked_recovery_email: string
+          user_id: string
         }[]
       }
       get_usage_summary: {
         Args: {
-          p_start_date?: string
           p_end_date?: string
+          p_start_date?: string
           p_subscription_tier?: string
         }
         Returns: {
-          date_bucket: string
-          subscription_tier: string
-          feature_name: string
           action_type: string
-          event_count: number
-          unique_users: number
           avg_duration: number
           avg_success_rate: number
+          date_bucket: string
+          event_count: number
+          feature_name: string
+          subscription_tier: string
+          unique_users: number
         }[]
       }
       get_user_email_for_security: {
@@ -1632,19 +1674,19 @@ export type Database = {
       }
       handle_login_attempt: {
         Args: {
-          user_email: string
           attempt_success: boolean
           client_ip?: unknown
-          user_agent_string?: string
           failure_reason_text?: string
+          user_agent_string?: string
+          user_email: string
         }
         Returns: Json
       }
       increment_usage: {
         Args: {
-          p_user_id: string
           p_feature_name: string
           p_increment?: number
+          p_user_id: string
         }
         Returns: boolean
       }
@@ -1669,7 +1711,7 @@ export type Database = {
         Returns: undefined
       }
       rotate_api_key: {
-        Args: { old_key_id: string; new_key_hash: string }
+        Args: { new_key_hash: string; old_key_id: string }
         Returns: string
       }
       sanitize_email_for_audit: {
@@ -1682,26 +1724,26 @@ export type Database = {
       }
       track_api_cost: {
         Args: {
-          p_service_provider: string
-          p_service_type: string
           p_cost_usd: number
-          p_user_id: string
           p_feature_name: string
           p_request_details?: Json
+          p_service_provider: string
+          p_service_type: string
+          p_user_id: string
         }
         Returns: string
       }
       track_usage_event: {
         Args: {
-          p_user_id: string
-          p_session_id: string
-          p_feature_name: string
           p_action_type: string
-          p_subscription_tier: string
           p_duration_seconds?: number
-          p_success_rate?: number
           p_error_details?: Json
+          p_feature_name: string
           p_metadata?: Json
+          p_session_id: string
+          p_subscription_tier: string
+          p_success_rate?: number
+          p_user_id: string
         }
         Returns: string
       }
@@ -1712,19 +1754,19 @@ export type Database = {
       validate_and_sanitize_input: {
         Args: {
           input_value: string
-          validation_type?: string
           max_length?: number
+          validation_type?: string
         }
         Returns: string
       }
       validate_api_key: {
-        Args: { key_hash: string } | { key_hash: string; client_ip?: unknown }
+        Args: { client_ip?: unknown; key_hash: string } | { key_hash: string }
         Returns: {
-          user_id: string
+          is_valid: boolean
           permissions: Json
           rate_limit: number
           rate_window_minutes: number
-          is_valid: boolean
+          user_id: string
         }[]
       }
       validate_service_operation: {

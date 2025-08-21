@@ -23,6 +23,7 @@ import BusinessCase from "./pages/BusinessCase";
 import SeasonalPlanning from "./pages/SeasonalPlanning";
 import TourGuide from "./pages/TourGuide";
 import Disclaimer from "./pages/Disclaimer";
+import { FieldMapping } from "./pages/FieldMapping";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const App = () => (
         <Route path="/adapt-integration" element={<AdaptIntegration />} />
         <Route path="/business-case" element={<BusinessCase />} />
         <Route path="/seasonal-planning" element={<SeasonalPlanning />} />
+        <Route path="/field-mapping" element={<FieldMapping />} />
         <Route path="/tour-guide" element={<TourGuide />} />
         <Route path="/disclaimer" element={<Disclaimer />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
