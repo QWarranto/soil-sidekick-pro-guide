@@ -33,10 +33,17 @@ const Auth = () => {
     }
   }, [searchParams]);
 
-  // Redirect if already authenticated (but not in reset mode)
+  // Handle OAuth redirect and user redirect
   useEffect(() => {
     const mode = searchParams.get('mode');
+    const provider = searchParams.get('provider');
+    
+    if (provider) {
+      console.log(`OAuth redirect detected for ${provider}`);
+    }
+    
     if (user && mode !== 'reset' && !showPasswordUpdate) {
+      console.log('User authenticated, redirecting to dashboard');
       navigate('/');
     }
   }, [user, navigate, showPasswordUpdate, searchParams]);

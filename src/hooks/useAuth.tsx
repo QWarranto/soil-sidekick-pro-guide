@@ -189,14 +189,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGoogle = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      console.log('Starting Google OAuth with redirect:', `${window.location.origin}/`);
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/`
+          redirectTo: `${window.location.origin}/auth?provider=google`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         }
       });
       
+      console.log('Google OAuth response:', { data, error });
+      
       if (error) {
+        console.error('Google OAuth error:', error);
         toast({
           title: "Google sign in failed",
           description: error.message,
@@ -206,6 +214,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       return { error };
     } catch (error: any) {
+      console.error('Google OAuth catch error:', error);
       toast({
         title: "Google sign in failed",
         description: "An unexpected error occurred",
@@ -217,14 +226,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithApple = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      console.log('Starting Apple OAuth with redirect:', `${window.location.origin}/`);
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'apple',
         options: {
-          redirectTo: `${window.location.origin}/`
+          redirectTo: `${window.location.origin}/auth?provider=apple`,
+          scopes: 'name email'
         }
       });
       
+      console.log('Apple OAuth response:', { data, error });
+      
       if (error) {
+        console.error('Apple OAuth error:', error);
         toast({
           title: "Apple sign in failed",
           description: error.message,
@@ -234,6 +248,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       return { error };
     } catch (error: any) {
+      console.error('Apple OAuth catch error:', error);
       toast({
         title: "Apple sign in failed",
         description: "An unexpected error occurred",
