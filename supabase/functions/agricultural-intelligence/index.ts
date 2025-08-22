@@ -220,7 +220,7 @@ Deno.serve(async (req) => {
 });
 
 async function analyzeIntent(query: string, apiKey: string, useGPT5: boolean = false) {
-  const model = useGPT5 ? 'gpt-5' : 'gpt-4o-mini';
+  const model = useGPT5 ? 'gpt-5-mini-2025-08-07' : 'gpt-4o-mini';
   
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -410,7 +410,7 @@ async function gatherRelevantData(intentAnalysis: any, context: any, supabase: a
 }
 
 async function generateIntelligentResponse(query: string, intent: any, analyticsData: any, apiKey: string, useGPT5: boolean = false) {
-  const model = useGPT5 ? 'gpt-5' : 'gpt-4o-mini';
+  const model = useGPT5 ? 'gpt-5-mini-2025-08-07' : 'gpt-4o-mini';
   
   const systemPrompt = useGPT5 
     ? `You are SoilSidekick Pro's most advanced agricultural intelligence system, powered by GPT-5's superior reasoning capabilities. You have access to comprehensive agricultural analytics and can provide exceptionally sophisticated insights.

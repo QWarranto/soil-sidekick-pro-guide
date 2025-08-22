@@ -76,7 +76,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5', // Will need to be updated when GPT-5 is released
+        model: 'gpt-5-mini-2025-08-07', // Using GPT-5 mini for better token limits and reliability
         messages: messages,
         temperature: temperature,
         max_tokens: max_tokens,

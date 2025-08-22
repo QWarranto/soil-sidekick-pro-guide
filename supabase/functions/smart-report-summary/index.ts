@@ -141,8 +141,8 @@ async function generateSummaryWithGPT5(reportType: string, reportData: any, apiK
       'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      model: 'gpt-5-2025-08-07',
+      body: JSON.stringify({
+        model: 'gpt-5-mini-2025-08-07',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
@@ -159,7 +159,7 @@ async function generateSummaryWithGPT5(reportType: string, reportData: any, apiK
   const data = await response.json();
   return {
     content: data.choices[0].message.content,
-    modelUsed: 'gpt-5-2025-08-07'
+    modelUsed: 'gpt-5-mini-2025-08-07'
   };
 }
 
