@@ -39,6 +39,41 @@ const SoilAnalysis = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Redirect to auth if not logged in
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-background to-green-50 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="flex items-center justify-center gap-2">
+              <Leaf className="h-6 w-6 text-green-600" />
+              Authentication Required
+            </CardTitle>
+            <CardDescription>
+              Please sign in to access soil analysis reports
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button 
+              onClick={() => navigate('/auth')}
+              className="w-full"
+            >
+              Sign In
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/')}
+              className="w-full"
+            >
+              Back to Home
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   const [selectedCounty, setSelectedCounty] = useState<County | null>(null);
   const [soilData, setSoilData] = useState<SoilData | null>(null);
   const [soilDataList, setSoilDataList] = useState<SoilData[]>([]);

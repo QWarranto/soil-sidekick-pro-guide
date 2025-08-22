@@ -49,6 +49,41 @@ const WaterQuality = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Redirect to auth if not logged in
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-blue-50 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="flex items-center justify-center gap-2">
+              <Droplets className="h-6 w-6 text-blue-600" />
+              Authentication Required
+            </CardTitle>
+            <CardDescription>
+              Please sign in to access water quality reports
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button 
+              onClick={() => navigate('/auth')}
+              className="w-full"
+            >
+              Sign In
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/')}
+              className="w-full"
+            >
+              Back to Home
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   const [selectedCounty, setSelectedCounty] = useState<County | null>(null);
   const [waterData, setWaterData] = useState<WaterQualityData | null>(null);
   const [territoryInfo, setTerritoryInfo] = useState<TerritoryInfo | null>(null);
