@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
       .eq('county_fips', county_fips)
       .order('created_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (existingAnalysis) {
       console.log('Returning existing analysis');

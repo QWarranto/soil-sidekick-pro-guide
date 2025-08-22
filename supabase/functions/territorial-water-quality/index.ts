@@ -170,7 +170,7 @@ Deno.serve(async (req) => {
     );
 
     // Log usage for analytics
-    await logWaterQualityUsage(supabase, fips_code, state_code);
+    await logWaterQualityUsage(supabase, fips_code, state_code, user.id);
 
     console.log(`Successfully generated water quality data for ${admin_unit_name}, ${state_code}`);
 
@@ -623,14 +623,14 @@ function getMCLForContaminant(name: string): { mcl: number; unit: string } {
   return { mcl: 0, unit: 'Unknown' };
 }
 
-async function logWaterQualityUsage(supabase: any, fips_code: string, state_code: string) {
+async function logWaterQualityUsage(supabase: any, fips_code: string, state_code: string, user_id: string) {
   try {
     await supabase
       .from('subscription_usages')
       .insert({
         action_type: 'territorial_water_quality',
         county_fips: fips_code,
-        user_id: null // Will be set by RLS if authenticated
+        user_id: user_id
       });
   } catch (error) {
     console.warn('Failed to log water quality usage:', error);
