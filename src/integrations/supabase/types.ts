@@ -1640,6 +1640,45 @@ export type Database = {
         }
         Relationships: []
       }
+      subscribers_security_view: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          masked_email: string | null
+          masked_stripe_id: string | null
+          subscribed: boolean | null
+          subscription_end: string | null
+          subscription_interval: string | null
+          subscription_tier: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          masked_email?: never
+          masked_stripe_id?: never
+          subscribed?: boolean | null
+          subscription_end?: string | null
+          subscription_interval?: string | null
+          subscription_tier?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          masked_email?: never
+          masked_stripe_id?: never
+          subscribed?: boolean | null
+          subscription_end?: string | null
+          subscription_interval?: string | null
+          subscription_tier?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       usage_summary: {
         Row: {
           action_type: string | null
@@ -1682,6 +1721,10 @@ export type Database = {
           rls_enabled: boolean
           table_name: string
         }[]
+      }
+      check_subscriber_security_compliance: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       cleanup_rate_limit_tracking: {
         Args: Record<PropertyKey, never>
@@ -1877,6 +1920,10 @@ export type Database = {
         }[]
       }
       validate_service_operation: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      validate_subscription_service_operation: {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
