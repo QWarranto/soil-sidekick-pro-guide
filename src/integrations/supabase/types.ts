@@ -571,6 +571,57 @@ export type Database = {
         }
         Relationships: []
       }
+      compliance_audit_log: {
+        Row: {
+          actual_completion_date: string | null
+          compliance_domain: string
+          control_objective: string
+          corrective_actions: string[] | null
+          created_at: string
+          evidence_collected: Json | null
+          finding_status: string
+          id: string
+          responsible_party: string | null
+          risk_level: string | null
+          target_completion_date: string | null
+          test_procedure: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          actual_completion_date?: string | null
+          compliance_domain: string
+          control_objective: string
+          corrective_actions?: string[] | null
+          created_at?: string
+          evidence_collected?: Json | null
+          finding_status?: string
+          id?: string
+          responsible_party?: string | null
+          risk_level?: string | null
+          target_completion_date?: string | null
+          test_procedure?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          actual_completion_date?: string | null
+          compliance_domain?: string
+          control_objective?: string
+          corrective_actions?: string[] | null
+          created_at?: string
+          evidence_collected?: Json | null
+          finding_status?: string
+          id?: string
+          responsible_party?: string | null
+          risk_level?: string | null
+          target_completion_date?: string | null
+          test_procedure?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       comprehensive_audit_log: {
         Row: {
           changed_fields: string[] | null
@@ -1242,6 +1293,48 @@ export type Database = {
         }
         Relationships: []
       }
+      soc2_compliance_checks: {
+        Row: {
+          check_name: string
+          check_type: string
+          compliance_score: number | null
+          created_at: string
+          details: Json | null
+          id: string
+          last_checked_at: string
+          next_check_at: string | null
+          remediation_actions: string[] | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          check_name: string
+          check_type: string
+          compliance_score?: number | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+          last_checked_at?: string
+          next_check_at?: string | null
+          remediation_actions?: string[] | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          check_name?: string
+          check_type?: string
+          compliance_score?: number | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+          last_checked_at?: string
+          next_check_at?: string | null
+          remediation_actions?: string[] | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       soil_analyses: {
         Row: {
           analysis_data: Json | null
@@ -1580,6 +1673,16 @@ export type Database = {
         Args: { password_text: string }
         Returns: number
       }
+      check_rls_compliance: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          anonymous_policies_count: number
+          compliance_status: string
+          risk_level: string
+          rls_enabled: boolean
+          table_name: string
+        }[]
+      }
       cleanup_rate_limit_tracking: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -1595,6 +1698,10 @@ export type Database = {
       encrypt_existing_sensitive_data: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      generate_soc2_compliance_report: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       get_cost_summary: {
         Args: {

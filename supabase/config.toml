@@ -1,5 +1,8 @@
 project_id = "wzgnxkoeqzvueypwzvyn"
 
+[functions.soc2-compliance-monitor]
+verify_jwt = true
+
 [functions.gpt5-chat]
 verify_jwt = true
 
