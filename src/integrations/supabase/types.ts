@@ -1643,48 +1643,6 @@ export type Database = {
         }
         Relationships: []
       }
-      subscribers_security_view: {
-        Row: {
-          created_at: string | null
-          encryption_version: number | null
-          id: string | null
-          masked_email: string | null
-          masked_stripe_id: string | null
-          subscribed: boolean | null
-          subscription_end: string | null
-          subscription_interval: string | null
-          subscription_tier: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          encryption_version?: number | null
-          id?: string | null
-          masked_email?: never
-          masked_stripe_id?: never
-          subscribed?: boolean | null
-          subscription_end?: string | null
-          subscription_interval?: string | null
-          subscription_tier?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          encryption_version?: number | null
-          id?: string | null
-          masked_email?: never
-          masked_stripe_id?: never
-          subscribed?: boolean | null
-          subscription_end?: string | null
-          subscription_interval?: string | null
-          subscription_tier?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       usage_summary: {
         Row: {
           action_type: string | null
