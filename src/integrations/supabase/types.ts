@@ -1784,6 +1784,22 @@ export type Database = {
         Args: { subscriber_id: string }
         Returns: string
       }
+      get_masked_subscription_data: {
+        Args: { target_user_id?: string }
+        Returns: {
+          created_at: string
+          encryption_version: number
+          id: string
+          masked_email: string
+          masked_stripe_id: string
+          subscribed: boolean
+          subscription_end: string
+          subscription_interval: string
+          subscription_tier: string
+          updated_at: string
+          user_id: string
+        }[]
+      }
       get_secure_account_security_info: {
         Args: { target_user_id?: string }
         Returns: {
