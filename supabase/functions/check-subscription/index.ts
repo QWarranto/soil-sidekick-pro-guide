@@ -48,16 +48,22 @@ serve(async (req) => {
     
     if (customers.data.length === 0) {
       logStep("No customer found, updating unsubscribed state");
-      await supabaseClient.from("subscribers").upsert({
-        email: user.email,
-        user_id: user.id,
-        stripe_customer_id: null,
-        subscribed: false,
-        subscription_tier: null,
-        subscription_interval: null,
-        subscription_end: null,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'email' });
+      
+      // Use secure function to handle encrypted data
+      const { error: upsertError } = await supabaseClient.rpc('secure_upsert_subscriber', {
+        p_user_id: user.id,
+        p_email: user.email,
+        p_stripe_customer_id: null,
+        p_subscribed: false,
+        p_subscription_tier: null,
+        p_subscription_interval: null,
+        p_subscription_end: null
+      });
+      
+      if (upsertError) {
+        throw new Error(`Failed to update subscriber: ${upsertError.message}`);
+      }
+      
       return new Response(JSON.stringify({ subscribed: false }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
@@ -102,16 +108,20 @@ serve(async (req) => {
       logStep("No active subscription found");
     }
 
-    await supabaseClient.from("subscribers").upsert({
-      email: user.email,
-      user_id: user.id,
-      stripe_customer_id: customerId,
-      subscribed: hasActiveSub,
-      subscription_tier: subscriptionTier,
-      subscription_interval: subscriptionInterval,
-      subscription_end: subscriptionEnd,
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'email' });
+    // Use secure function to handle encrypted data
+    const { error: upsertError } = await supabaseClient.rpc('secure_upsert_subscriber', {
+      p_user_id: user.id,
+      p_email: user.email,
+      p_stripe_customer_id: customerId,
+      p_subscribed: hasActiveSub,
+      p_subscription_tier: subscriptionTier,
+      p_subscription_interval: subscriptionInterval,
+      p_subscription_end: subscriptionEnd
+    });
+    
+    if (upsertError) {
+      throw new Error(`Failed to update subscriber: ${upsertError.message}`);
+    }
 
     logStep("Updated database with subscription info", { subscribed: hasActiveSub, subscriptionTier, subscriptionInterval });
     return new Response(JSON.stringify({

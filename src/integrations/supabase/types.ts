@@ -1390,6 +1390,7 @@ export type Database = {
         Row: {
           created_at: string
           email: string
+          encrypted_email: string | null
           encrypted_stripe_customer_id: string | null
           encryption_version: number | null
           id: string
@@ -1404,6 +1405,7 @@ export type Database = {
         Insert: {
           created_at?: string
           email: string
+          encrypted_email?: string | null
           encrypted_stripe_customer_id?: string | null
           encryption_version?: number | null
           id?: string
@@ -1418,6 +1420,7 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string
+          encrypted_email?: string | null
           encrypted_stripe_customer_id?: string | null
           encryption_version?: number | null
           id?: string
@@ -1643,6 +1646,7 @@ export type Database = {
       subscribers_security_view: {
         Row: {
           created_at: string | null
+          encryption_version: number | null
           id: string | null
           masked_email: string | null
           masked_stripe_id: string | null
@@ -1655,6 +1659,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          encryption_version?: number | null
           id?: string | null
           masked_email?: never
           masked_stripe_id?: never
@@ -1667,6 +1672,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          encryption_version?: number | null
           id?: string | null
           masked_email?: never
           masked_stripe_id?: never
@@ -1712,6 +1718,10 @@ export type Database = {
         Args: { password_text: string }
         Returns: number
       }
+      check_payment_data_security_compliance: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       check_rls_compliance: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -1734,6 +1744,10 @@ export type Database = {
         Args: { encrypted_email: string }
         Returns: string
       }
+      decrypt_sensitive_payment_data: {
+        Args: { encrypted_data: string }
+        Returns: string
+      }
       encrypt_email_address: {
         Args: { email_to_encrypt: string }
         Returns: string
@@ -1741,6 +1755,10 @@ export type Database = {
       encrypt_existing_sensitive_data: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      encrypt_sensitive_payment_data: {
+        Args: { data_to_encrypt: string }
+        Returns: string
       }
       generate_soc2_compliance_report: {
         Args: Record<PropertyKey, never>
@@ -1856,6 +1874,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      migrate_subscriber_data_to_encrypted: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       refresh_cost_summaries: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -1866,6 +1888,33 @@ export type Database = {
       }
       sanitize_email_for_audit: {
         Args: { email_address: string }
+        Returns: string
+      }
+      secure_get_subscriber_data: {
+        Args: { p_user_id: string }
+        Returns: {
+          created_at: string
+          email: string
+          id: string
+          stripe_customer_id: string
+          subscribed: boolean
+          subscription_end: string
+          subscription_interval: string
+          subscription_tier: string
+          updated_at: string
+          user_id: string
+        }[]
+      }
+      secure_upsert_subscriber: {
+        Args: {
+          p_email: string
+          p_stripe_customer_id?: string
+          p_subscribed?: boolean
+          p_subscription_end?: string
+          p_subscription_interval?: string
+          p_subscription_tier?: string
+          p_user_id: string
+        }
         Returns: string
       }
       simple_email_mask: {
