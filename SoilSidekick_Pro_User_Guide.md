@@ -2,6 +2,9 @@
 
 ## Master SoilSidekick Pro's agricultural intelligence platform with our comprehensive guides. From satellite data interpretation to environmental risk assessment.
 
+### SOC 2 Type 1 Compliance & Security
+SoilSidekick Pro maintains SOC 2 Type 1 compliance with enterprise-grade security standards. Your agricultural data is protected through comprehensive security controls including data encryption, access monitoring, and audit logging. Our security framework ensures your sensitive farm data remains private and secure.
+
 ---
 
 ## Quick Start
