@@ -22,7 +22,7 @@ interface SoilData {
 
 interface EnhancedPDFExportProps {
   soilData: SoilData;
-  userTier?: 'starter' | 'pro' | 'api' | 'enterprise';
+  userTier?: 'starter' | 'pro' | 'enterprise';
 }
 
 export const EnhancedPDFExport = ({ soilData, userTier = 'starter' }: EnhancedPDFExportProps) => {
@@ -77,7 +77,7 @@ export const EnhancedPDFExport = ({ soilData, userTier = 'starter' }: EnhancedPD
 
   const generatePDFContent = (data: SoilData, tier: string) => {
     const date = new Date().toLocaleDateString();
-    const isPro = tier === 'pro' || tier === 'api' || tier === 'enterprise';
+    const isPro = tier === 'pro' || tier === 'enterprise';
     
     return `
 ═══════════════════════════════════════════════════════════════
@@ -185,7 +185,7 @@ decision-making.
           Professional PDF Export
           {userTier !== 'starter' && (
             <Badge variant="outline" className="ml-2">
-              {userTier === 'pro' ? 'Pro' : userTier === 'api' ? 'API' : 'Enterprise'}
+              {userTier === 'pro' ? 'Pro' : 'Enterprise'}
             </Badge>
           )}
         </CardTitle>
@@ -274,8 +274,8 @@ decision-making.
               </ul>
             </div>
             
-            <Button variant="outline" className="w-full" onClick={() => window.open('/pricing', '_blank')}>
-              Upgrade to Pro - $9.99/month
+             <Button variant="outline" className="w-full" onClick={() => window.open('/pricing', '_blank')}>
+               Upgrade to Pro - $79.00/month
             </Button>
           </div>
         )}

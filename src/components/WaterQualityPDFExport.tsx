@@ -44,7 +44,7 @@ interface WaterQualityPDFExportProps {
   waterData: WaterQualityData;
   county: County;
   territoryInfo?: TerritoryInfo;
-  userTier?: 'starter' | 'pro' | 'api' | 'enterprise';
+  userTier?: 'starter' | 'pro' | 'enterprise';
 }
 
 export const WaterQualityPDFExport = ({ 
@@ -109,7 +109,7 @@ export const WaterQualityPDFExport = ({
     tier?: string
   ) => {
     const date = new Date().toLocaleDateString();
-    const isPro = tier === 'pro' || tier === 'api' || tier === 'enterprise';
+    const isPro = tier === 'pro' || tier === 'enterprise';
     const territoryDisplay = data.territory_type === 'state' ? 'US State' : 
                            data.territory_type === 'territory' ? 'US Territory' : 
                            'Compact State';
@@ -276,7 +276,7 @@ and should be used in conjunction with local utility communications.
           Professional PDF Export
           {userTier !== 'starter' && (
             <Badge variant="outline" className="ml-2">
-              {userTier === 'pro' ? 'Pro' : userTier === 'api' ? 'API' : 'Enterprise'}
+              {userTier === 'pro' ? 'Pro' : 'Enterprise'}
             </Badge>
           )}
         </CardTitle>
@@ -365,8 +365,8 @@ and should be used in conjunction with local utility communications.
               </ul>
             </div>
             
-            <Button variant="outline" className="w-full" onClick={() => window.open('/pricing', '_blank')}>
-              Upgrade to Pro - $9.99/month
+             <Button variant="outline" className="w-full" onClick={() => window.open('/pricing', '_blank')}>
+               Upgrade to Pro - $79.00/month
             </Button>
           </div>
         )}

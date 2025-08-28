@@ -391,7 +391,7 @@ const Pricing = () => {
                       </div>
                       {isAnnual && plan.id === 'pro' && (
                         <div className="text-sm text-green-600 font-medium mt-1">
-                          Save $40 per year
+                          Save $158 per year
                         </div>
                       )}
                     </div>

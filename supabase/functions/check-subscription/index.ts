@@ -96,10 +96,12 @@ serve(async (req) => {
       
       subscriptionInterval = interval;
       
-      if (amount >= 4999) {
-        subscriptionTier = "API";
-      } else if (amount >= 999) {
+      if (amount >= 14900) {
+        subscriptionTier = "Enterprise";
+      } else if (amount >= 7900) {
         subscriptionTier = "Pro";
+      } else if (amount >= 2900) {
+        subscriptionTier = "Starter";
       } else {
         subscriptionTier = "Free";
       }

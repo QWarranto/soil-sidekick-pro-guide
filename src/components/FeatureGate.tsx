@@ -63,9 +63,9 @@ const FeatureGate: React.FC<FeatureGateProps> = ({
 
   const getTierPrice = (tier: string) => {
     switch (tier) {
-      case 'starter': return '$19';
-      case 'pro': return '$19';
-      case 'enterprise': return 'Custom';
+      case 'starter': return '$29';
+      case 'pro': return '$79';
+      case 'enterprise': return '$149';
       default: return '';
     }
   };

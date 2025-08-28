@@ -12,7 +12,7 @@ const ApiDocs = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const isApiSubscriber = subscriptionData?.subscription_tier === 'api';
+  const isApiSubscriber = subscriptionData?.subscription_tier === 'enterprise';
 
   const handleBackHome = () => {
     navigate('/');

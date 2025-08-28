@@ -74,11 +74,11 @@ const FAQ = () => {
     },
     {
       question: "What's the difference between subscription tiers for ADAPT integration?",
-      answer: "Free tier: Basic ADAPT export only. Pro tier: Full bidirectional sync with field boundaries, real-time data exchange, AlphaEarth satellite enhancement, and GPT-5 enhanced features. API tier: Complete developer access with custom integrations, batch processing, satellite data access, and white-label capabilities. Choose based on your integration complexity needs."
+      answer: "Free tier: Basic ADAPT export only. Pro tier: Full bidirectional sync with field boundaries, real-time data exchange, AlphaEarth satellite enhancement, and GPT-5 enhanced features. Enterprise tier: Complete developer access with custom integrations, batch processing, satellite data access, and white-label capabilities. Choose based on your integration complexity needs."
     },
     {
       question: "Can I import field boundaries from my existing farm management system?",
-      answer: "Yes! Pro and API tiers support bidirectional ADAPT sync, meaning you can import field boundaries from John Deere, Case IH, or other ADAPT-compatible systems, then enhance them with our soil intelligence, GPT-5 powered recommendations, and satellite-derived environmental insights, syncing the enriched data back to your primary farm management platform."
+      answer: "Yes! Pro and Enterprise tiers support bidirectional ADAPT sync, meaning you can import field boundaries from John Deere, Case IH, or other ADAPT-compatible systems, then enhance them with our soil intelligence, GPT-5 powered recommendations, and satellite-derived environmental insights, syncing the enriched data back to your primary farm management platform."
     },
     {
       question: "What water-quality information do I get?",
@@ -94,7 +94,7 @@ const FAQ = () => {
     },
     {
       question: "How often is data updated and synced?",
-      answer: "EPA publishes SDWIS updates quarterly; our nightly job refreshes the cache every 24h. Soil data updates monthly from USDA SSURGO. Satellite data from AlphaEarth updates annually with real-time processing for environmental impact analysis. GPT-5 enhanced features provide real-time analysis and recommendations. ADAPT integration sync frequency depends on your tier: Manual (Free), Daily/Weekly (Pro), or Real-time (API tier)."
+      answer: "EPA publishes SDWIS updates quarterly; our nightly job refreshes the cache every 24h. Soil data updates monthly from USDA SSURGO. Satellite data from AlphaEarth updates annually with real-time processing for environmental impact analysis. GPT-5 enhanced features provide real-time analysis and recommendations. ADAPT integration sync frequency depends on your tier: Manual (Free), Daily/Weekly (Pro), or Real-time (Enterprise tier)."
     },
     {
       question: "Is the planting calendar available in the free tier?",
@@ -114,7 +114,7 @@ const FAQ = () => {
     },
     {
       question: "Do you still offer white-label solutions?",
-      answer: "Absolutely—now with dual soil + water endpoints, ADAPT Standard 1.0 integration APIs, AlphaEarth satellite intelligence, and GPT-5 enhanced agricultural AI features. Our API tier includes white-label ready solutions with custom branding. Contact enterprise@soilsidekickpro.com for custom branding and revenue-share agreements."
+      answer: "Absolutely—now with dual soil + water endpoints, ADAPT Standard 1.0 integration APIs, AlphaEarth satellite intelligence, and GPT-5 enhanced agricultural AI features. Our Enterprise tier includes white-label ready solutions with custom branding. Contact enterprise@soilsidekickpro.com for custom branding and revenue-share agreements."
     },
     {
       question: "How does ADAPT integration help with vendor lock-in?",

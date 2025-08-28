@@ -49,15 +49,19 @@ serve(async (req) => {
       logStep("Creating new customer");
     }
 
-    // Define pricing
+    // Define pricing - Updated prices
     const prices = {
-      pro: {
-        month: 999, // $9.99
-        year: 9999, // $99.99
+      starter: {
+        month: 2900, // $29.00
+        year: 29000, // $290.00
       },
-      api: {
-        month: 4999, // $49.99
-        year: 49999, // $499.99
+      pro: {
+        month: 7900, // $79.00
+        year: 79000, // $790.00
+      },
+      enterprise: {
+        month: 14900, // $149.00
+        year: 149000, // $1490.00
       }
     };
 

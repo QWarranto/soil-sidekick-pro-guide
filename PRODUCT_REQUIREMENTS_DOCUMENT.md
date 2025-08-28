@@ -142,20 +142,20 @@ To empower farmers and agricultural professionals with data-driven insights that
 - Standard water quality data
 - Community support
 
-### 5.2 Basic Tier ($7.99/month)
+### 5.2 Starter Tier ($29.00/month)
 - 50 county lookups/month
 - Enhanced soil analysis
 - Water quality alerts
 - Email support
 
-### 5.3 Premium Tier ($19.99/month)
+### 5.3 Pro Tier ($79.00/month)
 - Unlimited county lookups
 - Full environmental impact assessment
 - Advanced planting calendar
 - Priority support
 - ADAPT export functionality
 
-### 5.4 Enterprise Tier ($49.99/month)
+### 5.4 Enterprise Tier ($149.00/month)
 - All Premium features
 - API access
 - Custom integrations

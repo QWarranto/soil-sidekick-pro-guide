@@ -335,7 +335,7 @@ export default function AdaptIntegration() {
                       <SelectItem value="manual">Manual</SelectItem>
                       <SelectItem value="daily">Daily</SelectItem>
                       <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="real_time">Real-time (API tier only)</SelectItem>
+                      <SelectItem value="real_time">Real-time (Enterprise tier only)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
