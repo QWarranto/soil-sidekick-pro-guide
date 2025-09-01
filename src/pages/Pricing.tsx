@@ -62,14 +62,16 @@ const Pricing = () => {
       name: 'Starter',
       monthlyPrice: 29,
       yearlyPrice: 290,
-      description: 'AI soil analysis with basic recommendations and email support',
+      description: 'Unlimited counties with smart caching; basic soil/water analysis data, enhanced PDF & CSV reports along with email support and consultation',
       icon: <Zap className="h-6 w-6" />,
       badge: 'Popular',
       badgeVariant: 'default' as const,
       features: [
-        'AI soil analysis (5/month)',
-        'Basic recommendations',
-        'Email support'
+        'Unlimited counties with smart caching',
+        'Basic soil/water analysis data (5/month)',
+        'Enhanced PDF & CSV reports',
+        'Basic planning calendar',
+        'Email support and consultation'
       ]
     },
     {
