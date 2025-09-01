@@ -149,6 +149,23 @@ const tourSteps: TourStep[] = [
   },
   {
     id: 8,
+    title: "Field Boundary Mapping",
+    description: "Interactive satellite-based field mapping with precision boundary drawing and comprehensive field management.",
+    features: [
+      "Satellite imagery-based boundary drawing",
+      "Interactive field boundary creation",
+      "Crop type and planting date tracking",
+      "Automatic acreage calculations",
+      "Field-specific data management",
+      "Integration with analysis tools"
+    ],
+    icon: MapPin,
+    route: "/field-mapping",
+    color: "text-blue-600",
+    badge: "Mapping"
+  },
+  {
+    id: 9,
     title: "Seasonal Planning Assistant",
     description: "Plan your entire growing season with AI-powered insights and recommendations.",
     features: [
@@ -163,7 +180,7 @@ const tourSteps: TourStep[] = [
     color: "text-orange-600"
   },
   {
-    id: 9,
+    id: 10,
     title: "Local AI Processing",
     description: "Privacy-preserving agricultural intelligence using Google Gemma models that run on your device.",
     features: [
@@ -180,7 +197,7 @@ const tourSteps: TourStep[] = [
     badge: "Privacy First"
   },
   {
-    id: 10,
+    id: 11,
     title: "ADAPT Integration Hub",
     description: "Seamlessly connect with existing farm management systems through ADAPT Standard 1.0 compatibility.",
     features: [
