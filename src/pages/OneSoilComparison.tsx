@@ -21,9 +21,9 @@ const OneSoilComparison = () => {
     },
     {
       category: "Geographic Scope", 
-      soilSidekick: "US-wide with federal data integration (EPA, USDA, FIPS)",
+      soilSidekick: "Global AlphaEarth satellite coverage with US-focused regulatory integration",
       oneSoil: "Global coverage with satellite imagery worldwide",
-      winner: "OneSoil"
+      winner: "Similar"
     },
     {
       category: "Soil Analysis",
