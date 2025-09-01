@@ -75,14 +75,17 @@ export default function PricingNew() {
       name: 'Starter',
       price: '$29',
       period: 'month',
-      description: 'Unlimited counties with smart caching; basic soil/water analysis data, enhanced PDF & CSV reports along with email support and consultation',
+      description: 'Professional-grade analysis with unlimited counties, enhanced reporting, and expert consultation support',
       icon: Zap,
       features: [
-        'Unlimited counties with smart caching',
-        'Basic soil/water analysis data (5/month)',
-        'Enhanced PDF & CSV reports',
-        'Basic planning calendar',
-        'Email support and consultation'
+        'Unlimited county access with smart caching',
+        'AI-powered soil & water analysis (10/month)',
+        'Professional PDF & CSV export reports',
+        'Smart seasonal planning calendar',
+        'Priority email support & expert consultation',
+        'Basic field mapping and boundary tools',
+        'Historical data tracking & trends',
+        'Mobile-optimized dashboard access'
       ],
       limitations: [
         'Limited AI usage',
