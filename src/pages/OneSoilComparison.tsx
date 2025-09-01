@@ -33,9 +33,9 @@ const OneSoilComparison = () => {
     },
     {
       category: "Satellite Technology",
-      soilSidekick: "Basic satellite integration for field mapping",
-      oneSoil: "Advanced satellite monitoring with NDVI, growing degree days, precipitation analysis",
-      winner: "OneSoil"
+      soilSidekick: "Google AlphaEarth AI integration - unified petabyte-scale Earth observation processing",
+      oneSoil: "Traditional satellite monitoring with NDVI, growing degree days, precipitation analysis",
+      winner: "SoilSidekick"
     },
     {
       category: "Environmental Impact",
@@ -87,9 +87,15 @@ const OneSoilComparison = () => {
     },
     {
       category: "Data Integration",
-      soilSidekick: "Extensive federal and state database integration",
-      oneSoil: "Satellite data processing with 9 years of historical analysis",
-      winner: "Different"
+      soilSidekick: "AlphaEarth AI embeddings + extensive federal/state database integration",
+      oneSoil: "Traditional satellite data processing with 9 years of historical analysis",
+      winner: "SoilSidekick"
+    },
+    {
+      category: "AI Earth Observation",
+      soilSidekick: "Google AlphaEarth Foundations - unified Earth embedding model for global insights",
+      oneSoil: "Machine learning for satellite image analysis and crop pattern recognition",
+      winner: "SoilSidekick"
     }
   ];
 
@@ -168,7 +174,7 @@ const OneSoilComparison = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Cpu className="h-4 w-4 text-primary" />
-                <span className="text-sm">Local AI + Cloud Processing</span>
+                <span className="text-sm">Google AlphaEarth AI Integration</span>
               </div>
               <div className="flex items-center gap-2">
                 <Leaf className="h-4 w-4 text-primary" />
@@ -193,7 +199,7 @@ const OneSoilComparison = () => {
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Satellite className="h-4 w-4 text-green-600" />
-                <span className="text-sm">Global Satellite Coverage</span>
+                <span className="text-sm">Traditional Satellite Analysis</span>
               </div>
               <div className="flex items-center gap-2">
                 <BarChart3 className="h-4 w-4 text-green-600" />
@@ -356,12 +362,13 @@ const OneSoilComparison = () => {
             <div>
               <h3 className="font-semibold mb-4 text-primary">SoilSidekick Pro Strengths</h3>
               <ul className="space-y-2 text-sm">
+                <li>• Google AlphaEarth AI unified Earth observation processing</li>
                 <li>• Comprehensive environmental impact assessment</li>
                 <li>• Real-time EPA water quality integration</li>
                 <li>• SOC 2 Type 1 security compliance</li>
                 <li>• Advanced soil chemistry analysis</li>
                 <li>• US regulatory compliance focus</li>
-                <li>• Local AI processing capabilities</li>
+                <li>• Petabyte-scale satellite data embeddings</li>
               </ul>
             </div>
             <div>
@@ -369,7 +376,7 @@ const OneSoilComparison = () => {
               <ul className="space-y-2 text-sm">
                 <li>• Free core platform with premium options</li>
                 <li>• Proven VRA profitability gains ($36-45/hectare)</li>
-                <li>• Global satellite coverage and accessibility</li>
+                <li>• Traditional satellite monitoring accessibility</li>
                 <li>• Advanced NDVI and crop monitoring</li>
                 <li>• Native mobile field scouting apps</li>
                 <li>• 9 years of satellite data analysis</li>
