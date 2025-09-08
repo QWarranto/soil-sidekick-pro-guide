@@ -15,14 +15,14 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-primary/5">
+    <div className="min-h-screen bg-gradient-hero parallax-scroll">
       {/* Header */}
-      <header className="border-b bg-background/80 backdrop-blur-sm">
+      <header className="border-b glass-effect sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Leaf className="h-6 w-6 text-primary" />
+          <div className="flex items-center gap-2 floating-animation">
+            <Leaf className="h-6 w-6 text-primary pulse-glow" />
             <div className="flex flex-col">
-              <span className="text-xl font-bold text-primary">SoilSidekick Pro</span>
+              <span className="text-xl font-bold gradient-text">SoilSidekick Pro</span>
               <span className="text-xs text-muted-foreground">Patent Pending, Application Number 63/861,944</span>
             </div>
           </div>
@@ -70,11 +70,11 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <Card>
+        <div className="max-w-4xl mx-auto slide-in-up">
+          <Card className="card-3d backdrop-blur-sm bg-white/90 dark:bg-card/90">
             <CardHeader>
-              <CardTitle className="text-2xl">Welcome to SoilSidekick Pro</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-3xl gradient-text">Welcome to SoilSidekick Pro</CardTitle>
+              <CardDescription className="text-lg">
                 Your premium soil analysis platform with ADAPT Standard 1.0 integration for seamless farm management connectivity
               </CardDescription>
             </CardHeader>
@@ -86,16 +86,16 @@ const Index = () => {
                 )}
                 
                 {user ? (
-                  <div className="bg-primary/5 p-6 rounded-lg border border-primary/20">
-                    <h3 className="text-lg font-semibold text-primary mb-2">🌱 Free Trial Active</h3>
-                    <p className="text-muted-foreground">
+                  <div className="bg-gradient-primary p-6 rounded-lg border border-primary/20 shadow-glow-primary card-elevated">
+                    <h3 className="text-lg font-semibold text-white mb-2">🌱 Free Trial Active</h3>
+                    <p className="text-white/90">
                       You're on a 7-day free trial with access to premium features. 
                       After your trial, upgrade to maintain unlimited county lookups and export capabilities.
                     </p>
                   </div>
                 ) : (
-                  <div className="bg-secondary/5 p-6 rounded-lg border border-secondary/20">
-                    <h3 className="text-lg font-semibold text-secondary-foreground mb-2">🌾 Welcome to SoilSidekick Pro</h3>
+                  <div className="glass-effect p-6 rounded-lg border border-white/20 shadow-xl">
+                    <h3 className="text-lg font-semibold text-foreground mb-2">🌾 Welcome to SoilSidekick Pro</h3>
                     <p className="text-muted-foreground">
                       Sign in to access premium features including unlimited county lookups, detailed analysis, and export capabilities.
                     </p>
@@ -106,23 +106,23 @@ const Index = () => {
                   <p className="text-muted-foreground">
                     Ready to explore soil data and plan your sustainable growing season?
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 max-w-4xl mx-auto">
-                    <Button size="lg" className="bg-primary hover:bg-primary/90" onClick={() => navigate('/dashboard')}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 max-w-4xl mx-auto">
+                    <Button size="xl" variant="hero" onClick={() => navigate('/dashboard')} className="animate-bounce-in">
                       Dashboard
                     </Button>
-                    <Button size="lg" variant="outline" onClick={handleStartAnalysis}>
+                    <Button size="lg" variant="premium" onClick={handleStartAnalysis} className="animate-fade-in">
                       Soil Analysis
                     </Button>
-                    <Button size="lg" variant="outline" onClick={() => navigate('/water-quality')}>
+                    <Button size="lg" variant="glass" onClick={() => navigate('/water-quality')} className="animate-fade-in">
                       Water Quality
                     </Button>
-                    <Button size="lg" variant="outline" onClick={() => navigate('/planting-calendar')}>
+                    <Button size="lg" variant="outline" onClick={() => navigate('/planting-calendar')} className="animate-fade-in hover:shadow-lg">
                       Planting Calendar
                     </Button>
-                    <Button size="lg" variant="outline" onClick={() => navigate('/fertilizer-footprint')}>
+                    <Button size="lg" variant="outline" onClick={() => navigate('/fertilizer-footprint')} className="animate-fade-in hover:shadow-lg">
                       Fertilizer Footprint
                     </Button>
-                    <Button size="lg" variant="secondary" onClick={() => navigate('/adapt-integration')}>
+                    <Button size="lg" variant="secondary" onClick={() => navigate('/adapt-integration')} className="animate-fade-in hover:shadow-lg">
                       ADAPT Integration
                     </Button>
                   </div>
