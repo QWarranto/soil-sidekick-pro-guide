@@ -125,12 +125,12 @@ print(json.dumps(soil_data, indent=2))`,
         <div className="max-w-6xl mx-auto">
           {/* Header Section */}
           <div className="text-center mb-12 slide-in-up">
-            <h1 className="text-4xl font-bold mb-4 gradient-text animate-fade-in">
-              <span className="bg-gradient-primary bg-clip-text text-transparent">Monetizable</span> Soil Data API
+            <h1 className="text-4xl font-bold mb-4 text-white animate-fade-in">
+              <span className="text-white font-bold">Monetizable</span> Soil Data API
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto animate-fade-in">
+            <p className="text-xl text-white/90 max-w-3xl mx-auto animate-fade-in">
               Integrate county-level USDA soil intelligence into your agriculture platform. 
-              <span className="font-semibold gradient-text"> 15-minute setup</span>, zero GIS skills required.
+              <span className="font-semibold text-white"> 15-minute setup</span>, zero GIS skills required.
             </p>
           </div>
 
