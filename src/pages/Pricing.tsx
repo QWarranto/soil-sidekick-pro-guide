@@ -287,12 +287,12 @@ const Pricing = () => {
         <div className="max-w-6xl mx-auto">
           {/* Header Section */}
           <div className="text-center mb-12 slide-in-up">
-            <h1 className="text-4xl font-bold mb-4 gradient-text animate-fade-in">
-              Choose Your <span className="bg-gradient-primary bg-clip-text text-transparent">Patent-Protected Agricultural Intelligence</span> Plan
+            <h1 className="text-4xl font-bold mb-4 text-white animate-fade-in">
+              Choose Your <span className="text-white font-bold">Patent-Protected Agricultural Intelligence</span> Plan
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-6 animate-fade-in">
-              From hobby gardeners to enterprise ag-tech platforms. <span className="font-semibold gradient-text">4 patent-protected algorithms</span> delivering 
-              breakthrough environmental intelligence with <span className="font-semibold gradient-text">zero GIS skills required</span>.
+            <p className="text-xl text-white/90 max-w-3xl mx-auto mb-6 animate-fade-in">
+              From hobby gardeners to enterprise ag-tech platforms. <span className="font-semibold text-white">4 patent-protected algorithms</span> delivering 
+              breakthrough environmental intelligence with <span className="font-semibold text-white">zero GIS skills required</span>.
             </p>
             <Button variant="glass" onClick={() => window.location.href = '/features'} className="mb-8 hover:shadow-glow-primary">
               View Detailed Feature Comparison
