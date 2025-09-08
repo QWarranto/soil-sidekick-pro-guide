@@ -202,7 +202,13 @@ export default function AdaptIntegration() {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-64">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-hero parallax-scroll">
+        <div className="container mx-auto flex justify-center items-center h-64">
+          <div className="text-white text-lg">Loading...</div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -210,8 +216,8 @@ export default function AdaptIntegration() {
       <div className="container mx-auto p-6 space-y-6">
         <div className="flex items-center justify-between slide-in-up">
           <div>
-            <h1 className="text-3xl font-bold gradient-text animate-fade-in">ADAPT Standard Integration</h1>
-            <p className="text-muted-foreground animate-fade-in">
+            <h1 className="text-3xl font-bold text-white animate-fade-in">ADAPT Standard Integration</h1>
+            <p className="text-white/90 animate-fade-in">
               Connect SoilSidekick Pro with ADAPT Standard 1.0 compatible systems
             </p>
           </div>
