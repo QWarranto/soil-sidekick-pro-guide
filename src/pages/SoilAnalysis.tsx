@@ -244,9 +244,9 @@ ${soilData.recommendations || 'No recommendations available'}
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-primary/5">
+    <div className="min-h-screen bg-gradient-hero parallax-scroll">
       {/* Header */}
-      <header className="border-b bg-background/80 backdrop-blur-sm">
+      <header className="border-b glass-effect sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="sm" onClick={handleBackHome}>
@@ -272,9 +272,9 @@ ${soilData.recommendations || 'No recommendations available'}
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto space-y-6">
+        <div className="max-w-6xl mx-auto space-y-6 slide-in-up">
           {/* County Population Button */}
-          <Card>
+          <Card className="card-elevated">
             <CardHeader>
               <CardTitle>County Database Management</CardTitle>
               <CardDescription>

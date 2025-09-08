@@ -36,18 +36,18 @@ const SeasonalPlanning = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-background to-blue-50">
+    <div className="min-h-screen bg-gradient-hero parallax-scroll">
       {/* Header */}
-      <header className="border-b bg-background/80 backdrop-blur-sm">
+      <header className="border-b glass-effect sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Dashboard
             </Button>
-            <div className="flex items-center gap-2">
-              <Calendar className="h-6 w-6 text-green-600" />
-              <span className="text-xl font-bold text-green-600">Seasonal Planning Assistant</span>
+            <div className="flex items-center gap-2 floating-animation">
+              <Calendar className="h-6 w-6 text-green-600 pulse-glow" />
+              <span className="text-xl font-bold gradient-text">Seasonal Planning Assistant</span>
             </div>
           </div>
           <div className="flex items-center gap-4">

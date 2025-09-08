@@ -46,26 +46,26 @@ export const FieldMapping = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-hero parallax-scroll">
       {/* Header */}
-      <header className="bg-white border-b border-green-200 px-4 py-3">
+      <header className="glass-effect border-b border-primary/20 px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
-              variant="ghost"
+              variant="glass"
               size="sm"
               onClick={() => navigate('/dashboard')}
-              className="text-muted-foreground hover:text-foreground"
+              className="hover:shadow-glow-primary"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Dashboard
             </Button>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+            <div className="flex items-center gap-3 floating-animation">
+              <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center pulse-glow">
                 <Layers3 className="w-4 h-4 text-primary" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Field Boundary Mapping</h1>
+                <h1 className="text-xl font-bold gradient-text">Field Boundary Mapping</h1>
                 <p className="text-sm text-muted-foreground">
                   Map and manage your agricultural field boundaries
                 </p>
@@ -74,7 +74,7 @@ export const FieldMapping = () => {
           </div>
           <div className="flex items-center gap-3">
             <div className="text-right">
-              <p className="text-sm font-medium text-gray-900">{user.email}</p>
+              <p className="text-sm font-medium">{user.email}</p>
               <p className="text-xs text-muted-foreground">Authenticated User</p>
             </div>
           </div>
@@ -82,9 +82,9 @@ export const FieldMapping = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto p-6">
+      <main className="max-w-7xl mx-auto p-6 slide-in-up">
         {/* Info Card */}
-        <Card className="mb-6">
+        <Card className="mb-6 card-elevated animate-fade-in">
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">

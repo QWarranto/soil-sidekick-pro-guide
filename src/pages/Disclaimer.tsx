@@ -5,16 +5,16 @@ import { AlertTriangle } from "lucide-react";
 
 const Disclaimer = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-center mb-4">Legal Disclaimer</h1>
+    <div className="min-h-screen bg-gradient-hero parallax-scroll">
+      <div className="container mx-auto px-4 py-8 max-w-4xl slide-in-up">
+        <div className="mb-8 animate-fade-in">
+          <h1 className="text-4xl font-bold text-center mb-4 gradient-text">Legal Disclaimer</h1>
           <p className="text-lg text-muted-foreground text-center">
             Important information regarding the use of SoilSidekick Pro
           </p>
         </div>
 
-        <Alert className="mb-8">
+        <Alert className="mb-8 shadow-glow-primary border-primary/20">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
             Please read this disclaimer carefully before using SoilSidekick Pro. By using our application, you acknowledge and agree to the terms outlined below.
@@ -22,7 +22,7 @@ const Disclaimer = () => {
         </Alert>
 
         <div className="space-y-6">
-          <Card>
+          <Card className="card-elevated animate-fade-in">
             <CardHeader>
               <CardTitle>No Guaranteed Results</CardTitle>
               <CardDescription>

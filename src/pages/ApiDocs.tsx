@@ -94,9 +94,9 @@ print(json.dumps(soil_data, indent=2))`,
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+    <div className="min-h-screen bg-gradient-hero parallax-scroll">
       {/* Header */}
-      <header className="border-b bg-background/80 backdrop-blur-sm">
+      <header className="border-b glass-effect sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="sm" onClick={handleBackHome}>
@@ -124,19 +124,19 @@ print(json.dumps(soil_data, indent=2))`,
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           {/* Header Section */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4">
-              <span className="text-primary">Monetizable</span> Soil Data API
+          <div className="text-center mb-12 slide-in-up">
+            <h1 className="text-4xl font-bold mb-4 gradient-text animate-fade-in">
+              <span className="bg-gradient-primary bg-clip-text text-transparent">Monetizable</span> Soil Data API
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto animate-fade-in">
               Integrate county-level USDA soil intelligence into your agriculture platform. 
-              <span className="font-semibold text-primary"> 15-minute setup</span>, zero GIS skills required.
+              <span className="font-semibold gradient-text"> 15-minute setup</span>, zero GIS skills required.
             </p>
           </div>
 
           {/* Key Benefits */}
           <div className="grid md:grid-cols-3 gap-6 mb-12">
-            <Card>
+            <Card className="card-elevated hover:card-3d animate-fade-in">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
                   <Clock className="h-8 w-8 text-primary" />

@@ -138,9 +138,9 @@ const WaterQuality = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-blue-50">
+    <div className="min-h-screen bg-gradient-hero parallax-scroll">
       {/* Header */}
-      <header className="border-b bg-background/80 backdrop-blur-sm">
+      <header className="border-b glass-effect sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="sm" onClick={() => navigate('/')}>
@@ -166,8 +166,8 @@ const WaterQuality = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto space-y-6">
-          <Card>
+        <div className="max-w-4xl mx-auto space-y-6 slide-in-up">
+          <Card className="card-elevated">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Droplets className="h-5 w-5 text-blue-600" />
@@ -185,7 +185,7 @@ const WaterQuality = () => {
           </Card>
 
           {selectedCounty && (
-            <Card>
+            <Card className="card-elevated animate-fade-in">
               <CardHeader>
                 <CardTitle>Selected Location</CardTitle>
               </CardHeader>

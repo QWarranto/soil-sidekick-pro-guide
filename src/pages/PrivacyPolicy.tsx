@@ -2,11 +2,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function PrivacyPolicy() {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <Card>
+    <div className="min-h-screen bg-gradient-hero parallax-scroll">
+      <div className="container mx-auto px-4 py-8 max-w-4xl slide-in-up">
+        <Card className="card-elevated shadow-glow-primary animate-fade-in">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold text-center">Privacy Policy</CardTitle>
+            <CardTitle className="text-3xl font-bold text-center gradient-text">Privacy Policy</CardTitle>
             <p className="text-center text-muted-foreground">Last updated August 21, 2025</p>
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none dark:prose-invert">

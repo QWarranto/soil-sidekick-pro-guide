@@ -244,9 +244,9 @@ const TourGuide = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-primary/5">
+    <div className="min-h-screen bg-gradient-hero parallax-scroll">
       {/* Header */}
-      <header className="border-b bg-background/80 backdrop-blur-sm">
+      <header className="border-b glass-effect sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Leaf className="h-6 w-6 text-primary" />
@@ -267,24 +267,24 @@ const TourGuide = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           {/* Progress Header */}
-          <div className="mb-8">
+          <div className="mb-8 slide-in-up">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h1 className="text-3xl font-bold text-foreground mb-2">Welcome to SoilSidekick Pro</h1>
-                <p className="text-muted-foreground">Learn how to maximize your agricultural productivity with our comprehensive platform</p>
+                <h1 className="text-3xl font-bold gradient-text mb-2 animate-fade-in">Welcome to SoilSidekick Pro</h1>
+                <p className="text-muted-foreground animate-fade-in">Learn how to maximize your agricultural productivity with our comprehensive platform</p>
               </div>
               <div className="text-right">
                 <div className="text-sm text-muted-foreground mb-1">Progress</div>
-                <div className="text-2xl font-bold text-primary">{currentStep + 1}/{tourSteps.length}</div>
+                <div className="text-2xl font-bold gradient-text">{currentStep + 1}/{tourSteps.length}</div>
               </div>
             </div>
-            <Progress value={progress} className="h-2" />
+            <Progress value={progress} className="h-2 shadow-glow-primary" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Step Navigation */}
             <div className="lg:col-span-1">
-              <Card>
+              <Card className="card-elevated">
                 <CardHeader>
                   <CardTitle className="text-lg">Tour Steps</CardTitle>
                 </CardHeader>
@@ -314,7 +314,7 @@ const TourGuide = () => {
 
             {/* Main Content */}
             <div className="lg:col-span-3">
-              <Card className="mb-6">
+              <Card className="mb-6 card-elevated animate-fade-in">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">

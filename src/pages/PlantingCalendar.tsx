@@ -191,9 +191,9 @@ const PlantingCalendar = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-primary/5">
+    <div className="min-h-screen bg-gradient-hero parallax-scroll">
       {/* Header */}
-      <header className="border-b bg-background/80 backdrop-blur-sm">
+      <header className="border-b glass-effect sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Leaf className="h-6 w-6 text-primary" />
@@ -222,22 +222,22 @@ const PlantingCalendar = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto slide-in-up">
           {/* Navigation */}
           <div className="mb-6">
-            <Button variant="ghost" onClick={() => navigate('/')} className="mb-4">
+            <Button variant="glass" onClick={() => navigate('/')} className="mb-4 hover:shadow-glow-primary">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Dashboard
             </Button>
           </div>
 
           {/* Page Header */}
-          <Card className="mb-6">
+          <Card className="mb-6 card-elevated animate-fade-in">
             <CardHeader>
               <div className="flex items-center gap-3">
-                <Calendar className="h-8 w-8 text-primary" />
+                <Calendar className="h-8 w-8 text-primary pulse-glow" />
                 <div>
-                  <CardTitle className="text-2xl">Planting Calendar</CardTitle>
+                  <CardTitle className="text-2xl gradient-text">Planting Calendar</CardTitle>
                   <CardDescription>
                     County-specific planting and harvest schedules based on USDA and NOAA data
                   </CardDescription>
@@ -247,7 +247,7 @@ const PlantingCalendar = () => {
           </Card>
 
           {/* County Selection */}
-          <Card className="mb-6">
+          <Card className="mb-6 card-elevated">
             <CardHeader>
               <CardTitle>Select Your County</CardTitle>
               <CardDescription>

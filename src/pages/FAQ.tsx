@@ -143,32 +143,32 @@ const FAQ = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+    <div className="min-h-screen bg-gradient-hero parallax-scroll">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 slide-in-up">
           <Link 
             to="/" 
-            className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors mb-6"
+            className="inline-flex items-center text-muted-foreground hover:text-foreground transition-smooth mb-6 story-link"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
           </Link>
           
           <div className="text-center">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-4">
+            <h1 className="text-4xl font-bold gradient-text mb-4 animate-fade-in">
               Frequently Asked Questions
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in">
               Everything you need to know about SoilSidekick Pro's Agricultural Intelligence platform and how it optimizes your soil and water quality decisions.
             </p>
           </div>
         </div>
 
         {/* FAQ Content */}
-        <Card className="shadow-lg">
+        <Card className="shadow-glow-primary card-elevated">
           <CardHeader>
-            <CardTitle className="text-2xl">Common Questions</CardTitle>
+            <CardTitle className="text-2xl gradient-text">Common Questions</CardTitle>
             <CardDescription>
               Can't find what you're looking for? Contact our support team for personalized assistance.
             </CardDescription>
@@ -190,7 +190,7 @@ const FAQ = () => {
         </Card>
 
         {/* Contact Section */}
-        <Card className="mt-8 text-center shadow-lg">
+        <Card className="mt-8 text-center card-elevated hover:shadow-glow-primary animate-fade-in">
           <CardContent className="pt-6">
             <h3 className="text-xl font-semibold mb-2">Still have questions?</h3>
             <p className="text-muted-foreground mb-4">

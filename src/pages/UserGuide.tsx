@@ -42,9 +42,9 @@ const UserGuide = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+    <div className="min-h-screen bg-gradient-hero parallax-scroll">
       {/* Header */}
-      <header className="border-b bg-background/80 backdrop-blur-sm">
+      <header className="border-b glass-effect sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="sm" onClick={handleBackHome}>
@@ -72,11 +72,11 @@ const UserGuide = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           {/* Header Section */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4">
-              <span className="text-primary">User Guide</span>
+          <div className="text-center mb-12 slide-in-up">
+            <h1 className="text-4xl font-bold mb-4 gradient-text animate-fade-in">
+              <span className="bg-gradient-primary bg-clip-text text-transparent">User Guide</span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto animate-fade-in">
               Master SoilSidekick Pro's agricultural intelligence platform with our comprehensive guides.
               From satellite data interpretation to environmental risk assessment.
             </p>
@@ -84,7 +84,7 @@ const UserGuide = () => {
 
           {/* Quick Start Cards */}
           <div className="grid md:grid-cols-3 gap-6 mb-12">
-            <Card className="border-primary/20">
+            <Card className="border-primary/20 card-elevated hover:card-3d animate-fade-in">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
                   <Satellite className="h-8 w-8 text-primary" />

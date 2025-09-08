@@ -206,19 +206,20 @@ export default function AdaptIntegration() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">ADAPT Standard Integration</h1>
-          <p className="text-muted-foreground">
-            Connect SoilSidekick Pro with ADAPT Standard 1.0 compatible systems
-          </p>
+    <div className="min-h-screen bg-gradient-hero parallax-scroll">
+      <div className="container mx-auto p-6 space-y-6">
+        <div className="flex items-center justify-between slide-in-up">
+          <div>
+            <h1 className="text-3xl font-bold gradient-text animate-fade-in">ADAPT Standard Integration</h1>
+            <p className="text-muted-foreground animate-fade-in">
+              Connect SoilSidekick Pro with ADAPT Standard 1.0 compatible systems
+            </p>
+          </div>
+          <Badge variant="outline" className="text-sm pulse-glow">
+            <Zap className="h-3 w-3 mr-1" />
+            ADAPT 1.0 Certified
+          </Badge>
         </div>
-        <Badge variant="outline" className="text-sm">
-          <Zap className="h-3 w-3 mr-1" />
-          ADAPT 1.0 Certified
-        </Badge>
-      </div>
 
       <Tabs defaultValue="export" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
@@ -391,5 +392,6 @@ export default function AdaptIntegration() {
         </TabsContent>
       </Tabs>
     </div>
-  );
+  </div>
+);
 }

@@ -4,10 +4,10 @@ import { TrendingUp, MapPin, Database, Zap } from "lucide-react";
 
 const BusinessCase = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
-      <div className="container mx-auto px-4 py-12 max-w-6xl">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+    <div className="min-h-screen bg-gradient-hero parallax-scroll">
+      <div className="container mx-auto px-4 py-12 max-w-6xl slide-in-up">
+        <div className="text-center mb-12 animate-fade-in">
+          <h1 className="text-4xl font-bold mb-4 gradient-text">
             Market Potential Study: Revised Analysis
           </h1>
           <p className="text-xl text-muted-foreground mb-6">
