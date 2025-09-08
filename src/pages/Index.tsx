@@ -23,7 +23,7 @@ const Index = () => {
             <Leaf className="h-6 w-6 text-primary pulse-glow" />
             <div className="flex flex-col">
               <span className="text-xl font-bold gradient-text">SoilSidekick Pro</span>
-              <span className="text-xs text-muted-foreground">Patent Pending, Application Number 63/861,944</span>
+              <span className="text-xs text-muted-foreground">Patent Pending/Provisional #63/861,944 & Patent Pending/Non-Provisional #19/320,727</span>
             </div>
           </div>
           <div className="flex items-center gap-4">
