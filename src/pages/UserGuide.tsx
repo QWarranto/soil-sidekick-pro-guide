@@ -73,7 +73,7 @@ const UserGuide = () => {
         <div className="max-w-6xl mx-auto">
           {/* Header Section */}
           <div className="text-center mb-12 slide-in-up">
-            <h1 className="text-4xl font-bold mb-4 text-white animate-fade-in">
+            <h1 className="text-4xl font-bold mb-4 text-white opacity-100">
               User Guide
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto animate-fade-in">
