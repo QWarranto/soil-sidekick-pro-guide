@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { CarbonCreditDashboard } from "@/components/CarbonCreditDashboard";
 import { SeasonalPlanningCard } from "@/components/SeasonalPlanningCard";
 import CostMonitoringDashboard from "@/components/CostMonitoringDashboard";
 import UsageDashboard from "@/components/UsageDashboard";
+import { useLiveAgriculturalData } from "@/hooks/useLiveAgriculturalData";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   MapPin, 
@@ -28,16 +29,29 @@ import {
   RefreshCw,
   Satellite,
   Eye,
-  Brain
+  Brain,
+  Clock
 } from "lucide-react";
 
 const Dashboard = () => {
+  const { data: liveData, isLoading, refreshData, getDataAge } = useLiveAgriculturalData();
+
+  // Initialize data on component mount
+  useEffect(() => {
+    refreshData();
+  }, [refreshData]);
+
   const handleFieldAdded = (field: any) => {
     console.log("New field added:", field);
     // Here you would typically save to database or state management
   };
-  // Mock data for demonstration
-  const soilHealthData = [
+
+  const handleRefreshData = (forceLive: boolean = false) => {
+    refreshData(undefined, forceLive);
+  };
+
+  // Use live data if available, otherwise fallback to mock data
+  const soilHealthData = liveData?.soil?.trends || [
     { month: "Jan", health: 82 },
     { month: "Feb", health: 78 },
     { month: "Mar", health: 85 },
@@ -46,7 +60,7 @@ const Dashboard = () => {
     { month: "Jun", health: 87 }
   ];
 
-  const weatherForecast = [
+  const weatherForecast = liveData?.weather?.forecast || [
     { time: "6AM", temperature: 18, humidity: 75 },
     { time: "9AM", temperature: 22, humidity: 68 },
     { time: "12PM", temperature: 28, humidity: 55 },
@@ -104,9 +118,14 @@ const Dashboard = () => {
               <Filter className="h-4 w-4 mr-2" />
               Filter
             </Button>
-            <Button variant="outline" size="sm">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => handleRefreshData(true)}
+              disabled={isLoading}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+              {isLoading ? 'Refreshing...' : 'Refresh'}
             </Button>
             <AddFieldDialog onFieldAdded={handleFieldAdded} />
           </div>
@@ -128,6 +147,34 @@ const Dashboard = () => {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
+            {/* Data Freshness Indicator */}
+            {liveData && (
+              <Card className="border-l-4 border-l-primary">
+                <CardContent className="flex items-center justify-between py-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-2 h-2 rounded-full ${liveData.sources.some(s => s.includes('NOAA') || s.includes('USDA')) ? 'bg-green-500' : 'bg-yellow-500'}`} />
+                      <span className="text-sm font-medium">
+                        Data Sources: {liveData.sources.join(', ')}
+                      </span>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Last updated: {getDataAge()}
+                    </div>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => handleRefreshData(true)}
+                    disabled={isLoading}
+                  >
+                    <RefreshCw className={`h-3 w-3 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
+                    Force Live Update
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+            
             {/* Main Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
@@ -188,10 +235,33 @@ const Dashboard = () => {
           {/* Soil Health Trends */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <TrendingUp className="h-5 w-5 mr-2 text-green-600" />
-                Soil Health Trends
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center">
+                  <TrendingUp className="h-5 w-5 mr-2 text-green-600" />
+                  Soil Health Trends
+                </CardTitle>
+                <div className="flex items-center space-x-2">
+                  {liveData && (
+                    <div className="flex items-center text-xs text-muted-foreground">
+                      <Clock className="h-3 w-3 mr-1" />
+                      {getDataAge() || 'Unknown'}
+                    </div>
+                  )}
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => handleRefreshData()}
+                    disabled={isLoading}
+                  >
+                    <RefreshCw className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
+                  </Button>
+                </div>
+              </div>
+              {liveData?.soil && (
+                <div className="text-xs text-muted-foreground">
+                  Source: {liveData.soil.source} • Health Index: {liveData.soil.health_index}%
+                </div>
+              )}
             </CardHeader>
             <CardContent>
               <ChartContainer
@@ -223,10 +293,33 @@ const Dashboard = () => {
           {/* Weather Forecast */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Thermometer className="h-5 w-5 mr-2 text-orange-600" />
-                Weather Forecast
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center">
+                  <Thermometer className="h-5 w-5 mr-2 text-orange-600" />
+                  Weather Forecast
+                </CardTitle>
+                <div className="flex items-center space-x-2">
+                  {liveData && (
+                    <div className="flex items-center text-xs text-muted-foreground">
+                      <Clock className="h-3 w-3 mr-1" />
+                      {getDataAge() || 'Unknown'}
+                    </div>
+                  )}
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => handleRefreshData()}
+                    disabled={isLoading}
+                  >
+                    <RefreshCw className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
+                  </Button>
+                </div>
+              </div>
+              {liveData?.weather && (
+                <div className="text-xs text-muted-foreground">
+                  Source: {liveData.weather.source} • Avg Temp: {liveData.weather.temperature_avg.toFixed(1)}°C
+                </div>
+              )}
             </CardHeader>
             <CardContent>
               <ChartContainer
