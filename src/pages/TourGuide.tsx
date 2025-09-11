@@ -24,7 +24,8 @@ import {
   Lightbulb,
   Target,
   Camera,
-  Brain
+  Brain,
+  Zap
 } from 'lucide-react';
 
 interface TourStep {
@@ -60,9 +61,12 @@ const tourSteps: TourStep[] = [
     title: "Dashboard Overview",
     description: "Your command center for all agricultural data and analytics. Get quick insights and navigate to detailed analysis tools.",
     features: [
+      "Live data refresh for soil health trends",
+      "Real-time weather forecasts with NOAA integration", 
+      "AI crop recommendations with custom crop analysis",
       "Quick access to recent soil analyses",
       "Carbon credit tracking summary",
-      "Weather integration displays",
+      "Interactive charts with data source indicators",
       "Subscription usage monitoring",
       "Recent activity overview"
     ],
@@ -181,6 +185,24 @@ const tourSteps: TourStep[] = [
   },
   {
     id: 10,
+    title: "AI Crop Recommendations",
+    description: "Get personalized crop suggestions powered by GPT-5 intelligence with support for custom and alternative crops.",
+    features: [
+      "Suitability scoring for all crop types",
+      "Custom crop analysis on demand",
+      "Market outlook and profit potential",
+      "Environmental impact assessment", 
+      "Live agricultural data integration",
+      "Detailed growing requirements",
+      "Confidence levels and risk analysis"
+    ],
+    icon: Zap,
+    route: "/dashboard",
+    color: "text-yellow-600",
+    badge: "AI Powered"
+  },
+  {
+    id: 11,
     title: "Local AI Processing",
     description: "Privacy-preserving agricultural intelligence using Google Gemma models that run on your device.",
     features: [

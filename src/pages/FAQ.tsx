@@ -14,7 +14,7 @@ const FAQ = () => {
   const faqs = [
     {
       question: "What are the new GPT-5 Enhanced features?",
-      answer: "SoilSidekick Pro now includes three powerful GPT-5 enhanced features: Enhanced Agricultural Q&A Chat for sophisticated agricultural guidance, Smart Report Summaries that auto-generate executive summaries of soil and water reports, and Seasonal Planning Assistant for intelligent crop rotation and weather-integrated planning strategies."
+      answer: "SoilSidekick Pro now includes three powerful GPT-5 enhanced features: Enhanced Agricultural Q&A Chat for sophisticated agricultural guidance, Smart Report Summaries that auto-generate executive summaries of soil and water reports, AI Crop Recommendations with live data refresh capabilities, and Seasonal Planning Assistant for intelligent crop rotation and weather-integrated planning strategies."
     },
     {
       question: "How does the Enhanced Agricultural Q&A Chat work?",
@@ -39,6 +39,22 @@ const FAQ = () => {
     {
       question: "How accurate and reliable are the GPT-5 enhanced recommendations?",
       answer: "Our GPT-5 enhanced features are trained on comprehensive agricultural knowledge and use the latest AI reasoning capabilities. However, they complement rather than replace professional agricultural advice. All recommendations should be validated with local agricultural extension services and adapted to your specific farming conditions and local regulations."
+    },
+    {
+      question: "How do the AI Crop Recommendations work?",
+      answer: "Our AI Crop Recommendations system uses GPT-5 to analyze your specific location, soil conditions, weather patterns, and market data to provide personalized crop suitability scores. The system evaluates yield potential, profit opportunities, environmental impact, and growing requirements for traditional crops like corn and soybeans, as well as alternative crops. Each recommendation includes confidence levels, pros/cons analysis, and detailed growing requirements."
+    },
+    {
+      question: "Can I get recommendations for crops not shown in the default list?",
+      answer: "Absolutely! Click the 'Add Crop' button in the AI Crop Recommendations section to request analysis for any crop you're considering - from specialty crops like quinoa and hemp to cover crops like buckwheat and clover. The AI will analyze the crop's suitability for your specific location and provide the same detailed assessment as traditional crops, including market outlook and environmental considerations."
+    },
+    {
+      question: "What factors determine crop recommendation scores?",
+      answer: "AI crop recommendations consider multiple factors: your county's climate zone and growing season, current soil conditions (pH, organic matter, moisture), weather patterns and forecasts, historical yield data, market prices and demand trends, water and nitrogen requirements, environmental impact including carbon footprint, and regional expertise. Each factor is weighted using GPT-5's advanced reasoning to provide a comprehensive suitability score from 0-100%."
+    },
+    {
+      question: "How fresh is the data in soil health trends and weather forecasts?",
+      answer: "SoilSidekick Pro now features live data refresh capabilities. Weather forecast data comes directly from NOAA APIs when available, with real-time updates. Soil health trends integrate live agricultural data from USDA sources. Each chart shows the data source (live vs. simulated) and last refresh time. You can manually refresh data using the refresh buttons on each chart or the main dashboard refresh to force live updates from federal databases."
     },
     {
       question: "What exactly is \"Agricultural Intelligence\"?",

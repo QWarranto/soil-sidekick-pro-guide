@@ -342,6 +342,58 @@ const UserGuide = () => {
                       </AccordionContent>
                     </AccordionItem>
 
+                    <AccordionItem value="crop-recommendations">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <Zap className="h-5 w-5" />
+                          AI Crop Recommendations
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="bg-gradient-to-r from-yellow-50 to-green-50 p-4 rounded-lg border">
+                          <h4 className="font-semibold mb-2">Intelligent Crop Selection</h4>
+                          <p className="text-sm text-muted-foreground">
+                            AI Crop Recommendations analyze your specific location, soil conditions, weather patterns, and market data 
+                            to provide personalized crop suitability scores for traditional and alternative crops.
+                          </p>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-semibold mb-2">What You Get:</h4>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• Suitability scores (0-100%) for each crop</li>
+                              <li>• Yield potential and target assessments</li>
+                              <li>• Pros and cons for your specific location</li>
+                              <li>• Market outlook and profit potential</li>
+                              <li>• Environmental impact analysis</li>
+                              <li>• Detailed growing requirements</li>
+                              <li>• Confidence levels for each recommendation</li>
+                            </ul>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold mb-2">Custom Crop Analysis:</h4>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• Click "Add Crop" to analyze any crop</li>
+                              <li>• Enter specialty crops like quinoa, hemp, buckwheat</li>
+                              <li>• Analyze cover crops and rotation options</li>
+                              <li>• Compare unconventional crops to traditional ones</li>
+                              <li>• Get detailed analysis for emerging crops</li>
+                            </ul>
+                          </div>
+                        </div>
+                        <div className="bg-muted/50 p-4 rounded-lg">
+                          <h4 className="font-medium mb-2">Accessing Recommendations:</h4>
+                          <ul className="text-sm text-muted-foreground space-y-1">
+                            <li>• View in Dashboard → Farm Overview tab</li>
+                            <li>• Click refresh button for latest market data</li>
+                            <li>• Click info button for detailed crop analysis</li>
+                            <li>• Use "Force Live Update" for real-time agricultural data</li>
+                            <li>• Data includes USDA soil data and NOAA weather when available</li>
+                          </ul>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
                     <AccordionItem value="seasonal-planning">
                       <AccordionTrigger className="text-left">
                         <div className="flex items-center gap-2">
@@ -1673,6 +1725,15 @@ function verifySignature(payload, signature, secret) {
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
+                          <Zap className="h-5 w-5 text-secondary mt-0.5" />
+                          <div>
+                            <h4 className="font-medium">AI Crop Recommendations</h4>
+                            <p className="text-sm text-muted-foreground">
+                              GPT-5 powered crop suitability analysis with custom crop support and live data
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
                           <Lightbulb className="h-5 w-5 text-secondary mt-0.5" />
                           <div>
                             <h4 className="font-medium">Fertilizer Footprint</h4>
@@ -1699,6 +1760,9 @@ function verifySignature(payload, signature, secret) {
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li>• Start with Soil Analysis to establish baseline conditions</li>
                       <li>• Check Water Quality for environmental context</li>
+                      <li>• Use refresh buttons to get live data from NOAA and USDA</li>
+                      <li>• Try AI Crop Recommendations for alternative crop analysis</li>
+                      <li>• Click "Add Crop" to analyze any specialty or cover crop</li>
                       <li>• Use AlphaEarth data for real-time field monitoring</li>
                       <li>• Export reports for sharing with consultants or lenders</li>
                       <li>• Monitor usage limits in your subscription tier</li>
