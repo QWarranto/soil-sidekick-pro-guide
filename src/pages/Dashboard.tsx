@@ -13,6 +13,7 @@ import { SeasonalPlanningCard } from "@/components/SeasonalPlanningCard";
 import CostMonitoringDashboard from "@/components/CostMonitoringDashboard";
 import UsageDashboard from "@/components/UsageDashboard";
 import { useLiveAgriculturalData } from "@/hooks/useLiveAgriculturalData";
+import AICropRecommendations from "@/components/AICropRecommendations";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   MapPin, 
@@ -67,13 +68,6 @@ const Dashboard = () => {
     { time: "3PM", temperature: 32, humidity: 45 },
     { time: "6PM", temperature: 26, humidity: 62 },
     { time: "9PM", temperature: 20, humidity: 70 }
-  ];
-
-  const cropYield = [
-    { crop: "Corn", yield: 85, target: 90 },
-    { crop: "Wheat", yield: 78, target: 80 },
-    { crop: "Soybeans", yield: 92, target: 85 },
-    { crop: "Barley", yield: 74, target: 75 }
   ];
 
   const fields = [
@@ -413,49 +407,8 @@ const Dashboard = () => {
             </Card>
           </div>
 
-          {/* AI Recommendations */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Zap className="h-5 w-5 mr-2 text-yellow-600" />
-                AI Crop Recommendations
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {cropYield.map((crop, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="font-medium">{crop.crop}</span>
-                    <span className="text-muted-foreground">{crop.yield}%</span>
-                  </div>
-                  <Progress value={crop.yield} className="h-2" />
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>Yield: {crop.yield} tons/ha</span>
-                    <span className={crop.yield >= crop.target ? "text-green-600" : "text-yellow-600"}>
-                      {crop.yield >= crop.target ? "Above target" : "Below target"}
-                    </span>
-                  </div>
-                </div>
-              ))}
-              <div className="pt-4 border-t">
-                <h5 className="font-medium text-sm mb-2">Quick Actions</h5>
-                <div className="space-y-2">
-                  <Button variant="outline" size="sm" className="w-full justify-start">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    Schedule Planting
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-start">
-                    <Droplets className="h-4 w-4 mr-2" />
-                    Set Irrigation
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-start">
-                    <Leaf className="h-4 w-4 mr-2" />
-                    Apply Fertilizer
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* AI Crop Recommendations */}
+          <AICropRecommendations countyFips="17031" />
         </div>
 
         {/* Seasonal Planning Section */}
