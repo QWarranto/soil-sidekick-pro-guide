@@ -156,7 +156,7 @@ const FAQ = () => {
           </Link>
           
           <div className="text-center">
-            <h1 className="text-4xl font-bold gradient-text mb-4 animate-fade-in">
+            <h1 className="text-4xl font-bold text-white mb-4 animate-fade-in">
               Frequently Asked Questions
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in">
