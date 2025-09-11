@@ -355,6 +355,18 @@ const Dashboard = () => {
                   </LineChart>
                 </ResponsiveContainer>
               </ChartContainer>
+              
+              {/* Chart Legend */}
+              <div className="flex items-center justify-center space-x-6 mt-4 pt-3 border-t">
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-0.5 bg-destructive rounded"></div>
+                  <span className="text-sm text-muted-foreground">Temperature (°C)</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-0.5 bg-primary rounded"></div>
+                  <span className="text-sm text-muted-foreground">Humidity (%)</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
