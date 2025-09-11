@@ -270,7 +270,7 @@ const TourGuide = () => {
           <div className="mb-8 slide-in-up">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h1 className="text-3xl font-bold gradient-text mb-2 animate-fade-in">Welcome to SoilSidekick Pro</h1>
+                <h1 className="text-3xl font-bold text-white mb-2">Welcome to SoilSidekick Pro</h1>
                 <p className="text-muted-foreground animate-fade-in">Learn how to maximize your agricultural productivity with our comprehensive platform</p>
               </div>
               <div className="text-right">
