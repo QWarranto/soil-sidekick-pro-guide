@@ -10,11 +10,21 @@ interface SubscriptionData {
   subscription_end?: string;
 }
 
+interface TrialUser {
+  id: string;
+  email: string;
+  trial_start: string;
+  trial_end: string;
+  is_active: boolean;
+  access_count: number;
+}
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
   subscriptionData: SubscriptionData | null;
+  trialUser: TrialUser | null;
   refreshSubscription: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string, fullName?: string) => Promise<{ error: any }>;
@@ -22,6 +32,7 @@ interface AuthContextType {
   signInWithApple: () => Promise<{ error: any }>;
   signInWithPhone: (phone: string) => Promise<{ error: any }>;
   verifyOtp: (phone: string, token: string) => Promise<{ error: any }>;
+  signInWithTrial: (email: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: any }>;
   updatePassword: (newPassword: string) => Promise<{ error: any }>;
@@ -34,6 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null);
+  const [trialUser, setTrialUser] = useState<TrialUser | null>(null);
   const { toast } = useToast();
 
   const refreshSubscription = async () => {
@@ -64,6 +76,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } else {
           setSubscriptionData(null);
         }
+        
+        // Clear trial user when regular user logs in
+        if (session?.user) {
+          setTrialUser(null);
+        }
       }
     );
 
@@ -77,6 +94,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setTimeout(() => {
           refreshSubscription();
         }, 0);
+      }
+      
+      // Check for trial user in localStorage
+      const savedTrialUser = localStorage.getItem('trialUser');
+      if (savedTrialUser && !session?.user) {
+        try {
+          const trialData = JSON.parse(savedTrialUser);
+          if (new Date(trialData.trial_end) > new Date()) {
+            setTrialUser(trialData);
+          } else {
+            localStorage.removeItem('trialUser');
+          }
+        } catch (error) {
+          localStorage.removeItem('trialUser');
+        }
       }
     });
 
@@ -146,6 +178,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signInWithTrial = async (email: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('trial-auth', {
+        body: { email, action: 'create_trial' }
+      });
+
+      if (error) {
+        toast({
+          title: "Trial access failed",
+          description: error.message,
+          variant: "destructive",
+        });
+        return { error };
+      }
+
+      if (data.success) {
+        setTrialUser(data.trialUser);
+        localStorage.setItem('trialUser', JSON.stringify(data.trialUser));
+        toast({
+          title: "Trial access granted!",
+          description: `You have 10-day trial access until ${new Date(data.trialUser.trial_end).toLocaleDateString()}`,
+        });
+      }
+
+      return { error: null };
+    } catch (error: any) {
+      toast({
+        title: "Trial access failed",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+      return { error };
+    }
+  };
+
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -155,6 +222,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         variant: "destructive",
       });
     }
+    // Clear trial user data
+    setTrialUser(null);
+    localStorage.removeItem('trialUser');
   };
 
   const resetPassword = async (email: string) => {
@@ -358,6 +428,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     session,
     loading,
     subscriptionData,
+    trialUser,
     refreshSubscription,
     signIn,
     signUp,
@@ -365,6 +436,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signInWithApple,
     signInWithPhone,
     verifyOtp,
+    signInWithTrial,
     signOut,
     resetPassword,
     updatePassword,

@@ -1461,6 +1461,42 @@ export type Database = {
         }
         Relationships: []
       }
+      trial_users: {
+        Row: {
+          access_count: number
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          last_access: string | null
+          trial_end: string
+          trial_start: string
+          updated_at: string
+        }
+        Insert: {
+          access_count?: number
+          created_at?: string
+          email: string
+          id?: string
+          is_active?: boolean
+          last_access?: string | null
+          trial_end?: string
+          trial_start?: string
+          updated_at?: string
+        }
+        Update: {
+          access_count?: number
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean
+          last_access?: string | null
+          trial_end?: string
+          trial_start?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       usage_analytics: {
         Row: {
           action_type: string
@@ -1698,6 +1734,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      create_trial_user: {
+        Args: { trial_email: string }
+        Returns: string
+      }
       decrypt_email_address: {
         Args: { encrypted_email: string }
         Returns: string
@@ -1844,6 +1884,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      is_trial_valid: {
+        Args: { trial_email: string }
+        Returns: boolean
+      }
       migrate_account_security_emails: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -1922,6 +1966,10 @@ export type Database = {
       }
       unlock_account: {
         Args: { target_user_id: string }
+        Returns: boolean
+      }
+      update_trial_access: {
+        Args: { trial_email: string }
         Returns: boolean
       }
       validate_and_sanitize_input: {

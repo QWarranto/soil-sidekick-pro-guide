@@ -21,7 +21,7 @@ const Auth = () => {
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [showPhoneVerification, setShowPhoneVerification] = useState(false);
-  const { signIn, signUp, signInWithGoogle, signInWithApple, signInWithPhone, verifyOtp, resetPassword, updatePassword, user, session } = useAuth();
+  const { signIn, signUp, signInWithGoogle, signInWithApple, signInWithPhone, verifyOtp, signInWithTrial, resetPassword, updatePassword, user, session, trialUser } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -42,11 +42,11 @@ const Auth = () => {
       console.log(`OAuth redirect detected for ${provider}`);
     }
     
-    if (user && mode !== 'reset' && !showPasswordUpdate) {
+    if ((user || trialUser) && mode !== 'reset' && !showPasswordUpdate) {
       console.log('User authenticated, redirecting to dashboard');
       navigate('/');
     }
-  }, [user, navigate, showPasswordUpdate, searchParams]);
+  }, [user, trialUser, navigate, showPasswordUpdate, searchParams]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,6 +141,19 @@ const Auth = () => {
     setLoading(false);
   };
 
+  const handleTrialSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    const { error } = await signInWithTrial(email);
+    
+    if (!error) {
+      navigate('/');
+    }
+    
+    setLoading(false);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-primary/5 p-4">
       <Card className="w-full max-w-md">
@@ -192,9 +205,10 @@ const Auth = () => {
             </div>
           ) : (
           <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="signin">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              <TabsTrigger value="trial">10-Day Trial</TabsTrigger>
               <TabsTrigger value="phone">Phone</TabsTrigger>
             </TabsList>
             
@@ -396,6 +410,37 @@ const Auth = () => {
                 <p className="text-sm text-muted-foreground text-center mt-4">
                   Start your 7-day free trial • No credit card required
                 </p>
+              </form>
+            </TabsContent>
+
+            <TabsContent value="trial">
+              <form onSubmit={handleTrialSignIn} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="trial-email">Email Address</Label>
+                  <Input
+                    id="trial-email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? 'Starting trial...' : 'Start 10-Day Trial'}
+                </Button>
+                
+                <div className="text-center space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    ✓ No password required
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    ✓ Full access for 10 days
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    ✓ No credit card needed
+                  </p>
+                </div>
               </form>
             </TabsContent>
 
