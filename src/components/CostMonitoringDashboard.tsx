@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 const CostMonitoringDashboard: React.FC = () => {
-  const { user } = useAuth();
+  const { user, trialUser } = useAuth();
   const { 
     loading, 
     costData, 
@@ -49,7 +49,7 @@ const CostMonitoringDashboard: React.FC = () => {
     handleRefresh();
   }, [timeRange]);
 
-  if (!user) {
+  if (!user && !trialUser) {
     return (
       <Card>
         <CardHeader>

@@ -36,12 +36,11 @@ interface SoilData {
 }
 
 const SoilAnalysis = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, trialUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Redirect to auth if not logged in
-  if (!user) {
+  if (!user && !trialUser) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-background to-green-50 flex items-center justify-center">
         <Card className="w-full max-w-md">
@@ -260,7 +259,7 @@ ${soilData.recommendations || 'No recommendations available'}
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">
-              Welcome, {user?.email}
+              Welcome, {(user?.email || trialUser?.email) ?? 'Trial User'}
             </span>
             <Button variant="outline" size="sm" onClick={signOut}>
               <LogOut className="h-4 w-4 mr-2" />

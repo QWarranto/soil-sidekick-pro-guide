@@ -18,11 +18,11 @@ interface Field {
 }
 
 export const FieldMapping = () => {
-  const { user } = useAuth();
+  const { user, trialUser } = useAuth();
   const navigate = useNavigate();
   const [selectedField, setSelectedField] = useState<Field | null>(null);
 
-  if (!user) {
+  if (!user && !trialUser) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
@@ -74,8 +74,8 @@ export const FieldMapping = () => {
           </div>
           <div className="flex items-center gap-3">
             <div className="text-right">
-              <p className="text-sm font-medium">{user.email}</p>
-              <p className="text-xs text-muted-foreground">Authenticated User</p>
+              <p className="text-sm font-medium">{(user?.email || trialUser?.email) ?? 'Trial Access'}</p>
+              <p className="text-xs text-muted-foreground">{user ? 'Authenticated User' : 'Trial User'}</p>
             </div>
           </div>
         </div>
