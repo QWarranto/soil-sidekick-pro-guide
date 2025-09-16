@@ -46,12 +46,11 @@ interface TerritoryInfo {
 }
 
 const WaterQuality = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, trialUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Redirect to auth if not logged in
-  if (!user) {
+  if (!user && !trialUser) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-blue-50 flex items-center justify-center">
         <Card className="w-full max-w-md">
@@ -154,7 +153,7 @@ const WaterQuality = () => {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">
-              {user?.email}
+              {(user?.email || trialUser?.email) ?? 'Trial Access'}
             </span>
             <Button variant="outline" size="sm" onClick={signOut}>
               <LogOut className="h-4 w-4 mr-2" />
