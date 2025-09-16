@@ -17,7 +17,7 @@ interface County {
 }
 
 const SeasonalPlanning = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, trialUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedCounty, setSelectedCounty] = useState<County | null>(null);
@@ -52,7 +52,7 @@ const SeasonalPlanning = () => {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">
-              {user?.email}
+              {(user?.email || trialUser?.email) ?? 'Trial User'}
             </span>
             <Button variant="outline" size="sm" onClick={signOut}>
               <LogOut className="h-4 w-4 mr-2" />

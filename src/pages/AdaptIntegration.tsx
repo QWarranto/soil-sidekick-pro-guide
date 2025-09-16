@@ -31,7 +31,7 @@ interface SoilAnalysis {
 }
 
 export default function AdaptIntegration() {
-  const { user } = useAuth();
+  const { user, trialUser } = useAuth();
   const { toast } = useToast();
   const [integrations, setIntegrations] = useState<AdaptIntegration[]>([]);
   const [soilAnalyses, setSoilAnalyses] = useState<SoilAnalysis[]>([]);

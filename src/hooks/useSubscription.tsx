@@ -162,6 +162,11 @@ export const useSubscription = () => {
   };
 
   const checkFeatureAccess = async (featureName: string): Promise<{ canUse: boolean; reason?: string }> => {
+    // Trial users have access to all features
+    if (user && subscription?.isTrialActive) {
+      return { canUse: true };
+    }
+
     const canUse = await canUseFeature(featureName);
     
     if (!canUse) {

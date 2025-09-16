@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Zap, Crown, AlertTriangle } from 'lucide-react';
 
@@ -22,19 +23,26 @@ const FeatureGate: React.FC<FeatureGateProps> = ({
   requiredTier = 'pro'
 }) => {
   const { checkFeatureAccess, showUpgradePrompt, subscription, usage } = useSubscription();
+  const { trialUser } = useAuth();
   const [canAccess, setCanAccess] = useState<boolean | null>(null);
   const [accessReason, setAccessReason] = useState<string>('');
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkAccess = async () => {
+      // Trial users have access to all features
+      if (trialUser) {
+        setCanAccess(true);
+        return;
+      }
+      
       const result = await checkFeatureAccess(feature);
       setCanAccess(result.canUse);
       setAccessReason(result.reason || '');
     };
 
     checkAccess();
-  }, [feature, checkFeatureAccess]);
+  }, [feature, checkFeatureAccess, trialUser]);
 
   if (canAccess === null) {
     return (

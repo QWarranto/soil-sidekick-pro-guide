@@ -84,7 +84,7 @@ const samplePlantingData: PlantingData[] = [
 ];
 
 const PlantingCalendar = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, trialUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedCounty, setSelectedCounty] = useState<any>(null);
@@ -210,7 +210,7 @@ const PlantingCalendar = () => {
               Pricing
             </Button>
             <span className="text-sm text-muted-foreground">
-              Welcome, {user?.email}
+              Welcome, {(user?.email || trialUser?.email) ?? 'Trial User'}
             </span>
             <Button variant="outline" size="sm" onClick={signOut}>
               <LogOut className="h-4 w-4 mr-2" />
