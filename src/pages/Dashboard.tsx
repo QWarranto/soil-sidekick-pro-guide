@@ -136,6 +136,7 @@ const Dashboard = () => {
             <TabsTrigger value="overview">Farm Overview</TabsTrigger>
             <TabsTrigger value="ai-assistant">AI Assistant</TabsTrigger>
             <TabsTrigger value="carbon-credits">Carbon Credits</TabsTrigger>
+            <TabsTrigger value="kpi-dashboard">KPI Dashboard</TabsTrigger>
             <TabsTrigger value="cost-monitoring">Cost Analytics</TabsTrigger>
             <TabsTrigger value="usage-analytics">Usage Stats</TabsTrigger>
           </TabsList>
@@ -620,6 +621,10 @@ const Dashboard = () => {
             <CostMonitoringDashboard />
           </TabsContent>
 
+          <TabsContent value="kpi-dashboard">
+            <KPIDashboard />
+          </TabsContent>
+          
           <TabsContent value="usage-analytics">
             <UsageDashboard />
           </TabsContent>
