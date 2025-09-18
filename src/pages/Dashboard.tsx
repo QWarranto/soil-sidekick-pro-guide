@@ -12,6 +12,7 @@ import { CarbonCreditDashboard } from "@/components/CarbonCreditDashboard";
 import { SeasonalPlanningCard } from "@/components/SeasonalPlanningCard";
 import CostMonitoringDashboard from "@/components/CostMonitoringDashboard";
 import UsageDashboard from "@/components/UsageDashboard";
+import KPIDashboard from "@/components/KPIDashboard";
 import { useLiveAgriculturalData } from "@/hooks/useLiveAgriculturalData";
 import AICropRecommendations from "@/components/AICropRecommendations";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

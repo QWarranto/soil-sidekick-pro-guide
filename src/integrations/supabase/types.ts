@@ -1053,6 +1053,66 @@ export type Database = {
         }
         Relationships: []
       }
+      kpi_history: {
+        Row: {
+          date_bucket: string
+          id: string
+          kpi_name: string
+          metadata: Json | null
+          recorded_at: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          date_bucket?: string
+          id?: string
+          kpi_name: string
+          metadata?: Json | null
+          recorded_at?: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          date_bucket?: string
+          id?: string
+          kpi_name?: string
+          metadata?: Json | null
+          recorded_at?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
+      kpi_targets: {
+        Row: {
+          created_at: string
+          id: string
+          kpi_name: string
+          target_period: string
+          target_value: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kpi_name: string
+          target_period: string
+          target_value: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kpi_name?: string
+          target_period?: string
+          target_value?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       planting_optimizations: {
         Row: {
           alternative_crops: Json | null
