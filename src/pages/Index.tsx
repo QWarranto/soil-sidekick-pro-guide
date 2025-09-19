@@ -71,7 +71,7 @@ const Index = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto slide-in-up">
-          <Card className="card-3d backdrop-blur-sm bg-white/90 dark:bg-card/90">
+          <Card className="card-subtle backdrop-blur-sm bg-white/90 dark:bg-card/90">
             <CardHeader>
               <CardTitle className="text-3xl gradient-text">Welcome to SoilSidekick Pro</CardTitle>
               <CardDescription className="text-lg">

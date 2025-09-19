@@ -55,9 +55,9 @@ All colors MUST be HSL.
     --shadow-glow: 0 0 20px hsl(var(--primary) / 0.3);
     --shadow-primary: 0 10px 30px -10px hsl(var(--primary) / 0.4);
 
-    /* 3D Transform Effects */
-    --transform-3d: perspective(1000px) rotateX(5deg) rotateY(-5deg);
-    --transform-hover: perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1.02);
+    /* Subtle Transform Effects */
+    --transform-subtle: translateZ(0);
+    --transform-hover: translateY(-2px) scale(1.02);
 
     /* Motion & Animation */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -159,12 +159,12 @@ All colors MUST be HSL.
     transform: translateY(-2px);
   }
 
-  .card-3d {
-    transform: var(--transform-3d);
+  .card-subtle {
+    transform: var(--transform-subtle);
     transition: var(--transition-smooth);
   }
 
-  .card-3d:hover {
+  .card-subtle:hover {
     transform: var(--transform-hover);
   }
 
