@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/hooks/useAuth';
 import { Leaf, LogOut, LogIn } from 'lucide-react';
 import LeadCapture from '@/components/LeadCapture';
+import Footer from '@/components/Footer';
 
 const Index = () => {
   const { user, signOut } = useAuth();
@@ -132,6 +133,9 @@ const Index = () => {
           </Card>
         </div>
       </main>
+      
+      {/* Add Footer */}
+      <Footer />
     </div>
   );
 };
