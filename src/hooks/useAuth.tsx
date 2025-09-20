@@ -30,6 +30,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName?: string) => Promise<{ error: any }>;
   signInWithGoogle: () => Promise<{ error: any }>;
   signInWithApple: () => Promise<{ error: any }>;
+  signInWithLinkedIn: () => Promise<{ error: any }>;
   signInWithPhone: (phone: string) => Promise<{ error: any }>;
   verifyOtp: (phone: string, token: string) => Promise<{ error: any }>;
   signInWithTrial: (email: string) => Promise<{ error: any }>;
@@ -328,6 +329,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signInWithLinkedIn = async () => {
+    try {
+      console.log('Starting LinkedIn OAuth with redirect:', `${window.location.origin}/`);
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'linkedin_oidc',
+        options: {
+          redirectTo: `${window.location.origin}/auth?provider=linkedin`,
+          scopes: 'openid profile email'
+        }
+      });
+      
+      console.log('LinkedIn OAuth response:', { data, error });
+      
+      if (error) {
+        console.error('LinkedIn OAuth error:', error);
+        toast({
+          title: "LinkedIn sign in failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+      
+      return { error };
+    } catch (error: any) {
+      console.error('LinkedIn OAuth catch error:', error);
+      toast({
+        title: "LinkedIn sign in failed",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+      return { error };
+    }
+  };
+
   const signInWithPhone = async (phone: string) => {
     try {
       const { error } = await supabase.auth.signInWithOtp({
@@ -434,6 +469,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signInWithGoogle,
     signInWithApple,
+    signInWithLinkedIn,
     signInWithPhone,
     verifyOtp,
     signInWithTrial,
