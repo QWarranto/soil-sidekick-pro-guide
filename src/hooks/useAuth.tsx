@@ -31,6 +31,7 @@ interface AuthContextType {
   signInWithGoogle: () => Promise<{ error: any }>;
   signInWithApple: () => Promise<{ error: any }>;
   signInWithLinkedIn: () => Promise<{ error: any }>;
+  signInWithFacebook: () => Promise<{ error: any }>;
   signInWithPhone: (phone: string) => Promise<{ error: any }>;
   verifyOtp: (phone: string, token: string) => Promise<{ error: any }>;
   signInWithTrial: (email: string) => Promise<{ error: any }>;
@@ -363,6 +364,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signInWithFacebook = async () => {
+    try {
+      console.log('Starting Facebook OAuth with redirect:', `${window.location.origin}/`);
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'facebook',
+        options: {
+          redirectTo: `${window.location.origin}/auth?provider=facebook`,
+          scopes: 'email'
+        }
+      });
+      
+      console.log('Facebook OAuth response:', { data, error });
+      
+      if (error) {
+        console.error('Facebook OAuth error:', error);
+        toast({
+          title: "Facebook sign in failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+      
+      return { error };
+    } catch (error: any) {
+      console.error('Facebook OAuth catch error:', error);
+      toast({
+        title: "Facebook sign in failed",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+      return { error };
+    }
+  };
+
   const signInWithPhone = async (phone: string) => {
     try {
       const { error } = await supabase.auth.signInWithOtp({
@@ -470,6 +505,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signInWithGoogle,
     signInWithApple,
     signInWithLinkedIn,
+    signInWithFacebook,
     signInWithPhone,
     verifyOtp,
     signInWithTrial,
