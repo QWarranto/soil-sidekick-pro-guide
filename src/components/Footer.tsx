@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Leaf, Mail, Phone, MapPin, Twitter, Linkedin, Github } from 'lucide-react';
+import { Leaf, Mail, Phone, MapPin, Twitter, Linkedin, Github, Facebook } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -17,9 +17,32 @@ const Footer = () => {
               Patent-protected agricultural intelligence platform with ADAPT Standard 1.0 integration for seamless farm management connectivity.
             </p>
             <div className="flex gap-3">
-              <Twitter className="h-5 w-5 text-muted-foreground hover:text-primary cursor-pointer transition-colors" />
-              <Linkedin className="h-5 w-5 text-muted-foreground hover:text-primary cursor-pointer transition-colors" />
-              <Github className="h-5 w-5 text-muted-foreground hover:text-primary cursor-pointer transition-colors" />
+              <a 
+                href="https://www.facebook.com/profile.php?id=61581152402769&sk=about" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Facebook className="h-5 w-5" />
+              </a>
+              <a 
+                href="#" 
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Twitter className="h-5 w-5" />
+              </a>
+              <a 
+                href="#" 
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Linkedin className="h-5 w-5" />
+              </a>
+              <a 
+                href="#" 
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Github className="h-5 w-5" />
+              </a>
             </div>
           </div>
 
