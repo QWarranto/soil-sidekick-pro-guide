@@ -516,13 +516,13 @@ const Auth = () => {
                     <Input
                       id="phone"
                       type="tel"
-                      placeholder="+1234567890"
+                      placeholder="1-770-826-1143 or +17708261143"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       required
                     />
                     <p className="text-xs text-muted-foreground">
-                      Include country code (e.g., +1 for US)
+                      Enter US phone number with or without formatting
                     </p>
                   </div>
                   <Button type="submit" className="w-full" disabled={loading}>

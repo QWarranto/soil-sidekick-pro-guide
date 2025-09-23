@@ -398,10 +398,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const formatToE164 = (phone: string): string => {
+    // Remove all non-digit characters
+    const digits = phone.replace(/\D/g, '');
+    
+    // If it starts with 1 and has 11 digits, add +
+    if (digits.length === 11 && digits.startsWith('1')) {
+      return `+${digits}`;
+    }
+    
+    // If it has 10 digits, assume US number and add +1
+    if (digits.length === 10) {
+      return `+1${digits}`;
+    }
+    
+    // If it already starts with +, return as is (after removing non-digits except +)
+    if (phone.startsWith('+')) {
+      return `+${digits}`;
+    }
+    
+    // Default: add + if not present
+    return phone.startsWith('+') ? phone : `+${digits}`;
+  };
+
   const signInWithPhone = async (phone: string) => {
     try {
+      const formattedPhone = formatToE164(phone);
+      console.log('Original phone:', phone, 'Formatted:', formattedPhone);
+      
       const { error } = await supabase.auth.signInWithOtp({
-        phone,
+        phone: formattedPhone,
         options: {
           shouldCreateUser: true,
         }
@@ -433,8 +459,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const verifyOtp = async (phone: string, token: string) => {
     try {
+      const formattedPhone = formatToE164(phone);
+      
       const { error } = await supabase.auth.verifyOtp({
-        phone,
+        phone: formattedPhone,
         token,
         type: 'sms'
       });
