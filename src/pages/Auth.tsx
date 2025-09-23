@@ -472,7 +472,7 @@ const Auth = () => {
                 </Button>
                 
                 <p className="text-sm text-muted-foreground text-center mt-4">
-                  Start your 7-day free trial • No credit card required
+                  Start your 10-day free trial • No credit card required
                 </p>
               </form>
             </TabsContent>
