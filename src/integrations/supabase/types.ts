@@ -629,6 +629,7 @@ export type Database = {
           created_at: string
           id: string
           ip_address: unknown | null
+          metadata: Json | null
           new_values: Json | null
           old_values: Json | null
           operation: string
@@ -646,6 +647,7 @@ export type Database = {
           created_at?: string
           id?: string
           ip_address?: unknown | null
+          metadata?: Json | null
           new_values?: Json | null
           old_values?: Json | null
           operation: string
@@ -663,6 +665,7 @@ export type Database = {
           created_at?: string
           id?: string
           ip_address?: unknown | null
+          metadata?: Json | null
           new_values?: Json | null
           old_values?: Json | null
           operation?: string
