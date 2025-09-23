@@ -350,15 +350,15 @@ const AgriculturalChat: React.FC<AgriculturalChatProps> = ({ context }) => {
         </ScrollArea>
 
         {messages.length === 1 && (
-          <div className="p-4 border-t bg-muted/30">
-            <p className="text-sm text-muted-foreground mb-3">Try asking:</p>
-            <div className="flex flex-wrap gap-2">
+          <div className="p-2 md:p-4 border-t bg-muted/30">
+            <p className="text-xs md:text-sm text-muted-foreground mb-2 md:mb-3">Try asking:</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1 md:gap-2">
               {suggestedQuestions.map((question, index) => (
                 <Button
                   key={index}
                   variant="outline"
                   size="sm"
-                  className="text-xs"
+                  className="text-xs md:text-sm h-auto py-1 md:py-2 px-2 md:px-3 whitespace-normal text-left justify-start"
                   onClick={() => setInput(question)}
                 >
                   {question}
