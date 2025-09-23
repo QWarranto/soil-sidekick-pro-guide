@@ -133,13 +133,13 @@ const Dashboard = () => {
 
         {/* Dashboard Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview">Farm Overview</TabsTrigger>
-            <TabsTrigger value="ai-assistant">AI Assistant</TabsTrigger>
-            <TabsTrigger value="carbon-credits">Carbon Credits</TabsTrigger>
-            <TabsTrigger value="kpi-dashboard">KPI Dashboard</TabsTrigger>
-            <TabsTrigger value="cost-monitoring">Cost Analytics</TabsTrigger>
-            <TabsTrigger value="usage-analytics">Usage Stats</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1">
+            <TabsTrigger value="overview" className="text-xs md:text-sm">Farm Overview</TabsTrigger>
+            <TabsTrigger value="ai-assistant" className="text-xs md:text-sm">AI Assistant</TabsTrigger>
+            <TabsTrigger value="carbon-credits" className="text-xs md:text-sm">Carbon Credits</TabsTrigger>
+            <TabsTrigger value="kpi-dashboard" className="text-xs md:text-sm">KPI Dashboard</TabsTrigger>
+            <TabsTrigger value="cost-monitoring" className="text-xs md:text-sm">Cost Analytics</TabsTrigger>
+            <TabsTrigger value="usage-analytics" className="text-xs md:text-sm">Usage Stats</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
