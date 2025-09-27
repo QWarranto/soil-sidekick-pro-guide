@@ -10,6 +10,7 @@ import AgriculturalChat from "@/components/AgriculturalChat";
 import { LocationIndicator } from "@/components/LocationIndicator";
 import { CarbonCreditDashboard } from "@/components/CarbonCreditDashboard";
 import { SeasonalPlanningCard } from "@/components/SeasonalPlanningCard";
+import { QuickAccessSuggestion } from "@/components/QuickAccessSuggestion";
 import CostMonitoringDashboard from "@/components/CostMonitoringDashboard";
 import UsageDashboard from "@/components/UsageDashboard";
 import KPIDashboard from "@/components/KPIDashboard";
@@ -143,6 +144,31 @@ const Dashboard = () => {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
+            {/* Quick Access Suggestions */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <QuickAccessSuggestion
+                feature="satellite_monitoring"
+                title="Satellite Crop Monitoring"
+                description="Monitor your crops with real-time satellite imagery"
+                usageContext="Get real-time insights into crop health and growth patterns"
+                className="md:col-span-1"
+              />
+              <QuickAccessSuggestion
+                feature="carbon_credits"
+                title="Carbon Credit Calculator"
+                description="Calculate your farm's carbon sequestration potential"
+                usageContext="Turn sustainable practices into revenue opportunities"
+                className="md:col-span-1"
+              />
+              <QuickAccessSuggestion
+                feature="county_lookup"
+                title="Advanced County Data"
+                description="Access detailed county-specific agricultural insights"
+                usageContext="Get historical weather and soil data for better planning"
+                className="md:col-span-1"
+              />
+            </div>
+
             {/* Data Freshness Indicator */}
             {liveData && (
               <Card className="border-l-4 border-l-primary">

@@ -10,6 +10,7 @@ import { CountyLookup } from '@/components/CountyLookup';
 import { CountyMenuLookup } from '@/components/CountyMenuLookup';
 import { SoilAnalysisResults } from '@/components/SoilAnalysisResults';
 import { EnhancedPDFExport } from '@/components/EnhancedPDFExport';
+import { QuickAccessSuggestion } from '@/components/QuickAccessSuggestion';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -429,6 +430,24 @@ ${soilData.recommendations || 'No recommendations available'}
                 </div>
               </CardContent>
             </Card>
+          )}
+
+          {/* Quick Access Suggestion for Advanced Features */}
+          {selectedCounty && !soilData && !loading && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <QuickAccessSuggestion
+                feature="soil_analysis"
+                title="Enhanced AI Soil Analysis"
+                description="Get detailed AI-powered recommendations and advanced soil insights"
+                usageContext="Perfect for getting detailed fertilizer recommendations and soil health scoring"
+              />
+              <QuickAccessSuggestion
+                feature="environmental_impact"
+                title="Environmental Impact Analysis"
+                description="Assess environmental impacts and get sustainability recommendations"
+                usageContext="Understand water quality impacts and get eco-friendly alternatives"
+              />
+            </div>
           )}
 
           {/* Results Section */}

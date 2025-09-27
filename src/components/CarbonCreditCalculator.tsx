@@ -8,6 +8,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Calculator, Loader2, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { OneTimePurchaseModal } from './OneTimePurchaseModal';
+import { useOneTimePurchase } from '@/hooks/useOneTimePurchase';
+import { useSubscription } from '@/hooks/useSubscription';
 
 interface CarbonCreditCalculatorProps {
   onClose: () => void;
@@ -30,6 +33,14 @@ export function CarbonCreditCalculator({ onClose, onSuccess }: CarbonCreditCalcu
   });
   const [calculating, setCalculating] = useState(false);
   const [soilAnalyses, setSoilAnalyses] = useState<any[]>([]);
+  const { checkFeatureAccess } = useSubscription();
+  const { 
+    isModalOpen, 
+    currentFeature, 
+    showOneTimePurchaseModal, 
+    closeModal, 
+    getFeatureConfig 
+  } = useOneTimePurchase();
 
   const handleInputChange = (field: keyof CalculationForm, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -38,6 +49,17 @@ export function CarbonCreditCalculator({ onClose, onSuccess }: CarbonCreditCalcu
   const handleCalculate = async () => {
     if (!form.field_name || !form.field_size_acres) {
       toast.error('Please fill in all required fields');
+      return;
+    }
+
+    // Check feature access before proceeding
+    const accessResult = await checkFeatureAccess('carbon_credits');
+    if (!accessResult.canUse) {
+      // Show one-time purchase modal instead of blocking
+      const modalShown = showOneTimePurchaseModal('carbon_credits');
+      if (!modalShown) {
+        toast.error(accessResult.reason || 'Feature access denied');
+      }
       return;
     }
 
@@ -172,6 +194,24 @@ export function CarbonCreditCalculator({ onClose, onSuccess }: CarbonCreditCalcu
             </Button>
           </div>
         </div>
+
+        {currentFeature && (
+          <OneTimePurchaseModal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            feature={currentFeature}
+            featureTitle={getFeatureConfig(currentFeature).title}
+            featureDescription={getFeatureConfig(currentFeature).description}
+            price={getFeatureConfig(currentFeature).price}
+            originalPrice={getFeatureConfig(currentFeature).originalPrice}
+            benefits={getFeatureConfig(currentFeature).benefits}
+            onPurchaseSuccess={() => {
+              closeModal();
+              // Retry the calculation after purchase
+              setTimeout(handleCalculate, 1000);
+            }}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );

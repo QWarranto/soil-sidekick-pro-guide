@@ -6,6 +6,8 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Zap, Crown, AlertTriangle } from 'lucide-react';
+import { OneTimePurchaseModal } from './OneTimePurchaseModal';
+import { useOneTimePurchase } from '@/hooks/useOneTimePurchase';
 
 interface FeatureGateProps {
   feature: string;
@@ -27,6 +29,14 @@ const FeatureGate: React.FC<FeatureGateProps> = ({
   const [canAccess, setCanAccess] = useState<boolean | null>(null);
   const [accessReason, setAccessReason] = useState<string>('');
   const navigate = useNavigate();
+  const { 
+    isModalOpen, 
+    currentFeature, 
+    showOneTimePurchaseModal, 
+    closeModal, 
+    getFeatureConfig,
+    shouldShowOneTimePurchase 
+  } = useOneTimePurchase();
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -138,20 +148,45 @@ const FeatureGate: React.FC<FeatureGateProps> = ({
         </div>
 
         <div className="flex flex-col gap-2">
+          {shouldShowOneTimePurchase(feature) && (
+            <Button 
+              onClick={() => showOneTimePurchaseModal(feature)}
+              className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+            >
+              <Zap className="h-4 w-4 mr-2" />
+              Quick Access - 3 Days for ${getFeatureConfig(feature).price}
+            </Button>
+          )}
+          
           <Button 
             onClick={() => navigate('/pricing')}
+            variant={shouldShowOneTimePurchase(feature) ? "outline" : "default"}
             className="w-full"
           >
             Upgrade to {requiredTier === 'pro' ? 'Pro' : 'Enterprise'}
           </Button>
+          
           <Button 
-            variant="outline" 
+            variant="ghost" 
             size="sm"
             onClick={() => showUpgradePrompt(feature, accessReason)}
           >
             Learn More
           </Button>
         </div>
+
+        {currentFeature && (
+          <OneTimePurchaseModal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            feature={currentFeature}
+            featureTitle={getFeatureConfig(currentFeature).title}
+            featureDescription={getFeatureConfig(currentFeature).description}
+            price={getFeatureConfig(currentFeature).price}
+            originalPrice={getFeatureConfig(currentFeature).originalPrice}
+            benefits={getFeatureConfig(currentFeature).benefits}
+          />
+        )}
       </CardContent>
     </Card>
   );
