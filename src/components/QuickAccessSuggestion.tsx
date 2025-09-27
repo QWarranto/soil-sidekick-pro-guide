@@ -57,7 +57,7 @@ export function QuickAccessSuggestion({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">3-day access</span>
+            <span className="text-sm font-medium">10-day access</span>
           </div>
           <div className="text-right">
             <div className="text-lg font-bold text-primary">${config.price}</div>

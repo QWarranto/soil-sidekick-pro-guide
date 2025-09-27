@@ -109,7 +109,7 @@ export const useOneTimePurchase = () => {
       description: 'Access premium features with temporary access',
       price: 14.50,
       originalPrice: 29,
-      benefits: ['Full feature access', 'No usage limits', '3-day duration']
+      benefits: ['Full feature access', 'No usage limits', '10-day duration']
     };
   };
 

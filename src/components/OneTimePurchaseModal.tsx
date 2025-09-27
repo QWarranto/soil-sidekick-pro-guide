@@ -42,7 +42,7 @@ export function OneTimePurchaseModal({
           plan: 'one_time',
           feature,
           amount: price * 100, // Convert to cents
-          duration_days: 3
+          duration_days: 10
         }
       });
 
@@ -96,7 +96,7 @@ export function OneTimePurchaseModal({
             <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
               <Clock className="h-4 w-4 text-amber-600" />
               <span className="text-sm font-medium text-amber-800">
-                3-day access • Use as much as you need
+                10-day access • Use as much as you need
               </span>
             </div>
 
@@ -137,7 +137,7 @@ export function OneTimePurchaseModal({
             disabled={loading}
             className="w-full bg-primary hover:bg-primary/90"
           >
-            {loading ? 'Processing...' : `Get 3-Day Access for $${price}`}
+            {loading ? 'Processing...' : `Get 10-Day Access for $${price}`}
           </Button>
           
           <div className="flex gap-2">
@@ -159,7 +159,7 @@ export function OneTimePurchaseModal({
         </div>
 
         <div className="text-xs text-center text-muted-foreground">
-          No commitment • Cancel anytime • Full access for 3 days
+          No commitment • Cancel anytime • Full access for 10 days
         </div>
       </DialogContent>
     </Dialog>
