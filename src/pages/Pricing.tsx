@@ -426,7 +426,7 @@ const Pricing = () => {
                        isCurrentUserPlan ? 'Current Plan' :
                        plan.id === 'free' ? 'Get Started' : 
                        plan.id === 'enterprise' ? 'Contact Sales' : 
-                       'Start 7-Day Trial'}
+                       'Start 10-Day Trial'}
                     </Button>
                   </CardContent>
                 </Card>

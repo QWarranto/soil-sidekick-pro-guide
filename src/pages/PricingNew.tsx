@@ -269,9 +269,9 @@ export default function PricingNew() {
           <div className="max-w-3xl mx-auto space-y-6">
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold mb-2">How does the 7-day trial work?</h3>
+                <h3 className="font-semibold mb-2">How does the 10-day trial work?</h3>
                 <p className="text-muted-foreground">
-                  Start your 7-day Pro trial immediately with full access to all Pro features. 
+                  Start your 10-day Pro trial immediately with full access to all Pro features. 
                   No credit card required. After the trial, you can continue with the Free plan or upgrade to Pro.
                 </p>
               </CardContent>

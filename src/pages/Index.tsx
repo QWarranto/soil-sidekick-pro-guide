@@ -90,7 +90,7 @@ const Index = () => {
                   <div className="bg-gradient-primary p-6 rounded-lg border border-primary/20 shadow-glow-primary card-elevated">
                     <h3 className="text-lg font-semibold text-white mb-2">🌱 Free Trial Active</h3>
                     <p className="text-white/90">
-                      You're on a 7-day free trial with access to premium features. 
+                      You're on a 10-day free trial with access to premium features. 
                       After your trial, upgrade to maintain unlimited county lookups and export capabilities.
                     </p>
                   </div>
