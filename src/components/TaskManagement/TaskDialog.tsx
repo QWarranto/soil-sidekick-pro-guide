@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,8 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, Lock } from 'lucide-react';
 import { format } from 'date-fns';
+import { useSubscription } from '@/hooks/useSubscription';
 
 interface TaskDialogProps {
   open: boolean;
@@ -37,6 +39,10 @@ const categories = [
 const priorities = ['low', 'medium', 'high', 'critical'];
 
 export const TaskDialog = ({ open, onOpenChange, onSave, task, template, fields = [] }: TaskDialogProps) => {
+  const { subscription } = useSubscription();
+  const canUseRecurring = subscription?.tier !== 'free';
+  const canUseAdvancedRecurring = subscription?.tier === 'pro' || subscription?.tier === 'enterprise';
+  
   const [formData, setFormData] = useState({
     task_name: '',
     category: 'other',
@@ -103,8 +109,19 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task, template, fields 
   }, [task, template, open]);
 
   const handleSave = () => {
+    // Enforce tier restrictions on save
+    let finalRecurringPattern = formData.recurrence_pattern;
+    if (!canUseRecurring) {
+      // Force non-recurring for free tier
+      formData.is_recurring = false;
+    } else if (!canUseAdvancedRecurring && formData.recurrence_pattern !== 'annual') {
+      // Force annual for starter tier if they somehow selected advanced
+      finalRecurringPattern = 'annual';
+    }
+    
     const taskData = {
       ...formData,
+      recurrence_pattern: finalRecurringPattern,
       estimated_duration_hours: formData.estimated_duration_hours ? parseFloat(formData.estimated_duration_hours) : null,
       crops_involved: formData.crops_involved ? formData.crops_involved.split(',').map(c => c.trim()) : null,
       field_id: formData.field_id || null,
@@ -270,15 +287,57 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task, template, fields 
             />
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="recurring"
-              checked={formData.is_recurring}
-              onCheckedChange={checked => setFormData({ ...formData, is_recurring: checked as boolean })}
-            />
-            <Label htmlFor="recurring" className="cursor-pointer">
-              Make this a recurring task (will auto-generate next year)
-            </Label>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="recurring"
+                  checked={formData.is_recurring}
+                  onCheckedChange={checked => setFormData({ ...formData, is_recurring: checked as boolean })}
+                  disabled={!canUseRecurring}
+                />
+                <Label htmlFor="recurring" className={`cursor-pointer ${!canUseRecurring ? 'opacity-50' : ''}`}>
+                  Make this a recurring task
+                </Label>
+              </div>
+              {!canUseRecurring && (
+                <Badge variant="secondary" className="text-xs">
+                  <Lock className="h-3 w-3 mr-1" />
+                  Starter+
+                </Badge>
+              )}
+            </div>
+
+            {formData.is_recurring && (
+              <div className="ml-6 space-y-2">
+                <Label htmlFor="recurrence_pattern" className="text-sm">Recurrence Pattern</Label>
+                <Select 
+                  value={formData.recurrence_pattern} 
+                  onValueChange={v => setFormData({ ...formData, recurrence_pattern: v })}
+                >
+                  <SelectTrigger id="recurrence_pattern">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="annual">Annual (yearly)</SelectItem>
+                    <SelectItem value="seasonal" disabled={!canUseAdvancedRecurring}>
+                      Seasonal (quarterly) {!canUseAdvancedRecurring && '- Pro+'}
+                    </SelectItem>
+                    <SelectItem value="monthly" disabled={!canUseAdvancedRecurring}>
+                      Monthly {!canUseAdvancedRecurring && '- Pro+'}
+                    </SelectItem>
+                    <SelectItem value="custom" disabled={!canUseAdvancedRecurring}>
+                      Custom {!canUseAdvancedRecurring && '- Pro+'}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                {!canUseAdvancedRecurring && formData.recurrence_pattern !== 'annual' && (
+                  <p className="text-xs text-yellow-600">
+                    Advanced recurring patterns require Pro plan. Task will be set to annual.
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

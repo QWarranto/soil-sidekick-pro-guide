@@ -82,15 +82,19 @@ export default function PricingNew() {
         'AI-powered soil & water analysis (10/month)',
         'Professional PDF & CSV export reports',
         'Smart seasonal planning calendar',
+        'Unlimited seasonal task creation & tracking',
+        'Task history tracking & field assignment',
+        'Annual recurring tasks & email reminders',
         'Priority email support & expert consultation',
         'Basic field mapping and boundary tools',
         'Historical data tracking & trends',
         'Mobile-optimized dashboard access'
       ],
       limitations: [
-        'Limited AI usage',
+        'Limited AI usage (10/month)',
         'No visual crop analysis',
-        'No advanced analytics',
+        'No advanced task recurring patterns',
+        'No task learnings or AI recommendations',
         'No ADAPT integration'
       ],
       cta: 'Start Starter Plan',
@@ -102,17 +106,25 @@ export default function PricingNew() {
       name: 'Pro',
       price: '$79',
       period: 'month',
-      description: 'Unlimited AI features with visual crop analysis and advanced analytics',
+      description: 'Unlimited AI features with visual crop analysis and advanced task intelligence',
       icon: Crown,
       features: [
-        'Unlimited AI features',
-        'Visual crop analysis',
-        'Advanced analytics',
-        'Priority support'
+        'Unlimited AI-powered soil & water analysis',
+        'Visual crop analysis with satellite data',
+        'Advanced analytics & carbon tracking',
+        'Complete seasonal task management suite',
+        'Advanced recurring tasks (seasonal/monthly/custom)',
+        'Task completion learnings & AI recommendations',
+        'Year-over-year task comparison & insights',
+        'Task export & custom reporting',
+        'Unlimited email reminders & notifications',
+        'Priority support & consultation',
+        'Full field mapping & boundary tools'
       ],
       limitations: [
         'No ADAPT integration',
-        'No custom features'
+        'No team collaboration features',
+        'No API access'
       ],
       cta: 'Start Pro Plan',
       popular: true,
@@ -123,12 +135,19 @@ export default function PricingNew() {
       name: 'Enterprise',
       price: '$149',
       period: 'month',
-      description: 'Complete solution with ADAPT integration and dedicated support',
+      description: 'Complete solution with ADAPT integration, team collaboration, and API access',
       icon: Sparkles,
       features: [
-        'ADAPT integration',
-        'Custom features',
-        'Dedicated support'
+        'Everything in Pro, plus:',
+        'Full ADAPT Standard 1.0 integration',
+        'Team task collaboration & assignment',
+        'Custom task templates & workflows',
+        'Task management API access',
+        'Multi-user farm management',
+        'Advanced team analytics & reporting',
+        'Dedicated account manager',
+        '99.9% SLA with enterprise support',
+        'Custom integrations & white-label options'
       ],
       limitations: [],
       cta: 'Contact Sales',

@@ -68,6 +68,23 @@ export default function Features() {
       ]
     },
     {
+      category: 'Seasonal Task Management',
+      items: [
+        { name: 'View task templates', basic: true, starter: true, pro: true, api: true },
+        { name: 'Task creation limit', basic: '10/season', starter: 'Unlimited', pro: 'Unlimited', api: 'Unlimited' },
+        { name: 'Task history tracking', basic: false, starter: true, pro: true, api: true },
+        { name: 'Field-specific assignment', basic: false, starter: true, pro: true, api: true },
+        { name: 'Recurring tasks (annual)', basic: false, starter: true, pro: true, api: true },
+        { name: 'Advanced recurring (seasonal/monthly/custom)', basic: false, starter: false, pro: true, api: true },
+        { name: 'Task completion learnings & notes', basic: false, starter: false, pro: true, api: true },
+        { name: 'Year-over-year comparison', basic: false, starter: false, pro: true, api: true },
+        { name: 'AI task recommendations', basic: false, starter: false, pro: true, api: true },
+        { name: 'Task export & reporting', basic: false, starter: false, pro: true, api: true },
+        { name: 'Team task collaboration', basic: false, starter: false, pro: false, api: true },
+        { name: 'Task management API', basic: false, starter: false, pro: false, api: true },
+      ]
+    },
+    {
       category: 'Usage Limits & Support',
       items: [
         { name: 'Counties per month', basic: '3', starter: 'Unlimited', pro: 'Unlimited', api: 'Unlimited' },

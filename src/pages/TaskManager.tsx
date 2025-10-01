@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
+import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { ListTodo, LogOut, ArrowLeft, Plus, Library, History } from 'lucide-react';
+import { ListTodo, LogOut, ArrowLeft, Plus, Library, History, Lock } from 'lucide-react';
 import { TaskList } from '@/components/TaskManagement/TaskList';
 import { TaskTemplateLibrary } from '@/components/TaskManagement/TaskTemplateLibrary';
 import { TaskDialog } from '@/components/TaskManagement/TaskDialog';
@@ -15,6 +17,7 @@ const TaskManager = () => {
   const { user, signOut, trialUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { subscription, checkFeatureAccess, incrementUsage, showUpgradePrompt } = useSubscription();
   
   const [tasks, setTasks] = useState<any[]>([]);
   const [fields, setFields] = useState<any[]>([]);
@@ -22,13 +25,25 @@ const TaskManager = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
+  const [taskCreationAllowed, setTaskCreationAllowed] = useState(true);
 
   useEffect(() => {
     if (user || trialUser) {
       fetchTasks();
       fetchFields();
+      checkTaskCreationLimit();
     }
-  }, [user, trialUser]);
+  }, [user, trialUser, tasks.length]);
+
+  const checkTaskCreationLimit = async () => {
+    // Free tier: max 10 tasks per season
+    if (subscription?.tier === 'free') {
+      const access = await checkFeatureAccess('task_creation');
+      setTaskCreationAllowed(access.canUse);
+    } else {
+      setTaskCreationAllowed(true);
+    }
+  };
 
   const fetchTasks = async () => {
     try {
@@ -66,13 +81,25 @@ const TaskManager = () => {
     }
   };
 
-  const handleCreateTask = () => {
+  const handleCreateTask = async () => {
+    // Check task creation limit for free tier
+    if (subscription?.tier === 'free' && tasks.length >= 10) {
+      showUpgradePrompt('task_creation', 'You\'ve reached the free tier limit of 10 tasks. Upgrade to Starter for unlimited tasks.');
+      return;
+    }
+    
     setSelectedTask(null);
     setSelectedTemplate(null);
     setDialogOpen(true);
   };
 
-  const handleAddFromTemplate = (template: any) => {
+  const handleAddFromTemplate = async (template: any) => {
+    // Check task creation limit for free tier
+    if (subscription?.tier === 'free' && tasks.length >= 10) {
+      showUpgradePrompt('task_creation', 'You\'ve reached the free tier limit of 10 tasks. Upgrade to Starter for unlimited tasks.');
+      return;
+    }
+    
     setSelectedTask(null);
     setSelectedTemplate(template);
     setDialogOpen(true);
@@ -100,7 +127,11 @@ const TaskManager = () => {
           description: 'Task updated successfully',
         });
       } else {
-        // Create new task
+        // Create new task - increment usage for free tier
+        if (subscription?.tier === 'free') {
+          await incrementUsage('task_creation', 1);
+        }
+        
         const { error } = await supabase
           .from('user_tasks')
           .insert({
@@ -223,11 +254,32 @@ const TaskManager = () => {
                   <CardDescription>
                     Never forget seasonal tasks again. Track what works year after year.
                   </CardDescription>
+                  {subscription?.tier === 'free' && (
+                    <div className="flex items-center gap-2 mt-2">
+                      <Badge variant="outline">{tasks.length}/10 tasks created</Badge>
+                      {tasks.length >= 8 && (
+                        <span className="text-xs text-yellow-600">
+                          Approaching limit - upgrade for unlimited tasks
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
-                <Button onClick={handleCreateTask}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Custom Task
-                </Button>
+                <div className="flex items-center gap-2">
+                  {subscription?.tier === 'free' && tasks.length >= 10 && (
+                    <Button variant="outline" onClick={() => navigate('/pricing')}>
+                      <Lock className="h-4 w-4 mr-2" />
+                      Upgrade for More
+                    </Button>
+                  )}
+                  <Button 
+                    onClick={handleCreateTask}
+                    disabled={subscription?.tier === 'free' && tasks.length >= 10}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Custom Task
+                  </Button>
+                </div>
               </div>
             </CardHeader>
           </Card>
@@ -280,19 +332,42 @@ const TaskManager = () => {
             <TabsContent value="history">
               <Card>
                 <CardHeader>
-                  <CardTitle>Task History & Learnings</CardTitle>
-                  <CardDescription>
-                    Review completed tasks and your notes for future reference
-                  </CardDescription>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Task History & Learnings</CardTitle>
+                      <CardDescription>
+                        Review completed tasks and your notes for future reference
+                      </CardDescription>
+                    </div>
+                    {(subscription?.tier === 'free') && (
+                      <Badge variant="secondary">
+                        <Lock className="h-3 w-3 mr-1" />
+                        Starter+ Feature
+                      </Badge>
+                    )}
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-center py-12 text-muted-foreground">
-                    <History className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                    <p>Task history view coming soon!</p>
-                    <p className="text-sm mt-2">
-                      Complete tasks and add notes to build your farming knowledge base
-                    </p>
-                  </div>
+                  {(subscription?.tier === 'free') ? (
+                    <div className="text-center py-12 border-2 border-dashed rounded-lg">
+                      <Lock className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
+                      <p className="font-semibold mb-2">Task History Tracking</p>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Track what works year after year with task completion notes and learnings
+                      </p>
+                      <Button onClick={() => navigate('/pricing')}>
+                        Upgrade to Starter Plan
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-muted-foreground">
+                      <History className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                      <p>Task history view coming soon!</p>
+                      <p className="text-sm mt-2">
+                        Complete tasks and add notes to build your farming knowledge base
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
