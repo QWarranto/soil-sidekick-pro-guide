@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
-import { Calendar, LogOut, ArrowLeft } from 'lucide-react';
+import { Calendar, LogOut, ArrowLeft, ListTodo } from 'lucide-react';
 import { CountyLookup } from '@/components/CountyLookup';
 import { SeasonalPlanningAssistant } from '@/components/SeasonalPlanningAssistant';
 import { useToast } from '@/hooks/use-toast';
@@ -44,6 +44,10 @@ const SeasonalPlanning = () => {
             <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Dashboard
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => navigate('/task-manager')}>
+              <ListTodo className="h-4 w-4 mr-2" />
+              Task Manager
             </Button>
             <div className="flex items-center gap-2 floating-animation">
               <Calendar className="h-6 w-6 text-green-600 pulse-glow" />

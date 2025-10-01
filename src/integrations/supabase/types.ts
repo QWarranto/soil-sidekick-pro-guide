@@ -1236,6 +1236,48 @@ export type Database = {
         }
         Relationships: []
       }
+      seasonal_task_templates: {
+        Row: {
+          category: Database["public"]["Enums"]["task_category"]
+          created_at: string
+          description: string | null
+          estimated_duration_hours: number | null
+          id: string
+          priority: string | null
+          recommended_for_crops: string[] | null
+          task_name: string
+          typical_season: string | null
+          typical_timing_notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["task_category"]
+          created_at?: string
+          description?: string | null
+          estimated_duration_hours?: number | null
+          id?: string
+          priority?: string | null
+          recommended_for_crops?: string[] | null
+          task_name: string
+          typical_season?: string | null
+          typical_timing_notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["task_category"]
+          created_at?: string
+          description?: string | null
+          estimated_duration_hours?: number | null
+          id?: string
+          priority?: string | null
+          recommended_for_crops?: string[] | null
+          task_name?: string
+          typical_season?: string | null
+          typical_timing_notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       security_audit_log: {
         Row: {
           created_at: string
@@ -1524,6 +1566,65 @@ export type Database = {
         }
         Relationships: []
       }
+      task_history: {
+        Row: {
+          completed_at: string
+          completion_notes: string | null
+          cost_incurred: number | null
+          created_at: string
+          id: string
+          outcome_rating: number | null
+          photos: Json | null
+          recommendations_for_next_time: string | null
+          user_id: string
+          user_task_id: string
+          weather_during_task: Json | null
+          what_didnt_work: string | null
+          what_worked: string | null
+          yield_notes: string | null
+        }
+        Insert: {
+          completed_at?: string
+          completion_notes?: string | null
+          cost_incurred?: number | null
+          created_at?: string
+          id?: string
+          outcome_rating?: number | null
+          photos?: Json | null
+          recommendations_for_next_time?: string | null
+          user_id: string
+          user_task_id: string
+          weather_during_task?: Json | null
+          what_didnt_work?: string | null
+          what_worked?: string | null
+          yield_notes?: string | null
+        }
+        Update: {
+          completed_at?: string
+          completion_notes?: string | null
+          cost_incurred?: number | null
+          created_at?: string
+          id?: string
+          outcome_rating?: number | null
+          photos?: Json | null
+          recommendations_for_next_time?: string | null
+          user_id?: string
+          user_task_id?: string
+          weather_during_task?: Json | null
+          what_didnt_work?: string | null
+          what_worked?: string | null
+          yield_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_history_user_task_id_fkey"
+            columns: ["user_task_id"]
+            isOneToOne: false
+            referencedRelation: "user_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trial_users: {
         Row: {
           access_count: number
@@ -1658,6 +1759,112 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_tasks: {
+        Row: {
+          actual_duration_hours: number | null
+          category: Database["public"]["Enums"]["task_category"]
+          completed_date: string | null
+          created_at: string
+          created_from_template_id: string | null
+          crops_involved: string[] | null
+          description: string | null
+          due_date: string | null
+          estimated_duration_hours: number | null
+          field_id: string | null
+          id: string
+          is_recurring: boolean | null
+          location_notes: string | null
+          parent_task_id: string | null
+          priority: string | null
+          recurrence_config: Json | null
+          recurrence_pattern:
+            | Database["public"]["Enums"]["recurrence_pattern"]
+            | null
+          scheduled_date: string | null
+          status: Database["public"]["Enums"]["task_status"]
+          task_name: string
+          updated_at: string
+          user_id: string
+          weather_conditions: Json | null
+        }
+        Insert: {
+          actual_duration_hours?: number | null
+          category: Database["public"]["Enums"]["task_category"]
+          completed_date?: string | null
+          created_at?: string
+          created_from_template_id?: string | null
+          crops_involved?: string[] | null
+          description?: string | null
+          due_date?: string | null
+          estimated_duration_hours?: number | null
+          field_id?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          location_notes?: string | null
+          parent_task_id?: string | null
+          priority?: string | null
+          recurrence_config?: Json | null
+          recurrence_pattern?:
+            | Database["public"]["Enums"]["recurrence_pattern"]
+            | null
+          scheduled_date?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          task_name: string
+          updated_at?: string
+          user_id: string
+          weather_conditions?: Json | null
+        }
+        Update: {
+          actual_duration_hours?: number | null
+          category?: Database["public"]["Enums"]["task_category"]
+          completed_date?: string | null
+          created_at?: string
+          created_from_template_id?: string | null
+          crops_involved?: string[] | null
+          description?: string | null
+          due_date?: string | null
+          estimated_duration_hours?: number | null
+          field_id?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          location_notes?: string | null
+          parent_task_id?: string | null
+          priority?: string | null
+          recurrence_config?: Json | null
+          recurrence_pattern?:
+            | Database["public"]["Enums"]["recurrence_pattern"]
+            | null
+          scheduled_date?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          task_name?: string
+          updated_at?: string
+          user_id?: string
+          weather_conditions?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_tasks_created_from_template_id_fkey"
+            columns: ["created_from_template_id"]
+            isOneToOne: false
+            referencedRelation: "seasonal_task_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_tasks_field_id_fkey"
+            columns: ["field_id"]
+            isOneToOne: false
+            referencedRelation: "fields"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_tasks_parent_task_id_fkey"
+            columns: ["parent_task_id"]
+            isOneToOne: false
+            referencedRelation: "user_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_usage: {
         Row: {
@@ -1820,6 +2027,10 @@ export type Database = {
       encrypt_sensitive_payment_data: {
         Args: { data_to_encrypt: string }
         Returns: string
+      }
+      generate_recurring_tasks: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       generate_soc2_compliance_report: {
         Args: Record<PropertyKey, never>
@@ -2064,7 +2275,26 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      recurrence_pattern: "annual" | "seasonal" | "monthly" | "custom"
       subscription_tier: "free" | "starter" | "pro" | "enterprise"
+      task_category:
+        | "soil_preparation"
+        | "planting"
+        | "fertilization"
+        | "irrigation"
+        | "pest_management"
+        | "harvesting"
+        | "equipment_maintenance"
+        | "cover_crops"
+        | "soil_testing"
+        | "record_keeping"
+        | "other"
+      task_status:
+        | "pending"
+        | "in_progress"
+        | "completed"
+        | "skipped"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2193,7 +2423,28 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      recurrence_pattern: ["annual", "seasonal", "monthly", "custom"],
       subscription_tier: ["free", "starter", "pro", "enterprise"],
+      task_category: [
+        "soil_preparation",
+        "planting",
+        "fertilization",
+        "irrigation",
+        "pest_management",
+        "harvesting",
+        "equipment_maintenance",
+        "cover_crops",
+        "soil_testing",
+        "record_keeping",
+        "other",
+      ],
+      task_status: [
+        "pending",
+        "in_progress",
+        "completed",
+        "skipped",
+        "cancelled",
+      ],
     },
   },
 } as const

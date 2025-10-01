@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,10 +34,12 @@ import {
   Satellite,
   Eye,
   Brain,
-  Clock
+  Clock,
+  ListTodo
 } from "lucide-react";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const { data: liveData, isLoading, refreshData, getDataAge } = useLiveAgriculturalData();
 
   // Initialize data on component mount
@@ -450,6 +453,15 @@ const Dashboard = () => {
                 <CardTitle className="text-sm">Quick Planning Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full justify-start"
+                  onClick={() => navigate('/task-manager')}
+                >
+                  <ListTodo className="h-4 w-4 mr-2" />
+                  Manage Seasonal Tasks
+                </Button>
                 <Button variant="outline" size="sm" className="w-full justify-start">
                   <Calendar className="h-4 w-4 mr-2" />
                   View Planting Calendar
