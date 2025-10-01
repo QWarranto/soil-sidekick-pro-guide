@@ -13,8 +13,28 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 const FAQ = () => {
   const faqs = [
     {
-      question: "What are the new GPT-5 Enhanced features?",
-      answer: "SoilSidekick Pro now includes three powerful GPT-5 enhanced features: Enhanced Agricultural Q&A Chat for sophisticated agricultural guidance, Smart Report Summaries that auto-generate executive summaries of soil and water reports, AI Crop Recommendations with live data refresh capabilities, and Seasonal Planning Assistant for intelligent crop rotation and weather-integrated planning strategies."
+      question: "What is the Seasonal Task Manager and how does it help me?",
+      answer: "The Seasonal Task Manager helps you remember and improve farming practices from one season to the next. One of the biggest challenges farmers face is forgetting what needs to be done and when. The Task Manager provides 20+ pre-built task templates, recurring task automation, and task history tracking so you never forget critical seasonal tasks. Free tier allows 10 tasks, Starter tier offers unlimited tasks with annual recurring, and Pro tier adds advanced recurring patterns and AI-powered insights."
+    },
+    {
+      question: "What task templates are available?",
+      answer: "SoilSidekick Pro includes 20+ professionally crafted seasonal task templates covering soil preparation, planting (cool and warm season), irrigation setup, fertilization, pest management, harvest operations, cover crop planting, equipment maintenance, and record keeping. Each template includes recommended timing (e.g., '2 weeks before last frost'), estimated duration, and crop-specific guidance. You can customize any template for your specific farm needs."
+    },
+    {
+      question: "How do recurring tasks work?",
+      answer: "Recurring tasks automatically remind you of seasonal activities year after year. Starter tier ($29/mo) includes annual recurring tasks - perfect for yearly activities like spring soil testing or fall cover crop planting. Pro tier ($79/mo) unlocks advanced recurring patterns including seasonal (quarterly), monthly, and custom frequencies - ideal for intensive rotations, succession planting, and frequent monitoring tasks. Free tier does not support recurring tasks."
+    },
+    {
+      question: "What's the difference between Free, Starter, and Pro tiers for task management?",
+      answer: "Free tier: View templates (read-only) and create up to 10 tasks per season with basic status tracking. Starter tier ($29/mo): Unlimited tasks, full template library access, task history tracking, annual recurring tasks, field assignment, and 50 email reminders/month. Pro tier ($79/mo): Everything in Starter plus advanced recurring patterns (seasonal/monthly/custom), task learnings & notes, year-over-year comparison, AI recommendations, unlimited reminders, and task export. Enterprise tier adds team collaboration and API access."
+    },
+    {
+      question: "Can I track what worked and what didn't for each task?",
+      answer: "Yes! The Task History & Learnings feature (available with Starter+ plans, currently in development for Q2 2025) will let you document completion notes, what worked, what to improve, outcome ratings, and attach photos. This creates a personalized farming knowledge base that helps you improve operations year over year. You'll be able to compare tasks across years and get AI-powered insights from your historical data."
+    },
+    {
+      question: "How do I access the Task Manager?",
+      answer: "Access the Seasonal Task Manager from three locations: Click 'Manage Seasonal Tasks' button on the Dashboard, use the 'Task Manager' button in Seasonal Planning, or navigate directly to /task-manager. The interface includes three main sections: My Tasks (active/pending), Task Library (pre-built templates), and History & Learnings (completed tasks with notes)."
     },
     {
       question: "How does the Enhanced Agricultural Q&A Chat work?",

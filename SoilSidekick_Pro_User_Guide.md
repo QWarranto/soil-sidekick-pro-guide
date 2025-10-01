@@ -54,6 +54,115 @@ Generate professional PDF reports for your analysis. Pro subscribers get enhance
 
 ---
 
+## Seasonal Task Management Guide
+
+### Getting Started with Task Management
+
+#### Why Task Management?
+One of the biggest challenges farmers face is remembering what worked, what didn't, and when to do things from one season to the next. The Seasonal Task Manager helps you track every seasonal task, build a farming knowledge base, and improve your operations year over year.
+
+#### Access the Task Manager:
+- From Dashboard → "Manage Seasonal Tasks" button
+- From Seasonal Planning → "Task Manager" button
+- Direct navigation to /task-manager
+
+#### Main Sections:
+- **My Tasks:** Active and pending tasks
+- **Task Library:** Pre-built templates
+- **History & Learnings:** Completed tasks with notes (Coming Soon)
+
+### Task Template Library
+
+#### Pre-Built Seasonal Tasks
+Start with 20+ professionally crafted task templates covering every season and farming activity. Each template includes recommended timing, estimated duration, and crop-specific guidance.
+
+#### Spring Tasks:
+- Soil Testing & Preparation
+- Spring Planting (Cool & Warm Season)
+- Irrigation Setup
+- Frost Protection
+- First Fertilizer Application
+
+#### Summer Tasks:
+- Pest Scouting & Management
+- Irrigation Monitoring
+- Mid-Season Fertilization
+- Succession Planting
+- Harvest Operations
+
+#### Fall/Winter Tasks:
+- Fall Soil Amendment
+- Cover Crop Planting
+- Equipment Winterization
+- Record Keeping
+- Winter Planning
+
+#### How to Use Templates:
+- Browse templates by category or search by name
+- Click "Add to My Tasks" to create from template
+- Customize dates, fields, and details for your farm
+- Templates provide typical timing notes (e.g., "2 weeks before last frost")
+
+### Features by Subscription Tier
+
+#### Free Tier - Getting Started
+- View all task templates (read-only)
+- Create up to 10 tasks per season
+- Basic task status tracking (pending/completed)
+- No recurring task support
+
+#### Starter Tier ($29/mo) - Unlimited Tasks
+- **Unlimited task creation**
+- Full access to task template library
+- Task history tracking
+- Annual recurring tasks
+- Field-specific task assignment
+- Up to 50 email reminders per month
+
+#### Pro Tier ($79/mo) - Advanced Intelligence
+- Everything in Starter, plus:
+- **Advanced recurring patterns** (seasonal, monthly, custom)
+- Task completion learnings & notes
+- Year-over-year task comparison
+- AI-powered task recommendations
+- Unlimited email reminders
+- Task export & reporting
+
+#### Enterprise Tier ($149/mo) - Team Collaboration
+- Everything in Pro, plus:
+- Team task collaboration & assignment
+- Custom task templates & workflows
+- Task management API access
+- Multi-user farm management
+
+### Recurring Task Automation
+
+#### Never Forget Seasonal Tasks
+Recurring tasks automatically remind you of seasonal activities year after year. Set it once, and the system generates new task instances at the right time every year.
+
+#### Annual Recurring (Starter+)
+Tasks that repeat once per year (e.g., "Spring Soil Testing", "Fall Cover Crop Planting"). Perfect for farmers who need to remember yearly maintenance and seasonal preparations.
+
+#### Advanced Patterns (Pro+)
+Seasonal (quarterly), Monthly, or Custom frequency patterns. Ideal for intensive rotations, succession planting, and frequent monitoring tasks.
+
+### Task History & Learnings (Coming Soon)
+
+#### Build Your Farming Knowledge Base
+The History & Learnings feature (currently in development) will let you document what worked, what didn't, and recommendations for next time. This creates a personalized farming playbook that improves year over year.
+
+#### Planned Features:
+- Task completion notes and observations
+- "What worked" and "What to improve" sections
+- Outcome ratings (1-5 stars)
+- Year-over-year comparison
+- AI-powered insights from your history
+- Photo attachments for visual documentation
+
+*This feature requires Starter plan or higher and will be available in Q2 2025*
+
+---
+
 ## AlphaEarth Satellite Intelligence Guide
 
 ### Vegetation Health Analysis

@@ -185,6 +185,23 @@ const tourSteps: TourStep[] = [
   },
   {
     id: 10,
+    title: "Seasonal Task Manager",
+    description: "Never forget critical farming tasks again with intelligent seasonal task tracking and year-over-year learning.",
+    features: [
+      "Create custom tasks or use pre-built templates",
+      "Track completion history and learnings",
+      "Annual recurring tasks (Starter+)",
+      "Advanced recurring patterns (Pro+)",
+      "Field-specific task assignment",
+      "Year-over-year comparison"
+    ],
+    icon: Calendar,
+    route: "/task-manager",
+    color: "text-green-600",
+    badge: "Memory Aid"
+  },
+  {
+    id: 11,
     title: "AI Crop Recommendations",
     description: "Get personalized crop suggestions powered by GPT-5 intelligence with support for custom and alternative crops.",
     features: [
@@ -202,7 +219,7 @@ const tourSteps: TourStep[] = [
     badge: "AI Powered"
   },
   {
-    id: 11,
+    id: 12,
     title: "Local AI Processing",
     description: "Privacy-preserving agricultural intelligence using Google Gemma models that run on your device.",
     features: [
@@ -219,7 +236,7 @@ const tourSteps: TourStep[] = [
     badge: "Privacy First"
   },
   {
-    id: 11,
+    id: 13,
     title: "ADAPT Integration Hub",
     description: "Seamlessly connect with existing farm management systems through ADAPT Standard 1.0 compatibility.",
     features: [

@@ -138,9 +138,10 @@ const UserGuide = () => {
 
           {/* Main Guide Content */}
           <Tabs defaultValue="getting-started" className="w-full">
-            <TabsList className="grid w-full grid-cols-9">
+            <TabsList className="grid w-full grid-cols-10">
               <TabsTrigger value="getting-started">Getting Started</TabsTrigger>
               <TabsTrigger value="gpt5-features">GPT-5 Features</TabsTrigger>
+              <TabsTrigger value="task-management">Task Manager</TabsTrigger>
               <TabsTrigger value="local-ai">Local AI</TabsTrigger>
               <TabsTrigger value="alpha-earth">AlphaEarth</TabsTrigger>
               <TabsTrigger value="soil-analysis">Soil Analysis</TabsTrigger>
@@ -459,6 +460,265 @@ const UserGuide = () => {
                             economic optimization strategies, and sustainability recommendations.
                           </p>
                         </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="task-management" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-6 w-6" />
+                    Seasonal Task Management Guide
+                    <Badge variant="outline" className="ml-2">NEW</Badge>
+                  </CardTitle>
+                  <CardDescription>
+                    Master seasonal task tracking to remember and improve farming practices year after year
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="task-overview">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <Target className="h-5 w-5" />
+                          Getting Started with Task Management
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg border">
+                          <h4 className="font-semibold mb-2">Why Task Management?</h4>
+                          <p className="text-sm text-muted-foreground">
+                            One of the biggest challenges farmers face is remembering what worked, what didn't, and when to do things from one season to the next. 
+                            The Seasonal Task Manager helps you track every seasonal task, build a farming knowledge base, and improve your operations year over year.
+                          </p>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-semibold mb-2">Access the Task Manager:</h4>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• From Dashboard → "Manage Seasonal Tasks" button</li>
+                              <li>• From Seasonal Planning → "Task Manager" button</li>
+                              <li>• Direct navigation to /task-manager</li>
+                            </ul>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold mb-2">Main Sections:</h4>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• <strong>My Tasks:</strong> Active and pending tasks</li>
+                              <li>• <strong>Task Library:</strong> Pre-built templates</li>
+                              <li>• <strong>History & Learnings:</strong> Completed tasks with notes</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="task-templates">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <Zap className="h-5 w-5" />
+                          Task Template Library
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg border">
+                          <h4 className="font-semibold mb-2">Pre-Built Seasonal Tasks</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Start with 20+ professionally crafted task templates covering every season and farming activity. 
+                            Each template includes recommended timing, estimated duration, and crop-specific guidance.
+                          </p>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-4">
+                          <div>
+                            <h5 className="font-semibold mb-2">Spring Tasks:</h5>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• Soil Testing & Preparation</li>
+                              <li>• Spring Planting (Cool & Warm Season)</li>
+                              <li>• Irrigation Setup</li>
+                              <li>• Frost Protection</li>
+                              <li>• First Fertilizer Application</li>
+                            </ul>
+                          </div>
+                          <div>
+                            <h5 className="font-semibold mb-2">Summer Tasks:</h5>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• Pest Scouting & Management</li>
+                              <li>• Irrigation Monitoring</li>
+                              <li>• Mid-Season Fertilization</li>
+                              <li>• Succession Planting</li>
+                              <li>• Harvest Operations</li>
+                            </ul>
+                          </div>
+                          <div>
+                            <h5 className="font-semibold mb-2">Fall/Winter Tasks:</h5>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• Fall Soil Amendment</li>
+                              <li>• Cover Crop Planting</li>
+                              <li>• Equipment Winterization</li>
+                              <li>• Record Keeping</li>
+                              <li>• Winter Planning</li>
+                            </ul>
+                          </div>
+                        </div>
+                        <div className="bg-muted/50 p-4 rounded-lg">
+                          <h4 className="font-medium mb-2">How to Use Templates:</h4>
+                          <ul className="text-sm text-muted-foreground space-y-1">
+                            <li>• Browse templates by category or search by name</li>
+                            <li>• Click "Add to My Tasks" to create from template</li>
+                            <li>• Customize dates, fields, and details for your farm</li>
+                            <li>• Templates provide typical timing notes (e.g., "2 weeks before last frost")</li>
+                          </ul>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="tier-features">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <Shield className="h-5 w-5" />
+                          Features by Subscription Tier
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="grid gap-4">
+                          <div className="border rounded-lg p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge variant="outline">Free Tier</Badge>
+                              <span className="text-sm font-medium">Getting Started</span>
+                            </div>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• View all task templates (read-only)</li>
+                              <li>• Create up to 10 tasks per season</li>
+                              <li>• Basic task status tracking (pending/completed)</li>
+                              <li>• No recurring task support</li>
+                            </ul>
+                          </div>
+
+                          <div className="border-2 border-primary rounded-lg p-4 bg-primary/5">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge>Starter - $29/mo</Badge>
+                              <span className="text-sm font-medium">Unlimited Tasks</span>
+                            </div>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• <strong>Unlimited task creation</strong></li>
+                              <li>• Full access to task template library</li>
+                              <li>• Task history tracking</li>
+                              <li>• Annual recurring tasks</li>
+                              <li>• Field-specific task assignment</li>
+                              <li>• Up to 50 email reminders per month</li>
+                            </ul>
+                          </div>
+
+                          <div className="border-2 border-purple-500 rounded-lg p-4 bg-purple-50">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge className="bg-purple-600">Pro - $79/mo</Badge>
+                              <span className="text-sm font-medium">Advanced Intelligence</span>
+                            </div>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• Everything in Starter, plus:</li>
+                              <li>• <strong>Advanced recurring patterns</strong> (seasonal, monthly, custom)</li>
+                              <li>• Task completion learnings & notes</li>
+                              <li>• Year-over-year task comparison</li>
+                              <li>• AI-powered task recommendations</li>
+                              <li>• Unlimited email reminders</li>
+                              <li>• Task export & reporting</li>
+                            </ul>
+                          </div>
+
+                          <div className="border rounded-lg p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge variant="secondary">Enterprise - $149/mo</Badge>
+                              <span className="text-sm font-medium">Team Collaboration</span>
+                            </div>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• Everything in Pro, plus:</li>
+                              <li>• Team task collaboration & assignment</li>
+                              <li>• Custom task templates & workflows</li>
+                              <li>• Task management API access</li>
+                              <li>• Multi-user farm management</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="recurring-tasks">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <RefreshCw className="h-5 w-5" />
+                          Recurring Task Automation
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="bg-gradient-to-r from-blue-50 to-green-50 p-4 rounded-lg border">
+                          <h4 className="font-semibold mb-2">Never Forget Seasonal Tasks</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Recurring tasks automatically remind you what needs to be done each season. Set it once, and the system 
+                            generates new task instances at the right time every year.
+                          </p>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div className="border rounded-lg p-3">
+                            <h5 className="font-medium mb-2 flex items-center gap-2">
+                              <Badge variant="outline">Starter+</Badge>
+                              Annual Recurring
+                            </h5>
+                            <p className="text-sm text-muted-foreground mb-2">
+                              Tasks that repeat once per year (e.g., "Spring Soil Testing", "Fall Cover Crop Planting")
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Perfect for farmers who need to remember yearly maintenance and seasonal preparations
+                            </p>
+                          </div>
+                          <div className="border-2 border-purple-500 rounded-lg p-3 bg-purple-50">
+                            <h5 className="font-medium mb-2 flex items-center gap-2">
+                              <Badge className="bg-purple-600">Pro+</Badge>
+                              Advanced Patterns
+                            </h5>
+                            <p className="text-sm text-muted-foreground mb-2">
+                              Seasonal (quarterly), Monthly, or Custom frequency patterns
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Ideal for intensive rotations, succession planting, and frequent monitoring tasks
+                            </p>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="task-history">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <Lightbulb className="h-5 w-5" />
+                          Task History & Learnings (Coming Soon)
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                          <h4 className="font-semibold mb-2">Build Your Farming Knowledge Base</h4>
+                          <p className="text-sm text-muted-foreground">
+                            The History & Learnings feature (currently in development) will let you document what worked, what didn't, 
+                            and recommendations for next time. This creates a personalized farming playbook that improves year over year.
+                          </p>
+                        </div>
+                        <div>
+                          <h5 className="font-medium mb-2">Planned Features:</h5>
+                          <ul className="text-sm text-muted-foreground space-y-1">
+                            <li>• Task completion notes and observations</li>
+                            <li>• "What worked" and "What to improve" sections</li>
+                            <li>• Outcome ratings (1-5 stars)</li>
+                            <li>• Year-over-year comparison</li>
+                            <li>• AI-powered insights from your history</li>
+                            <li>• Photo attachments for visual documentation</li>
+                          </ul>
+                        </div>
+                        <p className="text-xs text-muted-foreground italic">
+                          This feature requires Starter plan or higher and will be available in Q2 2025
+                        </p>
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
