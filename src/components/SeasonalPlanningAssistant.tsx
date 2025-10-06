@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Calendar, Sprout, CloudRain, TrendingUp, Leaf, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import DOMPurify from 'dompurify';
 
 interface SeasonalPlanningAssistantProps {
   location?: {
@@ -343,12 +344,14 @@ export const SeasonalPlanningAssistant: React.FC<SeasonalPlanningAssistantProps>
               <div 
                 className="text-sm leading-relaxed whitespace-pre-line"
                 dangerouslySetInnerHTML={{ 
-                  __html: recommendations
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                    .replace(/#{1,6}\s*(.*?)$/gm, '<h3 class="text-base font-semibold mt-4 mb-2 text-green-700">$1</h3>')
-                    .replace(/•/g, '•')
-                    .replace(/- /g, '• ')
+                  __html: DOMPurify.sanitize(
+                    recommendations
+                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                      .replace(/#{1,6}\s*(.*?)$/gm, '<h3 class="text-base font-semibold mt-4 mb-2 text-green-700">$1</h3>')
+                      .replace(/•/g, '•')
+                      .replace(/- /g, '• ')
+                  )
                 }} 
               />
             </div>

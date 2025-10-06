@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { LocalLLMToggle } from './LocalLLMToggle';
 import { localLLMService, LocalLLMConfig } from '@/services/localLLMService';
 import { useSmartLLMSelection } from '@/hooks/useSmartLLMSelection';
+import DOMPurify from 'dompurify';
 
 interface SmartReportSummaryProps {
   reportType: 'soil' | 'water';
@@ -223,9 +224,11 @@ export const SmartReportSummary: React.FC<SmartReportSummaryProps> = ({
             <div 
               className="text-sm leading-relaxed whitespace-pre-line"
               dangerouslySetInnerHTML={{ 
-                __html: summary.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                                   .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                                   .replace(/•/g, '•')
+                __html: DOMPurify.sanitize(
+                  summary.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                         .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                         .replace(/•/g, '•')
+                )
               }} 
             />
           </div>
