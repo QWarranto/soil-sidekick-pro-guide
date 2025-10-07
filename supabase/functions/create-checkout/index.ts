@@ -1,15 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { logSafe, logError } from '../_shared/logging-utils.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
-const logStep = (step: string, details?: any) => {
-  const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
-  console.log(`[CREATE-CHECKOUT] ${step}${detailsStr}`);
 };
 
 serve(async (req) => {
@@ -23,18 +19,18 @@ serve(async (req) => {
   );
 
   try {
-    logStep("Function started");
+    logSafe("create-checkout started");
 
     const authHeader = req.headers.get("Authorization")!;
     const token = authHeader.replace("Bearer ", "");
     const { data } = await supabaseClient.auth.getUser(token);
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
-    logStep("User authenticated", { userId: user.id, email: user.email });
+    logSafe("User authenticated", { userId: user.id, email: user.email });
 
     const { plan, interval } = await req.json();
     if (!plan || !interval) throw new Error("Plan and interval are required");
-    logStep("Request details", { plan, interval });
+    logSafe("Request details", { plan, interval });
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
@@ -44,9 +40,9 @@ serve(async (req) => {
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
-      logStep("Found existing customer", { customerId });
+      logSafe("Found existing customer", { customerId });
     } else {
-      logStep("Creating new customer");
+      logSafe("Creating new customer");
     }
 
     // Define pricing - Updated prices
@@ -67,7 +63,7 @@ serve(async (req) => {
 
     const amount = prices[plan as keyof typeof prices]?.[interval as keyof typeof prices['pro']];
     if (!amount) throw new Error("Invalid plan or interval");
-    logStep("Price calculated", { plan, interval, amount });
+    logSafe("Price calculated", { plan, interval, amount });
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -91,15 +87,15 @@ serve(async (req) => {
       cancel_url: `${req.headers.get("origin")}/pricing?canceled=true`,
     });
 
-    logStep("Checkout session created", { sessionId: session.id, url: session.url });
+    logSafe("Checkout session created", { sessionId: session.id });
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error) {
+    logError("create-checkout", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
-    logStep("ERROR in create-checkout", { message: errorMessage });
     return new Response(JSON.stringify({ error: errorMessage }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
