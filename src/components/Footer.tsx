@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Leaf, Mail, Phone, MapPin, Twitter, Linkedin, Github, Facebook } from 'lucide-react';
+import { Leaf, Mail, Phone, MapPin, Twitter, Linkedin, Github, Facebook, FileText } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -76,6 +76,17 @@ const Footer = () => {
             <ul className="space-y-2 text-sm">
               <li><Link to="/faq" className="text-muted-foreground hover:text-primary transition-colors">FAQ</Link></li>
               <li><Link to="/user-guide" className="text-muted-foreground hover:text-primary transition-colors">User Guide</Link></li>
+              <li>
+                <a 
+                  href="/SoilSidekick_Pro_User_Guide.pdf" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
+                >
+                  <FileText className="h-3.5 w-3.5" />
+                  Download User Guide (PDF)
+                </a>
+              </li>
               <li><Link to="/tour-guide" className="text-muted-foreground hover:text-primary transition-colors">Tour Guide</Link></li>
               <li><Link to="/privacy-policy" className="text-muted-foreground hover:text-primary transition-colors">Privacy Policy</Link></li>
               <li><Link to="/disclaimer" className="text-muted-foreground hover:text-primary transition-colors">Terms of Service</Link></li>
