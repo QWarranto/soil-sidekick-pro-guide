@@ -1,5 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { corsHeaders } from '../_shared/cors.ts'
+import { logSafe, logError } from '../_shared/logging-utils.ts'
+import { validateTrialAccess, generateTrialToken } from '../_shared/trial-validation.ts'
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
@@ -27,33 +29,36 @@ Deno.serve(async (req) => {
 
     switch (action) {
       case 'create_trial': {
-        console.log('Creating trial user for:', email)
+        logSafe('Creating trial user', { email })
         
         // Create or update trial user
         const { data: trialUser, error: createError } = await supabase
           .rpc('create_trial_user', { trial_email: email })
         
         if (createError) {
-          console.error('Error creating trial user:', createError)
+          logError('create_trial_user RPC', createError)
           throw createError
         }
 
-        // Get trial user details
-        const { data: trialData, error: fetchError } = await supabase
-          .from('trial_users')
-          .select('*')
-          .eq('email', email)
-          .single()
+        // Validate the trial was created successfully
+        const validation = await validateTrialAccess(
+          email,
+          Deno.env.get('SUPABASE_URL') ?? '',
+          Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+        )
 
-        if (fetchError) {
-          console.error('Error fetching trial user:', fetchError)
-          throw fetchError
+        if (!validation.isValid) {
+          throw new Error(validation.error || 'Trial validation failed')
         }
+
+        // Generate secure session token instead of sending trial data
+        const sessionToken = generateTrialToken(email)
 
         return new Response(
           JSON.stringify({
             success: true,
-            trialUser: trialData,
+            sessionToken, // Client stores this instead of trial data
+            trialEnd: validation.trialUser?.trial_end,
             message: 'Trial access granted for 10 days'
           }),
           {
@@ -64,22 +69,20 @@ Deno.serve(async (req) => {
       }
 
       case 'verify_trial': {
-        console.log('Verifying trial user:', email)
+        logSafe('Verifying trial user', { email })
         
-        // Check if trial is valid
-        const { data: isValid, error: verifyError } = await supabase
-          .rpc('is_trial_valid', { trial_email: email })
-        
-        if (verifyError) {
-          console.error('Error verifying trial:', verifyError)
-          throw verifyError
-        }
+        // Server-side validation - NEVER trust client data
+        const validation = await validateTrialAccess(
+          email,
+          Deno.env.get('SUPABASE_URL') ?? '',
+          Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+        )
 
-        if (!isValid) {
+        if (!validation.isValid) {
           return new Response(
             JSON.stringify({
               success: false,
-              message: 'Trial has expired or is not valid'
+              message: validation.error || 'Trial has expired or is not valid'
             }),
             {
               headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -88,31 +91,15 @@ Deno.serve(async (req) => {
           )
         }
 
-        // Update access count
-        const { error: updateError } = await supabase
-          .rpc('update_trial_access', { trial_email: email })
-        
-        if (updateError) {
-          console.error('Error updating trial access:', updateError)
-          throw updateError
-        }
-
-        // Get updated trial data
-        const { data: trialData, error: fetchError } = await supabase
-          .from('trial_users')
-          .select('*')
-          .eq('email', email)
-          .single()
-
-        if (fetchError) {
-          console.error('Error fetching trial data:', fetchError)
-          throw fetchError
-        }
+        // Generate new session token
+        const sessionToken = generateTrialToken(email)
 
         return new Response(
           JSON.stringify({
             success: true,
-            trialUser: trialData,
+            sessionToken,
+            trialEnd: validation.trialUser?.trial_end,
+            accessCount: validation.trialUser?.access_count,
             message: 'Trial access verified'
           }),
           {
@@ -127,7 +114,7 @@ Deno.serve(async (req) => {
     }
 
   } catch (error) {
-    console.error('Trial auth error:', error)
+    logError('trial-auth', error)
     return new Response(
       JSON.stringify({
         success: false,
