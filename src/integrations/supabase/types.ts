@@ -1625,6 +1625,30 @@ export type Database = {
           },
         ]
       }
+      trial_creation_rate_limit: {
+        Row: {
+          attempts: number
+          created_at: string
+          email: string
+          id: string
+          ip_address: unknown
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          email: string
+          id?: string
+          ip_address: unknown
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          email?: string
+          id?: string
+          ip_address?: unknown
+        }
+        Relationships: []
+      }
       trial_users: {
         Row: {
           access_count: number
@@ -1999,6 +2023,15 @@ export type Database = {
       check_subscriber_security_compliance: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      check_trial_rate_limit: {
+        Args: {
+          check_email: string
+          check_ip: unknown
+          max_attempts?: number
+          window_minutes?: number
+        }
+        Returns: boolean
       }
       cleanup_rate_limit_tracking: {
         Args: Record<PropertyKey, never>
