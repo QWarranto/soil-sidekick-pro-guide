@@ -1494,7 +1494,7 @@ export type Database = {
       subscribers: {
         Row: {
           created_at: string
-          email: string
+          email: string | null
           encrypted_email: string | null
           encrypted_stripe_customer_id: string | null
           encryption_version: number | null
@@ -1509,7 +1509,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          email: string
+          email?: string | null
           encrypted_email?: string | null
           encrypted_stripe_customer_id?: string | null
           encryption_version?: number | null
@@ -1524,7 +1524,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          email?: string
+          email?: string | null
           encrypted_email?: string | null
           encrypted_stripe_customer_id?: string | null
           encryption_version?: number | null
