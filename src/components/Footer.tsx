@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Leaf, Mail, Phone, MapPin, Twitter, Linkedin, Github, Facebook, FileText } from 'lucide-react';
+import { Leaf, Mail, Phone, MapPin, Twitter, Linkedin, Github, Facebook, FileText, BookOpen } from 'lucide-react';
+import { GuideMenu } from './guides/GuideMenu';
 
 const Footer = () => {
+  const [isGuideMenuOpen, setIsGuideMenuOpen] = useState(false);
+
   return (
+    <>
+      <GuideMenu isOpen={isGuideMenuOpen} onClose={() => setIsGuideMenuOpen(false)} />
     <footer className="bg-card border-t">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -77,6 +82,15 @@ const Footer = () => {
               <li><Link to="/faq" className="text-muted-foreground hover:text-primary transition-colors">FAQ</Link></li>
               <li><Link to="/user-guide" className="text-muted-foreground hover:text-primary transition-colors">User Guide</Link></li>
               <li>
+                <button
+                  onClick={() => setIsGuideMenuOpen(true)}
+                  className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 text-left"
+                >
+                  <BookOpen className="h-3.5 w-3.5" />
+                  Interactive Guides
+                </button>
+              </li>
+              <li>
                 <a 
                   href="/SoilSidekick_Pro_User_Guide.pdf" 
                   target="_blank" 
@@ -118,6 +132,7 @@ const Footer = () => {
         </div>
       </div>
     </footer>
+    </>
   );
 };
 
