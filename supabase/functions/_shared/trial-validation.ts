@@ -38,9 +38,11 @@ export async function validateTrialAccess(
   const { data: isValid, error: rpcError } = await supabase
     .rpc('is_trial_valid', { trial_email: email });
 
+  console.log('is_trial_valid result:', { isValid, error: rpcError });
+
   if (rpcError) {
-    console.error('Trial validation error:', rpcError.message);
-    return { isValid: false, error: 'Validation failed' };
+    console.error('Trial validation RPC error:', rpcError);
+    return { isValid: false, error: `Validation failed: ${rpcError.message}` };
   }
 
   if (!isValid) {
