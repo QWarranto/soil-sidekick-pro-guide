@@ -39,38 +39,16 @@ export const CountyLookup: React.FC<CountyLookupProps> = ({ onCountySelect }) =>
       const cleanTerm = term.replace(/,/g, '').trim();
       console.log('Clean search term:', cleanTerm);
       
-      // Use separate queries for better search results
-      let query = supabase
-        .from('counties')
-        .select('*');
+      // Call public edge function to avoid RLS issues
+      const { data, error } = await supabase.functions.invoke('county-lookup', {
+        body: { term: cleanTerm }
+      });
 
-      // Search county names first (primary search)
-      const { data: countyData, error: countyError } = await query
-        .ilike('county_name', `%${cleanTerm}%`)
-        .limit(50); // Increased limit to show more counties
+      console.log('county-lookup response:', { data, error });
+      if (error) throw error;
 
-      console.log('County search results:', countyData, 'Error:', countyError);
-      if (countyError) throw countyError;
-
-      // If we have results, use them. Otherwise, search state names too
-      let allResults = countyData || [];
-      
-      if (allResults.length < 5) {
-        const { data: stateData, error: stateError } = await supabase
-          .from('counties')
-          .select('*')
-          .ilike('state_name', `%${cleanTerm}%`)
-          .limit(50); // Increased limit to show more counties
-
-        if (stateError) throw stateError;
-        
-        // Combine results, avoiding duplicates
-        const existingIds = new Set(allResults.map(c => c.id));
-        const newStateResults = (stateData || []).filter(c => !existingIds.has(c.id));
-        allResults = [...allResults, ...newStateResults].slice(0, 10);
-      }
-
-      setCounties(allResults);
+      const results = (data?.results || []).slice(0, 10);
+      setCounties(results);
     } catch (error) {
       console.error('Error searching counties:', error);
       toast({

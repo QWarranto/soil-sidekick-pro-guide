@@ -86,3 +86,6 @@ verify_jwt = true
 
 [functions.seasonal-planning-assistant]
 verify_jwt = true
+
+[functions.county-lookup]
+verify_jwt = false
