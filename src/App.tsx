@@ -26,6 +26,7 @@ import Disclaimer from "./pages/Disclaimer";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import { FieldMapping } from "./pages/FieldMapping";
 import TaskManager from "./pages/TaskManager";
+import DeploymentGuide from "./pages/DeploymentGuide";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -58,6 +59,7 @@ const App = () => (
         <Route path="/tour-guide" element={<TourGuide />} />
         <Route path="/disclaimer" element={<Disclaimer />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/deployment-guide" element={<DeploymentGuide />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
