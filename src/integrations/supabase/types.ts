@@ -1760,6 +1760,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_feedback: {
+        Row: {
+          created_at: string
+          feature_used: string | null
+          feedback_text: string | null
+          id: string
+          metadata: Json | null
+          page_context: string | null
+          rating: number
+          survey_type: string
+          user_id: string | null
+          would_recommend: boolean | null
+        }
+        Insert: {
+          created_at?: string
+          feature_used?: string | null
+          feedback_text?: string | null
+          id?: string
+          metadata?: Json | null
+          page_context?: string | null
+          rating: number
+          survey_type?: string
+          user_id?: string | null
+          would_recommend?: boolean | null
+        }
+        Update: {
+          created_at?: string
+          feature_used?: string | null
+          feedback_text?: string | null
+          id?: string
+          metadata?: Json | null
+          page_context?: string | null
+          rating?: number
+          survey_type?: string
+          user_id?: string | null
+          would_recommend?: boolean | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string

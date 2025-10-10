@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Leaf, Mail, Phone, MapPin, Twitter, Linkedin, Github, Facebook, FileText, BookOpen } from 'lucide-react';
+import { Leaf, Mail, Phone, MapPin, Twitter, Linkedin, Github, Facebook, FileText, BookOpen, MessageSquare } from 'lucide-react';
 import { GuideMenu } from './guides/GuideMenu';
+import { FeedbackSurvey } from './FeedbackSurvey';
 
 const Footer = () => {
   const [isGuideMenuOpen, setIsGuideMenuOpen] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
   return (
     <>
       <GuideMenu isOpen={isGuideMenuOpen} onClose={() => setIsGuideMenuOpen(false)} />
+      <FeedbackSurvey open={isFeedbackOpen} onOpenChange={setIsFeedbackOpen} />
     <footer className="bg-card border-t">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -88,6 +91,15 @@ const Footer = () => {
                 >
                   <BookOpen className="h-3.5 w-3.5" />
                   Interactive Guides
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setIsFeedbackOpen(true)}
+                  className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 text-left"
+                >
+                  <MessageSquare className="h-3.5 w-3.5" />
+                  Share Feedback
                 </button>
               </li>
               <li>
