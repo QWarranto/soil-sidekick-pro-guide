@@ -59,6 +59,7 @@ Deno.serve(async (req) => {
             success: true,
             sessionToken, // Client stores this instead of trial data
             trialEnd: validation.trialUser?.trial_end,
+            trialUser: validation.trialUser, // Backward compatibility for clients expecting trialUser
             message: 'Trial access granted for 10 days'
           }),
           {
@@ -100,6 +101,7 @@ Deno.serve(async (req) => {
             sessionToken,
             trialEnd: validation.trialUser?.trial_end,
             accessCount: validation.trialUser?.access_count,
+            trialUser: validation.trialUser, // Backward compatibility
             message: 'Trial access verified'
           }),
           {
