@@ -186,29 +186,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: { email, action: 'create_trial' }
       });
 
+      console.log('Trial auth response:', { data, error });
+
       if (error) {
         toast({
           title: "Trial access failed",
-          description: error.message,
+          description: error.message || "Please try again",
           variant: "destructive",
         });
         return { error };
       }
 
-      if (data.success) {
+      if (data?.success && data?.trialUser) {
         setTrialUser(data.trialUser);
         localStorage.setItem('trialUser', JSON.stringify(data.trialUser));
         toast({
           title: "Trial access granted!",
           description: `You have 10-day trial access until ${new Date(data.trialUser.trial_end).toLocaleDateString()}`,
         });
+        return { error: null };
+      } else {
+        const errorMsg = data?.error || data?.message || "Trial creation failed";
+        toast({
+          title: "Trial access failed",
+          description: errorMsg,
+          variant: "destructive",
+        });
+        return { error: new Error(errorMsg) };
       }
-
-      return { error: null };
     } catch (error: any) {
+      console.error('Trial auth error:', error);
       toast({
         title: "Trial access failed",
-        description: "An unexpected error occurred",
+        description: error.message || "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
       return { error };
