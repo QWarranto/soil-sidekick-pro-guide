@@ -32,10 +32,12 @@ export const CountyLookup: React.FC<CountyLookupProps> = ({ onCountySelect }) =>
       return;
     }
 
+    console.log('Searching for county:', term);
     setLoading(true);
     try {
       // Clean the search term by removing commas and extra spaces, then escape for SQL
       const cleanTerm = term.replace(/,/g, '').trim();
+      console.log('Clean search term:', cleanTerm);
       
       // Use separate queries for better search results
       let query = supabase
@@ -47,6 +49,7 @@ export const CountyLookup: React.FC<CountyLookupProps> = ({ onCountySelect }) =>
         .ilike('county_name', `%${cleanTerm}%`)
         .limit(50); // Increased limit to show more counties
 
+      console.log('County search results:', countyData, 'Error:', countyError);
       if (countyError) throw countyError;
 
       // If we have results, use them. Otherwise, search state names too
