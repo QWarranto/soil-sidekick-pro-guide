@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { LogOut, LogIn } from 'lucide-react';
+import { NetworkStatusIndicator } from '@/components/NetworkStatusIndicator';
 
 const AppHeader = () => {
   const { user, signOut } = useAuth();
@@ -27,20 +28,21 @@ const AppHeader = () => {
           </div>
         </div>
         
-        <nav className="hidden md:flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
+        <nav className="flex items-center gap-2">
+          <NetworkStatusIndicator />
+          <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')} className="hidden md:flex">
             Dashboard
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => navigate('/pricing')}>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/pricing')} className="hidden md:flex">
             Pricing
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => navigate('/api-docs')}>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/api-docs')} className="hidden md:flex">
             API Docs
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => navigate('/faq')}>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/faq')} className="hidden md:flex">
             FAQ
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => navigate('/user-guide')}>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/user-guide')} className="hidden md:flex">
             User Guide
           </Button>
           {user ? (

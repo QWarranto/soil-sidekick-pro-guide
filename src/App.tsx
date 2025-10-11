@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import AppHeader from "@/components/AppHeader";
 import { OfflineSyncIndicator } from "@/components/OfflineSyncIndicator";
+import { NetworkStatusBanner } from "@/components/NetworkStatusBanner";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -42,6 +43,7 @@ const App = () => (
       <AuthProvider>
         <BrowserRouter>
           <AppHeader />
+          <NetworkStatusBanner />
           <OfflineSyncIndicator />
           <Routes>
             <Route path="/" element={<Index />} />

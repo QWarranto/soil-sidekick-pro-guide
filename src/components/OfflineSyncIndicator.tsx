@@ -30,7 +30,8 @@ export const OfflineSyncIndicator = () => {
     hasItemsToSync
   } = useOfflineSyncQueue();
 
-  if (!hasItemsToSync && isOnline) {
+  // Always show when offline or has items to sync
+  if (isOnline && !hasItemsToSync) {
     return null;
   }
 
