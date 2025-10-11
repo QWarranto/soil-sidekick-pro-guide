@@ -23,7 +23,8 @@ export const useNetworkStatus = () => {
         if (status.connected && wasOffline) {
           toast({
             title: "Back online",
-            description: "Syncing your data..."
+            description: "Auto-syncing pending changes...",
+            duration: 3000
           });
         } else if (!status.connected) {
           toast({

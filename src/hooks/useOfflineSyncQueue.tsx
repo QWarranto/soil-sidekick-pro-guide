@@ -169,11 +169,19 @@ export const useOfflineSyncQueue = () => {
     const successCount = results.filter(r => r.success).length;
     const failCount = results.length - successCount;
 
-    if (successCount > 0) {
-      toast({
-        title: "Sync complete",
-        description: `Successfully synced ${successCount} item${successCount > 1 ? 's' : ''}${failCount > 0 ? `, ${failCount} failed` : ''}`,
-      });
+    if (successCount > 0 || failCount > 0) {
+      if (failCount === 0) {
+        toast({
+          title: "✓ Sync complete",
+          description: `Successfully synced ${successCount} item${successCount !== 1 ? 's' : ''}`,
+        });
+      } else {
+        toast({
+          title: "Sync completed with errors",
+          description: `${successCount} synced, ${failCount} failed`,
+          variant: "destructive"
+        });
+      }
     }
 
     setIsSyncing(false);
@@ -184,13 +192,20 @@ export const useOfflineSyncQueue = () => {
   // Auto-sync when coming online
   useEffect(() => {
     if (isOnline && queue.length > 0 && !syncInProgressRef.current) {
+      console.log(`Auto-sync triggered: ${queue.length} items in queue`);
+      
       // Small delay to ensure connection is stable
       const timer = setTimeout(() => {
+        toast({
+          title: "Auto-sync started",
+          description: `Syncing ${queue.length} pending change${queue.length !== 1 ? 's' : ''}...`,
+          duration: 2000
+        });
         processQueue();
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [isOnline, queue.length, processQueue]);
+  }, [isOnline, queue.length, processQueue, toast]);
 
   // Load queue on mount
   useEffect(() => {
