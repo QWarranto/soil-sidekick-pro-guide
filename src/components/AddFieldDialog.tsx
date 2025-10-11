@@ -99,7 +99,12 @@ export function AddFieldDialog({ onFieldAdded }: AddFieldDialogProps) {
                 <FormItem>
                   <FormLabel>Field Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., North Field, Plot 1" {...field} />
+                    <Input 
+                      placeholder="e.g., North Field, Plot 1"
+                      autoComplete="off"
+                      autoCapitalize="words"
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -116,8 +121,10 @@ export function AddFieldDialog({ onFieldAdded }: AddFieldDialogProps) {
                     <FormControl>
                       <Input 
                         type="number" 
+                        inputMode="decimal"
                         step="any" 
                         placeholder="e.g., 40.7128"
+                        autoComplete="off"
                         {...field}
                         onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                       />
@@ -135,9 +142,11 @@ export function AddFieldDialog({ onFieldAdded }: AddFieldDialogProps) {
                     <FormLabel>Longitude</FormLabel>
                     <FormControl>
                       <Input 
-                        type="number" 
+                        type="number"
+                        inputMode="decimal" 
                         step="any" 
                         placeholder="e.g., -74.0060"
+                        autoComplete="off"
                         {...field}
                         onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                       />
@@ -171,9 +180,11 @@ export function AddFieldDialog({ onFieldAdded }: AddFieldDialogProps) {
                   <FormLabel>Field Size (Acres)</FormLabel>
                   <FormControl>
                     <Input 
-                      type="number" 
+                      type="number"
+                      inputMode="decimal" 
                       step="0.1" 
                       placeholder="e.g., 25.5"
+                      autoComplete="off"
                       {...field}
                       onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                     />
@@ -297,6 +308,9 @@ export function AddFieldDialog({ onFieldAdded }: AddFieldDialogProps) {
                   <FormControl>
                     <Textarea 
                       placeholder="Additional notes about this field..."
+                      autoResize
+                      rows={3}
+                      maxLength={500}
                       {...field}
                     />
                   </FormControl>
