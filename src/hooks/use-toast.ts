@@ -1,5 +1,5 @@
 import * as React from "react"
-
+import { hapticService } from "@/services/hapticService"
 import type {
   ToastActionElement,
   ToastProps,
@@ -148,6 +148,13 @@ function toast({ ...props }: Toast) {
       toast: { ...props, id },
     })
   const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
+
+  // Trigger haptic feedback based on toast variant
+  if (props.variant === 'destructive') {
+    hapticService.error();
+  } else {
+    hapticService.success();
+  }
 
   dispatch({
     type: "ADD_TOAST",
