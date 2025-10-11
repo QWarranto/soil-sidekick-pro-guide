@@ -8,52 +8,60 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Base - Beige/Tan background from soilsidekickpro.com */
+    --background: 35 20% 96%;
+    --foreground: 200 20% 20%;
 
+    /* Cards - Light with subtle warmth */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 200 20% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 200 20% 20%;
 
-    --primary: 122 39% 49%;
+    /* Primary - Forest Green from logo and nature theme */
+    --primary: 142 65% 45%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 122 45% 65%;
+    --primary-glow: 142 65% 65%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Navy/Charcoal from header */
+    --secondary: 200 20% 28%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted - Light beige tones */
+    --muted: 35 20% 90%;
+    --muted-foreground: 200 15% 40%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - Blue from "Pro" logo */
+    --accent: 211 76% 59%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Borders - Subtle earth tones */
+    --border: 35 15% 85%;
+    --input: 35 15% 85%;
+    --ring: 142 65% 45%;
 
     --radius: 0.5rem;
 
-    /* Enhanced Visual Design Tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
-    --gradient-hero: linear-gradient(135deg, hsl(122 39% 49%), hsl(142 69% 58%), hsl(162 73% 60%));
-    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--muted)));
+    /* Enhanced Visual Design Tokens - Earthy Agricultural Theme */
+    --gradient-primary: linear-gradient(135deg, hsl(142 65% 45%), hsl(142 65% 65%));
+    --gradient-subtle: linear-gradient(180deg, hsl(35 20% 96%), hsl(35 20% 90%));
+    --gradient-hero: linear-gradient(135deg, hsl(142 65% 45%), hsl(142 70% 55%), hsl(162 73% 60%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(35 20% 95%));
+    --gradient-navy: linear-gradient(135deg, hsl(200 20% 28%), hsl(200 25% 35%));
 
     /* Shadows & 3D Effects */
-    --shadow-sm: 0 1px 2px 0 hsl(var(--foreground) / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(var(--foreground) / 0.1), 0 2px 4px -1px hsl(var(--foreground) / 0.06);
-    --shadow-lg: 0 10px 15px -3px hsl(var(--foreground) / 0.1), 0 4px 6px -2px hsl(var(--foreground) / 0.05);
-    --shadow-xl: 0 20px 25px -5px hsl(var(--foreground) / 0.1), 0 10px 10px -5px hsl(var(--foreground) / 0.04);
-    --shadow-2xl: 0 25px 50px -12px hsl(var(--foreground) / 0.25);
-    --shadow-inner: inset 0 2px 4px 0 hsl(var(--foreground) / 0.06);
-    --shadow-glow: 0 0 20px hsl(var(--primary) / 0.3);
-    --shadow-primary: 0 10px 30px -10px hsl(var(--primary) / 0.4);
+    --shadow-sm: 0 1px 2px 0 hsl(200 20% 20% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(200 20% 20% / 0.1), 0 2px 4px -1px hsl(200 20% 20% / 0.06);
+    --shadow-lg: 0 10px 15px -3px hsl(200 20% 20% / 0.1), 0 4px 6px -2px hsl(200 20% 20% / 0.05);
+    --shadow-xl: 0 20px 25px -5px hsl(200 20% 20% / 0.1), 0 10px 10px -5px hsl(200 20% 20% / 0.04);
+    --shadow-2xl: 0 25px 50px -12px hsl(200 20% 20% / 0.25);
+    --shadow-inner: inset 0 2px 4px 0 hsl(200 20% 20% / 0.06);
+    --shadow-glow: 0 0 20px hsl(142 65% 45% / 0.3);
+    --shadow-primary: 0 10px 30px -10px hsl(142 65% 45% / 0.4);
 
     /* Subtle Transform Effects */
     --transform-subtle: translateZ(0);
@@ -64,69 +72,69 @@ All colors MUST be HSL.
     --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar - Navy theme */
+    --sidebar-background: 200 20% 28%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 142 65% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 200 25% 35%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 200 20% 25%;
+    --sidebar-ring: 142 65% 45%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark - Rich soil/earth tones */
+    --background: 200 20% 12%;
+    --foreground: 35 20% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 200 20% 15%;
+    --card-foreground: 35 20% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 200 20% 15%;
+    --popover-foreground: 35 20% 95%;
 
-    --primary: 142 69% 58%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --primary-glow: 122 45% 75%;
+    /* Primary - Bright green for dark mode */
+    --primary: 142 70% 55%;
+    --primary-foreground: 200 20% 12%;
+    --primary-glow: 142 70% 75%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    /* Secondary - Lighter navy for dark */
+    --secondary: 200 25% 22%;
+    --secondary-foreground: 35 20% 95%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 200 20% 20%;
+    --muted-foreground: 35 15% 70%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    /* Accent - Brighter blue for dark mode */
+    --accent: 211 76% 65%;
+    --accent-foreground: 200 20% 12%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 35 20% 95%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 200 20% 22%;
+    --input: 200 20% 22%;
+    --ring: 142 70% 55%;
 
-    /* Dark Mode Enhanced Visuals */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
-    --gradient-hero: linear-gradient(135deg, hsl(142 69% 58%), hsl(162 73% 60%), hsl(182 77% 62%));
-    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--muted)));
+    /* Dark Mode Enhanced Visuals - Agricultural Night Theme */
+    --gradient-primary: linear-gradient(135deg, hsl(142 70% 55%), hsl(142 70% 75%));
+    --gradient-subtle: linear-gradient(180deg, hsl(200 20% 12%), hsl(200 20% 20%));
+    --gradient-hero: linear-gradient(135deg, hsl(142 70% 55%), hsl(162 73% 60%), hsl(182 77% 62%));
+    --gradient-card: linear-gradient(145deg, hsl(200 20% 15%), hsl(200 20% 20%));
+    --gradient-navy: linear-gradient(135deg, hsl(200 25% 18%), hsl(200 25% 25%));
 
-    --shadow-glow: 0 0 20px hsl(var(--primary) / 0.5);
-    --shadow-primary: 0 10px 30px -10px hsl(var(--primary) / 0.6);
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --shadow-glow: 0 0 20px hsl(142 70% 55% / 0.5);
+    --shadow-primary: 0 10px 30px -10px hsl(142 70% 55% / 0.6);
+
+    --sidebar-background: 200 25% 15%;
+    --sidebar-foreground: 35 20% 95%;
+    --sidebar-primary: 142 70% 55%;
+    --sidebar-primary-foreground: 200 20% 12%;
+    --sidebar-accent: 200 25% 22%;
+    --sidebar-accent-foreground: 35 20% 95%;
+    --sidebar-border: 200 20% 18%;
+    --sidebar-ring: 142 70% 55%;
   }
 }
 
