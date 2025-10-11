@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FieldMap } from '@/components/FieldMap';
+import { LazyFieldMap } from '@/components/lazy/LazyFieldMap';
 import { ArrowLeft, Map, Layers3 } from 'lucide-react';
 
 interface Field {
@@ -101,7 +101,7 @@ export const FieldMapping = () => {
         </Card>
 
         {/* Field Map Component */}
-        <FieldMap onFieldSelect={setSelectedField} />
+        <LazyFieldMap onFieldSelect={setSelectedField} />
 
         {/* Additional Features Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">

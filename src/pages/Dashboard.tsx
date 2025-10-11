@@ -9,14 +9,16 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, AreaChart, Area, Ba
 import { AddFieldDialog } from "@/components/AddFieldDialog";
 import AgriculturalChat from "@/components/AgriculturalChat";
 import { LocationIndicator } from "@/components/LocationIndicator";
-import { CarbonCreditDashboard } from "@/components/CarbonCreditDashboard";
-import { SeasonalPlanningCard } from "@/components/SeasonalPlanningCard";
 import { QuickAccessSuggestion } from "@/components/QuickAccessSuggestion";
-import CostMonitoringDashboard from "@/components/CostMonitoringDashboard";
-import UsageDashboard from "@/components/UsageDashboard";
-import KPIDashboard from "@/components/KPIDashboard";
+import {
+  LazyCarbonCreditDashboard,
+  LazyCostMonitoringDashboard,
+  LazyUsageDashboard,
+  LazyKPIDashboard,
+  LazyAICropRecommendations,
+  LazySeasonalPlanningCard
+} from "@/components/lazy/LazyChartComponents";
 import { useLiveAgriculturalData } from "@/hooks/useLiveAgriculturalData";
-import AICropRecommendations from "@/components/AICropRecommendations";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   MapPin, 
@@ -439,13 +441,13 @@ const Dashboard = () => {
           </div>
 
           {/* AI Crop Recommendations */}
-          <AICropRecommendations countyFips="17031" />
+          <LazyAICropRecommendations countyFips="17031" />
         </div>
 
         {/* Seasonal Planning Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <SeasonalPlanningCard />
+            <LazySeasonalPlanningCard />
           </div>
           <div className="space-y-4">
             <Card>
@@ -653,19 +655,19 @@ const Dashboard = () => {
           </TabsContent>
 
           <TabsContent value="carbon-credits">
-            <CarbonCreditDashboard />
+            <LazyCarbonCreditDashboard />
           </TabsContent>
 
           <TabsContent value="cost-monitoring">
-            <CostMonitoringDashboard />
+            <LazyCostMonitoringDashboard />
           </TabsContent>
 
           <TabsContent value="kpi-dashboard">
-            <KPIDashboard />
+            <LazyKPIDashboard />
           </TabsContent>
           
           <TabsContent value="usage-analytics">
-            <UsageDashboard />
+            <LazyUsageDashboard />
           </TabsContent>
         </Tabs>
       </div>
