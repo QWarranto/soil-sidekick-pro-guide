@@ -12,6 +12,7 @@ import { ListTodo, LogOut, ArrowLeft, Plus, Library, History, Lock } from 'lucid
 import { TaskList } from '@/components/TaskManagement/TaskList';
 import { TaskTemplateLibrary } from '@/components/TaskManagement/TaskTemplateLibrary';
 import { TaskDialog } from '@/components/TaskManagement/TaskDialog';
+import { TaskListSkeleton } from '@/components/skeletons/TaskListSkeleton';
 
 const TaskManager = () => {
   const { user, signOut, trialUser } = useAuth();
@@ -311,7 +312,7 @@ const TaskManager = () => {
                 </CardHeader>
                 <CardContent>
                   {isLoading ? (
-                    <div className="text-center py-8 text-muted-foreground">Loading tasks...</div>
+                    <TaskListSkeleton />
                   ) : (
                     <TaskList
                       tasks={tasks}

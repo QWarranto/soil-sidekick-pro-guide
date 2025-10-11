@@ -7,6 +7,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { CarbonCreditCalculator } from './CarbonCreditCalculator';
+import { DashboardMetricSkeleton } from './skeletons/DashboardSkeleton';
+import { CardTableSkeleton } from './skeletons/TableSkeleton';
 
 interface CarbonCredit {
   id: string;
@@ -93,9 +95,13 @@ export function CarbonCreditDashboard() {
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <div className="h-32 bg-muted animate-pulse rounded-lg" />
-        <div className="h-64 bg-muted animate-pulse rounded-lg" />
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <DashboardMetricSkeleton key={i} />
+          ))}
+        </div>
+        <CardTableSkeleton rows={3} />
       </div>
     );
   }
