@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { LogOut, LogIn } from 'lucide-react';
 import { NetworkStatusIndicator } from '@/components/NetworkStatusIndicator';
+import { OptimizedImage } from '@/components/OptimizedImage';
 
 const AppHeader = () => {
   const { user, signOut } = useAuth();
@@ -15,10 +16,14 @@ const AppHeader = () => {
           className="flex items-center gap-3 cursor-pointer floating-animation"
           onClick={() => navigate('/')}
         >
-          <img 
+          <OptimizedImage 
             src="/logo-192.png" 
             alt="SoilSidekick Pro Logo" 
-            className="h-10 w-10 object-contain"
+            width={40}
+            height={40}
+            priority
+            objectFit="contain"
+            className="h-10 w-10"
           />
           <div className="flex flex-col">
             <span className="text-xl font-bold text-white">SoilSidekick Pro</span>
