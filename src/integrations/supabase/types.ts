@@ -1206,6 +1206,36 @@ export type Database = {
         }
         Relationships: []
       }
+      pwa_analytics: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          platform: string | null
+          timestamp: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          platform?: string | null
+          timestamp?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          platform?: string | null
+          timestamp?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       rate_limit_tracking: {
         Row: {
           created_at: string | null
