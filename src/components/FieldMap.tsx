@@ -8,10 +8,13 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Save, Trash2, Edit3 } from 'lucide-react';
+import { MapPin, Save, Trash2, Edit3, WifiOff, Wifi, CloudOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { useOfflineStorage } from '@/hooks/useOfflineStorage';
+import { OfflineSyncService } from '@/services/offlineSync';
 
 interface Field {
   id: string;
@@ -42,6 +45,49 @@ export const FieldMap: React.FC<FieldMapProps> = ({ onFieldSelect }) => {
     planting_date: '',
     harvest_date: ''
   });
+
+  // Offline support
+  const { isOnline, isWifi, isCellular } = useNetworkStatus();
+  const { 
+    data: offlineFields, 
+    saveOfflineData, 
+    markAsSynced,
+    needsSync 
+  } = useOfflineStorage<Field[]>('fields_cache');
+  const [pendingSyncCount, setPendingSyncCount] = useState(0);
+
+  // Check pending sync count
+  useEffect(() => {
+    const checkPending = async () => {
+      const count = await OfflineSyncService.getPendingSyncCount();
+      setPendingSyncCount(count);
+    };
+    checkPending();
+  }, [fields]);
+
+  // Auto-sync when coming back online
+  useEffect(() => {
+    if (isOnline && needsSync) {
+      syncOfflineData();
+    }
+  }, [isOnline, needsSync]);
+
+  const syncOfflineData = async () => {
+    try {
+      const result = await OfflineSyncService.processSyncQueue();
+      if (result.success) {
+        toast.success(`Synced ${result.synced} item(s) successfully`);
+        await markAsSynced();
+        setPendingSyncCount(0);
+        loadFields();
+      } else {
+        toast.error(`Sync completed with ${result.failed} error(s)`);
+      }
+    } catch (error) {
+      console.error('Sync failed:', error);
+      toast.error('Failed to sync offline changes');
+    }
+  };
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -87,20 +133,42 @@ export const FieldMap: React.FC<FieldMapProps> = ({ onFieldSelect }) => {
 
   const loadFields = async () => {
     try {
-      const { data, error } = await supabase
-        .from('fields')
-        .select('*')
-        .order('created_at', { ascending: false });
+      if (isOnline) {
+        const { data, error } = await supabase
+          .from('fields')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      setFields(data || []);
-      data?.forEach(field => {
-        addFieldToMap(field);
-      });
+        setFields(data || []);
+        // Save to offline cache
+        await saveOfflineData(data || [], true);
+        data?.forEach(field => {
+          addFieldToMap(field);
+        });
+      } else {
+        // Load from offline cache
+        if (offlineFields) {
+          setFields(offlineFields);
+          offlineFields.forEach(field => {
+            addFieldToMap(field);
+          });
+        }
+        toast.info('Loaded fields from offline cache', { icon: <CloudOff className="h-4 w-4" /> });
+      }
     } catch (error) {
       console.error('Error loading fields:', error);
-      toast.error('Failed to load fields');
+      // Try loading from offline cache as fallback
+      if (offlineFields) {
+        setFields(offlineFields);
+        offlineFields.forEach(field => {
+          addFieldToMap(field);
+        });
+        toast.warning('Loaded fields from offline cache');
+      } else {
+        toast.error('Failed to load fields');
+      }
     }
   };
 
@@ -193,27 +261,57 @@ export const FieldMap: React.FC<FieldMapProps> = ({ onFieldSelect }) => {
       ]]
     };
 
+    const fieldData = {
+      user_id: user.id,
+      name: newFieldForm.name,
+      description: newFieldForm.description,
+      boundary_coordinates: sampleCoordinates,
+      area_acres: 10.5,
+      crop_type: newFieldForm.crop_type,
+      planting_date: newFieldForm.planting_date || null,
+      harvest_date: newFieldForm.harvest_date || null
+    };
+
     try {
-      const { data, error } = await supabase
-        .from('fields')
-        .insert({
-          user_id: user.id,
-          name: newFieldForm.name,
-          description: newFieldForm.description,
-          boundary_coordinates: sampleCoordinates,
-          area_acres: 10.5, // Sample area
-          crop_type: newFieldForm.crop_type,
-          planting_date: newFieldForm.planting_date || null,
-          harvest_date: newFieldForm.harvest_date || null
-        })
-        .select()
-        .single();
+      if (isOnline) {
+        const { data, error } = await supabase
+          .from('fields')
+          .insert(fieldData)
+          .select()
+          .single();
 
-      if (error) throw error;
+        if (error) throw error;
 
-      toast.success('Field saved successfully!');
-      setFields(prev => [...prev, data]);
-      addFieldToMap(data);
+        toast.success('Field saved successfully!');
+        setFields(prev => [...prev, data]);
+        addFieldToMap(data);
+        
+        // Update offline cache
+        const updatedFields = [...fields, data];
+        await saveOfflineData(updatedFields, true);
+      } else {
+        // Save offline
+        const tempField = {
+          ...fieldData,
+          id: crypto.randomUUID(),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        
+        await OfflineSyncService.addToSyncQueue('fields', 'insert', fieldData);
+        setFields(prev => [...prev, tempField]);
+        addFieldToMap(tempField);
+        
+        // Update offline cache
+        const updatedFields = [...fields, tempField];
+        await saveOfflineData(updatedFields, false);
+        setPendingSyncCount(prev => prev + 1);
+        
+        toast.success('Field saved offline. Will sync when online.', { 
+          icon: <CloudOff className="h-4 w-4" /> 
+        });
+      }
+
       setNewFieldForm({
         name: '',
         description: '',
@@ -230,14 +328,33 @@ export const FieldMap: React.FC<FieldMapProps> = ({ onFieldSelect }) => {
 
   const deleteField = async (fieldId: string) => {
     try {
-      const { error } = await supabase
-        .from('fields')
-        .delete()
-        .eq('id', fieldId);
+      if (isOnline) {
+        const { error } = await supabase
+          .from('fields')
+          .delete()
+          .eq('id', fieldId);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      setFields(prev => prev.filter(f => f.id !== fieldId));
+        const updatedFields = fields.filter(f => f.id !== fieldId);
+        setFields(updatedFields);
+        
+        // Update offline cache
+        await saveOfflineData(updatedFields, true);
+      } else {
+        // Queue for deletion when online
+        await OfflineSyncService.addToSyncQueue('fields', 'delete', { id: fieldId });
+        const updatedFields = fields.filter(f => f.id !== fieldId);
+        setFields(updatedFields);
+        
+        // Update offline cache
+        await saveOfflineData(updatedFields, false);
+        setPendingSyncCount(prev => prev + 1);
+        
+        toast.success('Field queued for deletion. Will sync when online.', {
+          icon: <CloudOff className="h-4 w-4" />
+        });
+      }
       
       // Remove from map
       const sourceId = `field-${fieldId}`;
@@ -249,7 +366,10 @@ export const FieldMap: React.FC<FieldMapProps> = ({ onFieldSelect }) => {
         map.current.removeSource(sourceId);
       }
 
-      toast.success('Field deleted successfully');
+      if (isOnline) {
+        toast.success('Field deleted successfully');
+      }
+      
       if (selectedField?.id === fieldId) {
         setSelectedField(null);
         onFieldSelect?.(null);
@@ -274,15 +394,51 @@ export const FieldMap: React.FC<FieldMapProps> = ({ onFieldSelect }) => {
             <div className="flex items-center gap-2">
               <MapPin className="h-5 w-5 text-primary" />
               <h3 className="text-lg font-semibold">Field Map</h3>
+              
+              {/* Network Status Indicator */}
+              <Badge variant={isOnline ? "default" : "destructive"} className="ml-2">
+                {isOnline ? (
+                  <>
+                    <Wifi className="h-3 w-3 mr-1" />
+                    {isWifi ? 'WiFi' : isCellular ? 'Cellular' : 'Online'}
+                  </>
+                ) : (
+                  <>
+                    <WifiOff className="h-3 w-3 mr-1" />
+                    Offline
+                  </>
+                )}
+              </Badge>
+
+              {/* Pending Sync Indicator */}
+              {pendingSyncCount > 0 && (
+                <Badge variant="secondary" className="ml-2">
+                  <CloudOff className="h-3 w-3 mr-1" />
+                  {pendingSyncCount} pending
+                </Badge>
+              )}
             </div>
-            <Button 
-              onClick={startDrawing}
-              disabled={isDrawingMode}
-              className="flex items-center gap-2"
-            >
-              <Edit3 className="h-4 w-4" />
-              {isDrawingMode ? 'Drawing...' : 'Add Field'}
-            </Button>
+            <div className="flex gap-2">
+              {pendingSyncCount > 0 && isOnline && (
+                <Button 
+                  onClick={syncOfflineData}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <Wifi className="h-4 w-4" />
+                  Sync Now
+                </Button>
+              )}
+              <Button 
+                onClick={startDrawing}
+                disabled={isDrawingMode}
+                className="flex items-center gap-2"
+              >
+                <Edit3 className="h-4 w-4" />
+                {isDrawingMode ? 'Drawing...' : 'Add Field'}
+              </Button>
+            </div>
           </div>
           <div 
             ref={mapContainer} 
