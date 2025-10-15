@@ -375,14 +375,14 @@ const Pricing = () => {
                     plan.id === 'pro' ? 'ring-2 ring-primary shadow-lg scale-105' : ''
                   } ${isCurrentUserPlan ? 'border-green-500 bg-green-50/50' : ''}`}
                 >
-                  {plan.badge && (
-                    <div className="absolute top-4 right-4">
+                  {plan.badge && !isCurrentUserPlan && (
+                    <div className="absolute top-4 right-4 z-10">
                       <Badge variant={plan.badgeVariant}>{plan.badge}</Badge>
                     </div>
                   )}
                   
                   {isCurrentUserPlan && (
-                    <div className="absolute top-4 left-4">
+                    <div className="absolute top-4 left-4 z-10">
                       <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
                         Your Plan
                       </Badge>
