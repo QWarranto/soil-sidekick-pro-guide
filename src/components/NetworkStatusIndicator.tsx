@@ -38,7 +38,7 @@ export const NetworkStatusIndicator = () => {
         <TooltipTrigger asChild>
           <Badge 
             variant={isOnline ? "secondary" : "destructive"}
-            className="gap-1.5 cursor-help"
+            className="gap-1.5"
           >
             {getIcon()}
             <span className="text-xs hidden sm:inline">{getStatus()}</span>

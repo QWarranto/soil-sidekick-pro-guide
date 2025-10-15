@@ -255,6 +255,7 @@ const tourSteps: TourStep[] = [
 
 const TourGuide = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [visitedSteps, setVisitedSteps] = useState<Set<number>>(new Set([0]));
   const navigate = useNavigate();
 
   const progress = ((currentStep + 1) / tourSteps.length) * 100;
@@ -262,18 +263,23 @@ const TourGuide = () => {
 
   const handleNext = () => {
     if (currentStep < tourSteps.length - 1) {
-      setCurrentStep(currentStep + 1);
+      const nextStep = currentStep + 1;
+      setCurrentStep(nextStep);
+      setVisitedSteps(prev => new Set([...prev, nextStep]));
     }
   };
 
   const handlePrevious = () => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+      const prevStep = currentStep - 1;
+      setCurrentStep(prevStep);
+      setVisitedSteps(prev => new Set([...prev, prevStep]));
     }
   };
 
   const handleStepClick = (stepIndex: number) => {
     setCurrentStep(stepIndex);
+    setVisitedSteps(prev => new Set([...prev, stepIndex]));
   };
 
   const handleTryFeature = () => {
@@ -336,8 +342,8 @@ const TourGuide = () => {
                       onClick={() => handleStepClick(index)}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`rounded-full p-1 ${index <= currentStep ? 'bg-primary/20' : 'bg-muted'}`}>
-                          {index < currentStep ? (
+                        <div className={`rounded-full p-1 ${visitedSteps.has(index) ? 'bg-primary/20' : 'bg-muted'}`}>
+                          {visitedSteps.has(index) && index !== currentStep ? (
                             <CheckCircle className="h-4 w-4 text-primary" />
                           ) : (
                             <div className={`h-4 w-4 rounded-full ${index === currentStep ? 'bg-primary' : 'bg-muted-foreground/30'}`} />
@@ -430,7 +436,7 @@ const TourGuide = () => {
                       className={`h-2 w-8 rounded-full transition-colors ${
                         index === currentStep 
                           ? 'bg-primary' 
-                          : index < currentStep 
+                          : visitedSteps.has(index)
                             ? 'bg-primary/50' 
                             : 'bg-muted'
                       }`}
