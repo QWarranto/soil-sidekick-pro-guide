@@ -240,12 +240,12 @@ export const FieldMap: React.FC<FieldMapProps> = ({ onFieldSelect }) => {
 
   const saveField = async () => {
     if (!user) {
-      toast.error('Please log in to save fields');
+      toast.error('Login Required: Please log in to save field boundaries');
       return;
     }
 
     if (!newFieldForm.name.trim()) {
-      toast.error('Please enter a field name');
+      toast.error('Field Name Required: Please enter a name for this field');
       return;
     }
 

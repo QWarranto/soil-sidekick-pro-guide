@@ -93,6 +93,13 @@ const WaterQuality = () => {
     setIsLoading(true);
     
     try {
+      // Get the current session to ensure we have a valid token
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('No active session found. Please sign in again.');
+      }
+
       // Call the territorial water quality edge function using Supabase client
       const { data: result, error } = await supabase.functions.invoke('territorial-water-quality', {
         body: {
@@ -103,10 +110,11 @@ const WaterQuality = () => {
       });
 
       if (error) {
+        console.error('Edge function error:', error);
         throw new Error(error.message || 'Failed to fetch water quality data');
       }
       
-      if (result.success) {
+      if (result?.success) {
         setWaterData(result.data);
         setTerritoryInfo(result.territory_info);
         toast({
@@ -114,13 +122,26 @@ const WaterQuality = () => {
           description: `Found ${result.data.territory_type} water data for ${county.county_name}, ${county.state_code}`,
         });
       } else {
-        throw new Error(result.error || 'Unknown error occurred');
+        throw new Error(result?.error || 'Unknown error occurred');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching water quality data:', error);
+      
+      // Provide detailed error messages
+      let errorMessage = "Failed to retrieve water quality data. ";
+      if (error.message?.includes('session')) {
+        errorMessage += "Your session has expired. Please sign in again.";
+      } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+        errorMessage += "Network error. Please check your connection and try again.";
+      } else if (error.message) {
+        errorMessage += error.message;
+      } else {
+        errorMessage += "Please try again later.";
+      }
+      
       toast({
-        title: "Error",
-        description: "Failed to retrieve water quality data. Please try again.",
+        title: "Water Analysis Failed",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

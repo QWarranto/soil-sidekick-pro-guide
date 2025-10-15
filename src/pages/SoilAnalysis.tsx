@@ -111,7 +111,14 @@ const SoilAnalysis = () => {
     setLoading(true);
     
     try {
-      // Call edge function to get soil data
+      // Get the current session to ensure we have a valid token
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('No active session found. Please sign in again.');
+      }
+
+      // Call edge function to get soil data with proper authentication
       const { data, error } = await supabase.functions.invoke('get-soil-data', {
         body: { 
           county_fips: county.fips_code,
@@ -120,7 +127,10 @@ const SoilAnalysis = () => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Edge function error:', error);
+        throw new Error(error.message || 'Failed to fetch soil data');
+      }
 
       if (data?.soilAnalysis) {
         setSoilData(data.soilAnalysis);
@@ -156,11 +166,24 @@ const SoilAnalysis = () => {
           description: `Enhanced soil data retrieved for ${county.county_name}, ${county.state_code}`,
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting soil data:', error);
+      
+      // Provide detailed error messages
+      let errorMessage = "Unable to retrieve soil data. ";
+      if (error.message?.includes('session')) {
+        errorMessage += "Your session has expired. Please sign in again.";
+      } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+        errorMessage += "Network error. Please check your connection and try again.";
+      } else if (error.message) {
+        errorMessage += error.message;
+      } else {
+        errorMessage += "Please try again later.";
+      }
+      
       toast({
-        title: "Analysis Failed",
-        description: "Unable to retrieve soil data. Please try again.",
+        title: "Soil Analysis Failed",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
