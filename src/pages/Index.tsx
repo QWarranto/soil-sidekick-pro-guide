@@ -16,66 +16,14 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-hero parallax-scroll">
-      {/* Header */}
-      <header className="border-b glass-effect sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2 floating-animation">
-            <Leaf className="h-6 w-6 text-primary pulse-glow" />
-            <div className="flex flex-col">
-              <span className="text-xl font-bold text-white">SoilSidekick Pro</span>
-              <span className="text-xs text-white/80">Patent Pending/Provisional #63/861,944 & Patent Pending/Non-Provisional #19/320,727</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
-              Dashboard
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/pricing')}>
-              Pricing
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/api-docs')}>
-              API Docs
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/adapt-integration')}>
-              ADAPT Integration
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/faq')}>
-              FAQ
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/user-guide')}>
-              User Guide
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/tour-guide')}>
-              Tour Guide
-            </Button>
-            {user ? (
-              <>
-                <span className="text-sm text-muted-foreground">
-                  Welcome, {user.email}
-                </span>
-                <Button variant="outline" size="sm" onClick={signOut}>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </Button>
-              </>
-            ) : (
-              <Button variant="outline" size="sm" onClick={() => navigate('/auth')}>
-                <LogIn className="h-4 w-4 mr-2" />
-                Sign In
-              </Button>
-            )}
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-gradient-subtle parallax-scroll">
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto slide-in-up">
-          <Card className="card-subtle backdrop-blur-sm bg-white/90 dark:bg-card/90">
+          <Card className="card-subtle backdrop-blur-sm bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-3xl gradient-text">Welcome to SoilSidekick Pro</CardTitle>
-              <CardDescription className="text-lg">
+              <CardTitle className="text-4xl font-bold text-foreground">Welcome to SoilSidekick Pro</CardTitle>
+              <CardDescription className="text-lg text-muted-foreground">
                 Your premium soil analysis platform with ADAPT Standard 1.0 integration for seamless farm management connectivity
               </CardDescription>
             </CardHeader>
@@ -95,7 +43,7 @@ const Index = () => {
                     </p>
                   </div>
                 ) : (
-                  <div className="glass-effect p-6 rounded-lg border border-white/20 shadow-xl">
+                  <div className="bg-muted p-6 rounded-lg border border-border shadow-md">
                     <h3 className="text-lg font-semibold text-foreground mb-2">🌾 Welcome to SoilSidekick Pro</h3>
                     <p className="text-muted-foreground">
                       Sign in to access premium features including unlimited county lookups, detailed analysis, and export capabilities.
@@ -104,7 +52,7 @@ const Index = () => {
                 )}
                 
                 <div className="text-center space-y-4">
-                  <p className="text-muted-foreground">
+                  <p className="text-foreground text-lg font-medium">
                     Ready to explore soil data and plan your sustainable growing season?
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 max-w-4xl mx-auto">
