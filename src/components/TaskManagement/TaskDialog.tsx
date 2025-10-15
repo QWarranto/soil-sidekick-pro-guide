@@ -12,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar as CalendarIcon, Lock } from 'lucide-react';
 import { format } from 'date-fns';
 import { useSubscription } from '@/hooks/useSubscription';
+import { cn } from '@/lib/utils';
 
 interface TaskDialogProps {
   open: boolean;
@@ -132,10 +133,10 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task, template, fields 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-background">
         <DialogHeader>
-          <DialogTitle>{task ? 'Edit Task' : 'Create Task'}</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-foreground">{task ? 'Edit Task' : 'Create Task'}</DialogTitle>
+          <DialogDescription className="text-muted-foreground">
             {task ? 'Update task details' : 'Add a new task to your schedule'}
           </DialogDescription>
         </DialogHeader>
@@ -206,11 +207,12 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task, template, fields 
                     {formData.scheduled_date ? format(formData.scheduled_date, 'PP') : 'Pick a date'}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={formData.scheduled_date}
-                    onSelect={date => setFormData({ ...formData, scheduled_date: date })}
+                    onSelect={(date) => setFormData({ ...formData, scheduled_date: date })}
+                    initialFocus
                   />
                 </PopoverContent>
               </Popover>
@@ -225,11 +227,12 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task, template, fields 
                     {formData.due_date ? format(formData.due_date, 'PP') : 'Pick a date'}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={formData.due_date}
-                    onSelect={date => setFormData({ ...formData, due_date: date })}
+                    onSelect={(date) => setFormData({ ...formData, due_date: date })}
+                    initialFocus
                   />
                 </PopoverContent>
               </Popover>

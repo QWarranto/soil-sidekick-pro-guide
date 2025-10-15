@@ -85,10 +85,11 @@ export const SeasonalPlanningAssistant: React.FC<SeasonalPlanningAssistantProps>
     setError('');
     
     try {
+      // Get the current session to ensure we have a valid token
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
-        throw new Error('Authentication required');
+        throw new Error('Authentication required. Please sign in to use seasonal planning.');
       }
 
       const response = await supabase.functions.invoke('seasonal-planning-assistant', {
@@ -102,7 +103,8 @@ export const SeasonalPlanningAssistant: React.FC<SeasonalPlanningAssistantProps>
       });
 
       if (response.error) {
-        throw new Error(response.error.message || 'Failed to generate plan');
+        console.error('Edge function error:', response.error);
+        throw new Error(response.error.message || 'Failed to generate seasonal plan');
       }
 
       if (response.data?.success) {
@@ -132,11 +134,11 @@ export const SeasonalPlanningAssistant: React.FC<SeasonalPlanningAssistantProps>
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card className="border-green-200 bg-gradient-to-r from-green-50 to-blue-50">
+      <Card className="border-green-200 bg-gradient-to-r from-green-50 to-blue-50 card-elevated">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 flex-wrap">
             <Calendar className="h-5 w-5 text-green-600" />
-            Seasonal Planning Assistant
+            <span>Seasonal Planning Assistant</span>
             <Badge variant="outline" className="ml-2">
               GPT-5 Enhanced
             </Badge>
