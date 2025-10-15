@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Mail, User, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { validateEmail } from '@/utils/emailValidation';
 
 const LeadCapture = () => {
   const [name, setName] = useState('');
@@ -23,9 +24,25 @@ const LeadCapture = () => {
       return;
     }
 
+    // Validate email
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.valid) {
+      toast({
+        title: "Invalid email address",
+        description: emailValidation.error,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
+      toast({
+        title: "Opening your email client...",
+        description: "This will create a pre-filled email to contact SoilSidekick Pro support.",
+      });
+
       // Create mailto link to send lead info to your email
       const subject = `New Lead from SoilSidekick Pro: ${name}`;
       const body = `New lead captured from SoilSidekick Pro website:
@@ -45,10 +62,12 @@ This lead was captured from the homepage and is interested in learning more abou
       setName('');
       setEmail('');
       
-      toast({
-        title: "Thank you for your interest!",
-        description: "We'll be in touch soon with more information about SoilSidekick Pro.",
-      });
+      setTimeout(() => {
+        toast({
+          title: "Email client opened!",
+          description: "Please send the pre-filled email to complete your request. We'll be in touch soon!",
+        });
+      }, 500);
       
     } catch (error) {
       toast({

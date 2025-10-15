@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { validateEmail } from '@/utils/emailValidation';
 
 interface SubscriptionData {
   subscribed: boolean;
@@ -145,6 +146,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string, fullName?: string) => {
     try {
+      // Validate email before attempting signup
+      const emailValidation = validateEmail(email);
+      if (!emailValidation.valid) {
+        toast({
+          title: "Invalid email address",
+          description: emailValidation.error,
+          variant: "destructive",
+        });
+        return { error: { message: emailValidation.error } };
+      }
+      
       const redirectUrl = `${window.location.origin}/`;
       
       const { error } = await supabase.auth.signUp({
