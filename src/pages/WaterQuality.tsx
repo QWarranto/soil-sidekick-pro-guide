@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
-import { Droplets, LogOut, ArrowLeft } from 'lucide-react';
+import { Droplets, ArrowLeft } from 'lucide-react';
 import { CountyLookup } from '@/components/CountyLookup';
 import { WaterQualityPDFExport } from '@/components/WaterQualityPDFExport';
 import { SmartReportSummary } from '@/components/SmartReportSummary';
@@ -46,7 +46,7 @@ interface TerritoryInfo {
 }
 
 const WaterQuality = () => {
-  const { user, signOut, trialUser } = useAuth();
+  const { user, trialUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -150,15 +150,6 @@ const WaterQuality = () => {
               <Droplets className="h-6 w-6 text-blue-600" />
               <span className="text-xl font-bold text-blue-600">TapWaterCheck Pro</span>
             </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">
-              {(user?.email || trialUser?.email) ?? 'Trial Access'}
-            </span>
-            <Button variant="outline" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
           </div>
         </div>
       </header>

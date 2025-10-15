@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
-import { ArrowLeft, Leaf, LogOut, Plus } from 'lucide-react';
+import { ArrowLeft, Leaf, Plus } from 'lucide-react';
 import { CountyLookup } from '@/components/CountyLookup';
 import { CountyMenuLookup } from '@/components/CountyMenuLookup';
 import { SoilAnalysisResults } from '@/components/SoilAnalysisResults';
@@ -37,7 +37,7 @@ interface SoilData {
 }
 
 const SoilAnalysis = () => {
-  const { user, signOut, trialUser } = useAuth();
+  const { user, trialUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -257,15 +257,6 @@ ${soilData.recommendations || 'No recommendations available'}
               <Leaf className="h-6 w-6 text-primary" />
               <span className="text-xl font-bold text-primary">SoilSidekick Pro</span>
             </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">
-              Welcome, {(user?.email || trialUser?.email) ?? 'Trial User'}
-            </span>
-            <Button variant="outline" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
           </div>
         </div>
       </header>

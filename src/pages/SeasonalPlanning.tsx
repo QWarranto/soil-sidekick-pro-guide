@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
-import { Calendar, LogOut, ArrowLeft, ListTodo } from 'lucide-react';
+import { Calendar, ArrowLeft, ListTodo } from 'lucide-react';
 import { CountyLookup } from '@/components/CountyLookup';
 import { SeasonalPlanningAssistant } from '@/components/SeasonalPlanningAssistant';
 import { useToast } from '@/hooks/use-toast';
@@ -17,7 +17,7 @@ interface County {
 }
 
 const SeasonalPlanning = () => {
-  const { user, signOut, trialUser } = useAuth();
+  const { user, trialUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedCounty, setSelectedCounty] = useState<County | null>(null);
@@ -55,13 +55,6 @@ const SeasonalPlanning = () => {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">
-              {(user?.email || trialUser?.email) ?? 'Trial User'}
-            </span>
-            <Button variant="outline" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
           </div>
         </div>
       </header>

@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CountyLookup } from '@/components/CountyLookup';
 import FertilizerDetailsDialog from '@/components/FertilizerDetailsDialog';
 import { useAuth } from '@/hooks/useAuth';
-import { Leaf, LogOut, ArrowLeft, Droplets, AlertTriangle, CheckCircle, TrendingDown, Recycle } from 'lucide-react';
+import { Leaf, ArrowLeft, Droplets, AlertTriangle, CheckCircle, TrendingDown, Recycle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -94,7 +94,7 @@ const sampleWaterData: WaterBodyData = {
 };
 
 const FertilizerFootprint = () => {
-  const { user, signOut, trialUser } = useAuth();
+  const { user, trialUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedCounty, setSelectedCounty] = useState<any>(null);
@@ -250,13 +250,6 @@ const FertilizerFootprint = () => {
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate('/planting-calendar')}>
               Planting Calendar
-            </Button>
-            <span className="text-sm text-muted-foreground">
-              Welcome, {(user?.email || trialUser?.email) ?? 'Trial User'}
-            </span>
-            <Button variant="outline" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
             </Button>
           </div>
         </div>

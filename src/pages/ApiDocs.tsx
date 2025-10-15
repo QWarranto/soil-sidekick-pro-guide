@@ -4,11 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
-import { ArrowLeft, Leaf, LogOut, Copy, Code2, Zap, Clock, Shield, Key, Settings, BookOpen } from 'lucide-react';
+import { ArrowLeft, Leaf, Copy, Code2, Zap, Clock, Shield, Key, Settings, BookOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const ApiDocs = () => {
-  const { user, signOut, subscriptionData } = useAuth();
+  const { user, subscriptionData } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -109,13 +109,6 @@ print(json.dumps(soil_data, indent=2))`,
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">
-              Welcome, {user?.email}
-            </span>
-            <Button variant="outline" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
           </div>
         </div>
       </header>

@@ -131,6 +131,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           description: error.message,
           variant: "destructive",
         });
+      } else {
+        // Send sign-in notification email
+        setTimeout(async () => {
+          try {
+            await supabase.functions.invoke('send-signin-notification', {
+              body: { 
+                email,
+                timestamp: new Date().toLocaleString(),
+                ipAddress: window.location.hostname,
+                userAgent: navigator.userAgent
+              }
+            });
+          } catch (emailError) {
+            console.error('Failed to send sign-in notification:', emailError);
+          }
+        }, 0);
+        
+        toast({
+          title: "Sign in successful!",
+          description: "Check your email for a sign-in confirmation.",
+        });
       }
       
       return { error };

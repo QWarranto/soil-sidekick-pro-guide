@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ArrowLeft, Check, Star, Zap, RefreshCw, Settings, Leaf, LogOut } from "lucide-react";
+import { ArrowLeft, Check, Star, Zap, RefreshCw, Settings, Leaf } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const Pricing = () => {
-  const { user, signOut, subscriptionData, refreshSubscription } = useAuth();
+  const { user, subscriptionData, refreshSubscription } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isAnnual, setIsAnnual] = useState(false);
@@ -270,13 +270,6 @@ const Pricing = () => {
             <Button variant="outline" size="sm" onClick={refreshSubscription} disabled={loading}>
               <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               Refresh
-            </Button>
-            <span className="text-sm text-muted-foreground">
-              Welcome, {user?.email}
-            </span>
-            <Button variant="outline" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
             </Button>
           </div>
         </div>

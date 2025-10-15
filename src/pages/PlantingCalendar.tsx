@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { CountyLookup } from '@/components/CountyLookup';
 import { useAuth } from '@/hooks/useAuth';
-import { Leaf, LogOut, ArrowLeft, Calendar, Sprout, Thermometer, CloudRain } from 'lucide-react';
+import { Leaf, ArrowLeft, Calendar, Sprout, Thermometer, CloudRain } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -84,7 +84,7 @@ const samplePlantingData: PlantingData[] = [
 ];
 
 const PlantingCalendar = () => {
-  const { user, signOut, trialUser } = useAuth();
+  const { user, trialUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedCounty, setSelectedCounty] = useState<any>(null);
@@ -208,13 +208,6 @@ const PlantingCalendar = () => {
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate('/pricing')}>
               Pricing
-            </Button>
-            <span className="text-sm text-muted-foreground">
-              Welcome, {(user?.email || trialUser?.email) ?? 'Trial User'}
-            </span>
-            <Button variant="outline" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
             </Button>
           </div>
         </div>

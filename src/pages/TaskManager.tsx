@@ -8,14 +8,14 @@ import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { ListTodo, LogOut, ArrowLeft, Plus, Library, History, Lock } from 'lucide-react';
+import { ListTodo, ArrowLeft, Plus, Library, History, Lock } from 'lucide-react';
 import { TaskList } from '@/components/TaskManagement/TaskList';
 import { TaskTemplateLibrary } from '@/components/TaskManagement/TaskTemplateLibrary';
 import { TaskDialog } from '@/components/TaskManagement/TaskDialog';
 import { TaskListSkeleton } from '@/components/skeletons/TaskListSkeleton';
 
 const TaskManager = () => {
-  const { user, signOut, trialUser } = useAuth();
+  const { user, trialUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { subscription, checkFeatureAccess, incrementUsage, showUpgradePrompt } = useSubscription();
@@ -232,13 +232,6 @@ const TaskManager = () => {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">
-              {(user?.email || trialUser?.email) ?? 'Trial User'}
-            </span>
-            <Button variant="outline" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
           </div>
         </div>
       </header>

@@ -34,7 +34,7 @@ import {
 } from 'lucide-react';
 
 const UserGuide = () => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleBackHome = () => {
@@ -57,13 +57,6 @@ const UserGuide = () => {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">
-              Welcome, {user?.email}
-            </span>
-            <Button variant="outline" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
           </div>
         </div>
       </header>
