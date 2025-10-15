@@ -184,24 +184,43 @@ const Pricing = () => {
   ];
 
   const handleSelectPlan = async (planId: string) => {
+    // Prevent multiple simultaneous requests
+    if (loading) return;
+    
     if (planId === 'free') return;
     
     setLoading(true);
     try {
       const interval = isAnnual ? 'year' : 'month';
+      
+      console.log(`Starting checkout for plan: ${planId}, interval: ${interval}`);
+      
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { plan: planId, interval }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Checkout error:', error);
+        throw error;
+      }
       
+      if (!data?.url) {
+        throw new Error('No checkout URL received');
+      }
+      
+      console.log('Checkout URL received, opening in new tab');
       // Open Stripe checkout in a new tab
       window.open(data.url, '_blank');
-    } catch (error) {
+      
+      toast({
+        title: "Redirecting to checkout",
+        description: "Opening secure checkout page...",
+      });
+    } catch (error: any) {
       console.error('Error creating checkout:', error);
       toast({
-        title: "Error",
-        description: "Failed to start checkout process. Please try again.",
+        title: "Checkout Error",
+        description: error?.message || "Failed to start checkout process. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -235,9 +254,11 @@ const Pricing = () => {
 
   const isCurrentPlan = (planId: string) => {
     if (planId === 'free') {
-      return !subscriptionData?.subscribed;
+      return !subscriptionData?.subscribed && !user;
     }
-    return subscriptionData?.subscription_tier?.toLowerCase() === planId;
+    // Check if this matches the current subscription tier
+    const currentTier = subscriptionData?.subscription_tier?.toLowerCase();
+    return currentTier === planId.toLowerCase();
   };
 
   return (
@@ -309,15 +330,15 @@ const Pricing = () => {
           </div>
 
           {/* Subscription Status */}
-          {subscriptionData && (
+          {user && subscriptionData && (
             <div className="bg-primary/5 rounded-lg p-6 mb-8 border border-primary/20">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-primary mb-2">Current Subscription</h3>
                   <p className="text-muted-foreground">
                     {subscriptionData.subscribed 
-                      ? `${subscriptionData.subscription_tier} plan (${subscriptionData.subscription_interval}ly billing)`
-                      : 'Free plan'}
+                      ? `${subscriptionData.subscription_tier?.toUpperCase() || 'UNKNOWN'} plan (${subscriptionData.subscription_interval}ly billing)`
+                      : 'Free plan - No active subscription'}
                   </p>
                   {subscriptionData.subscription_end && (
                     <p className="text-sm text-muted-foreground mt-1">
@@ -412,14 +433,20 @@ const Pricing = () => {
                     <Button 
                       className="w-full mt-6" 
                       variant={plan.id === 'pro' ? 'default' : 'outline'}
-                      onClick={() => handleSelectPlan(plan.id)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (!loading && !isCurrentUserPlan && plan.id !== 'free') {
+                          handleSelectPlan(plan.id);
+                        }
+                      }}
                       disabled={loading || isCurrentUserPlan || plan.id === 'free'}
                     >
                       {loading ? 'Processing...' :
                        isCurrentUserPlan ? 'Current Plan' :
                        plan.id === 'free' ? 'Get Started' : 
                        plan.id === 'enterprise' ? 'Contact Sales' : 
-                       'Start 10-Day Trial'}
+                       'Start Subscription'}
                     </Button>
                   </CardContent>
                 </Card>
