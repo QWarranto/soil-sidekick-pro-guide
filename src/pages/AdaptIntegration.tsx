@@ -49,6 +49,8 @@ export default function AdaptIntegration() {
   useEffect(() => {
     if (user) {
       loadData();
+    } else {
+      setLoading(false);
     }
   }, [user]);
 
@@ -204,8 +206,23 @@ export default function AdaptIntegration() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-hero parallax-scroll">
-        <div className="container mx-auto flex justify-center items-center h-64">
-          <div className="text-white text-lg">Loading...</div>
+        <div className="container mx-auto flex justify-center items-center min-h-[50vh]">
+          <div className="text-white text-lg">Loading integration data...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user && !trialUser) {
+    return (
+      <div className="min-h-screen bg-gradient-hero parallax-scroll">
+        <div className="container mx-auto p-6">
+          <Card>
+            <CardContent className="p-8 text-center">
+              <h2 className="text-2xl font-bold mb-4">Authentication Required</h2>
+              <p className="text-muted-foreground">Please sign in to access ADAPT integration features.</p>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );

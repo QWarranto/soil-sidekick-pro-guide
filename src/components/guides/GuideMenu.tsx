@@ -80,8 +80,7 @@ export function GuideMenu({ isOpen, onClose }: GuideMenuProps) {
   };
 
   const filteredGuides = guides.filter(guide => 
-    guide.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    guide.description.toLowerCase().includes(searchQuery.toLowerCase())
+    guide.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const guidesByCategory = Object.entries(
@@ -129,12 +128,48 @@ export function GuideMenu({ isOpen, onClose }: GuideMenuProps) {
 
             <TabsContent value="all" className="flex-1 mt-4 overflow-hidden">
               <ScrollArea className="h-[500px] pr-4">
-                <div className="space-y-6">
-                  {guidesByCategory.map(([category, categoryGuides]) => (
-                    <div key={category}>
-                      <h3 className="text-sm font-semibold text-muted-foreground mb-3">
-                        {categoryLabels[category as GuideCategory]}
-                      </h3>
+                {filteredGuides.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-center py-12">
+                    <Search className="h-12 w-12 text-muted-foreground/50 mb-4" />
+                    <p className="text-muted-foreground text-lg font-medium">No guides found</p>
+                    <p className="text-muted-foreground text-sm mt-2">Try adjusting your search query</p>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {guidesByCategory.map(([category, categoryGuides]) => (
+                      <div key={category}>
+                        <h3 className="text-sm font-semibold text-muted-foreground mb-3">
+                          {categoryLabels[category as GuideCategory]}
+                        </h3>
+                        <div className="grid gap-3">
+                          {categoryGuides.map(guide => (
+                            <GuideCard
+                              key={guide.id}
+                              guide={guide}
+                              isLocked={isGuideLocked(guide)}
+                              onClick={() => handleGuideSelect(guide)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </ScrollArea>
+            </TabsContent>
+
+            {(['quickstart', 'feature', 'integration', 'validation'] as GuideCategory[]).map(category => {
+              const categoryGuides = filteredGuides.filter(guide => guide.category === category);
+              return (
+                <TabsContent key={category} value={category} className="flex-1 mt-4 overflow-hidden">
+                  <ScrollArea className="h-[500px] pr-4">
+                    {categoryGuides.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center h-full text-center py-12">
+                        <Search className="h-12 w-12 text-muted-foreground/50 mb-4" />
+                        <p className="text-muted-foreground text-lg font-medium">No guides found</p>
+                        <p className="text-muted-foreground text-sm mt-2">Try adjusting your search query</p>
+                      </div>
+                    ) : (
                       <div className="grid gap-3">
                         {categoryGuides.map(guide => (
                           <GuideCard
@@ -145,30 +180,11 @@ export function GuideMenu({ isOpen, onClose }: GuideMenuProps) {
                           />
                         ))}
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </TabsContent>
-
-            {(['quickstart', 'feature', 'integration', 'validation'] as GuideCategory[]).map(category => (
-              <TabsContent key={category} value={category} className="flex-1 mt-4 overflow-hidden">
-                <ScrollArea className="h-[500px] pr-4">
-                  <div className="grid gap-3">
-                    {filteredGuides
-                      .filter(guide => guide.category === category)
-                      .map(guide => (
-                        <GuideCard
-                          key={guide.id}
-                          guide={guide}
-                          isLocked={isGuideLocked(guide)}
-                          onClick={() => handleGuideSelect(guide)}
-                        />
-                      ))}
-                  </div>
-                </ScrollArea>
-              </TabsContent>
-            ))}
+                    )}
+                  </ScrollArea>
+                </TabsContent>
+              );
+            })}
           </Tabs>
         </DialogContent>
       </Dialog>
@@ -196,8 +212,8 @@ function GuideCard({ guide, isLocked, onClick }: GuideCardProps) {
   return (
     <Card
       className={cn(
-        "p-4 transition-all hover:shadow-md cursor-pointer group",
-        isLocked && "opacity-60"
+        "p-4 transition-all hover:shadow-md group",
+        isLocked ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
       )}
       onClick={() => !isLocked && onClick()}
     >
