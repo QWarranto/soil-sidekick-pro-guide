@@ -134,7 +134,7 @@ const Footer = () => {
         <div className="border-t mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-xs text-muted-foreground">
-              © 2024 SoilSidekick Pro. All rights reserved. 
+              © 2025 SoilSidekick Pro. All rights reserved. 
               Patent Pending/Provisional #63/861,944 & Patent Pending/Non-Provisional #19/320,727
             </div>
             <div className="text-xs text-muted-foreground">
