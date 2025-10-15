@@ -194,6 +194,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithTrial = async (email: string) => {
     try {
+      // Validate email before creating trial
+      const emailValidation = validateEmail(email);
+      if (!emailValidation.valid) {
+        toast({
+          title: "Invalid email address",
+          description: emailValidation.error,
+          variant: "destructive",
+        });
+        return { error: { message: emailValidation.error } };
+      }
+
       const { data, error } = await supabase.functions.invoke('trial-auth', {
         body: { email, action: 'create_trial' }
       });
@@ -214,7 +225,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('trialUser', JSON.stringify(data.trialUser));
         toast({
           title: "Trial access granted!",
-          description: `You have 10-day trial access until ${new Date(data.trialUser.trial_end).toLocaleDateString()}`,
+          description: `You have 10-day trial access. Please check your email to verify your account for full access.`,
         });
         return { error: null };
       } else {

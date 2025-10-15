@@ -60,12 +60,7 @@ const AppHeader = () => {
                 Sign Out
               </Button>
             </>
-          ) : (
-            <Button variant="outline" size="sm" onClick={() => navigate('/auth')} className="border-secondary-foreground/30 text-secondary-foreground hover:bg-secondary-foreground/10">
-              <LogIn className="h-4 w-4 mr-2" />
-              Sign In
-            </Button>
-          )}
+          ) : null}
         </nav>
       </div>
     </header>
