@@ -417,6 +417,32 @@ const TourGuide = () => {
                 </CardContent>
               </Card>
 
+              {/* Call to Action - Show on last step */}
+              {currentStep === tourSteps.length - 1 && (
+                <Card className="mb-6 card-elevated bg-gradient-primary border-primary/20">
+                  <CardContent className="pt-6">
+                    <div className="text-center text-white space-y-4">
+                      <h3 className="text-2xl font-bold">🎉 Congratulations! You've Completed the Tour</h3>
+                      <p className="text-white/90 text-lg max-w-2xl mx-auto">
+                        You've discovered the powerful features that will transform your agricultural operations. 
+                        Ready to put them to work?
+                      </p>
+                      <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+                        <Button size="xl" variant="hero" onClick={() => navigate('/auth')} className="text-lg px-8">
+                          Start Free Trial
+                        </Button>
+                        <Button size="lg" variant="outline" onClick={() => navigate('/pricing')} className="bg-white/10 text-white border-white/20 hover:bg-white/20">
+                          View Pricing Plans
+                        </Button>
+                      </div>
+                      <p className="text-sm text-white/70 pt-2">
+                        10-day free trial • No credit card required • Access all premium features
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Navigation */}
               <div className="flex items-center justify-between">
                 <Button 
@@ -447,7 +473,7 @@ const TourGuide = () => {
                 {currentStep === tourSteps.length - 1 ? (
                   <Button onClick={() => navigate('/')}>
                     <Home className="h-4 w-4 mr-2" />
-                    Get Started
+                    Back to Home
                   </Button>
                 ) : (
                   <Button onClick={handleNext}>

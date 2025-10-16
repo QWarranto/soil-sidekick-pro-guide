@@ -51,6 +51,19 @@ const Index = () => {
                   </div>
                 )}
                 
+                {/* New User Tour Guide Highlight */}
+                {!user && (
+                  <div className="bg-gradient-primary p-6 rounded-lg border border-primary/20 shadow-glow-primary card-elevated text-center">
+                    <h3 className="text-2xl font-bold text-white mb-3">🎓 New to SoilSidekick Pro?</h3>
+                    <p className="text-white/90 mb-4 text-lg">
+                      Take our interactive Tour Guide to discover all the powerful features that will transform your agricultural operations.
+                    </p>
+                    <Button size="xl" variant="hero" onClick={() => navigate('/tour-guide')} className="animate-pulse">
+                      Start Interactive Tour
+                    </Button>
+                  </div>
+                )}
+                
                 <div className="text-center space-y-4">
                   <p className="text-foreground text-lg font-medium">
                     Ready to explore soil data and plan your sustainable growing season?
