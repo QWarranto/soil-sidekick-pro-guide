@@ -191,6 +191,17 @@ const Pricing = () => {
     
     if (planId === 'free') return;
     
+    // Check if user is authenticated before proceeding
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to subscribe to a plan.",
+        variant: "destructive",
+      });
+      navigate('/auth');
+      return;
+    }
+    
     setLoading(true);
     try {
       const interval = isAnnual ? 'year' : 'month';
