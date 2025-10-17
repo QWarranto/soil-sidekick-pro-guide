@@ -111,6 +111,7 @@ export default function PricingNew() {
       features: [
         'Unlimited AI-powered soil & water analysis',
         'Visual crop analysis with satellite data',
+        'AI-powered VRT prescription maps',
         'Advanced analytics & carbon tracking',
         'Complete seasonal task management suite',
         'Advanced recurring tasks (seasonal/monthly/custom)',
@@ -122,6 +123,7 @@ export default function PricingNew() {
         'Full field mapping & boundary tools'
       ],
       limitations: [
+        'Basic VRT export formats only',
         'No ADAPT integration',
         'No team collaboration features',
         'No API access'
@@ -140,6 +142,7 @@ export default function PricingNew() {
       features: [
         'Everything in Pro, plus:',
         'Full ADAPT Standard 1.0 integration',
+        'VRT prescription map export (ADAPT, Shapefile, ISO-XML)',
         'Team task collaboration & assignment',
         'Custom task templates & workflows',
         'Task management API access',

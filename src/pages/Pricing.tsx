@@ -89,6 +89,7 @@ const Pricing = () => {
       features: [
         'Unlimited AI features',
         'Visual crop analysis',
+        'AI-powered VRT prescription maps',
         'Advanced analytics',
         'Priority support'
       ]
@@ -103,7 +104,8 @@ const Pricing = () => {
       badge: 'Full Suite',
       badgeVariant: 'outline' as const,
       features: [
-        'ADAPT integration',
+        'AI-powered VRT prescription maps',
+        'ADAPT integration with VRT export',
         'Custom features',
         'Dedicated support'
       ]
