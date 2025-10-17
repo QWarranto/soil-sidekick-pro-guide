@@ -804,7 +804,7 @@ Process the incoming data based on event type.
 ### Getting Additional Help
 
 #### Support Channels
-- **Email Support:** help@soilsidekick.com (24-48 hour response)
+- **Email Support:** support@soilsidekickpro.com (24-48 hour response)
 - **Live Chat:** Available during business hours for Pro subscribers
 - **Knowledge Base:** Searchable articles and tutorials
 - **Video Tutorials:** Step-by-step feature walkthroughs
@@ -840,7 +840,7 @@ Process the incoming data based on event type.
 - **Minimum Speed:** 1 Mbps for basic functionality
 - **Recommended:** 5+ Mbps for smooth experience
 - **Ports:** Standard HTTP/HTTPS (80, 443)
-- **Firewall:** Allow connections to *.soilsidekick.com
+- **Firewall:** Allow connections to *.soilsidekickpro.com
 
 #### Data Accuracy
 - **USDA Data:** Updated annually, may lag recent field changes
@@ -850,4 +850,4 @@ Process the incoming data based on event type.
 
 ---
 
-*This guide covers the essential features and capabilities of SoilSidekick Pro. For the most current information and feature updates, always refer to the in-app help system and our online documentation at docs.soilsidekick.com.*
+*This guide covers the essential features and capabilities of SoilSidekick Pro. For the most current information and feature updates, always refer to the in-app help system and our online documentation at docs.soilsidekickpro.com.*

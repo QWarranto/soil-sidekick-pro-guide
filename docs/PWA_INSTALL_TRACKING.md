@@ -43,7 +43,7 @@ CREATE TABLE pwa_analytics (
 - **RLS Enabled**: Row Level Security protects user data
 - **Anyone can insert**: Allows tracking before authentication
 - **Users view own data**: Users can only see their own analytics
-- **Admin access**: Admins (emails ending in @soilsidekick.com) can view all data
+- **Admin access**: Admins (emails ending in @soilsidekickpro.com) can view all data
 
 ## Usage
 

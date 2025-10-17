@@ -390,10 +390,10 @@ echo "Monthly maintenance completed successfully."
 
 ## Operations Team Contacts
 
-**Operations Manager**: ops-manager@soilsidekick.com
-**Security Operations**: security-ops@soilsidekick.com  
-**Database Operations**: db-ops@soilsidekick.com
-**Emergency Contact**: emergency@soilsidekick.com (24/7)
+**Operations Manager**: admin@soilsidekickpro.com
+**Security Operations**: admin@soilsidekickpro.com  
+**Database Operations**: admin@soilsidekickpro.com
+**Emergency Contact**: support@soilsidekickpro.com (24/7)
 
 **Escalation Procedures**:
 1. Level 1: Operations Team (Response: 15 minutes)

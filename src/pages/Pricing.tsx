@@ -527,7 +527,7 @@ const Pricing = () => {
                         variant="default"
                         onClick={() => {
                           // Contact sales for white-label options
-                          window.open('mailto:sales@soilsidekick.com?subject=White-Label Partnership Inquiry&body=I am interested in learning more about your white-label and partnership solutions.', '_blank');
+                          window.open('mailto:support@soilsidekickpro.com?subject=White-Label Partnership Inquiry&body=I am interested in learning more about your white-label and partnership solutions.', '_blank');
                         }}
                       >
                         Contact Partnership Team

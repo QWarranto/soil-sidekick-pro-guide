@@ -373,10 +373,10 @@ All API interactions maintain comprehensive audit trails including:
 
 ## Support & Resources
 
-**API Support**: api-support@soilsidekick.com
-**Security Issues**: security@soilsidekick.com
-**Documentation**: https://docs.soilsidekick.com
-**Status Page**: https://status.soilsidekick.com
+**API Support**: support@soilsidekickpro.com
+**Security Issues**: admin@soilsidekickpro.com
+**Documentation**: https://docs.soilsidekickpro.com
+**Status Page**: https://status.soilsidekickpro.com
 
 **Compliance Certifications**:
 - SOC 2 Type 1 Certified

@@ -49,12 +49,12 @@ getSoilData('48453') // Travis County, TX
   .catch(error => console.error('Error:', error));`,
 
     curl: `# SoilSidekick Pro API - cURL
-curl -X GET "https://api.soilsidekick.com/v1/soil/48453" \\
+curl -X GET "https://api.soilsidekickpro.com/v1/soil/48453" \\
   -H "Authorization: Bearer your_api_key_here" \\
   -H "Content-Type: application/json"
 
 # Get PDF export
-curl -X GET "https://api.soilsidekick.com/v1/soil/48453/pdf" \\
+curl -X GET "https://api.soilsidekickpro.com/v1/soil/48453/pdf" \\
   -H "Authorization: Bearer your_api_key_here" \\
   --output soil-report.pdf`,
 
