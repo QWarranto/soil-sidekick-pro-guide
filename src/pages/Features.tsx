@@ -30,6 +30,8 @@ export default function Features() {
         { name: 'Basic soil/water analysis data', basic: false, starter: true, pro: true, api: true },
         { name: 'Advanced soil/water analysis data', basic: false, starter: false, pro: true, api: true },
         { name: 'Visual crop analysis', basic: false, starter: false, pro: true, api: true },
+        { name: 'Variable Rate Technology (VRT) prescription maps', basic: false, starter: false, pro: true, api: true },
+        { name: 'VRT export formats (ADAPT, Shapefile, ISO-XML)', basic: false, starter: false, pro: false, api: true },
         { name: 'Satellite-enhanced environmental analysis', basic: false, starter: false, pro: true, api: true },
         { name: 'AlphaEarth integration with confidence scores', basic: false, starter: false, pro: true, api: true },
         { name: 'GPS field mapping & location capture', basic: false, starter: true, pro: true, api: true },
