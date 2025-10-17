@@ -1164,6 +1164,89 @@ export type Database = {
         }
         Relationships: []
       }
+      prescription_maps: {
+        Row: {
+          analysis_method: string | null
+          application_type: string
+          applied_at: string | null
+          base_rate: number
+          confidence_score: number | null
+          created_at: string
+          crop_type: string | null
+          estimated_savings: number | null
+          export_format: string | null
+          exported_at: string | null
+          field_id: string | null
+          id: string
+          map_name: string
+          notes: string | null
+          rate_unit: string
+          soil_analysis_id: string | null
+          status: string
+          target_yield: number | null
+          total_zones: number
+          updated_at: string
+          user_id: string
+          zones: Json
+        }
+        Insert: {
+          analysis_method?: string | null
+          application_type: string
+          applied_at?: string | null
+          base_rate: number
+          confidence_score?: number | null
+          created_at?: string
+          crop_type?: string | null
+          estimated_savings?: number | null
+          export_format?: string | null
+          exported_at?: string | null
+          field_id?: string | null
+          id?: string
+          map_name: string
+          notes?: string | null
+          rate_unit: string
+          soil_analysis_id?: string | null
+          status?: string
+          target_yield?: number | null
+          total_zones?: number
+          updated_at?: string
+          user_id: string
+          zones: Json
+        }
+        Update: {
+          analysis_method?: string | null
+          application_type?: string
+          applied_at?: string | null
+          base_rate?: number
+          confidence_score?: number | null
+          created_at?: string
+          crop_type?: string | null
+          estimated_savings?: number | null
+          export_format?: string | null
+          exported_at?: string | null
+          field_id?: string | null
+          id?: string
+          map_name?: string
+          notes?: string | null
+          rate_unit?: string
+          soil_analysis_id?: string | null
+          status?: string
+          target_yield?: number | null
+          total_zones?: number
+          updated_at?: string
+          user_id?: string
+          zones?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescription_maps_field_id_fkey"
+            columns: ["field_id"]
+            isOneToOne: false
+            referencedRelation: "fields"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -2359,7 +2442,11 @@ export type Database = {
       validate_api_key: {
         Args: { client_ip?: unknown; key_hash: string } | { key_hash: string }
         Returns: {
+          access_count: number
+          api_key_id: string
+          is_locked: boolean
           is_valid: boolean
+          lock_reason: string
           permissions: Json
           rate_limit: number
           rate_window_minutes: number

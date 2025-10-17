@@ -2,8 +2,9 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
-import { Leaf, LogOut, LogIn } from 'lucide-react';
+import { Leaf, LogOut, LogIn, Sparkles } from 'lucide-react';
 import LeadCapture from '@/components/LeadCapture';
 import Footer from '@/components/Footer';
 
@@ -86,6 +87,11 @@ const Index = () => {
                     </Button>
                     <Button size="lg" variant="secondary" onClick={() => navigate('/adapt-integration')} className="animate-fade-in hover:shadow-lg">
                       ADAPT Integration
+                    </Button>
+                    <Button size="lg" variant="premium" onClick={() => navigate('/variable-rate-technology')} className="animate-fade-in hover:shadow-lg relative">
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Variable Rate Tech (VRT)
+                      <Badge className="absolute -top-2 -right-2 bg-green-500">NEW</Badge>
                     </Button>
                   </div>
                 </div>

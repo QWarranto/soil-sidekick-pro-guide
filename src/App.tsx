@@ -22,6 +22,7 @@ import FAQ from "./pages/FAQ";
 import Features from "./pages/Features";
 import UserGuide from "./pages/UserGuide";
 import AdaptIntegration from "./pages/AdaptIntegration";
+import VariableRateTechnology from "./pages/VariableRateTechnology";
 import BusinessCase from "./pages/BusinessCase";
 import SeasonalPlanning from "./pages/SeasonalPlanning";
 import TourGuide from "./pages/TourGuide";
@@ -71,6 +72,7 @@ const App = () => (
             <Route path="/features" element={<Features />} />
             <Route path="/user-guide" element={<UserGuide />} />
         <Route path="/adapt-integration" element={<AdaptIntegration />} />
+        <Route path="/variable-rate-technology" element={<VariableRateTechnology />} />
         <Route path="/business-case" element={<BusinessCase />} />
         <Route path="/seasonal-planning" element={<SeasonalPlanning />} />
         <Route path="/field-mapping" element={<FieldMapping />} />
