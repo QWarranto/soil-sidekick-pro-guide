@@ -237,6 +237,23 @@ const tourSteps: TourStep[] = [
   },
   {
     id: 13,
+    title: "Variable Rate Technology (VRT)",
+    description: "Create AI-powered prescription maps for precision agriculture - optimize inputs and reduce waste with zone-based variable rate application.",
+    features: [
+      "AI-generated management zones (3-5 zones per field)",
+      "Zone-specific application rates for fertilizer, seed, water",
+      "Integration with GPS-enabled tractors",
+      "Estimated input savings up to 30%",
+      "Export to ADAPT, Shapefile, ISO-XML formats",
+      "Field-specific optimization based on soil variability"
+    ],
+    icon: Zap,
+    route: "/variable-rate-technology",
+    color: "text-yellow-600",
+    badge: "NEW - Precision Ag"
+  },
+  {
+    id: 14,
     title: "ADAPT Integration Hub",
     description: "Seamlessly connect with existing farm management systems through ADAPT Standard 1.0 compatibility.",
     features: [

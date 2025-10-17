@@ -173,6 +173,22 @@ const FAQ = () => {
       answer: "Both are agricultural data standards, but ADAPT (Agricultural Data Application Programming Toolkit) is more widely adopted by major equipment manufacturers like John Deere, Case IH, and AGCO. EFDI (Extended Farm Management Information Systems Data Interface) is another standard we're evaluating for future integration. We chose ADAPT 1.0 first due to broader industry support and better integration with our GPT-5 enhanced features."
     },
     {
+      question: "What is Variable Rate Technology (VRT) and how does it help my farm?",
+      answer: "Variable Rate Technology allows GPS-enabled tractors to apply fertilizers, seeds, water, and other inputs at different rates across your field based on soil variability. Our AI-powered VRT prescription maps divide your field into 3-5 management zones with optimized application rates for each zone. This precision approach can reduce input costs by up to 30% while maintaining or improving yields by applying more inputs where needed and less where soil is already optimal."
+    },
+    {
+      question: "How do I create a VRT prescription map?",
+      answer: "Navigate to the Variable Rate Technology page, select your field, choose the application type (fertilizer, seed, water, or pesticide), enter your base application rate and crop type, then click 'Generate Prescription Map.' Our AI analyzes your field's soil data and creates zone-specific application rates. You can then export the prescription map in ADAPT, Shapefile, or ISO-XML formats to load into your tractor's precision agriculture system."
+    },
+    {
+      question: "Which equipment is compatible with VRT prescription maps?",
+      answer: "Our VRT prescription maps export in industry-standard formats (ADAPT, Shapefile, ISO-XML) that work with most modern precision agriculture equipment including John Deere AutoTrac, Case IH AFS, New Holland IntelliView, AGCO VarioDoc, Trimble, and Raven controllers. Any GPS-enabled planter, sprayer, or fertilizer applicator with variable rate capability can use our prescription maps."
+    },
+    {
+      question: "What's the difference between VRT and ADAPT integration?",
+      answer: "ADAPT integration allows you to export soil analysis data to farm management systems. VRT goes further by creating actionable prescription maps that your tractor can follow for variable rate application. ADAPT handles data exchange, while VRT provides the zone-based application instructions. They work together - create VRT maps in SoilSidekick Pro, export via ADAPT to your farm management system, then load into equipment."
+    },
+    {
       question: "What is SoilSidekick Pro's SOC 2 compliance status?",
       answer: "SoilSidekick Pro maintains SOC 2 Type 1 compliance, which means we undergo rigorous point-in-time security assessments of our controls and processes. This includes comprehensive monitoring of data access controls, encryption protocols, API security, payment processing security, and database security. Our SOC 2 Type 1 compliance demonstrates our commitment to protecting your agricultural data and maintaining enterprise-grade security standards for soil analysis, water quality data, and ADAPT integrations."
     }

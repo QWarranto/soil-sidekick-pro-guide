@@ -1,6 +1,6 @@
 # SoilSidekick Pro User Guide
 
-## Master SoilSidekick Pro's agricultural intelligence platform with our comprehensive guides. From satellite data interpretation to environmental risk assessment.
+## Master SoilSidekick Pro's agricultural intelligence platform with our comprehensive guides. From satellite data interpretation to environmental risk assessment and Variable Rate Technology.
 
 ### SOC 2 Type 1 Compliance & Security
 SoilSidekick Pro maintains SOC 2 Type 1 compliance with enterprise-grade security standards. Your agricultural data is protected through comprehensive security controls including data encryption, access monitoring, and audit logging. Our security framework ensures your sensitive farm data remains private and secure.
@@ -160,6 +160,80 @@ The History & Learnings feature (currently in development) will let you document
 - Photo attachments for visual documentation
 
 *This feature requires Starter plan or higher and will be available in Q2 2025*
+
+---
+
+## Variable Rate Technology (VRT) Guide
+
+### Getting Started with Precision Agriculture
+
+Variable Rate Technology transforms how you apply inputs across your fields by creating zone-specific application rates based on soil variability. Instead of uniform application, VRT allows your equipment to automatically adjust rates for optimal efficiency.
+
+#### Benefits of VRT
+- **Reduce Input Costs**: Save 15-30% on fertilizers, seeds, and chemicals
+- **Improve Yields**: Apply more where needed, less where soil is already optimal
+- **Environmental Benefits**: Reduce runoff and environmental impact
+- **Data-Driven**: AI analyzes soil data to create optimal zones
+- **Equipment Compatible**: Works with GPS-enabled John Deere, Case IH, New Holland, AGCO equipment
+
+### Creating Your First Prescription Map
+
+#### Step 1: Select Your Field
+Navigate to the Variable Rate Technology page and choose the field you want to optimize. If you haven't created fields yet, use the Field Mapping tool to draw field boundaries.
+
+#### Step 2: Choose Application Type
+Select what you're applying:
+- **Fertilizer**: Nitrogen, phosphorus, potassium, or other nutrients
+- **Seed**: Variable seeding rates for optimal plant population
+- **Water/Irrigation**: Zone-based irrigation scheduling
+- **Pesticide/Herbicide**: Targeted application where needed
+
+#### Step 3: Enter Base Rate and Crop
+- Enter your typical uniform application rate (e.g., 150 lbs/acre nitrogen)
+- Select the unit of measurement (lbs/acre, kg/hectare, seeds/acre, gallons/acre)
+- Specify your crop type for crop-specific optimization
+- Optionally add target yield for yield-based recommendations
+
+#### Step 4: Generate AI Prescription
+Click "Generate Prescription Map" and our AI will:
+- Analyze your soil data for variability
+- Create 3-5 management zones based on soil properties
+- Calculate optimal application rate for each zone
+- Estimate potential input savings
+- Provide confidence scores and recommendations
+
+#### Step 5: Review Zone Recommendations
+The system creates management zones like:
+- **High Productivity Zone**: 120% of base rate (excellent soil, high organic matter)
+- **Moderate Zone**: 100% of base rate (standard soil conditions)  
+- **Low Input Zone**: 80% of base rate (sufficient nutrients, lower requirements)
+
+Each zone includes rate multiplier, justification, area percentage, total input quantity, and confidence level.
+
+### Exporting Prescription Maps
+
+#### Compatible Formats
+- **ADAPT 1.0**: Universal standard for farm management systems
+- **Shapefile**: GIS format for advanced mapping software
+- **ISO-XML**: International standard for precision agriculture
+
+#### Equipment Integration
+1. Export prescription map in your equipment's preferred format
+2. Load onto USB drive or upload to manufacturer's cloud platform
+3. Import into your tractor's display (John Deere Operations Center, Case IH AFS Connect, etc.)
+4. Verify zones display correctly on equipment
+5. Begin variable rate application
+
+### Understanding Zone Creation
+
+Our AI analyzes pH levels, nutrient levels, organic matter, soil texture, and drainage patterns to create optimal management zones for your specific application type.
+
+### Best Practices & ROI
+
+**Cost Savings Example** (100-acre field):
+Uniform application costs $7,500 vs. VRT optimized application of $7,200 with improved yields = 15-25% ROI improvement.
+
+Track and refine prescriptions season-over-season for continuous improvement.
 
 ---
 
