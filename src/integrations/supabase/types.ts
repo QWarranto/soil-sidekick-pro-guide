@@ -313,7 +313,7 @@ export type Database = {
           endpoint: string | null
           failure_reason: string | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           rate_limited: boolean | null
           request_size_bytes: number | null
           response_time_ms: number | null
@@ -327,7 +327,7 @@ export type Database = {
           endpoint?: string | null
           failure_reason?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           rate_limited?: boolean | null
           request_size_bytes?: number | null
           response_time_ms?: number | null
@@ -341,7 +341,7 @@ export type Database = {
           endpoint?: string | null
           failure_reason?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           rate_limited?: boolean | null
           request_size_bytes?: number | null
           response_time_ms?: number | null
@@ -371,7 +371,7 @@ export type Database = {
           is_locked: boolean | null
           key_hash: string
           key_name: string
-          last_access_ip: unknown | null
+          last_access_ip: unknown
           last_failed_attempt: string | null
           last_used_at: string | null
           lock_reason: string | null
@@ -394,7 +394,7 @@ export type Database = {
           is_locked?: boolean | null
           key_hash: string
           key_name: string
-          last_access_ip?: unknown | null
+          last_access_ip?: unknown
           last_failed_attempt?: string | null
           last_used_at?: string | null
           lock_reason?: string | null
@@ -417,7 +417,7 @@ export type Database = {
           is_locked?: boolean | null
           key_hash?: string
           key_name?: string
-          last_access_ip?: unknown | null
+          last_access_ip?: unknown
           last_failed_attempt?: string | null
           last_used_at?: string | null
           lock_reason?: string | null
@@ -439,7 +439,7 @@ export type Database = {
           event_type: string
           failure_reason: string | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           location_data: Json | null
           metadata: Json | null
           risk_score: number | null
@@ -454,7 +454,7 @@ export type Database = {
           event_type: string
           failure_reason?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           location_data?: Json | null
           metadata?: Json | null
           risk_score?: number | null
@@ -469,7 +469,7 @@ export type Database = {
           event_type?: string
           failure_reason?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           location_data?: Json | null
           metadata?: Json | null
           risk_score?: number | null
@@ -628,13 +628,13 @@ export type Database = {
           compliance_tags: string[] | null
           created_at: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           metadata: Json | null
           new_values: Json | null
           old_values: Json | null
           operation: string
           record_id: string | null
-          retention_period: unknown | null
+          retention_period: unknown
           risk_level: string | null
           session_id: string | null
           table_name: string
@@ -646,13 +646,13 @@ export type Database = {
           compliance_tags?: string[] | null
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           metadata?: Json | null
           new_values?: Json | null
           old_values?: Json | null
           operation: string
           record_id?: string | null
-          retention_period?: unknown | null
+          retention_period?: unknown
           risk_level?: string | null
           session_id?: string | null
           table_name: string
@@ -664,13 +664,13 @@ export type Database = {
           compliance_tags?: string[] | null
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           metadata?: Json | null
           new_values?: Json | null
           old_values?: Json | null
           operation?: string
           record_id?: string | null
-          retention_period?: unknown | null
+          retention_period?: unknown
           risk_level?: string | null
           session_id?: string | null
           table_name?: string
@@ -1397,7 +1397,7 @@ export type Database = {
           details: Json | null
           event_type: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           user_agent: string | null
           user_id: string | null
         }
@@ -1406,7 +1406,7 @@ export type Database = {
           details?: Json | null
           event_type: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           user_agent?: string | null
           user_id?: string | null
         }
@@ -1415,7 +1415,7 @@ export type Database = {
           details?: Json | null
           event_type?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           user_agent?: string | null
           user_id?: string | null
         }
@@ -1475,7 +1475,7 @@ export type Database = {
           investigation_status: string | null
           mitigation_actions: Json | null
           monitoring_type: string
-          target_ip: unknown | null
+          target_ip: unknown
           target_resource: string | null
           target_user_id: string | null
           threat_level: string
@@ -1489,7 +1489,7 @@ export type Database = {
           investigation_status?: string | null
           mitigation_actions?: Json | null
           monitoring_type: string
-          target_ip?: unknown | null
+          target_ip?: unknown
           target_resource?: string | null
           target_user_id?: string | null
           threat_level: string
@@ -1503,7 +1503,7 @@ export type Database = {
           investigation_status?: string | null
           mitigation_actions?: Json | null
           monitoring_type?: string
-          target_ip?: unknown | null
+          target_ip?: unknown
           target_resource?: string | null
           target_user_id?: string | null
           threat_level?: string
@@ -1565,6 +1565,7 @@ export type Database = {
           ph_level: number | null
           phosphorus_level: string | null
           potassium_level: string | null
+          property_address: string | null
           recommendations: string | null
           state_code: string
           updated_at: string
@@ -1581,6 +1582,7 @@ export type Database = {
           ph_level?: number | null
           phosphorus_level?: string | null
           potassium_level?: string | null
+          property_address?: string | null
           recommendations?: string | null
           state_code: string
           updated_at?: string
@@ -1597,6 +1599,7 @@ export type Database = {
           ph_level?: number | null
           phosphorus_level?: string | null
           potassium_level?: string | null
+          property_address?: string | null
           recommendations?: string | null
           state_code?: string
           updated_at?: string
@@ -2145,7 +2148,7 @@ export type Database = {
         Returns: boolean
       }
       check_cost_alerts: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           alert_id: string
           alert_name: string
@@ -2158,12 +2161,9 @@ export type Database = {
         Args: { password_text: string }
         Returns: number
       }
-      check_payment_data_security_compliance: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      check_payment_data_security_compliance: { Args: never; Returns: Json }
       check_rls_compliance: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           anonymous_policies_count: number
           compliance_status: string
@@ -2172,10 +2172,7 @@ export type Database = {
           table_name: string
         }[]
       }
-      check_subscriber_security_compliance: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      check_subscriber_security_compliance: { Args: never; Returns: Json }
       check_trial_rate_limit: {
         Args: {
           check_email: string
@@ -2185,14 +2182,8 @@ export type Database = {
         }
         Returns: boolean
       }
-      cleanup_rate_limit_tracking: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      create_trial_user: {
-        Args: { trial_email: string }
-        Returns: string
-      }
+      cleanup_rate_limit_tracking: { Args: never; Returns: undefined }
+      create_trial_user: { Args: { trial_email: string }; Returns: string }
       decrypt_email_address: {
         Args: { encrypted_email: string }
         Returns: string
@@ -2205,22 +2196,13 @@ export type Database = {
         Args: { email_to_encrypt: string }
         Returns: string
       }
-      encrypt_existing_sensitive_data: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      encrypt_existing_sensitive_data: { Args: never; Returns: undefined }
       encrypt_sensitive_payment_data: {
         Args: { data_to_encrypt: string }
         Returns: string
       }
-      generate_recurring_tasks: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      generate_soc2_compliance_report: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      generate_recurring_tasks: { Args: never; Returns: undefined }
+      generate_soc2_compliance_report: { Args: never; Returns: Json }
       get_cost_summary: {
         Args: {
           p_end_date?: string
@@ -2331,34 +2313,13 @@ export type Database = {
         }
         Returns: boolean
       }
-      is_account_locked: {
-        Args: { user_email: string }
-        Returns: boolean
-      }
-      is_admin: {
-        Args: { _user_id?: string }
-        Returns: boolean
-      }
-      is_service_role: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_trial_valid: {
-        Args: { trial_email: string }
-        Returns: boolean
-      }
-      migrate_account_security_emails: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      migrate_subscriber_data_to_encrypted: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      refresh_cost_summaries: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      is_account_locked: { Args: { user_email: string }; Returns: boolean }
+      is_admin: { Args: { _user_id?: string }; Returns: boolean }
+      is_service_role: { Args: never; Returns: boolean }
+      is_trial_valid: { Args: { trial_email: string }; Returns: boolean }
+      migrate_account_security_emails: { Args: never; Returns: undefined }
+      migrate_subscriber_data_to_encrypted: { Args: never; Returns: number }
+      refresh_cost_summaries: { Args: never; Returns: undefined }
       rotate_api_key: {
         Args: { new_key_hash: string; old_key_id: string }
         Returns: string
@@ -2394,10 +2355,7 @@ export type Database = {
         }
         Returns: string
       }
-      simple_email_mask: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      simple_email_mask: { Args: never; Returns: string }
       track_api_cost: {
         Args: {
           p_cost_usd: number
@@ -2423,14 +2381,8 @@ export type Database = {
         }
         Returns: string
       }
-      unlock_account: {
-        Args: { target_user_id: string }
-        Returns: boolean
-      }
-      update_trial_access: {
-        Args: { trial_email: string }
-        Returns: boolean
-      }
+      unlock_account: { Args: { target_user_id: string }; Returns: boolean }
+      update_trial_access: { Args: { trial_email: string }; Returns: boolean }
       validate_and_sanitize_input: {
         Args: {
           input_value: string
@@ -2439,28 +2391,33 @@ export type Database = {
         }
         Returns: string
       }
-      validate_api_key: {
-        Args: { client_ip?: unknown; key_hash: string } | { key_hash: string }
-        Returns: {
-          access_count: number
-          api_key_id: string
-          is_locked: boolean
-          is_valid: boolean
-          lock_reason: string
-          permissions: Json
-          rate_limit: number
-          rate_window_minutes: number
-          user_id: string
-        }[]
-      }
-      validate_service_operation: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      validate_subscription_service_operation: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      validate_api_key:
+        | {
+            Args: { client_ip?: unknown; key_hash: string }
+            Returns: {
+              access_count: number
+              api_key_id: string
+              is_locked: boolean
+              is_valid: boolean
+              lock_reason: string
+              permissions: Json
+              rate_limit: number
+              rate_window_minutes: number
+              user_id: string
+            }[]
+          }
+        | {
+            Args: { key_hash: string }
+            Returns: {
+              is_valid: boolean
+              permissions: Json
+              rate_limit: number
+              rate_window_minutes: number
+              user_id: string
+            }[]
+          }
+      validate_service_operation: { Args: never; Returns: boolean }
+      validate_subscription_service_operation: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
