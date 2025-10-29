@@ -326,6 +326,11 @@ export const PropertySoilAnalysis: React.FC<PropertySoilAnalysisProps> = ({ soil
                 </li>
               ))}
             </ul>
+            {soilData.property_address && (
+              <p className="text-xs text-muted-foreground mt-4 text-center opacity-60">
+                {soilData.property_address}
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -350,6 +355,11 @@ export const PropertySoilAnalysis: React.FC<PropertySoilAnalysisProps> = ({ soil
                 </li>
               ))}
             </ul>
+            {soilData.property_address && (
+              <p className="text-xs text-muted-foreground mt-4 text-center opacity-60">
+                {soilData.property_address}
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -382,6 +392,11 @@ export const PropertySoilAnalysis: React.FC<PropertySoilAnalysisProps> = ({ soil
                 <strong>Property Value Impact:</strong> {landscaping.valueImpact}
               </AlertDescription>
             </Alert>
+            {soilData.property_address && (
+              <p className="text-xs text-muted-foreground text-center opacity-60">
+                {soilData.property_address}
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -398,27 +413,34 @@ export const PropertySoilAnalysis: React.FC<PropertySoilAnalysisProps> = ({ soil
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">pH Level:</span>
-                <Badge variant="outline">{soilData.ph_level?.toFixed(1) || 'N/A'}</Badge>
+          <div className="space-y-3">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">pH Level:</span>
+                  <Badge variant="outline">{soilData.ph_level?.toFixed(1) || 'N/A'}</Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Organic Matter:</span>
+                  <Badge variant="outline">{soilData.organic_matter ? `${soilData.organic_matter.toFixed(1)}%` : 'N/A'}</Badge>
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Organic Matter:</span>
-                <Badge variant="outline">{soilData.organic_matter ? `${soilData.organic_matter.toFixed(1)}%` : 'N/A'}</Badge>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Nitrogen (N):</span>
+                  <Badge variant="outline">{soilData.nitrogen_level || 'N/A'}</Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Phosphorus (P):</span>
+                  <Badge variant="outline">{soilData.phosphorus_level || 'N/A'}</Badge>
+                </div>
               </div>
             </div>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Nitrogen (N):</span>
-                <Badge variant="outline">{soilData.nitrogen_level || 'N/A'}</Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Phosphorus (P):</span>
-                <Badge variant="outline">{soilData.phosphorus_level || 'N/A'}</Badge>
-              </div>
-            </div>
+            {soilData.property_address && (
+              <p className="text-xs text-muted-foreground mt-2 text-center opacity-60">
+                {soilData.property_address}
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
