@@ -93,6 +93,10 @@ const Index = () => {
                       Variable Rate Tech (VRT)
                       <Badge className="absolute -top-2 -right-2 bg-green-500">NEW</Badge>
                     </Button>
+                    <Button size="lg" variant="glass" onClick={() => navigate('/property-report')} className="animate-fade-in hover:shadow-lg relative border-blue-500/50">
+                      🏠 Property Soil Report
+                      <Badge className="absolute -top-2 -right-2 bg-blue-500">REAL ESTATE</Badge>
+                    </Button>
                   </div>
                 </div>
               </div>

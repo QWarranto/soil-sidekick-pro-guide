@@ -38,6 +38,9 @@ const AppHeader = () => {
           <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')} className="hidden md:flex text-secondary-foreground hover:text-primary">
             Dashboard
           </Button>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/property-report')} className="hidden md:flex text-secondary-foreground hover:text-primary">
+            Property Report
+          </Button>
           <Button variant="ghost" size="sm" onClick={() => navigate('/pricing')} className="hidden md:flex text-secondary-foreground hover:text-primary">
             Pricing
           </Button>

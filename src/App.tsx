@@ -32,6 +32,7 @@ import { FieldMapping } from "./pages/FieldMapping";
 import TaskManager from "./pages/TaskManager";
 import DeploymentGuide from "./pages/DeploymentGuide";
 import NotificationsDemo from "./pages/NotificationsDemo";
+import PropertyReport from "./pages/PropertyReport";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -82,6 +83,7 @@ const App = () => (
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/deployment-guide" element={<DeploymentGuide />} />
         <Route path="/notifications" element={<NotificationsDemo />} />
+        <Route path="/property-report" element={<PropertyReport />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
