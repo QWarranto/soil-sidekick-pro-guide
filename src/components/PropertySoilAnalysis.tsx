@@ -12,13 +12,15 @@ import {
   TrendingUp,
   AlertCircle,
   Sprout,
-  FileText
+  FileText,
+  MapPin
 } from 'lucide-react';
 
 interface SoilData {
   id: string;
   county_name: string;
   state_code: string;
+  property_address?: string;
   ph_level: number | null;
   organic_matter: number | null;
   nitrogen_level: string | null;
@@ -205,11 +207,12 @@ export const PropertySoilAnalysis: React.FC<PropertySoilAnalysisProps> = ({ soil
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <Card className="card-elevated">
-        <CardHeader>
+      {/* Header with Watermark */}
+      <Card className="card-elevated border-2 border-primary/30 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 pointer-events-none"></div>
+        <CardHeader className="relative">
           <div className="flex items-start justify-between">
-            <div>
+            <div className="flex-1">
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Home className="h-6 w-6 text-primary" />
                 Property Soil Report
@@ -221,6 +224,25 @@ export const PropertySoilAnalysis: React.FC<PropertySoilAnalysisProps> = ({ soil
               </CardDescription>
             </div>
           </div>
+          
+          {/* Watermark Section */}
+          {soilData.property_address && (
+            <div className="mt-4 p-4 bg-primary/10 border-2 border-primary/30 rounded-lg">
+              <div className="flex items-start gap-3">
+                <MapPin className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-primary mb-1">PROPERTY ADDRESS (Report Watermark)</p>
+                  <p className="text-lg font-bold text-foreground break-words">
+                    {soilData.property_address}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    This report is valid only for the property address shown above. 
+                    Unauthorized use for other properties is prohibited.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </CardHeader>
       </Card>
 

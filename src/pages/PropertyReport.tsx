@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
-import { ArrowLeft, Home } from 'lucide-react';
+import { ArrowLeft, Home, MapPin } from 'lucide-react';
 import { CountyLookup } from '@/components/CountyLookup';
 import { PropertySoilAnalysis } from '@/components/PropertySoilAnalysis';
 import { supabase } from '@/integrations/supabase/client';
@@ -21,6 +23,7 @@ interface SoilData {
   id: string;
   county_name: string;
   state_code: string;
+  property_address: string;
   ph_level: number | null;
   organic_matter: number | null;
   nitrogen_level: string | null;
@@ -70,6 +73,7 @@ const PropertyReport = () => {
   }
 
   const [selectedCounty, setSelectedCounty] = useState<County | null>(null);
+  const [propertyAddress, setPropertyAddress] = useState('');
   const [soilData, setSoilData] = useState<SoilData | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -77,8 +81,29 @@ const PropertyReport = () => {
     navigate('/');
   };
 
-  const handleCountySelect = async (county: County) => {
+  const handleCountySelect = (county: County) => {
     setSelectedCounty(county);
+  };
+
+  const handleGenerateReport = async () => {
+    if (!selectedCounty) {
+      toast({
+        title: "County Required",
+        description: "Please select a county first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!propertyAddress.trim()) {
+      toast({
+        title: "Address Required",
+        description: "Please enter the complete property address to generate a report.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     
     try {
@@ -90,9 +115,10 @@ const PropertyReport = () => {
 
       const { data, error } = await supabase.functions.invoke('get-soil-data', {
         body: { 
-          county_fips: county.fips_code,
-          county_name: county.county_name,
-          state_code: county.state_code 
+          county_fips: selectedCounty.fips_code,
+          county_name: selectedCounty.county_name,
+          state_code: selectedCounty.state_code,
+          property_address: propertyAddress.trim()
         }
       });
 
@@ -107,12 +133,12 @@ const PropertyReport = () => {
         await supabase.from('subscription_usages').insert({
           user_id: user?.id,
           action_type: 'property_report',
-          county_fips: county.fips_code
+          county_fips: selectedCounty.fips_code
         });
         
         toast({
           title: "Property Report Generated",
-          description: `Soil analysis retrieved for ${county.county_name}, ${county.state_code}`,
+          description: `Soil analysis retrieved for ${propertyAddress}`,
         });
       }
     } catch (error: any) {
@@ -185,7 +211,64 @@ const PropertyReport = () => {
           </Card>
 
           <div className="grid lg:grid-cols-2 gap-6">
-            <CountyLookup onCountySelect={handleCountySelect} />
+            <div className="space-y-6">
+              <CountyLookup onCountySelect={handleCountySelect} />
+              
+              {selectedCounty && (
+                <Card className="border-2 border-primary/20">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5 text-primary" />
+                      Property Address Required
+                    </CardTitle>
+                    <CardDescription>
+                      Each report is watermarked with the property address to prevent unauthorized reuse
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="property-address">Complete Property Address *</Label>
+                      <Input
+                        id="property-address"
+                        placeholder="123 Main Street, City, State ZIP"
+                        value={propertyAddress}
+                        onChange={(e) => setPropertyAddress(e.target.value)}
+                        disabled={loading}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        This address will be permanently embedded in your report
+                      </p>
+                    </div>
+                    
+                    <div className="p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                      <p className="text-xs text-amber-800 dark:text-amber-200">
+                        <strong>Anti-Reuse Protection:</strong> Each report is uniquely watermarked for a specific property address. 
+                        This ensures authenticity and prevents report reuse for different properties.
+                      </p>
+                    </div>
+
+                    <Button 
+                      onClick={handleGenerateReport} 
+                      disabled={loading || !propertyAddress.trim()}
+                      className="w-full"
+                      size="lg"
+                    >
+                      {loading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Generating Report...
+                        </>
+                      ) : (
+                        <>
+                          <Home className="h-4 w-4 mr-2" />
+                          Generate Property Report
+                        </>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
             
             <Card>
               <CardHeader>
@@ -200,14 +283,14 @@ const PropertyReport = () => {
                     <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</div>
                     <div className="text-sm">
                       <p className="font-medium">Search Property Location</p>
-                      <p className="text-muted-foreground">Enter the county where the property is located</p>
+                      <p className="text-muted-foreground">Select the county where the property is located</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
                     <div className="w-6 h-6 rounded-full bg-muted-foreground text-background flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</div>
                     <div className="text-sm">
-                      <p className="font-medium">Get NRCS Soil Data</p>
-                      <p className="text-muted-foreground">Official USDA soil survey information retrieved</p>
+                      <p className="font-medium">Enter Property Address</p>
+                      <p className="text-muted-foreground">Provide complete address for watermark protection</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
@@ -228,7 +311,7 @@ const PropertyReport = () => {
                 <div className="text-center space-y-4">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
                   <p className="text-muted-foreground">
-                    Analyzing soil data for {selectedCounty?.county_name}...
+                    Generating watermarked report for {propertyAddress}...
                   </p>
                 </div>
               </CardContent>

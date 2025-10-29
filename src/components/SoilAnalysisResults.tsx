@@ -10,6 +10,7 @@ interface SoilData {
   id: string;
   county_name: string;
   state_code: string;
+  property_address?: string;
   ph_level: number | null;
   organic_matter: number | null;
   nitrogen_level: string | null;

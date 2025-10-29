@@ -12,16 +12,16 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { county_fips, county_name, state_code } = await req.json();
+    const { county_fips, county_name, state_code, property_address } = await req.json();
     
-    if (!county_fips || !county_name || !state_code) {
+    if (!county_fips || !county_name || !state_code || !property_address) {
       return new Response(
-        JSON.stringify({ error: 'Missing required parameters' }),
+        JSON.stringify({ error: 'Missing required parameters (county_fips, county_name, state_code, property_address)' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log(`Getting soil data for ${county_name}, ${state_code} (FIPS: ${county_fips})`);
+    console.log(`Getting soil data for ${property_address} in ${county_name}, ${state_code} (FIPS: ${county_fips})`);
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -47,18 +47,19 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Check if we already have analysis for this county and user
+    // Check if we already have analysis for this exact property address
     const { data: existingAnalysis } = await supabase
       .from('soil_analyses')
       .select('*')
       .eq('user_id', user.id)
       .eq('county_fips', county_fips)
+      .eq('property_address', property_address)
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
 
     if (existingAnalysis) {
-      console.log('Returning existing analysis');
+      console.log('Returning existing analysis for this property address');
       return new Response(
         JSON.stringify({ soilAnalysis: existingAnalysis }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -69,7 +70,7 @@ Deno.serve(async (req) => {
     // In production, this would call external APIs like USDA Soil Survey
     const soilData = generateSampleSoilData(county_name, state_code, county_fips);
 
-    // Store the analysis in the database
+    // Store the analysis in the database with property address
     const { data: newAnalysis, error: insertError } = await supabase
       .from('soil_analyses')
       .insert({
@@ -77,6 +78,7 @@ Deno.serve(async (req) => {
         county_name,
         county_fips,
         state_code,
+        property_address,
         ph_level: soilData.ph_level,
         organic_matter: soilData.organic_matter,
         nitrogen_level: soilData.nitrogen_level,
