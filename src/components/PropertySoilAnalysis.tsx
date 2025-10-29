@@ -33,9 +33,11 @@ interface SoilData {
 
 interface PropertySoilAnalysisProps {
   soilData: SoilData;
+  professionalName?: string;
+  professionalEntity?: string;
 }
 
-export const PropertySoilAnalysis: React.FC<PropertySoilAnalysisProps> = ({ soilData }) => {
+export const PropertySoilAnalysis: React.FC<PropertySoilAnalysisProps> = ({ soilData, professionalName, professionalEntity }) => {
   
   // Foundation Risk Assessment
   const getFoundationRisk = () => {
@@ -235,6 +237,17 @@ export const PropertySoilAnalysis: React.FC<PropertySoilAnalysisProps> = ({ soil
                   <p className="text-lg font-bold text-foreground break-words">
                     {soilData.property_address}
                   </p>
+                  {(professionalName || professionalEntity) && (
+                    <div className="mt-3 pt-3 border-t border-border/50">
+                      <p className="text-xs text-muted-foreground mb-1">Prepared by:</p>
+                      {professionalName && (
+                        <p className="text-sm font-semibold text-foreground">{professionalName}</p>
+                      )}
+                      {professionalEntity && (
+                        <p className="text-sm text-muted-foreground">{professionalEntity}</p>
+                      )}
+                    </div>
+                  )}
                   <p className="text-xs text-muted-foreground mt-2">
                     This report is valid only for the property address shown above. 
                     Unauthorized use for other properties is prohibited.
@@ -327,9 +340,11 @@ export const PropertySoilAnalysis: React.FC<PropertySoilAnalysisProps> = ({ soil
               ))}
             </ul>
             {soilData.property_address && (
-              <p className="text-xs text-muted-foreground mt-4 text-center opacity-60">
-                {soilData.property_address}
-              </p>
+              <div className="text-xs text-muted-foreground mt-4 text-center opacity-60 space-y-0.5">
+                <p>{soilData.property_address}</p>
+                {professionalName && <p>{professionalName}</p>}
+                {professionalEntity && <p>{professionalEntity}</p>}
+              </div>
             )}
           </div>
         </CardContent>
@@ -356,9 +371,11 @@ export const PropertySoilAnalysis: React.FC<PropertySoilAnalysisProps> = ({ soil
               ))}
             </ul>
             {soilData.property_address && (
-              <p className="text-xs text-muted-foreground mt-4 text-center opacity-60">
-                {soilData.property_address}
-              </p>
+              <div className="text-xs text-muted-foreground mt-4 text-center opacity-60 space-y-0.5">
+                <p>{soilData.property_address}</p>
+                {professionalName && <p>{professionalName}</p>}
+                {professionalEntity && <p>{professionalEntity}</p>}
+              </div>
             )}
           </div>
         </CardContent>
@@ -393,9 +410,11 @@ export const PropertySoilAnalysis: React.FC<PropertySoilAnalysisProps> = ({ soil
               </AlertDescription>
             </Alert>
             {soilData.property_address && (
-              <p className="text-xs text-muted-foreground text-center opacity-60">
-                {soilData.property_address}
-              </p>
+              <div className="text-xs text-muted-foreground text-center opacity-60 space-y-0.5">
+                <p>{soilData.property_address}</p>
+                {professionalName && <p>{professionalName}</p>}
+                {professionalEntity && <p>{professionalEntity}</p>}
+              </div>
             )}
           </div>
         </CardContent>
@@ -437,9 +456,11 @@ export const PropertySoilAnalysis: React.FC<PropertySoilAnalysisProps> = ({ soil
               </div>
             </div>
             {soilData.property_address && (
-              <p className="text-xs text-muted-foreground mt-2 text-center opacity-60">
-                {soilData.property_address}
-              </p>
+              <div className="text-xs text-muted-foreground mt-2 text-center opacity-60 space-y-0.5">
+                <p>{soilData.property_address}</p>
+                {professionalName && <p>{professionalName}</p>}
+                {professionalEntity && <p>{professionalEntity}</p>}
+              </div>
             )}
           </div>
         </CardContent>

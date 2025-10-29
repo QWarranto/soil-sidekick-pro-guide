@@ -74,6 +74,8 @@ const PropertyReport = () => {
 
   const [selectedCounty, setSelectedCounty] = useState<County | null>(null);
   const [propertyAddress, setPropertyAddress] = useState('');
+  const [professionalName, setProfessionalName] = useState('');
+  const [professionalEntity, setProfessionalEntity] = useState('');
   const [soilData, setSoilData] = useState<SoilData | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -239,6 +241,29 @@ const PropertyReport = () => {
                         This address will be permanently embedded in your report
                       </p>
                     </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="professional-name">Real Estate Professional Name</Label>
+                        <Input
+                          id="professional-name"
+                          placeholder="John Smith"
+                          value={professionalName}
+                          onChange={(e) => setProfessionalName(e.target.value)}
+                          disabled={loading}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="professional-entity">Brokerage/Entity</Label>
+                        <Input
+                          id="professional-entity"
+                          placeholder="ABC Realty Group"
+                          value={professionalEntity}
+                          onChange={(e) => setProfessionalEntity(e.target.value)}
+                          disabled={loading}
+                        />
+                      </div>
+                    </div>
                     
                     <div className="p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
                       <p className="text-xs text-amber-800 dark:text-amber-200">
@@ -319,7 +344,11 @@ const PropertyReport = () => {
           )}
 
           {soilData && !loading && (
-            <PropertySoilAnalysis soilData={soilData} />
+            <PropertySoilAnalysis 
+              soilData={soilData} 
+              professionalName={professionalName}
+              professionalEntity={professionalEntity}
+            />
           )}
         </div>
       </main>
