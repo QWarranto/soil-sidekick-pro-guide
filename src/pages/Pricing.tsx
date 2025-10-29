@@ -396,7 +396,7 @@ const Pricing = () => {
                   
                   {isCurrentUserPlan && (
                     <div className="absolute top-4 left-4 z-10">
-                      <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
+                      <Badge variant="default" className="bg-primary text-primary-foreground border-primary">
                         Your Plan
                       </Badge>
                     </div>

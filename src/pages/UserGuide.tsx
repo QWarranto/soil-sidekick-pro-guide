@@ -159,7 +159,7 @@ const UserGuide = () => {
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                        <CheckCircle className="h-5 w-5 text-green-600" />
+                        <CheckCircle className="h-5 w-5 text-primary" />
                         1. Choose Your County
                       </h3>
                       <p className="text-sm text-muted-foreground mb-3">
@@ -175,7 +175,7 @@ const UserGuide = () => {
 
                     <div>
                       <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                        <CheckCircle className="h-5 w-5 text-green-600" />
+                        <CheckCircle className="h-5 w-5 text-primary" />
                         2. Review Your Analysis
                       </h3>
                       <p className="text-sm text-muted-foreground mb-3">
