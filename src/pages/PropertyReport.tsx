@@ -38,8 +38,18 @@ const PropertyReport = () => {
   const { user, trialUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  // ALL STATE DECLARATIONS MUST BE AT THE TOP (React Rules of Hooks)
   const [externalAuthChecked, setExternalAuthChecked] = useState(false);
   const [isExternalUser, setIsExternalUser] = useState(false);
+  const [selectedCounty, setSelectedCounty] = useState<County | null>(null);
+  const [propertyAddress, setPropertyAddress] = useState('');
+  const [professionalName, setProfessionalName] = useState('');
+  const [professionalEntity, setProfessionalEntity] = useState('');
+  const [storedProfessionalInfo, setStoredProfessionalInfo] = useState<{ name: string; entity: string } | null>(null);
+  const [isLoadingProfessionalInfo, setIsLoadingProfessionalInfo] = useState(true);
+  const [soilData, setSoilData] = useState<SoilData | null>(null);
+  const [loading, setLoading] = useState(false);
 
   // Check for external authentication from SoilCertify.com
   useEffect(() => {
@@ -107,15 +117,6 @@ const PropertyReport = () => {
       </div>
     );
   }
-
-  const [selectedCounty, setSelectedCounty] = useState<County | null>(null);
-  const [propertyAddress, setPropertyAddress] = useState('');
-  const [professionalName, setProfessionalName] = useState('');
-  const [professionalEntity, setProfessionalEntity] = useState('');
-  const [storedProfessionalInfo, setStoredProfessionalInfo] = useState<{ name: string; entity: string } | null>(null);
-  const [isLoadingProfessionalInfo, setIsLoadingProfessionalInfo] = useState(true);
-  const [soilData, setSoilData] = useState<SoilData | null>(null);
-  const [loading, setLoading] = useState(false);
 
   // Fetch stored professional information on mount
   useEffect(() => {
