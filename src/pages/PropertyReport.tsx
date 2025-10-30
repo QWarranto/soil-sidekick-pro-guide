@@ -254,7 +254,8 @@ const PropertyReport = () => {
           county_fips: selectedCounty.fips_code,
           county_name: selectedCounty.county_name,
           state_code: selectedCounty.state_code,
-          property_address: propertyAddress.trim()
+          property_address: propertyAddress.trim(),
+          force_refresh: true
         }
       });
 

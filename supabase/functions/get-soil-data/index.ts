@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { county_fips, county_name, state_code, property_address } = await req.json();
+    const { county_fips, county_name, state_code, property_address, force_refresh } = await req.json();
     
     if (!county_fips || !county_name || !state_code || !property_address) {
       return new Response(
@@ -47,23 +47,34 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Check if we already have analysis for this exact property address
-    const { data: existingAnalysis } = await supabase
-      .from('soil_analyses')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('county_fips', county_fips)
-      .eq('property_address', property_address)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    // Check if we already have analysis for this exact property address (unless force_refresh is true)
+    if (!force_refresh) {
+      const { data: existingAnalysis } = await supabase
+        .from('soil_analyses')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('county_fips', county_fips)
+        .eq('property_address', property_address)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-    if (existingAnalysis) {
-      console.log('Returning existing analysis for this property address');
-      return new Response(
-        JSON.stringify({ soilAnalysis: existingAnalysis }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      if (existingAnalysis) {
+        console.log('Returning existing analysis for this property address');
+        return new Response(
+          JSON.stringify({ soilAnalysis: existingAnalysis }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    } else {
+      console.log('Force refresh requested - fetching fresh data');
+      // Delete old analyses for this property
+      await supabase
+        .from('soil_analyses')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('county_fips', county_fips)
+        .eq('property_address', property_address);
     }
 
     // Fetch real soil data from USDA Soil Data Access (SDA) API
