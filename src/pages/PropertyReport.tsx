@@ -38,8 +38,44 @@ const PropertyReport = () => {
   const { user, trialUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [externalAuthChecked, setExternalAuthChecked] = useState(false);
+  const [isExternalUser, setIsExternalUser] = useState(false);
 
-  if (!user && !trialUser) {
+  // Check for external authentication from SoilCertify.com
+  useEffect(() => {
+    const checkExternalAuth = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const authToken = urlParams.get('auth_token');
+      const source = urlParams.get('source');
+      
+      if (authToken && source === 'soilcertify') {
+        // Store the external auth token
+        sessionStorage.setItem('soilcertify_auth', authToken);
+        setIsExternalUser(true);
+      } else {
+        // Check if we have a stored external auth token
+        const storedToken = sessionStorage.getItem('soilcertify_auth');
+        if (storedToken) {
+          setIsExternalUser(true);
+        }
+      }
+      setExternalAuthChecked(true);
+    };
+
+    checkExternalAuth();
+  }, []);
+
+  // Show loading while checking external auth
+  if (!externalAuthChecked) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-blue-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Allow access if user is authenticated OR is an external user from SoilCertify
+  if (!user && !trialUser && !isExternalUser) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-blue-50 flex items-center justify-center">
         <Card className="w-full max-w-md">
@@ -84,6 +120,12 @@ const PropertyReport = () => {
   // Fetch stored professional information on mount
   useEffect(() => {
     const fetchProfessionalInfo = async () => {
+      // Skip professional info check for external users
+      if (isExternalUser) {
+        setIsLoadingProfessionalInfo(false);
+        return;
+      }
+      
       if (!user) {
         setIsLoadingProfessionalInfo(false);
         return;
@@ -108,7 +150,7 @@ const PropertyReport = () => {
     };
 
     fetchProfessionalInfo();
-  }, [user]);
+  }, [user, isExternalUser]);
 
   const handleBackHome = () => {
     navigate('/');
@@ -137,67 +179,72 @@ const PropertyReport = () => {
       return;
     }
 
-    // Validate professional information
-    if (!professionalName.trim() || !professionalEntity.trim()) {
-      toast({
-        title: "Professional Information Required",
-        description: "Please provide both your name and entity to generate a report.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Check if stored info exists and validate it matches
-    if (storedProfessionalInfo) {
-      if (professionalName.trim() !== storedProfessionalInfo.name || 
-          professionalEntity.trim() !== storedProfessionalInfo.entity) {
+    // Validate professional information (skip for external users)
+    if (!isExternalUser) {
+      if (!professionalName.trim() || !professionalEntity.trim()) {
         toast({
-          title: "Account Identity Mismatch",
-          description: "Professional name and entity do not match your account. Each account is restricted to one professional identity to prevent sharing.",
+          title: "Professional Information Required",
+          description: "Please provide both your name and entity to generate a report.",
           variant: "destructive",
         });
         return;
       }
-    } else {
-      // First time - store the professional info
-      if (user) {
-        const { error: insertError } = await supabase
-          .from('professional_info')
-          .insert({
-            user_id: user.id,
-            professional_name: professionalName.trim(),
-            professional_entity: professionalEntity.trim()
-          });
 
-        if (insertError) {
-          console.error('Error storing professional info:', insertError);
+      // Check if stored info exists and validate it matches
+      if (storedProfessionalInfo) {
+        if (professionalName.trim() !== storedProfessionalInfo.name || 
+            professionalEntity.trim() !== storedProfessionalInfo.entity) {
           toast({
-            title: "Failed to Save Professional Information",
-            description: "Unable to register your professional identity. Please try again.",
+            title: "Account Identity Mismatch",
+            description: "Professional name and entity do not match your account. Each account is restricted to one professional identity to prevent sharing.",
             variant: "destructive",
           });
           return;
         }
+      } else {
+        // First time - store the professional info
+        if (user) {
+          const { error: insertError } = await supabase
+            .from('professional_info')
+            .insert({
+              user_id: user.id,
+              professional_name: professionalName.trim(),
+              professional_entity: professionalEntity.trim()
+            });
 
-        setStoredProfessionalInfo({
-          name: professionalName.trim(),
-          entity: professionalEntity.trim()
-        });
-        
-        toast({
-          title: "Professional Identity Registered",
-          description: "Your account is now locked to this professional identity.",
-        });
+          if (insertError) {
+            console.error('Error storing professional info:', insertError);
+            toast({
+              title: "Failed to Save Professional Information",
+              description: "Unable to register your professional identity. Please try again.",
+              variant: "destructive",
+            });
+            return;
+          }
+
+          setStoredProfessionalInfo({
+            name: professionalName.trim(),
+            entity: professionalEntity.trim()
+          });
+          
+          toast({
+            title: "Professional Identity Registered",
+            description: "Your account is now locked to this professional identity.",
+          });
+        }
       }
     }
 
     setLoading(true);
     
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        throw new Error('No active session found. Please sign in again.');
+      // Skip session check for external users
+      if (!isExternalUser) {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          throw new Error('No active session found. Please sign in again.');
+        }
       }
 
       const { data, error } = await supabase.functions.invoke('get-soil-data', {
@@ -217,11 +264,14 @@ const PropertyReport = () => {
       if (data?.soilAnalysis) {
         setSoilData(data.soilAnalysis);
         
-        await supabase.from('subscription_usages').insert({
-          user_id: user?.id,
-          action_type: 'property_report',
-          county_fips: selectedCounty.fips_code
-        });
+        // Only track usage for authenticated users, not external users
+        if (user?.id) {
+          await supabase.from('subscription_usages').insert({
+            user_id: user.id,
+            action_type: 'property_report',
+            county_fips: selectedCounty.fips_code
+          });
+        }
         
         toast({
           title: "Property Report Generated",
@@ -327,51 +377,55 @@ const PropertyReport = () => {
                       </p>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="professional-name">
-                          Real Estate Professional Name *
-                          {storedProfessionalInfo && <span className="text-xs text-muted-foreground ml-2">(Locked)</span>}
-                        </Label>
-                        <Input
-                          id="professional-name"
-                          placeholder="John Smith"
-                          value={professionalName}
-                          onChange={(e) => setProfessionalName(e.target.value)}
-                          disabled={loading || !!storedProfessionalInfo || isLoadingProfessionalInfo}
-                        />
-                        {storedProfessionalInfo && (
-                          <p className="text-xs text-muted-foreground">
-                            This account is registered to this professional
+                    {!isExternalUser && (
+                      <>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="professional-name">
+                              Real Estate Professional Name *
+                              {storedProfessionalInfo && <span className="text-xs text-muted-foreground ml-2">(Locked)</span>}
+                            </Label>
+                            <Input
+                              id="professional-name"
+                              placeholder="John Smith"
+                              value={professionalName}
+                              onChange={(e) => setProfessionalName(e.target.value)}
+                              disabled={loading || !!storedProfessionalInfo || isLoadingProfessionalInfo}
+                            />
+                            {storedProfessionalInfo && (
+                              <p className="text-xs text-muted-foreground">
+                                This account is registered to this professional
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="professional-entity">
+                              Brokerage/Entity *
+                              {storedProfessionalInfo && <span className="text-xs text-muted-foreground ml-2">(Locked)</span>}
+                            </Label>
+                            <Input
+                              id="professional-entity"
+                              placeholder="ABC Realty Group"
+                              value={professionalEntity}
+                              onChange={(e) => setProfessionalEntity(e.target.value)}
+                              disabled={loading || !!storedProfessionalInfo || isLoadingProfessionalInfo}
+                            />
+                            {storedProfessionalInfo && (
+                              <p className="text-xs text-muted-foreground">
+                                This account is registered to this entity
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                          <p className="text-xs text-amber-800 dark:text-amber-200">
+                            <strong>Anti-Sharing Protection:</strong> Each account is permanently locked to one professional identity. 
+                            Once set, your name and entity cannot be changed, preventing account sharing between multiple professionals.
                           </p>
-                        )}
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="professional-entity">
-                          Brokerage/Entity *
-                          {storedProfessionalInfo && <span className="text-xs text-muted-foreground ml-2">(Locked)</span>}
-                        </Label>
-                        <Input
-                          id="professional-entity"
-                          placeholder="ABC Realty Group"
-                          value={professionalEntity}
-                          onChange={(e) => setProfessionalEntity(e.target.value)}
-                          disabled={loading || !!storedProfessionalInfo || isLoadingProfessionalInfo}
-                        />
-                        {storedProfessionalInfo && (
-                          <p className="text-xs text-muted-foreground">
-                            This account is registered to this entity
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className="p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                      <p className="text-xs text-amber-800 dark:text-amber-200">
-                        <strong>Anti-Sharing Protection:</strong> Each account is permanently locked to one professional identity. 
-                        Once set, your name and entity cannot be changed, preventing account sharing between multiple professionals.
-                      </p>
-                    </div>
+                        </div>
+                      </>
+                    )}
 
                     <Button 
                       onClick={handleGenerateReport} 
