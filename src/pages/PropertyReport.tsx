@@ -75,6 +75,41 @@ const PropertyReport = () => {
     checkExternalAuth();
   }, []);
 
+  // Fetch stored professional information on mount
+  useEffect(() => {
+    const fetchProfessionalInfo = async () => {
+      // Skip professional info check for external users
+      if (isExternalUser) {
+        setIsLoadingProfessionalInfo(false);
+        return;
+      }
+      
+      if (!user) {
+        setIsLoadingProfessionalInfo(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('professional_info')
+        .select('professional_name, professional_entity')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (!error && data) {
+        setStoredProfessionalInfo({
+          name: data.professional_name,
+          entity: data.professional_entity
+        });
+        setProfessionalName(data.professional_name);
+        setProfessionalEntity(data.professional_entity);
+      }
+      
+      setIsLoadingProfessionalInfo(false);
+    };
+
+    fetchProfessionalInfo();
+  }, [user, isExternalUser]);
+
   // Show loading while checking external auth
   if (!externalAuthChecked) {
     return (
@@ -118,40 +153,6 @@ const PropertyReport = () => {
     );
   }
 
-  // Fetch stored professional information on mount
-  useEffect(() => {
-    const fetchProfessionalInfo = async () => {
-      // Skip professional info check for external users
-      if (isExternalUser) {
-        setIsLoadingProfessionalInfo(false);
-        return;
-      }
-      
-      if (!user) {
-        setIsLoadingProfessionalInfo(false);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('professional_info')
-        .select('professional_name, professional_entity')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!error && data) {
-        setStoredProfessionalInfo({
-          name: data.professional_name,
-          entity: data.professional_entity
-        });
-        setProfessionalName(data.professional_name);
-        setProfessionalEntity(data.professional_entity);
-      }
-      
-      setIsLoadingProfessionalInfo(false);
-    };
-
-    fetchProfessionalInfo();
-  }, [user, isExternalUser]);
 
   const handleBackHome = () => {
     navigate('/');
