@@ -79,7 +79,7 @@ Deno.serve(async (req) => {
 
     // Fetch real soil data from USDA Soil Data Access (SDA) API
     console.log('Fetching real SSURGO data from SDA API...');
-    const soilData = await fetchRealSoilData(county_fips, property_address);
+    const soilData = await fetchRealSoilData(county_fips, property_address, state_code);
 
     // Store the analysis in the database with property address
     const { data: newAnalysis, error: insertError } = await supabase
@@ -124,10 +124,17 @@ Deno.serve(async (req) => {
 });
 
 // Fetch real soil data from USDA Soil Data Access (SDA) API
-async function fetchRealSoilData(countyFips: string, propertyAddress: string) {
+async function fetchRealSoilData(countyFips: string, propertyAddress: string, stateCode: string) {
   const SDA_URL = 'https://SDMDataAccess.sc.egov.usda.gov/Tabular/post.rest';
   
   try {
+    // Construct proper areasymbol: state code + county numeric portion
+    // Example: FIPS "13247" with state "GA" becomes "GA247"
+    const countyNumeric = countyFips.substring(2);
+    const areasymbol = `${stateCode}${countyNumeric}`;
+    
+    console.log(`Looking up SSURGO data for areasymbol: ${areasymbol}`);
+    
     // Query to get soil properties for the county
     // We'll get representative values for the dominant map units in the county
     const sqlQuery = `
@@ -151,7 +158,7 @@ async function fetchRealSoilData(countyFips: string, propertyAddress: string) {
       INNER JOIN mapunit mu ON mu.lkey = l.lkey
       INNER JOIN component c ON c.mukey = mu.mukey
       INNER JOIN chorizon ch ON ch.cokey = c.cokey
-      WHERE l.areasymbol LIKE '${countyFips.substring(2)}%'
+      WHERE l.areasymbol = '${areasymbol}'
         AND c.compkind = 'Series'
         AND ch.hzdept_r = 0
       ORDER BY c.comppct_r DESC
