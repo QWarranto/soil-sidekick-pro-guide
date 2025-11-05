@@ -1,10 +1,11 @@
-const CACHE_NAME = 'soilsidekick-pro-v1';
+const CACHE_NAME = 'soilsidekick-pro-v2';
 const urlsToCache = [
   '/',
   '/index.html',
   '/manifest.json',
   '/logo-192.png',
-  '/logo-512.png'
+  '/logo-512.png',
+  '/offline.html'
 ];
 
 // Error tracking storage
@@ -149,7 +150,21 @@ self.addEventListener('fetch', (event) => {
             // No cache available, log and return error
             logError(fetchError, `fetch_failed: ${url.pathname}`);
             
-            // Return a custom offline page or error response
+            // For navigation requests, show offline page
+            if (request.mode === 'navigate') {
+              return caches.match('/offline.html').then((offlineResponse) => {
+                return offlineResponse || new Response(
+                  'Offline - Please check your connection',
+                  {
+                    status: 503,
+                    statusText: 'Service Unavailable',
+                    headers: new Headers({ 'Content-Type': 'text/html' }),
+                  }
+                );
+              });
+            }
+            
+            // For other requests, return JSON error
             return new Response(
               JSON.stringify({
                 error: 'Network request failed and no cached version available',

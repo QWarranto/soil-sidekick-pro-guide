@@ -9,6 +9,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import AppHeader from "@/components/AppHeader";
 import { OfflineSyncIndicator } from "@/components/OfflineSyncIndicator";
 import { NetworkStatusBanner } from "@/components/NetworkStatusBanner";
+import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -34,6 +35,8 @@ import DeploymentGuide from "./pages/DeploymentGuide";
 import NotificationsDemo from "./pages/NotificationsDemo";
 import PropertyReport from "./pages/PropertyReport";
 import NotFound from "./pages/NotFound";
+import Install from "./pages/Install";
+import { PWAOfflinePage } from "./components/PWAOfflinePage";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +62,7 @@ const App = () => (
           <AppHeader />
           <NetworkStatusBanner />
           <OfflineSyncIndicator />
+          <PWAInstallBanner />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
@@ -84,6 +88,8 @@ const App = () => (
         <Route path="/deployment-guide" element={<DeploymentGuide />} />
         <Route path="/notifications" element={<NotificationsDemo />} />
         <Route path="/property-report" element={<PropertyReport />} />
+        <Route path="/install" element={<Install />} />
+        <Route path="/offline" element={<PWAOfflinePage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
