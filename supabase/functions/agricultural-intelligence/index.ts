@@ -497,13 +497,26 @@ ${useGPT5 ? 'Provide sophisticated agricultural analysis using your enhanced rea
     }),
   });
 
+  const data = await response.json();
+
   // Handle GPT-5 not available yet - fallback gracefully
   if (!response.ok && useGPT5) {
     console.log('GPT-5 not available for response generation, falling back to GPT-4o-mini');
     return generateIntelligentResponse(query, intent, analyticsData, apiKey, false);
   }
 
-  const data = await response.json();
+  // Check if API call was successful
+  if (!response.ok) {
+    console.error('OpenAI API error:', data);
+    throw new Error(data.error?.message || 'OpenAI API request failed');
+  }
+
+  // Validate response structure
+  if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+    console.error('Invalid OpenAI response structure:', data);
+    throw new Error('Invalid response from OpenAI API');
+  }
+
   return {
     content: data.choices[0].message.content,
     model: data.model || model,
