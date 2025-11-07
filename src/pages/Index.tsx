@@ -7,6 +7,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { Leaf, LogOut, LogIn, Sparkles } from 'lucide-react';
 import LeadCapture from '@/components/LeadCapture';
 import Footer from '@/components/Footer';
+import { OptimizedImage } from '@/components/OptimizedImage';
+import heroAerialFarm from '@/assets/hero-aerial-farm.jpg';
+import heroTechAgriculture from '@/assets/hero-tech-agriculture.jpg';
 
 const Index = () => {
   const { user, signOut } = useAuth();
@@ -17,11 +20,33 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-subtle parallax-scroll">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Background Hero Image */}
+      <div className="absolute inset-0 z-0">
+        <OptimizedImage
+          src={heroAerialFarm}
+          alt="Aerial view of precision agriculture farmland with advanced crop management"
+          priority
+          objectFit="cover"
+          className="w-full h-full"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/80 to-background/95" />
+      </div>
+
+      {/* Tech Agriculture Accent */}
+      <div className="absolute top-0 right-0 w-1/3 h-1/2 opacity-20 z-0 hidden lg:block">
+        <OptimizedImage
+          src={heroTechAgriculture}
+          alt="Smart farming technology with AI-powered agricultural intelligence"
+          objectFit="cover"
+          className="w-full h-full"
+        />
+      </div>
+
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-4xl mx-auto slide-in-up">
-          <Card className="card-subtle backdrop-blur-sm bg-card border-border">
+          <Card className="card-subtle backdrop-blur-md bg-card/90 border-border shadow-elegant">
             <CardHeader>
               <CardTitle className="text-4xl font-bold text-foreground">Welcome to SoilSidekick Pro</CardTitle>
               <CardDescription className="text-lg text-muted-foreground">
