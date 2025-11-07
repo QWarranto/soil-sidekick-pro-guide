@@ -30,7 +30,7 @@ const Index = () => {
           objectFit="cover"
           className="w-full h-full"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/80 to-background/95" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/98 via-background/90 to-background/98" />
       </div>
 
       {/* Tech Agriculture Accent */}
