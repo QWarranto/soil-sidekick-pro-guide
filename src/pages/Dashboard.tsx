@@ -10,6 +10,8 @@ import { AddFieldDialog } from "@/components/AddFieldDialog";
 import AgriculturalChat from "@/components/AgriculturalChat";
 import { LocationIndicator } from "@/components/LocationIndicator";
 import { QuickAccessSuggestion } from "@/components/QuickAccessSuggestion";
+import { OptimizedImage } from "@/components/OptimizedImage";
+import heroTechAgriculture from '@/assets/hero-tech-agriculture.jpg';
 import {
   LazyCarbonCreditDashboard,
   LazyCostMonitoringDashboard,
@@ -129,6 +131,23 @@ const Dashboard = () => {
               {isLoading ? 'Refreshing...' : 'Refresh'}
             </Button>
             <AddFieldDialog onFieldAdded={handleFieldAdded} />
+          </div>
+        </div>
+      </div>
+
+      {/* Hero Tech Banner */}
+      <div className="relative h-48 overflow-hidden border-b">
+        <OptimizedImage
+          src={heroTechAgriculture}
+          alt="Smart farming technology with AI-powered agricultural intelligence and data management systems"
+          priority
+          objectFit="cover"
+          className="w-full h-full"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/60 to-background/95 flex items-center justify-center">
+          <div className="text-center space-y-2">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">AI-Powered Agricultural Intelligence</h2>
+            <p className="text-muted-foreground text-lg">Smart farming technology for data-driven decisions</p>
           </div>
         </div>
       </div>

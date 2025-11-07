@@ -9,7 +9,6 @@ import LeadCapture from '@/components/LeadCapture';
 import Footer from '@/components/Footer';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import heroAerialFarm from '@/assets/hero-aerial-farm.jpg';
-import heroTechAgriculture from '@/assets/hero-tech-agriculture.jpg';
 
 const Index = () => {
   const { user, signOut } = useAuth();
@@ -31,16 +30,6 @@ const Index = () => {
           className="w-full h-full"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background/98 via-background/90 to-background/98" />
-      </div>
-
-      {/* Tech Agriculture Accent */}
-      <div className="absolute top-0 right-0 w-1/3 h-1/2 opacity-20 z-0 hidden lg:block">
-        <OptimizedImage
-          src={heroTechAgriculture}
-          alt="Smart farming technology with AI-powered agricultural intelligence"
-          objectFit="cover"
-          className="w-full h-full"
-        />
       </div>
 
       {/* Main Content */}
