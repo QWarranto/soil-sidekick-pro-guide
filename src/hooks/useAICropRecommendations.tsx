@@ -106,19 +106,24 @@ export const useAICropRecommendations = () => {
         throw new Error(`AI service error: ${supabaseError.message}`);
       }
 
-      if (!result?.analysis) {
+      // Check if the edge function returned an error
+      if (!result?.success) {
+        throw new Error(result?.error || 'AI service returned an error');
+      }
+
+      if (!result?.response) {
         throw new Error('No recommendations received from AI service');
       }
 
       // Parse the AI response and structure it
-      const aiAnalysis = result.analysis;
+      const aiAnalysis = result.response;
       const structuredRecommendations = await parseAIRecommendations(aiAnalysis, defaultCrops, defaultCounty);
 
       setRecommendations(structuredRecommendations);
 
       toast({
         title: "AI Recommendations Updated",
-        description: `Generated recommendations for ${defaultCrops.length} crops using ${result.model || 'GPT-5'} intelligence`,
+        description: `Generated recommendations for ${defaultCrops.length} crops${result.data_sources?.length ? ` • Sources: ${result.data_sources.slice(0, 2).join(', ')}` : ''}`,
         duration: 3000,
       });
 
@@ -164,9 +169,14 @@ export const useAICropRecommendations = () => {
         throw new Error(`AI service error: ${supabaseError.message}`);
       }
 
+      // Check if the edge function returned an error
+      if (!result?.success) {
+        throw new Error(result?.error || 'AI service returned an error');
+      }
+
       // Add the new crop to existing recommendations
-      if (recommendations && result?.analysis) {
-        const newCropData = await parseCustomCropRecommendation(result.analysis, cropName);
+      if (recommendations && result?.response) {
+        const newCropData = await parseCustomCropRecommendation(result.response, cropName);
         const updatedRecommendations = {
           ...recommendations,
           recommendations: [...recommendations.recommendations, newCropData]
