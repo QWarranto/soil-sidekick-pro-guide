@@ -37,6 +37,10 @@ import PropertyReport from "./pages/PropertyReport";
 import NotFound from "./pages/NotFound";
 import Install from "./pages/Install";
 import { PWAOfflinePage } from "./components/PWAOfflinePage";
+import FarmonautComparison from "./pages/FarmonautComparison";
+import OneSoilComparison from "./pages/OneSoilComparison";
+import HeirloomComparison from "./pages/HeirloomComparison";
+import SoilTestProComparison from "./pages/SoilTestProComparison";
 
 const queryClient = new QueryClient();
 
@@ -90,6 +94,10 @@ const App = () => (
         <Route path="/property-report" element={<PropertyReport />} />
         <Route path="/install" element={<Install />} />
         <Route path="/offline" element={<PWAOfflinePage />} />
+        <Route path="/compare/farmonaut" element={<FarmonautComparison />} />
+        <Route path="/compare/onesoil" element={<OneSoilComparison />} />
+        <Route path="/compare/heirloom" element={<HeirloomComparison />} />
+        <Route path="/compare/soiltest-pro" element={<SoilTestProComparison />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
