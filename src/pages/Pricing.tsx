@@ -61,20 +61,25 @@ const Pricing = () => {
       id: 'starter',
       name: 'Starter',
       monthlyPrice: 29,
-      yearlyPrice: 290,
-      description: 'Professional-grade analysis with unlimited counties, enhanced reporting, and expert consultation support',
+      yearlyPrice: 228, // First 2 months at $19 = $38, then 10 months at $19 = $190, total $228
+      description: 'Perfect for hobby farmers! Unlimited county access, 10 AI analyses/month, and FREE field assessment call',
       icon: <Zap className="h-6 w-6" />,
-      badge: 'Popular',
+      badge: '🎁 First 2 Months $19',
       badgeVariant: 'default' as const,
       features: [
-        'Unlimited county access with smart caching',
-        'AI-powered soil & water analysis (10/month)',
-        'Professional PDF & CSV export reports',
-        'Smart seasonal planning calendar',
-        'Priority email support & expert consultation',
-        'Basic field mapping and boundary tools',
-        'Historical data tracking & trends',
-        'Mobile-optimized dashboard access'
+        '🌟 Unlimited county access (your killer feature!)',
+        '🤖 10 AI-powered soil & water analyses/month',
+        '🎯 Perfect for hobby farmers & small operations',
+        '📞 FREE field assessment consultation call',
+        '🌍 Pay-per-use AlphaEarth access ($5/analysis)',
+        '📊 Professional PDF & CSV export reports',
+        '📅 Smart seasonal planning calendar',
+        '💬 Priority email support & expert consultation',
+        '🗺️ Basic field mapping and boundary tools',
+        '📈 Historical data tracking & trends',
+        '📱 Mobile-optimized dashboard access',
+        '🎁 Referral bonus: 1 month free per referral',
+        '🔥 3 referrals = Your 2nd year FREE'
       ]
     },
     {
@@ -82,16 +87,18 @@ const Pricing = () => {
       name: 'Pro',
       monthlyPrice: 79,
       yearlyPrice: 790,
-      description: 'Unlimited AI features with visual crop analysis and advanced analytics',
+      description: 'Unlimited AI features with FULL AlphaEarth access and visual crop analysis',
       icon: <Star className="h-6 w-6" />,
       badge: 'Best Value',
       badgeVariant: 'default' as const,
       features: [
-        'Unlimited AI features',
-        'Visual crop analysis',
-        'AI-powered VRT prescription maps',
-        'Advanced analytics',
-        'Priority support'
+        '♾️ Unlimited AI-powered analyses',
+        '🌍 FULL AlphaEarth satellite access (included)',
+        '📸 Visual crop analysis with satellite data',
+        '🗺️ AI-powered VRT prescription maps',
+        '📊 Advanced analytics & insights',
+        '⚡ Priority support & consultation',
+        '🎁 Referral bonus: 1 month free per referral'
       ]
     },
     {
@@ -99,15 +106,18 @@ const Pricing = () => {
       name: 'Enterprise',
       monthlyPrice: 149,
       yearlyPrice: 1490,
-      description: 'Complete solution with ADAPT integration and dedicated support',
+      description: 'Complete solution with UNLIMITED AlphaEarth, ADAPT integration, and dedicated support',
       icon: <Settings className="h-6 w-6" />,
       badge: 'Full Suite',
       badgeVariant: 'outline' as const,
       features: [
-        'AI-powered VRT prescription maps',
-        'ADAPT integration with VRT export',
-        'Custom features',
-        'Dedicated support'
+        '♾️ UNLIMITED AlphaEarth satellite access',
+        '🗺️ AI-powered VRT prescription maps',
+        '🔗 Full ADAPT integration with VRT export',
+        '🎨 Custom feature development',
+        '👨‍💼 Dedicated account manager',
+        '🚀 White-label & custom integrations',
+        '🎁 Referral bonus: 1 month free per referral'
       ]
     }
   ];
@@ -421,6 +431,11 @@ const Pricing = () => {
                           </span>
                         )}
                       </div>
+                      {isAnnual && plan.id === 'starter' && (
+                        <div className="text-sm text-green-600 font-medium mt-1">
+                          🎉 First 2 months just $19 each!
+                        </div>
+                      )}
                       {isAnnual && plan.id === 'pro' && (
                         <div className="text-sm text-green-600 font-medium mt-1">
                           Save $158 per year
