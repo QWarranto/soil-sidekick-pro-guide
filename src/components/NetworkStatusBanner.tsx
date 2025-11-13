@@ -55,6 +55,12 @@ export const NetworkStatusBanner = () => {
                 <>Connected {isWifi ? 'via WiFi' : isCellular ? 'via cellular' : ''} • All data synced</>
               )}
             </div>
+            {!isOnline && (
+              <div className="text-sm font-semibold text-destructive-foreground mt-1 flex items-center gap-2">
+                <span className="text-base">⚠️</span>
+                To go online: Enable WiFi or cellular data in your device settings
+              </div>
+            )}
           </div>
         </div>
 
