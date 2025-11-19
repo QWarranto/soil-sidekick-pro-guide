@@ -1,9 +1,31 @@
 # SoilSidekick Pro: Comprehensive Implementation Guide
 ## From MVP to Production-Ready Platform
 
-> **Status**: Implementation Roadmap  
+> **🚨 CRITICAL**: Read [SECURITY_CRITICAL_CORRECTIONS.md](./SECURITY_CRITICAL_CORRECTIONS.md) BEFORE implementing this guide  
+> **Status**: Implementation Roadmap (WITH SECURITY CORRECTIONS REQUIRED)  
 > **Last Updated**: 2025-11-19  
 > **Purpose**: Consolidated guide bridging current MVP state to production-ready architecture
+
+---
+
+## ⚠️ SECURITY WARNING
+
+This guide contains **7 critical security flaws** that have been documented and corrected in:
+
+### [SECURITY_CRITICAL_CORRECTIONS.md](./SECURITY_CRITICAL_CORRECTIONS.md)
+
+**YOU MUST READ THE SECURITY CORRECTIONS BEFORE PROCEEDING.**
+
+Critical issues include:
+- ❌ Incorrect user_id handling (lines 979-986)
+- ❌ Missing admin role security implementation
+- ❌ No server-side input validation guidance
+- ❌ Nullable user_id columns in RLS policies
+- ❌ Missing XSS/injection prevention
+- ❌ Incomplete error handling
+- ❌ Migration vs data operations confusion
+
+**The corrections document supersedes any conflicting guidance in this file.**
 
 ---
 
