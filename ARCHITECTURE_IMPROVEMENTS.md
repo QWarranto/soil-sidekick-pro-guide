@@ -65,6 +65,104 @@ This document tracks identified weaknesses and areas for improvement in the Soil
 
 ---
 
+## Frontend Architecture Weaknesses
+
+### 3. Routing Architecture (High Priority)
+
+**Issue**: Manual state-based routing in `App.tsx` instead of proper routing library (React Router is installed but not fully utilized).
+
+**Specific Concerns**:
+- Current implementation: `const [currentRoute, setCurrentRoute] = useState(...)`
+- Browser "Back" button is broken - doesn't navigate between pages
+- Deep-linking is impossible - can't share URLs to specific pages/tasks
+- Page state resets on browser refresh
+- No URL parameters support (e.g., `/tasks/123`)
+
+**Impact**:
+- Poor user experience with broken browser navigation
+- Can't bookmark or share specific pages
+- SEO implications - all pages appear as single route
+- State management complexity increases
+- Analytics can't track page views accurately
+
+**Recommended Future Action**:
+- Migrate to React Router's `BrowserRouter` with proper `<Route>` components
+- Replace all `setCurrentRoute()` calls with `navigate()` from React Router
+- Add route parameters for resource IDs (`/tasks/:id`, `/fields/:id`)
+- Implement proper 404 handling
+- Add route guards for authentication-required pages
+
+---
+
+### 4. Feature Utilization Gap (Medium Priority)
+
+**Issue**: Frontend only implements a fraction of backend capabilities, leaving robust features unused.
+
+**Specific Concerns**:
+- No UI for security features:
+  - Account security settings (`account_security` table)
+  - Security audit logs (`auth_security_log`, `security_audit_log`)
+  - API key management (`api_keys` table)
+- No compliance monitoring interface:
+  - Compliance audit log viewing (`compliance_audit_log`)
+  - SOC2 compliance checks (`soc2_compliance_checks`)
+- No cost management dashboard:
+  - Cost tracking analytics (`cost_tracking`)
+  - Cost alerts configuration (`cost_alerts`)
+  - Usage analytics visualization (`usage_analytics`)
+- Missing admin interfaces for monitoring and management
+
+**Impact**:
+- Wasted backend development effort
+- Users can't leverage advanced features they're paying for
+- Admin team lacks visibility into system health
+- Security monitoring capabilities unused
+- Cost overruns go unnoticed without alerts interface
+
+**Recommended Future Action**:
+- Build admin dashboard for security/compliance monitoring
+- Create user-facing settings page for account security
+- Implement cost tracking dashboard with alerts
+- Add API key management interface for Enterprise users
+- Prioritize features based on subscription tier value
+
+---
+
+### 5. CRUD Operation Gaps (High Priority)
+
+**Issue**: Current UI is largely read-only, missing create/update/delete operations despite backend support.
+
+**Specific Concerns**:
+- No forms for creating resources:
+  - Add new fields (`fields` table has Insert types defined)
+  - Create task templates
+  - Add soil analyses
+  - Configure integrations
+- No update operations:
+  - Edit field boundaries
+  - Update task statuses
+  - Modify user preferences
+  - Change subscription settings
+- No delete functionality for user-created resources
+- Backend Insert/Update types in `types.ts` are unused
+
+**Impact**:
+- Users cannot fully manage their data
+- Requires manual database operations for basic tasks
+- Poor user experience - feels incomplete
+- Backend validation logic untested
+- Type safety benefits of Supabase schema wasted
+
+**Recommended Future Action**:
+- Audit all tables with user-owned data
+- Build CRUD forms using React Hook Form + Zod validation
+- Implement optimistic updates with TanStack Query
+- Add confirmation dialogs for destructive operations
+- Create reusable form components for common patterns
+- Test Insert/Update type validation end-to-end
+
+---
+
 ## Additional Weaknesses
 
 _[Reserved for additional architectural concerns to be documented]_
