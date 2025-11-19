@@ -419,3 +419,848 @@ export const AddFieldForm = () => {
 - All Insert/Update types utilized
 - Performance metrics within targets
 
+---
+
+## Production-Ready Architecture Patterns
+
+### 6. Layout Pattern & Code Organization (Critical - 🔴)
+
+**Issue**: Current `App.tsx` handles state, routing, and layout simultaneously, creating tight coupling and poor separation of concerns.
+
+**Current Anti-Pattern**:
+```typescript
+// App.tsx doing too much
+const [currentRoute, setCurrentRoute] = useState('/');
+const [user, setUser] = useState(mockUser);
+
+return (
+  <div>
+    <Header />
+    <Sidebar />
+    {currentRoute === '/' && <Dashboard />}
+    {currentRoute === '/tasks' && <TaskManager />}
+  </div>
+);
+```
+
+**Recommended Pattern: Layout Components with Outlet**
+
+```typescript
+// src/components/layouts/DashboardLayout.tsx
+import { Outlet } from 'react-router-dom';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { AppSidebar } from '@/components/AppSidebar';
+import { AppHeader } from '@/components/AppHeader';
+
+export const DashboardLayout = () => {
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <div className="flex-1 flex flex-col">
+          <AppHeader />
+          <main className="flex-1 p-6">
+            <Outlet /> {/* Child routes render here */}
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+};
+
+// src/components/layouts/AuthLayout.tsx
+export const AuthLayout = () => {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-muted">
+      <Outlet /> {/* Login/Signup pages */}
+    </div>
+  );
+};
+
+// App.tsx - Simplified to routing only
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { DashboardLayout } from '@/components/layouts/DashboardLayout';
+import { AuthLayout } from '@/components/layouts/AuthLayout';
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Public routes */}
+        <Route element={<AuthLayout />}>
+          <Route path="/auth" element={<Auth />} />
+        </Route>
+        
+        {/* Protected routes */}
+        <Route element={<DashboardLayout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/tasks" element={<TaskManager />} />
+          <Route path="/fields" element={<FieldMapping />} />
+          <Route path="/fields/:id" element={<FieldDetail />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
+```
+
+**Benefits**:
+- Clear separation of layout vs. content
+- Easy to add new layouts (public, admin, mobile)
+- Sidebar/header logic encapsulated
+- Layout-specific providers stay scoped
+
+---
+
+### 7. Runtime Data Validation with Zod (Critical - 🔴)
+
+**Issue**: Database returns `Json` types (e.g., `boundary_coordinates`, `analysis_data`, `usage_pattern`) with no runtime validation. TypeScript's `Json` type is too loose and won't catch malformed data.
+
+**Risk**: Malformed JSON from database can crash components at runtime.
+
+**Solution: Zod Schemas for JSON Fields**
+
+```typescript
+// src/lib/schemas/field.schema.ts
+import { z } from 'zod';
+
+// Validate GeoJSON structure
+export const BoundaryCoordinatesSchema = z.object({
+  type: z.literal('Polygon'),
+  coordinates: z.array(
+    z.array(
+      z.array(z.number()).length(2) // [lng, lat]
+    )
+  ).min(1),
+});
+
+export const FieldSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1).max(100),
+  description: z.string().max(500).optional(),
+  area_acres: z.number().positive().optional(),
+  crop_type: z.string().max(50).optional(),
+  boundary_coordinates: BoundaryCoordinatesSchema,
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+  user_id: z.string().uuid(),
+});
+
+export type Field = z.infer<typeof FieldSchema>;
+
+// src/lib/schemas/analysis.schema.ts
+export const SoilAnalysisDataSchema = z.object({
+  ph_level: z.number().min(0).max(14),
+  nitrogen_level: z.enum(['low', 'medium', 'high']),
+  phosphorus_level: z.enum(['low', 'medium', 'high']),
+  potassium_level: z.enum(['low', 'medium', 'high']),
+  organic_matter: z.number().min(0).max(100),
+  recommendations: z.array(z.string()),
+});
+
+// Usage in data fetching hook
+export const useFields = () => {
+  return useQuery({
+    queryKey: ['fields'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('fields')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      // Validate each record
+      return data.map(record => {
+        try {
+          return FieldSchema.parse(record);
+        } catch (validationError) {
+          console.error('Invalid field data:', validationError);
+          // Option 1: Filter out invalid records
+          return null;
+          // Option 2: Return with safe defaults
+          // Option 3: Throw and handle in UI
+        }
+      }).filter(Boolean);
+    },
+  });
+};
+```
+
+**Benefits**:
+- Catch data corruption early
+- Type-safe JSON access in components
+- Self-documenting data structures
+- Can generate TypeScript types from schemas
+
+---
+
+### 8. Domain-Driven Data Layer with TanStack Query (Critical - 🔴)
+
+**Issue**: Direct Supabase client usage scattered across components creates tight coupling and makes testing difficult.
+
+**Solution: Custom Hooks per Domain Entity**
+
+```typescript
+// src/features/fields/api/useFields.ts
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { FieldSchema } from '@/lib/schemas/field.schema';
+import type { Database } from '@/integrations/supabase/types';
+
+type Field = Database['public']['Tables']['fields']['Row'];
+type FieldInsert = Database['public']['Tables']['fields']['Insert'];
+type FieldUpdate = Database['public']['Tables']['fields']['Update'];
+
+// Query: Fetch all fields
+export const useFields = () => {
+  return useQuery({
+    queryKey: ['fields'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('fields')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data.map(d => FieldSchema.parse(d));
+    },
+  });
+};
+
+// Query: Fetch single field
+export const useField = (id: string) => {
+  return useQuery({
+    queryKey: ['fields', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('fields')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (error) throw error;
+      return FieldSchema.parse(data);
+    },
+    enabled: !!id,
+  });
+};
+
+// Mutation: Create field
+export const useCreateField = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (newField: FieldInsert) => {
+      const { data, error } = await supabase
+        .from('fields')
+        .insert(newField)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return FieldSchema.parse(data);
+    },
+    onSuccess: (newField) => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ['fields'] });
+      
+      // Or: Optimistically update cache
+      queryClient.setQueryData(['fields'], (old: Field[] = []) => 
+        [newField, ...old]
+      );
+      
+      toast.success('Field created successfully');
+    },
+    onError: (error) => {
+      console.error('Failed to create field:', error);
+      toast.error('Failed to create field');
+    },
+  });
+};
+
+// Mutation: Update field with optimistic updates
+export const useUpdateField = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: FieldUpdate }) => {
+      const { data, error } = await supabase
+        .from('fields')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return FieldSchema.parse(data);
+    },
+    // Optimistic update
+    onMutate: async ({ id, updates }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['fields'] });
+      
+      // Snapshot previous value
+      const previousFields = queryClient.getQueryData<Field[]>(['fields']);
+      
+      // Optimistically update cache
+      if (previousFields) {
+        queryClient.setQueryData<Field[]>(['fields'], 
+          previousFields.map(field => 
+            field.id === id ? { ...field, ...updates } : field
+          )
+        );
+      }
+      
+      return { previousFields };
+    },
+    // Rollback on error
+    onError: (err, variables, context) => {
+      if (context?.previousFields) {
+        queryClient.setQueryData(['fields'], context.previousFields);
+      }
+      toast.error('Failed to update field');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fields'] });
+      toast.success('Field updated');
+    },
+  });
+};
+
+// Mutation: Delete field
+export const useDeleteField = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('fields')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: (_, deletedId) => {
+      // Remove from cache
+      queryClient.setQueryData<Field[]>(['fields'], (old = []) =>
+        old.filter(field => field.id !== deletedId)
+      );
+      toast.success('Field deleted');
+    },
+  });
+};
+
+// Component usage - clean and testable
+function FieldList() {
+  const { data: fields, isLoading, error } = useFields();
+  const deleteField = useDeleteField();
+  
+  if (isLoading) return <Skeleton />;
+  if (error) return <ErrorState error={error} />;
+  
+  return (
+    <div>
+      {fields?.map(field => (
+        <FieldCard 
+          key={field.id} 
+          field={field}
+          onDelete={() => deleteField.mutate(field.id)}
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+**Benefits**:
+- UI components don't know about Supabase
+- Easy to mock for testing
+- Consistent error handling
+- Automatic caching and revalidation
+- Optimistic updates for snappy UX
+
+---
+
+### 9. Authentication Context & RLS Security (Critical - 🔴)
+
+**Issue**: Mock data uses hardcoded `user_id: 'u1'`. No auth context means components can't access current user.
+
+**Security Risk**: Passing user IDs from client allows ID spoofing.
+
+**Solution: Global AuthProvider Context**
+
+```typescript
+// src/contexts/AuthContext.tsx
+import { createContext, useContext, useEffect, useState } from 'react';
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
+
+interface AuthContextType {
+  user: User | null;
+  session: Session | null;
+  loading: boolean;
+  signOut: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, session, loading, signOut }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
+};
+
+// Protected Route Component
+import { Navigate, Outlet } from 'react-router-dom';
+
+export const ProtectedRoute = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  return user ? <Outlet /> : <Navigate to="/auth" replace />;
+};
+
+// Usage in App.tsx
+function App() {
+  return (
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/auth" element={<Auth />} />
+            
+            {/* All protected routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route element={<DashboardLayout />}>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/tasks" element={<TaskManager />} />
+              </Route>
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </AuthProvider>
+  );
+}
+```
+
+**CRITICAL: Never pass user_id from client**
+
+```typescript
+// ❌ WRONG - Client can spoof user_id
+const createField = async (fieldData: FieldInsert) => {
+  const { data } = await supabase
+    .from('fields')
+    .insert({ ...fieldData, user_id: user.id }); // Spoofable!
+};
+
+// ✅ CORRECT - RLS policy automatically injects user_id
+const createField = async (fieldData: Omit<FieldInsert, 'user_id'>) => {
+  const { data } = await supabase
+    .from('fields')
+    .insert(fieldData); // RLS policy adds user_id server-side
+};
+
+// RLS Policy in database ensures security:
+CREATE POLICY "Users can create their own fields"
+ON fields FOR INSERT
+WITH CHECK (auth.uid() = user_id);
+```
+
+---
+
+### 10. Form Management with React Hook Form (High Priority - 🔴)
+
+**Issue**: Manual form state management causes excessive re-renders and boilerplate code.
+
+**Solution: React Hook Form + Zod Integration**
+
+```typescript
+// src/components/forms/AddFieldForm.tsx
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { useCreateField } from '@/features/fields/api/useFields';
+
+// Form validation schema
+const fieldFormSchema = z.object({
+  name: z.string()
+    .min(1, 'Name is required')
+    .max(100, 'Name must be less than 100 characters'),
+  description: z.string()
+    .max(500, 'Description must be less than 500 characters')
+    .optional(),
+  area_acres: z.number()
+    .positive('Area must be positive')
+    .optional()
+    .or(z.string().transform(val => val === '' ? undefined : parseFloat(val))),
+  crop_type: z.string()
+    .max(50)
+    .optional(),
+  boundary_coordinates: z.object({
+    type: z.literal('Polygon'),
+    coordinates: z.array(z.array(z.array(z.number()))),
+  }),
+});
+
+type FieldFormValues = z.infer<typeof fieldFormSchema>;
+
+export const AddFieldForm = ({ onSuccess }: { onSuccess?: () => void }) => {
+  const createField = useCreateField();
+  
+  const form = useForm<FieldFormValues>({
+    resolver: zodResolver(fieldFormSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+      area_acres: undefined,
+      crop_type: '',
+      boundary_coordinates: {
+        type: 'Polygon',
+        coordinates: [],
+      },
+    },
+  });
+
+  const onSubmit = async (data: FieldFormValues) => {
+    createField.mutate(data, {
+      onSuccess: () => {
+        form.reset();
+        onSuccess?.();
+      },
+    });
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Field Name</FormLabel>
+              <FormControl>
+                <Input placeholder="North Field" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Additional details about this field..."
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="area_acres"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Area (acres)</FormLabel>
+              <FormControl>
+                <Input 
+                  type="number" 
+                  step="0.01"
+                  placeholder="25.5"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button 
+          type="submit" 
+          disabled={createField.isPending}
+        >
+          {createField.isPending ? 'Creating...' : 'Create Field'}
+        </Button>
+      </form>
+    </Form>
+  );
+};
+```
+
+**Benefits**:
+- Automatic validation with Zod
+- Minimal re-renders (only changed fields)
+- Built-in error handling
+- Accessibility features
+- Form state management
+
+---
+
+### 11. Error Boundaries for Resilience (Medium Priority - 🟡)
+
+**Issue**: If a chart component crashes due to malformed data, it takes down the entire page.
+
+**Solution: Granular Error Boundaries**
+
+```typescript
+// src/components/ErrorBoundary.tsx
+import { Component, ReactNode } from 'react';
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+
+interface Props {
+  children: ReactNode;
+  fallback?: ReactNode;
+  componentName?: string;
+}
+
+interface State {
+  hasError: boolean;
+  error?: Error;
+}
+
+export class ErrorBoundary extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: any) {
+    console.error('ErrorBoundary caught:', error, errorInfo);
+    // Send to error tracking service (Sentry, etc.)
+  }
+
+  handleReset = () => {
+    this.setState({ hasError: false, error: undefined });
+  };
+
+  render() {
+    if (this.state.hasError) {
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
+      return (
+        <Alert variant="destructive" className="my-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>
+            {this.props.componentName || 'Component'} Error
+          </AlertTitle>
+          <AlertDescription className="mt-2">
+            <p className="mb-2">
+              {this.state.error?.message || 'Something went wrong'}
+            </p>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={this.handleReset}
+            >
+              Try Again
+            </Button>
+          </AlertDescription>
+        </Alert>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Usage: Wrap individual widgets
+function Dashboard() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <ErrorBoundary componentName="Carbon Credits Chart">
+        <CarbonCreditsChart />
+      </ErrorBoundary>
+      
+      <ErrorBoundary componentName="Task List">
+        <TaskList />
+      </ErrorBoundary>
+      
+      <ErrorBoundary componentName="Field Map">
+        <FieldMap />
+      </ErrorBoundary>
+      
+      <ErrorBoundary componentName="Weather Widget">
+        <WeatherWidget />
+      </ErrorBoundary>
+    </div>
+  );
+}
+```
+
+**Benefits**:
+- Isolated failures don't crash entire app
+- Better user experience
+- Easier debugging
+- Graceful degradation
+
+---
+
+## Recommended Production Folder Structure
+
+```
+/src
+  /components
+    /ui              # shadcn/ui components (Button, Card, etc.)
+    /layouts         # DashboardLayout, AuthLayout, etc.
+    /shared          # Shared domain components (LoadingSpinner, ErrorState)
+    ErrorBoundary.tsx
+    NavLink.tsx
+    
+  /features          # Feature-based grouping (domain-driven design)
+    /fields
+      /api           # useFields, useCreateField, useUpdateField
+      /components    # FieldCard, FieldForm, FieldMap
+      /routes        # FieldList, FieldDetail pages
+      /schemas       # field.schema.ts (Zod)
+      
+    /tasks
+      /api           # useTasks, useUpdateTask
+      /components    # TaskCard, TaskForm
+      /routes        # TaskManager, TaskDetail
+      /schemas       # task.schema.ts
+      
+    /soil-analysis
+      /api
+      /components
+      /routes
+      /schemas
+      
+    /auth
+      /api           # useAuth context and hooks
+      /components    # LoginForm, SignupForm
+      /routes        # Auth page
+      
+  /hooks            # Global hooks
+    useMobile.tsx
+    useDebounce.tsx
+    
+  /lib
+    /schemas        # Shared Zod schemas
+    supabase.ts     # Supabase client singleton (read-only)
+    utils.ts        # Class name mergers, formatters
+    constants.ts    # Global constants
+    
+  /integrations
+    /supabase
+      client.ts     # Auto-generated (read-only)
+      types.ts      # Auto-generated (read-only)
+      
+  /pages           # Page entry points (can be lazy loaded)
+    Index.tsx
+    Dashboard.tsx
+    NotFound.tsx
+    
+  App.tsx          # Providers and Routes only
+  main.tsx         # Root entry point
+  index.css        # Global styles
+```
+
+**Folder Structure Benefits**:
+- Features are self-contained (easier to delete/refactor)
+- Clear separation of concerns
+- Easy to find related code
+- Scales to large teams
+- Supports code splitting by feature
+
+**File Naming Conventions**:
+- Components: `PascalCase.tsx` (FieldCard.tsx)
+- Hooks: `camelCase.tsx` with `use` prefix (useFields.tsx)
+- Utilities: `camelCase.ts` (formatDate.ts)
+- Schemas: `camelCase.schema.ts` (field.schema.ts)
+- Types: `camelCase.types.ts` (field.types.ts)
+
+---
+
+## Critical Implementation Order
+
+1. **Week 1: Foundation**
+   - ✅ Set up React Router with layout components
+   - ✅ Create AuthProvider and ProtectedRoute
+   - ✅ Add TanStack Query with first domain hooks
+   - ✅ Implement error boundaries
+
+2. **Week 2-3: Core Features**
+   - ✅ Build field management (full CRUD)
+   - ✅ Add Zod validation for all JSON fields
+   - ✅ Implement task management forms
+   - ✅ Create soil analysis upload
+
+3. **Week 4: Polish & Testing**
+   - ✅ Add optimistic updates
+   - ✅ Implement proper error handling
+   - ✅ Add loading states and skeletons
+   - ✅ Write integration tests
+
+---
+
+## Additional Resources
+
+- **React Router**: https://reactrouter.com/docs
+- **TanStack Query**: https://tanstack.com/query/latest
+- **React Hook Form**: https://react-hook-form.com/
+- **Zod**: https://zod.dev/
+- **Supabase RLS**: https://supabase.com/docs/guides/auth/row-level-security
+
