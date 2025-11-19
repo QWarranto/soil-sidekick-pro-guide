@@ -4,22 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LazyFieldMap } from '@/components/lazy/LazyFieldMap';
+import { useFields, Field } from '@/hooks/useFields';
 import { ArrowLeft, Map, Layers3 } from 'lucide-react';
-
-interface Field {
-  id: string;
-  name: string;
-  description?: string;
-  boundary_coordinates: any;
-  area_acres?: number;
-  crop_type?: string;
-  planting_date?: string;
-  harvest_date?: string;
-}
 
 export const FieldMapping = () => {
   const { user, trialUser } = useAuth();
   const navigate = useNavigate();
+  const { fields } = useFields();
   const [selectedField, setSelectedField] = useState<Field | null>(null);
 
   if (!user && !trialUser) {
@@ -101,7 +92,9 @@ export const FieldMapping = () => {
         </Card>
 
         {/* Field Map Component */}
-        <LazyFieldMap onFieldSelect={setSelectedField} />
+        <LazyFieldMap 
+          onFieldSelect={(field) => setSelectedField(field as Field | null)}
+        />
 
         {/* Additional Features Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
