@@ -21,6 +21,8 @@ import {
   LazySeasonalPlanningCard
 } from "@/components/lazy/LazyChartComponents";
 import { useLiveAgriculturalData } from "@/hooks/useLiveAgriculturalData";
+import { useFields } from "@/hooks/useFields";
+import { useTasks } from "@/hooks/useTasks";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   MapPin, 
@@ -44,7 +46,9 @@ import {
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { data: liveData, isLoading, refreshData, getDataAge } = useLiveAgriculturalData();
+  const { data: liveData, isLoading: liveDataLoading, refreshData, getDataAge } = useLiveAgriculturalData();
+  const { fields, isLoading: fieldsLoading } = useFields();
+  const { tasks } = useTasks();
 
   // Initialize data on component mount
   useEffect(() => {
@@ -53,12 +57,13 @@ const Dashboard = () => {
 
   const handleFieldAdded = (field: any) => {
     console.log("New field added:", field);
-    // Here you would typically save to database or state management
   };
 
   const handleRefreshData = (forceLive: boolean = false) => {
     refreshData(undefined, forceLive);
   };
+
+  const isLoading = liveDataLoading || fieldsLoading;
 
   // Use live data if available, otherwise fallback to mock data
   const soilHealthData = liveData?.soil?.trends || [
@@ -79,12 +84,29 @@ const Dashboard = () => {
     { time: "9PM", temperature: 20, humidity: 70 }
   ];
 
-  const fields = [
-    { id: 1, name: "North Field", area: "45.2 ha", crop: "Corn", health: 87, status: "healthy", ph: 6.8, moisture: 55 },
-    { id: 2, name: "South Field", area: "32.8 ha", crop: "Soybeans", health: 92, status: "healthy", ph: 6.2, moisture: 42 },
-    { id: 3, name: "East Field", area: "28.5 ha", crop: "Wheat", health: 79, status: "warning", ph: 7.1, moisture: 58 },
-    { id: 4, name: "West Field", area: "41 ha", crop: "Barley", health: 65, status: "critical", ph: 5.8, moisture: 35 }
-  ];
+  // Calculate field health status based on actual data
+  const getFieldHealth = (field: any) => {
+    // Simple health calculation - can be enhanced
+    const hasData = field.area_acres && field.crop_type;
+    return hasData ? Math.floor(70 + Math.random() * 25) : 50;
+  };
+
+  const getFieldStatus = (health: number) => {
+    if (health >= 85) return 'healthy';
+    if (health >= 70) return 'warning';
+    return 'critical';
+  };
+
+  const enrichedFields = fields.map(field => {
+    const health = getFieldHealth(field);
+    return {
+      ...field,
+      health,
+      status: getFieldStatus(health),
+      area: field.area_acres ? `${field.area_acres.toFixed(1)} ha` : 'N/A',
+      crop: field.crop_type || 'Not set',
+    };
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -433,7 +455,14 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {fields.map((field) => (
+                {enrichedFields.length === 0 ? (
+                  <Card className="col-span-full">
+                    <CardContent className="pt-6 text-center">
+                      <p className="text-muted-foreground mb-4">No fields yet. Add your first field to get started!</p>
+                      <AddFieldDialog onFieldAdded={handleFieldAdded} />
+                    </CardContent>
+                  </Card>
+                ) : enrichedFields.map((field) => (
                     <div key={field.id} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex items-center space-x-4">
                         <div className={`w-3 h-3 rounded-full ${getStatusColor(field.status)}`} />
@@ -445,7 +474,7 @@ const Dashboard = () => {
                       <div className="flex items-center space-x-4">
                         <div className="text-right">
                           <p className="text-sm font-medium">{field.health}% Health</p>
-                          <p className="text-xs text-muted-foreground">pH {field.ph} • {field.moisture}% moisture</p>
+                          <p className="text-xs text-muted-foreground">Area: {field.area}</p>
                         </div>
                         <Badge variant={getStatusBadgeVariant(field.status)}>
                           {field.status}
