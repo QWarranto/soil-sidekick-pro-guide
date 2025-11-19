@@ -71,8 +71,27 @@
 
 ## Next Steps
 
-1. Address authentication issues immediately
-2. Implement robust API fallbacks
-3. Complete dashboard functionality
-4. Add missing SEO elements
-5. Schedule follow-up beta test
+**⚠️ For detailed implementation guidance, see:** [COMPREHENSIVE_IMPLEMENTATION_GUIDE.md](./COMPREHENSIVE_IMPLEMENTATION_GUIDE.md)
+
+### Immediate Actions (Week 1)
+1. ✅ Fix layout tilt animations (COMPLETED)
+2. ✅ Remove Lovable badge confusion (COMPLETED)
+3. 🔧 Address authentication issues (IN PROGRESS)
+4. 🔧 Migrate to React Router (see Implementation Guide Phase 1.1)
+5. 🔧 Replace mock data with Supabase (see Implementation Guide Phase 1.2)
+
+### Short-term Actions (Week 2-3)
+1. Implement API fallbacks for EPA database access
+2. Build core CRUD forms (fields, tasks)
+3. Add Zod validation for JSON fields
+4. Complete dashboard functionality (carbon credits, usage stats)
+5. Fix "View Details" and "View All" buttons
+
+### Medium-term Actions (Week 4-8)
+1. Add missing SEO elements (see Implementation Guide Phase 3)
+2. Build admin dashboards for security/compliance
+3. Implement cost monitoring interface
+4. Add footer and social links
+5. Schedule follow-up beta test after Phase 1 completion
+
+**Status Tracking**: All beta test issues have been consolidated into the comprehensive implementation guide with prioritized phases and timelines.
