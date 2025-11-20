@@ -41,6 +41,22 @@ const FAQ = () => {
       answer: "Our Enhanced Agricultural Q&A Chat uses GPT-5's advanced reasoning to provide sophisticated agricultural insights. It analyzes complex queries about soil health, crop management, pest control, and sustainability practices, delivering detailed, actionable recommendations tailored to your specific location and conditions. The system automatically uses GPT-5 when available, with seamless fallback to GPT-4o for consistent service."
     },
     {
+      question: "How do the interactive charts on the Overview dashboard work?",
+      answer: "The Overview dashboard features interactive recharts visualizations with multiple capabilities: Bar charts showing carbon credits vs. organic matter with toggleable data series (click legend items to show/hide), pie charts with expanding slices on hover to highlight task status distribution, and custom styled tooltips displaying precise units and percentages. All charts automatically adapt to your theme and provide clear, actionable insights at a glance."
+    },
+    {
+      question: "What can I see in the soil analysis visualization modal?",
+      answer: "When you click 'View Soil Analysis' on any field card, you'll see a comprehensive modal with: N-P-K nutrient bar chart showing nitrogen, phosphorus, and potassium levels color-coded by intensity (high/medium/low), pH level gauge with optimal range indicators (6.0-7.5 is ideal), organic matter progress bar with quality ratings (3%+ is good), location information (county and property address), nutrient summary badges, and detailed agronomist recommendations. The visualization makes it easy to quickly identify areas needing attention."
+    },
+    {
+      question: "How does the task filtering system work?",
+      answer: "The enhanced Task Manager now includes dual filtering capabilities: filter by status (All, Pending, In Progress, Completed, Skipped, Cancelled) AND filter by crop type dynamically extracted from your tasks. The system shows unique crops from all tasks' crops_involved arrays and lets you combine both filters. A live counter shows 'X of Y tasks' to indicate active filters. Click 'Clear Filters' to reset both filters and see all tasks at once."
+    },
+    {
+      question: "Can I export or print the soil analysis charts?",
+      answer: "Yes! The soil analysis visualization modal includes export functionality. You can capture the entire analysis including the N-P-K nutrient chart, pH and organic matter gauges, and recommendations. The data is formatted for easy sharing with agronomists or for your farm records. The modal presents all data in a print-friendly format with clear visual hierarchies."
+    },
+    {
       question: "What are Smart Report Summaries?",
       answer: "Smart Report Summaries automatically generate executive summaries for both soil analysis and water quality reports using GPT-5's intelligent analysis. These summaries highlight key findings, critical issues, priority recommendations, and economic/business impacts in a concise, professional format suitable for farmers, landowners, and agricultural lenders."
     },
