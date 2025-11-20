@@ -22,19 +22,27 @@ import {
 } from 'recharts';
 import { MapPin, Eye, Droplets, Leaf } from 'lucide-react';
 
+interface SoilAnalysis {
+  id: string;
+  ph_level?: number;
+  organic_matter?: number;
+  nitrogen_level?: string;
+  phosphorus_level?: string;
+  potassium_level?: string;
+  recommendations?: string;
+  county_fips: string;
+  county_name: string;
+  state_code: string;
+  property_address?: string;
+}
+
 interface Field {
   id: string;
   name: string;
   area_acres?: number;
   crop_type?: string;
   boundary_coordinates: any;
-  soilAnalysis?: {
-    ph_level: number;
-    organic_matter: number;
-    nitrogen_level: 'high' | 'medium' | 'low';
-    phosphorus_level: 'high' | 'medium' | 'low';
-    potassium_level: 'high' | 'medium' | 'low';
-  };
+  soilAnalysis?: SoilAnalysis;
 }
 
 interface FieldsListProps {
@@ -136,7 +144,7 @@ export function FieldsList({ fields, onFieldSelect }: FieldsListProps) {
                 </div>
               )}
               
-              {field.soilAnalysis && (
+              {field.soilAnalysis && field.soilAnalysis.ph_level && field.soilAnalysis.organic_matter && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">pH Level</span>
@@ -196,130 +204,175 @@ export function FieldsList({ fields, onFieldSelect }: FieldsListProps) {
           
           {selectedField?.soilAnalysis && (
             <div className="space-y-6">
+              {/* Location Information */}
+              {(selectedField.soilAnalysis.property_address || selectedField.soilAnalysis.county_name) && (
+                <Card className="bg-muted/50">
+                  <CardContent className="pt-4">
+                    <div className="flex items-start gap-2 text-sm">
+                      <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                      <div>
+                        {selectedField.soilAnalysis.property_address && (
+                          <p className="font-medium">{selectedField.soilAnalysis.property_address}</p>
+                        )}
+                        <p className="text-muted-foreground">
+                          {selectedField.soilAnalysis.county_name}, {selectedField.soilAnalysis.state_code}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Nutrient Levels Bar Chart */}
-              <div>
-                <h4 className="font-semibold mb-3">Nutrient Levels (N-P-K)</h4>
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={getSoilData(selectedField)}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis 
-                      dataKey="name" 
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
-                    />
-                    <YAxis 
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
-                      domain={[0, 100]}
-                    />
-                    <Tooltip content={<CustomNutrientTooltip />} />
-                    <Bar 
-                      dataKey="value" 
-                      radius={[4, 4, 0, 0]}
-                    >
-                      {getSoilData(selectedField)?.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              {selectedField.soilAnalysis.nitrogen_level && 
+               selectedField.soilAnalysis.phosphorus_level && 
+               selectedField.soilAnalysis.potassium_level && (
+                <div>
+                  <h4 className="font-semibold mb-3">Nutrient Levels (N-P-K)</h4>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={getSoilData(selectedField)}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis 
+                        dataKey="name" 
+                        stroke="hsl(var(--muted-foreground))"
+                        fontSize={12}
+                      />
+                      <YAxis 
+                        stroke="hsl(var(--muted-foreground))"
+                        fontSize={12}
+                        domain={[0, 100]}
+                      />
+                      <Tooltip content={<CustomNutrientTooltip />} />
+                      <Bar 
+                        dataKey="value" 
+                        radius={[4, 4, 0, 0]}
+                      >
+                        {getSoilData(selectedField)?.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
 
               {/* pH and Organic Matter Gauges */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium">pH Level</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-2xl font-bold">
-                        {selectedField.soilAnalysis.ph_level.toFixed(1)}
-                      </span>
-                      <Badge variant={
-                        selectedField.soilAnalysis.ph_level >= 6.0 && selectedField.soilAnalysis.ph_level <= 7.5 
-                          ? 'default' 
-                          : 'secondary'
-                      }>
-                        {selectedField.soilAnalysis.ph_level >= 6.0 && selectedField.soilAnalysis.ph_level <= 7.5 
-                          ? 'Optimal' 
-                          : 'Needs Adjustment'}
-                      </Badge>
-                    </div>
-                    <Progress 
-                      value={(selectedField.soilAnalysis.ph_level / 14) * 100} 
-                      className="h-3"
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>Acidic (0)</span>
-                      <span>Neutral (7)</span>
-                      <span>Alkaline (14)</span>
-                    </div>
-                  </CardContent>
-                </Card>
+              {selectedField.soilAnalysis.ph_level != null && 
+               selectedField.soilAnalysis.organic_matter != null && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm font-medium">pH Level</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-2xl font-bold">
+                          {selectedField.soilAnalysis.ph_level.toFixed(1)}
+                        </span>
+                        <Badge variant={
+                          selectedField.soilAnalysis.ph_level >= 6.0 && selectedField.soilAnalysis.ph_level <= 7.5 
+                            ? 'default' 
+                            : 'secondary'
+                        }>
+                          {selectedField.soilAnalysis.ph_level >= 6.0 && selectedField.soilAnalysis.ph_level <= 7.5 
+                            ? 'Optimal' 
+                            : 'Needs Adjustment'}
+                        </Badge>
+                      </div>
+                      <Progress 
+                        value={(selectedField.soilAnalysis.ph_level / 14) * 100} 
+                        className="h-3"
+                      />
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Acidic (0)</span>
+                        <span>Neutral (7)</span>
+                        <span>Alkaline (14)</span>
+                      </div>
+                    </CardContent>
+                  </Card>
 
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium">Organic Matter</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-2xl font-bold">
-                        {selectedField.soilAnalysis.organic_matter.toFixed(1)}%
-                      </span>
-                      <Badge variant={
-                        selectedField.soilAnalysis.organic_matter >= 3.0 
-                          ? 'default' 
-                          : 'secondary'
-                      }>
-                        {selectedField.soilAnalysis.organic_matter >= 3.0 
-                          ? 'Good' 
-                          : 'Low'}
-                      </Badge>
-                    </div>
-                    <Progress 
-                      value={selectedField.soilAnalysis.organic_matter * 10} 
-                      className="h-3"
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>Poor (0%)</span>
-                      <span>Good (5%)</span>
-                      <span>Excellent (10%)</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm font-medium">Organic Matter</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-2xl font-bold">
+                          {selectedField.soilAnalysis.organic_matter.toFixed(1)}%
+                        </span>
+                        <Badge variant={
+                          selectedField.soilAnalysis.organic_matter >= 3.0 
+                            ? 'default' 
+                            : 'secondary'
+                        }>
+                          {selectedField.soilAnalysis.organic_matter >= 3.0 
+                            ? 'Good' 
+                            : 'Low'}
+                        </Badge>
+                      </div>
+                      <Progress 
+                        value={selectedField.soilAnalysis.organic_matter * 10} 
+                        className="h-3"
+                      />
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Poor (0%)</span>
+                        <span>Good (5%)</span>
+                        <span>Excellent (10%)</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
 
               {/* Nutrient Summary */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center p-3 rounded-lg border">
-                  <div className="text-sm text-muted-foreground mb-1">Nitrogen</div>
-                  <Badge 
-                    className="w-full justify-center"
-                    style={{ backgroundColor: getNutrientColor(selectedField.soilAnalysis.nitrogen_level) }}
-                  >
-                    {selectedField.soilAnalysis.nitrogen_level}
-                  </Badge>
+              {selectedField.soilAnalysis.nitrogen_level && 
+               selectedField.soilAnalysis.phosphorus_level && 
+               selectedField.soilAnalysis.potassium_level && (
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center p-3 rounded-lg border">
+                    <div className="text-sm text-muted-foreground mb-1">Nitrogen</div>
+                    <Badge 
+                      className="w-full justify-center"
+                      style={{ backgroundColor: getNutrientColor(selectedField.soilAnalysis.nitrogen_level) }}
+                    >
+                      {selectedField.soilAnalysis.nitrogen_level}
+                    </Badge>
+                  </div>
+                  <div className="text-center p-3 rounded-lg border">
+                    <div className="text-sm text-muted-foreground mb-1">Phosphorus</div>
+                    <Badge 
+                      className="w-full justify-center"
+                      style={{ backgroundColor: getNutrientColor(selectedField.soilAnalysis.phosphorus_level) }}
+                    >
+                      {selectedField.soilAnalysis.phosphorus_level}
+                    </Badge>
+                  </div>
+                  <div className="text-center p-3 rounded-lg border">
+                    <div className="text-sm text-muted-foreground mb-1">Potassium</div>
+                    <Badge 
+                      className="w-full justify-center"
+                      style={{ backgroundColor: getNutrientColor(selectedField.soilAnalysis.potassium_level) }}
+                    >
+                      {selectedField.soilAnalysis.potassium_level}
+                    </Badge>
+                  </div>
                 </div>
-                <div className="text-center p-3 rounded-lg border">
-                  <div className="text-sm text-muted-foreground mb-1">Phosphorus</div>
-                  <Badge 
-                    className="w-full justify-center"
-                    style={{ backgroundColor: getNutrientColor(selectedField.soilAnalysis.phosphorus_level) }}
-                  >
-                    {selectedField.soilAnalysis.phosphorus_level}
-                  </Badge>
-                </div>
-                <div className="text-center p-3 rounded-lg border">
-                  <div className="text-sm text-muted-foreground mb-1">Potassium</div>
-                  <Badge 
-                    className="w-full justify-center"
-                    style={{ backgroundColor: getNutrientColor(selectedField.soilAnalysis.potassium_level) }}
-                  >
-                    {selectedField.soilAnalysis.potassium_level}
-                  </Badge>
-                </div>
-              </div>
+              )}
+
+              {/* Recommendations Section */}
+              {selectedField.soilAnalysis.recommendations && (
+                <Card className="bg-primary/5 border-primary/20">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium flex items-center gap-2">
+                      <Leaf className="h-4 w-4 text-primary" />
+                      Agronomist Recommendations
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm leading-relaxed">{selectedField.soilAnalysis.recommendations}</p>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           )}
         </DialogContent>
