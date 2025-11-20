@@ -1,8 +1,15 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { 
   CheckCircle2, 
   Circle, 
@@ -12,7 +19,8 @@ import {
   ChevronDown,
   ChevronUp,
   Edit,
-  Trash2
+  Trash2,
+  Filter
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -42,6 +50,29 @@ interface TaskListProps {
 
 export const TaskList = ({ tasks, onTaskComplete, onTaskEdit, onTaskDelete, fields = [] }: TaskListProps) => {
   const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set());
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [cropFilter, setCropFilter] = useState<string>('all');
+
+  // Extract unique crop types from tasks
+  const availableCrops = useMemo(() => {
+    const crops = new Set<string>();
+    tasks.forEach(task => {
+      if (task.crops_involved && task.crops_involved.length > 0) {
+        task.crops_involved.forEach(crop => crops.add(crop));
+      }
+    });
+    return Array.from(crops).sort();
+  }, [tasks]);
+
+  // Filter tasks based on selected filters
+  const filteredTasks = useMemo(() => {
+    return tasks.filter(task => {
+      const statusMatch = statusFilter === 'all' || task.status === statusFilter;
+      const cropMatch = cropFilter === 'all' || 
+        (task.crops_involved && task.crops_involved.includes(cropFilter));
+      return statusMatch && cropMatch;
+    });
+  }, [tasks, statusFilter, cropFilter]);
 
   const toggleExpand = (taskId: string) => {
     const newExpanded = new Set(expandedTasks);
@@ -78,7 +109,7 @@ export const TaskList = ({ tasks, onTaskComplete, onTaskEdit, onTaskDelete, fiel
     return field?.name;
   };
 
-  const groupedTasks = tasks.reduce((acc, task) => {
+  const groupedTasks = filteredTasks.reduce((acc, task) => {
     const status = task.status;
     if (!acc[status]) acc[status] = [];
     acc[status].push(task);
@@ -89,6 +120,73 @@ export const TaskList = ({ tasks, onTaskComplete, onTaskEdit, onTaskDelete, fiel
 
   return (
     <div className="space-y-6">
+      {/* Filter Controls */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <label className="text-sm font-medium mb-2 flex items-center gap-2">
+                <Filter className="h-4 w-4" />
+                Status Filter
+              </label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All statuses" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="in_progress">In Progress</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="skipped">Skipped</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="flex-1">
+              <label className="text-sm font-medium mb-2 flex items-center gap-2">
+                <Filter className="h-4 w-4" />
+                Crop Type Filter
+              </label>
+              <Select value={cropFilter} onValueChange={setCropFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All crops" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Crops</SelectItem>
+                  {availableCrops.map(crop => (
+                    <SelectItem key={crop} value={crop}>
+                      {crop}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {(statusFilter !== 'all' || cropFilter !== 'all') && (
+              <div className="flex items-end">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setStatusFilter('all');
+                    setCropFilter('all');
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            )}
+          </div>
+          
+          <div className="mt-4 text-sm text-muted-foreground">
+            Showing {filteredTasks.length} of {tasks.length} tasks
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Task Lists */}
       {statusOrder.map(status => {
         const statusTasks = groupedTasks[status] || [];
         if (statusTasks.length === 0) return null;
