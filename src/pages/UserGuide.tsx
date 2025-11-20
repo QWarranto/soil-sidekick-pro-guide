@@ -80,16 +80,16 @@ const UserGuide = () => {
             <Card className="border-primary/20 card-elevated hover:card-3d animate-fade-in">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
-                  <Satellite className="h-8 w-8 text-primary" />
+                  <BarChart3 className="h-8 w-8 text-primary" />
                   <div>
-                    <CardTitle className="text-lg">AlphaEarth Intelligence</CardTitle>
-                    <CardDescription>Satellite-powered insights</CardDescription>
+                    <CardTitle className="text-lg">Interactive Dashboard</CardTitle>
+                    <CardDescription>Visual analytics at a glance</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Learn to interpret vegetation health, soil moisture, and environmental risk scores from Google Earth Engine data.
+                  Explore interactive charts with custom tooltips, toggleable data series, and expanding pie slices to visualize carbon credits, organic matter trends, and task distributions.
                 </p>
               </CardContent>
             </Card>
@@ -99,8 +99,8 @@ const UserGuide = () => {
                 <div className="flex items-center gap-3">
                   <TrendingUp className="h-8 w-8 text-secondary" />
                   <div>
-                    <CardTitle className="text-lg">Soil Analysis</CardTitle>
-                    <CardDescription>County-level precision</CardDescription>
+                    <CardTitle className="text-lg">Soil Analysis Visualization</CardTitle>
+                    <CardDescription>Nutrient composition & health</CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -114,16 +114,16 @@ const UserGuide = () => {
             <Card className="border-accent/20">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
-                  <Droplets className="h-8 w-8 text-accent" />
+                  <Calendar className="h-8 w-8 text-accent" />
                   <div>
-                    <CardTitle className="text-lg">Environmental Assessment</CardTitle>
-                    <CardDescription>EPA data integration</CardDescription>
+                    <CardTitle className="text-lg">Smart Task Filtering</CardTitle>
+                    <CardDescription>Organize by crop & status</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Understand water quality monitoring, contamination detection, and eco-friendly farming practices.
+                  Filter seasonal tasks dynamically by both status and crop type with intelligent dual-filter system and task counters.
                 </p>
               </CardContent>
             </Card>

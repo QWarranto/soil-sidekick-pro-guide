@@ -58,21 +58,57 @@ const tourSteps: TourStep[] = [
   },
   {
     id: 2,
-    title: "Dashboard Overview",
-    description: "Your command center for all agricultural data and analytics. Get quick insights and navigate to detailed analysis tools.",
+    title: "Interactive Dashboard & Overview",
+    description: "Explore visual analytics with interactive charts displaying carbon credits, organic matter trends, and task distributions. Click and hover for detailed insights.",
     features: [
-      "Live data refresh for soil health trends",
-      "Real-time weather forecasts with NOAA integration", 
-      "AI crop recommendations with custom crop analysis",
-      "Quick access to recent soil analyses",
-      "Carbon credit tracking summary",
-      "Interactive charts with data source indicators",
-      "Subscription usage monitoring",
-      "Recent activity overview"
+      "Toggle chart data series by clicking legend items",
+      "Expanding pie chart slices on hover",
+      "Custom tooltips with precise measurements",
+      "Carbon credits vs organic matter bar chart",
+      "Task status distribution pie chart",
+      "Theme-adaptive visualizations"
     ],
     icon: BarChart3,
     route: "/dashboard",
-    color: "text-blue-600"
+    color: "text-blue-600",
+    badge: "New"
+  },
+  {
+    id: 3,
+    title: "Enhanced Field Management",
+    description: "Comprehensive field visualization with interactive soil analysis modals showing N-P-K nutrients, pH levels, and organic matter with color-coded charts.",
+    features: [
+      "Interactive soil analysis visualization modal",
+      "N-P-K nutrient bar chart (Nitrogen, Phosphorus, Potassium)",
+      "Color-coded nutrient levels (Red/Amber/Green)",
+      "pH level gauge with optimal range indicators",
+      "Organic matter progress bar with quality ratings",
+      "Location-based soil data integration",
+      "Agronomist recommendations display",
+      "Nutrient summary badges"
+    ],
+    icon: Map,
+    route: "/field-mapping",
+    color: "text-green-600",
+    badge: "Enhanced"
+  },
+  {
+    id: 4,
+    title: "Smart Task Management",  
+    description: "Advanced task filtering with dual filter system allowing you to organize tasks by both status and crop type simultaneously.",
+    features: [
+      "Dual filtering: Status + Crop Type",
+      "Dynamic crop extraction from task data",
+      "Live task counter showing filtered results",
+      "Clear filters button for quick reset",
+      "Status filters: Pending, In Progress, Completed, etc.",
+      "Crop-specific task organization",
+      "Combined filter logic for precise task views"
+    ],
+    icon: Calendar,
+    route: "/task-manager",
+    color: "text-purple-600",
+    badge: "New Filter"
   },
   {
     id: 3,
