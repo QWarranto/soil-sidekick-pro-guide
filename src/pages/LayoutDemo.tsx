@@ -58,23 +58,31 @@ const LayoutDemo = () => {
           </div>
         </section>
 
-        {/* Button Glow */}
+        {/* Button Effects */}
         <section className="space-y-4">
           <div className="flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-primary" />
-            <h2 className="text-2xl font-semibold">Button Glow</h2>
+            <h2 className="text-2xl font-semibold">Button Effects</h2>
           </div>
-          <div className="flex flex-wrap gap-4">
-            <Button className="btn-glow">Primary Glow</Button>
-            <Button variant="secondary" className="btn-glow">
-              Secondary Glow
-            </Button>
-            <Button variant="outline" className="btn-glow">
-              Outline Glow
-            </Button>
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-sm font-medium mb-3">Outline Glow Variant</h3>
+              <div className="flex flex-wrap gap-4">
+                <Button variant="outline-glow">Outline Glow</Button>
+                <Button variant="outline-glow" size="lg">Large Outline Glow</Button>
+                <Button variant="outline-glow" size="sm">Small Outline Glow</Button>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium mb-3">Manual Glow Class</h3>
+              <div className="flex flex-wrap gap-4">
+                <Button className="btn-glow">Primary Glow</Button>
+                <Button variant="secondary" className="btn-glow">Secondary Glow</Button>
+              </div>
+            </div>
           </div>
           <p className="text-sm text-muted-foreground">
-            Adds a glowing shadow effect that intensifies on hover with scale animation.
+            Outline Glow variant includes border, scale animation, and glow effect on hover.
           </p>
         </section>
 
@@ -85,27 +93,45 @@ const LayoutDemo = () => {
             <h2 className="text-2xl font-semibold">Glass Effect</h2>
           </div>
           <div 
-            className="relative h-64 rounded-lg overflow-hidden"
+            className="relative h-96 rounded-lg overflow-hidden"
             style={{
-              backgroundImage: 'url(https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800)',
+              backgroundImage: 'url(https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200)',
               backgroundSize: 'cover',
               backgroundPosition: 'center'
             }}
           >
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Card className="glass-effect max-w-md">
-                <CardHeader>
-                  <CardTitle className="text-white">Frosted Glass</CardTitle>
-                  <CardDescription className="text-white/80">
-                    Backdrop blur with semi-transparent background
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-white/90">
-                    Perfect for overlays and floating panels over images or gradients.
-                  </p>
-                </CardContent>
-              </Card>
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20" />
+            <div className="absolute inset-0 flex items-center justify-center p-8">
+              <div className="grid md:grid-cols-2 gap-6 w-full max-w-4xl">
+                <Card className="glass-effect">
+                  <CardHeader>
+                    <CardTitle className="text-white">Frosted Glass Card</CardTitle>
+                    <CardDescription className="text-white/80">
+                      Backdrop blur with semi-transparent background
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-white/90">
+                      Perfect for overlays and floating panels over images or gradients.
+                    </p>
+                    <Button variant="outline-glow" className="w-full">Outline Glow Button</Button>
+                  </CardContent>
+                </Card>
+                <Card className="glass-effect">
+                  <CardHeader>
+                    <CardTitle className="text-white">Another Glass Panel</CardTitle>
+                    <CardDescription className="text-white/80">
+                      Multiple glass elements work together
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-white/90">
+                      Layer multiple glass elements for depth and visual interest.
+                    </p>
+                    <Button variant="outline-glow" className="w-full">Action Button</Button>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </section>
@@ -165,6 +191,10 @@ const LayoutDemo = () => {
                 <div className="flex justify-between p-3 bg-muted rounded">
                   <code>.card-subtle</code>
                   <span className="text-muted-foreground">Subtle hover transform</span>
+                </div>
+                <div className="flex justify-between p-3 bg-muted rounded">
+                  <code>variant="outline-glow"</code>
+                  <span className="text-muted-foreground">Outline + glow + scale</span>
                 </div>
                 <div className="flex justify-between p-3 bg-muted rounded">
                   <code>.btn-glow</code>
