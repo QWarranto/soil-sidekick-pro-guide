@@ -41,6 +41,7 @@ import FarmonautComparison from "./pages/FarmonautComparison";
 import OneSoilComparison from "./pages/OneSoilComparison";
 import HeirloomComparison from "./pages/HeirloomComparison";
 import SoilTestProComparison from "./pages/SoilTestProComparison";
+import LayoutDemo from "./pages/LayoutDemo";
 
 const queryClient = new QueryClient();
 
@@ -98,6 +99,7 @@ const App = () => (
         <Route path="/compare/onesoil" element={<OneSoilComparison />} />
         <Route path="/compare/heirloom" element={<HeirloomComparison />} />
         <Route path="/compare/soiltest-pro" element={<SoilTestProComparison />} />
+        <Route path="/layout-demo" element={<LayoutDemo />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
