@@ -17,10 +17,10 @@ const FarmonautComparison = () => {
     },
     {
       category: "Satellite Technology",
-      feature: "Satellite Monitoring",
-      soilSidekick: "AlphaEarth Integration for Soil Analysis",
-      farmonaut: "100M+ Acres Monitored Globally",
-      winner: "Farmonaut",
+      feature: "Earth Observation AI",
+      soilSidekick: "Google AlphaEarth - Unified Petabyte-Scale Earth Embeddings",
+      farmonaut: "Traditional Satellite Crop Monitoring (100M+ Acres)",
+      winner: "SoilSidekick",
       icon: <Satellite className="h-4 w-4" />
     },
     {
@@ -158,7 +158,7 @@ const FarmonautComparison = () => {
                 <strong>Specialization:</strong> Deep soil analysis, environmental compliance, precision recommendations
               </div>
               <div className="text-sm text-green-700">
-                <strong>Key Strength:</strong> Advanced AI soil chemistry analysis with privacy-first local processing
+                <strong>Key Strength:</strong> AlphaEarth AI unified Earth observation + instant analysis vs weeks delay
               </div>
               <div className="text-sm text-green-700">
                 <strong>Target Users:</strong> Precision farmers, agricultural consultants, environmental compliance
@@ -343,11 +343,12 @@ const FarmonautComparison = () => {
                   SoilSidekick Pro Advantages
                 </h3>
                 <ul className="space-y-2 text-sm">
-                  <li className="flex gap-2"><Star className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />Privacy-first architecture with local AI processing</li>
-                  <li className="flex gap-2"><Star className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />Deep integration with EPA and USDA data sources</li>
-                  <li className="flex gap-2"><Star className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />Advanced soil chemistry analysis beyond basic monitoring</li>
-                  <li className="flex gap-2"><Star className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />Built-in environmental compliance and reporting</li>
-                  <li className="flex gap-2"><Star className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />SOC 2 Type 1 compliance for enterprise security</li>
+                  <li className="flex gap-2"><Star className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />Google AlphaEarth AI - petabyte-scale unified Earth observation model</li>
+                  <li className="flex gap-2"><Star className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />Instant analysis vs weeks for traditional satellite monitoring</li>
+                  <li className="flex gap-2"><Star className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />Privacy-first architecture with local AI (Gemma) + SOC 2 Type 1</li>
+                  <li className="flex gap-2"><Star className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />Patent-protected Environmental Impact Engine</li>
+                  <li className="flex gap-2"><Star className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />Real-time EPA Water Quality Portal + USDA integration</li>
+                  <li className="flex gap-2"><Star className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />ADAPT Standard 1.0 compliance for data portability</li>
                 </ul>
               </div>
               <div className="space-y-4">
