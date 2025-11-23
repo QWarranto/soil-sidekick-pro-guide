@@ -116,134 +116,133 @@ const Index = () => {
       </div>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 relative z-10">
-        <div className="max-w-6xl mx-auto">
-          {/* Dashboard Header */}
-          <div className="mb-8 text-center slide-in-up">
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent mb-2">
-              {getGreeting()}, {getUserName()}
-            </h1>
-            <p className="text-lg text-muted-foreground mb-4">
-              Your Agricultural Command Center
-            </p>
-            <Alert className="max-w-2xl mx-auto bg-primary/10 border-primary/20">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                <span className="font-semibold">Trial Mode Active:</span> Experience all premium features during your trial period.
-              </AlertDescription>
-            </Alert>
-          </div>
-
-          {/* Primary Action Grid */}
-          <Card className="card-subtle backdrop-blur-md bg-card/90 border-border shadow-elegant animate-fade-in">
-            <CardHeader>
-              <CardTitle className="text-2xl">Quick Access</CardTitle>
-              <CardDescription className="text-base">
-                Select a tool to get started with your agricultural analysis
+      <main className="container mx-auto px-4 py-8 relative z-10 flex items-center justify-center min-h-screen">
+        <div className="max-w-5xl mx-auto w-full">
+          <Card className="card-subtle backdrop-blur-md bg-card/95 border-border shadow-elegant animate-fade-in">
+            {/* Simple Header */}
+            <CardHeader className="text-center pb-6">
+              <CardTitle className="text-4xl md:text-5xl font-bold text-foreground mb-2">
+                SoilSidekick Pro
+              </CardTitle>
+              <CardDescription className="text-lg text-muted-foreground">
+                Select a tool to begin your analysis
               </CardDescription>
             </CardHeader>
             
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Button
-                  onClick={() => navigate('/dashboard')}
-                  size="lg"
-                  variant="hero"
-                  className="w-full h-28 text-lg font-semibold flex flex-col gap-2"
-                >
-                  <BarChart3 className="h-8 w-8" />
-                  Dashboard
-                </Button>
-
+            <CardContent className="space-y-6">
+              {/* Main Action Grid - 4 columns */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {/* Primary: Soil Analysis */}
                 <Button
                   onClick={() => navigate('/soil-analysis')}
-                  variant="premium"
                   size="lg"
-                  className="w-full h-28 text-lg font-semibold flex flex-col gap-2"
+                  className="w-full h-32 text-lg font-semibold bg-primary hover:bg-primary/90 flex flex-col gap-2 hover-scale"
                 >
                   <Droplets className="h-8 w-8" />
                   Soil Analysis
                 </Button>
 
+                {/* Water Quality */}
                 <Button
                   onClick={() => navigate('/water-quality')}
-                  variant="glass"
+                  variant="outline"
                   size="lg"
-                  className="w-full h-28 text-lg font-semibold flex flex-col gap-2 relative"
+                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2"
                 >
                   <Waves className="h-8 w-8" />
                   Water Quality
-                  <Badge variant="secondary" className="absolute top-2 right-2">New</Badge>
                 </Button>
 
+                {/* Planting Calendar */}
                 <Button
                   onClick={() => navigate('/planting-calendar')}
                   variant="outline"
                   size="lg"
-                  className="w-full h-28 text-lg font-semibold flex flex-col gap-2"
+                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2"
                 >
                   <Calendar className="h-8 w-8" />
                   Planting Calendar
                 </Button>
 
+                {/* Fertilizer Footprint */}
                 <Button
                   onClick={() => navigate('/fertilizer-footprint')}
                   variant="outline"
                   size="lg"
-                  className="w-full h-28 text-lg font-semibold flex flex-col gap-2 relative"
+                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2"
                 >
                   <Sprout className="h-8 w-8" />
-                  Environmental Impact
-                  <Badge variant="secondary" className="absolute top-2 right-2 text-xs">Patent</Badge>
+                  Fertilizer Footprint
                 </Button>
 
+                {/* ADAPT Integration - Dark */}
                 <Button
-                  onClick={() => navigate('/field-mapping')}
-                  variant="outline"
+                  onClick={() => navigate('/adapt-integration')}
                   size="lg"
-                  className="w-full h-28 text-lg font-semibold flex flex-col gap-2"
-                >
-                  <Map className="h-8 w-8" />
-                  Field Mapping
-                </Button>
-
-                <Button
-                  onClick={() => navigate('/seasonal-planning')}
-                  variant="outline"
-                  size="lg"
-                  className="w-full h-28 text-lg font-semibold flex flex-col gap-2 relative"
-                >
-                  <Cloud className="h-8 w-8" />
-                  Seasonal Planning
-                  <Badge variant="secondary" className="absolute top-2 right-2">AI</Badge>
-                </Button>
-
-                <Button
-                  onClick={() => navigate('/variable-rate-technology')}
-                  variant="premium"
-                  size="lg"
-                  className="w-full h-28 text-lg font-semibold flex flex-col gap-2 relative"
+                  className="w-full h-32 text-lg font-semibold bg-secondary hover:bg-secondary/90 text-secondary-foreground flex flex-col gap-2 hover-scale"
                 >
                   <Sparkles className="h-8 w-8" />
-                  Variable Rate Tech
-                  <Badge className="absolute top-2 right-2 bg-green-500">NEW</Badge>
+                  ADAPT Integration
                 </Button>
 
+                {/* Variable Rate Tech - NEW Badge */}
+                <Button
+                  onClick={() => navigate('/variable-rate-technology')}
+                  variant="outline"
+                  size="lg"
+                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2 relative"
+                >
+                  <Badge className="absolute -top-2 -right-2 bg-green-500 text-white">NEW</Badge>
+                  <Sparkles className="h-8 w-8" />
+                  Variable Rate Tech
+                </Button>
+
+                {/* Property Report - BETA Badge */}
+                <Button
+                  onClick={() => navigate('/property-report')}
+                  variant="outline"
+                  size="lg"
+                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2 relative"
+                >
+                  <Badge className="absolute -top-2 -right-2 bg-yellow-500 text-black">BETA</Badge>
+                  <Map className="h-8 w-8" />
+                  Property Report
+                </Button>
+
+                {/* Settings */}
+                <Button
+                  onClick={() => navigate('/dashboard')}
+                  variant="outline"
+                  size="lg"
+                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2"
+                >
+                  <BarChart3 className="h-8 w-8" />
+                  Dashboard
+                </Button>
+              </div>
+
+              {/* Tour Section */}
+              <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-6 rounded-lg border border-primary/20 flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in">
+                <div className="text-left">
+                  <h3 className="text-lg font-semibold text-foreground mb-1">
+                    New to the platform?
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Take our interactive tour to optimize your yield.
+                  </p>
+                </div>
                 <Button
                   onClick={() => navigate('/tour-guide')}
-                  variant="secondary"
                   size="lg"
-                  className="w-full h-28 text-lg font-semibold flex flex-col gap-2"
+                  className="bg-primary hover:bg-primary/90 whitespace-nowrap"
                 >
-                  <Play className="h-8 w-8" />
-                  Interactive Tour
+                  Start Tour
                 </Button>
               </div>
             </CardContent>
           </Card>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };
