@@ -63,8 +63,14 @@ const HeirloomComparison = () => {
     },
     {
       category: "AI Integration",
-      soilSidekick: "Local AI (Gemma models) + cloud GPT-5, agricultural intelligence",
+      soilSidekick: "Google AlphaEarth AI + Local Gemma models + GPT-5, instant agricultural intelligence",
       heirloom: "AI-powered farming planner",
+      winner: "SoilSidekick"
+    },
+    {
+      category: "Satellite Technology",
+      soilSidekick: "Google AlphaEarth - Unified petabyte-scale Earth observation embeddings",
+      heirloom: "Basic satellite mapping",
       winner: "SoilSidekick"
     },
     {
@@ -135,8 +141,8 @@ const HeirloomComparison = () => {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              Enterprise-grade agricultural intelligence platform focused on precision farming, 
-              environmental impact assessment, and regulatory compliance.
+              Category leader in AI-powered environmental agricultural intelligence with instant analysis, 
+              AlphaEarth integration, and comprehensive federal data integration.
             </p>
             <div className="space-y-2">
               <div className="flex items-center gap-2">

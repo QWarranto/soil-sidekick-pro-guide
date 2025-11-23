@@ -33,7 +33,7 @@ const OneSoilComparison = () => {
     },
     {
       category: "Satellite Technology",
-      soilSidekick: "Google AlphaEarth AI integration - unified petabyte-scale Earth observation processing",
+      soilSidekick: "Google AlphaEarth - Unified petabyte-scale Earth observation AI embeddings (instant analysis)",
       oneSoil: "Traditional satellite monitoring with NDVI, growing degree days, precipitation analysis",
       winner: "SoilSidekick"
     },
@@ -93,8 +93,14 @@ const OneSoilComparison = () => {
     },
     {
       category: "AI Earth Observation",
-      soilSidekick: "Google AlphaEarth Foundations - unified Earth embedding model for global insights",
+      soilSidekick: "Google AlphaEarth Foundations - unified Earth embedding model for instant global insights",
       oneSoil: "Machine learning for satellite image analysis and crop pattern recognition",
+      winner: "SoilSidekick"
+    },
+    {
+      category: "Speed to Insights",
+      soilSidekick: "Instant analysis - no waiting for processing",
+      oneSoil: "Near real-time satellite updates (days to weeks)",
       winner: "SoilSidekick"
     }
   ];
@@ -362,13 +368,13 @@ const OneSoilComparison = () => {
             <div>
               <h3 className="font-semibold mb-4 text-primary">SoilSidekick Pro Strengths</h3>
               <ul className="space-y-2 text-sm">
-                <li>• Google AlphaEarth AI unified Earth observation processing</li>
-                <li>• Comprehensive environmental impact assessment</li>
-                <li>• Real-time EPA water quality integration</li>
-                <li>• SOC 2 Type 1 security compliance</li>
-                <li>• Advanced soil chemistry analysis</li>
-                <li>• US regulatory compliance focus</li>
-                <li>• Petabyte-scale satellite data embeddings</li>
+                <li>• Google AlphaEarth AI - unified petabyte-scale Earth observation embeddings</li>
+                <li>• Instant analysis vs days/weeks for traditional satellite processing</li>
+                <li>• Patent-protected Environmental Impact Engine</li>
+                <li>• Real-time EPA Water Quality Portal integration</li>
+                <li>• Privacy-first local AI (Gemma models) + SOC 2 Type 1 compliance</li>
+                <li>• Advanced soil chemistry analysis + ADAPT Standard compliance</li>
+                <li>• Category leader in AI-powered environmental agricultural intelligence</li>
               </ul>
             </div>
             <div>
@@ -376,10 +382,10 @@ const OneSoilComparison = () => {
               <ul className="space-y-2 text-sm">
                 <li>• Free core platform with premium options</li>
                 <li>• Proven VRA profitability gains ($36-45/hectare)</li>
-                <li>• Traditional satellite monitoring accessibility</li>
+                <li>• Established traditional satellite monitoring</li>
                 <li>• Advanced NDVI and crop monitoring</li>
                 <li>• Native mobile field scouting apps</li>
-                <li>• 9 years of satellite data analysis</li>
+                <li>• 9 years of historical satellite data</li>
               </ul>
             </div>
           </div>

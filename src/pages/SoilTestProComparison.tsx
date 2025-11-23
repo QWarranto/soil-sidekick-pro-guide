@@ -27,7 +27,7 @@ const SoilTestProComparison = () => {
     {
       category: "AI & Intelligence",
       feature: "AI Processing",
-      soilSidekick: "Local Gemma Models + GPT-5 Integration",
+      soilSidekick: "Google AlphaEarth AI + Local Gemma Models + GPT-5 Integration",
       soilTestPro: "No AI Features",
       winner: "SoilSidekick",
       icon: <Cpu className="h-4 w-4" />
@@ -35,8 +35,8 @@ const SoilTestProComparison = () => {
     {
       category: "Data Sources",
       feature: "Integrated Data",
-      soilSidekick: "EPA + USDA + AlphaEarth + Water Quality Portal",
-      soilTestPro: "Lab Results Only",
+      soilSidekick: "Google AlphaEarth + EPA + USDA + Water Quality Portal (Instant)",
+      soilTestPro: "Lab Results Only (1-2 Weeks)",
       winner: "SoilSidekick",
       icon: <Database className="h-4 w-4" />
     },
@@ -178,7 +178,7 @@ const SoilTestProComparison = () => {
                 <strong>Approach:</strong> Digital-first platform with AI-powered analysis and multi-source data integration
               </div>
               <div className="text-sm text-green-700">
-                <strong>Key Strength:</strong> Instant insights combining AI, EPA, USDA, and satellite data without physical sampling
+                <strong>Key Strength:</strong> Instant insights via AlphaEarth AI, EPA, USDA integration - no physical sampling or lab delays
               </div>
               <div className="text-sm text-green-700">
                 <strong>Best For:</strong> Fast decisions, environmental compliance, data-driven precision farming
