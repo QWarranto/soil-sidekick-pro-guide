@@ -10,6 +10,7 @@ import AppHeader from "@/components/AppHeader";
 import { OfflineSyncIndicator } from "@/components/OfflineSyncIndicator";
 import { NetworkStatusBanner } from "@/components/NetworkStatusBanner";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
+import B2BLanding from "./pages/B2BLanding";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -68,9 +69,10 @@ const App = () => (
           <NetworkStatusBanner />
           <OfflineSyncIndicator />
           <PWAInstallBanner />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
+      <Routes>
+        <Route path="/" element={<B2BLanding />} />
+        <Route path="/dashboard" element={<Index />} />
+        <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/soil-analysis" element={<SoilAnalysis />} />
             <Route path="/water-quality" element={<WaterQuality />} />
