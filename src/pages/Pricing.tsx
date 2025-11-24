@@ -1,608 +1,469 @@
-import React, { useEffect, useState } from "react";
-import { ArrowLeft, Check, Star, Zap, RefreshCw, Settings, Leaf } from "lucide-react";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Check, Zap, Shield, TrendingUp, Users, Sparkles, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 
-const Pricing = () => {
-  const { user, subscriptionData, refreshSubscription } = useAuth();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [isAnnual, setIsAnnual] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+export default function Pricing() {
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
 
-  const handleBackHome = () => {
-    navigate('/');
-  };
-
-  useEffect(() => {
-    // Handle success/canceled redirects from Stripe
-    if (searchParams.get('success') === 'true') {
-      toast({
-        title: "Subscription successful!",
-        description: "Welcome to your new plan. Refreshing subscription status...",
-      });
-      setTimeout(() => {
-        refreshSubscription();
-      }, 2000);
-    } else if (searchParams.get('canceled') === 'true') {
-      toast({
-        title: "Subscription canceled",
-        description: "You can try again anytime.",
-        variant: "destructive",
-      });
-    }
-  }, [searchParams, toast, refreshSubscription]);
-
-  const plans = [
+  const tiers = [
     {
-      id: 'free',
-      name: 'Free',
-      monthlyPrice: 0,
-      yearlyPrice: 0,
-      description: 'Basic data access with limited features and community support',
-      icon: <Leaf className="h-6 w-6" />,
-      badge: 'Free',
-      badgeVariant: 'secondary' as const,
+      id: "starter",
+      name: "Environmental Intelligence Starter",
+      monthlyPrice: 500,
+      annualPrice: 5000,
+      annualDiscount: "Save $1,000",
+      description: "Perfect for emerging plant ID apps looking to differentiate with environmental data",
+      icon: Zap,
+      popular: false,
       features: [
-        'Basic data access',
-        'Limited features',
-        'Community support'
-      ]
+        { text: "Environmental Compatibility Score API", included: true },
+        { text: "EPA Water Quality Integration", included: true },
+        { text: "Federal FIPS Location Intelligence", included: true },
+        { text: "50,000 API calls/month", included: true },
+        { text: "Email support (48hr response)", included: true },
+        { text: "API documentation access", included: true },
+        { text: "Basic analytics dashboard", included: true },
+        { text: "AlphaEarth Satellite Data", included: false },
+        { text: "White-label options", included: false },
+        { text: "Dedicated account manager", included: false },
+      ],
+      cta: "Start Free Trial",
+      limits: {
+        apiCalls: "50,000/month",
+        rateLimit: "1,000 req/min",
+        support: "Email (48hr)",
+      },
     },
     {
-      id: 'starter',
-      name: 'Starter',
-      monthlyPrice: 29,
-      yearlyPrice: 228, // First 2 months at $19 = $38, then 10 months at $19 = $190, total $228
-      description: 'Perfect for hobby farmers! Unlimited county access, 10 AI analyses/month, and FREE field assessment call',
-      icon: <Zap className="h-6 w-6" />,
-      badge: '🎁 First 2 Months $19',
-      badgeVariant: 'default' as const,
+      id: "professional",
+      name: "Satellite Monitoring Pro",
+      monthlyPrice: 1500,
+      annualPrice: 15000,
+      annualDiscount: "Save $3,000",
+      description: "Complete environmental intelligence with real-time satellite monitoring",
+      icon: Sparkles,
+      popular: true,
       features: [
-        '🌟 Unlimited county access (your killer feature!)',
-        '🤖 10 AI-powered soil & water analyses/month',
-        '🎯 Perfect for hobby farmers & small operations',
-        '📞 FREE field assessment consultation call',
-        '🌍 Pay-per-use AlphaEarth access ($5/analysis)',
-        '📊 Professional PDF & CSV export reports',
-        '📅 Smart seasonal planning calendar',
-        '💬 Priority email support & expert consultation',
-        '🗺️ Basic field mapping and boundary tools',
-        '📈 Historical data tracking & trends',
-        '📱 Mobile-optimized dashboard access',
-        '🎁 Referral bonus: 1 month free per referral',
-        '🔥 3 referrals = Your 2nd year FREE'
-      ]
+        { text: "Everything in Starter", included: true },
+        { text: "AlphaEarth Satellite Intelligence", included: true },
+        { text: "Real-time NDVI & soil moisture data", included: true },
+        { text: "Thermal stress indicators", included: true },
+        { text: "250,000 API calls/month", included: true },
+        { text: "Priority support (24hr response)", included: true },
+        { text: "Advanced analytics & reporting", included: true },
+        { text: "Custom integration support", included: true },
+        { text: "Quarterly business reviews", included: true },
+        { text: "White-label options", included: false },
+      ],
+      cta: "Start Free Trial",
+      limits: {
+        apiCalls: "250,000/month",
+        rateLimit: "2,500 req/min",
+        support: "Priority (24hr)",
+      },
     },
     {
-      id: 'pro',
-      name: 'Pro',
-      monthlyPrice: 79,
-      yearlyPrice: 790,
-      description: 'Unlimited AI features with FULL AlphaEarth access and visual crop analysis',
-      icon: <Star className="h-6 w-6" />,
-      badge: 'Best Value',
-      badgeVariant: 'default' as const,
+      id: "enterprise",
+      name: "White-Label Enterprise",
+      monthlyPrice: null,
+      annualPrice: null,
+      customPricing: "Custom",
+      description: "Complete white-label solution with unlimited access and dedicated support",
+      icon: Shield,
+      popular: false,
       features: [
-        '♾️ Unlimited AI-powered analyses',
-        '🌍 FULL AlphaEarth satellite access (included)',
-        '📸 Visual crop analysis with satellite data',
-        '🗺️ AI-powered VRT prescription maps',
-        '📊 Advanced analytics & insights',
-        '⚡ Priority support & consultation',
-        '🎁 Referral bonus: 1 month free per referral'
-      ]
+        { text: "Everything in Professional", included: true },
+        { text: "Unlimited API calls", included: true },
+        { text: "White-label branding options", included: true },
+        { text: "Custom domain support", included: true },
+        { text: "Dedicated account manager", included: true },
+        { text: "24/7 phone & Slack support", included: true },
+        { text: "Custom SLA agreements", included: true },
+        { text: "On-premise deployment options", included: true },
+        { text: "Custom feature development", included: true },
+        { text: "Strategic partnership opportunities", included: true },
+      ],
+      cta: "Contact Sales",
+      limits: {
+        apiCalls: "Unlimited",
+        rateLimit: "Custom",
+        support: "24/7 Dedicated",
+      },
     },
-    {
-      id: 'enterprise',
-      name: 'Enterprise',
-      monthlyPrice: 149,
-      yearlyPrice: 1490,
-      description: 'Complete solution with UNLIMITED AlphaEarth, ADAPT integration, and dedicated support',
-      icon: <Settings className="h-6 w-6" />,
-      badge: 'Full Suite',
-      badgeVariant: 'outline' as const,
-      features: [
-        '♾️ UNLIMITED AlphaEarth satellite access',
-        '🗺️ AI-powered VRT prescription maps',
-        '🔗 Full ADAPT integration with VRT export',
-        '🎨 Custom feature development',
-        '👨‍💼 Dedicated account manager',
-        '🚀 White-label & custom integrations',
-        '🎁 Referral bonus: 1 month free per referral'
-      ]
-    }
   ];
 
-  const whitelabelPlans = [
-    {
-      id: 'partner',
-      name: 'Partner — White-Label',
-      monthlyPrice: 199.99,
-      yearlyPrice: 1999.99,
-      description: 'Turn-key agricultural intelligence for resellers & integrators',
-      icon: <Settings className="h-6 w-6" />,
-      badge: 'Reseller Ready',
-      badgeVariant: 'default' as const,
-      features: [
-        'Complete white-label rebrand capability',
-        'Custom domain & SSL hosting included',
-        'Your logo, colors, and brand messaging',
-        'Reseller dashboard with client management',
-        '50k API calls per month included',
-        'Revenue-share model: 60/40 split',
-        'Dedicated onboarding & training',
-        'Marketing materials & sales support',
-        'Custom ADAPT integrations',
-        'Priority technical support',
-        'Co-branded partnership opportunities'
-      ]
-    },
-    {
-      id: 'enterprise-white-label',
-      name: 'Enterprise — Custom Platform',
-      monthlyPrice: 999.99,
-      yearlyPrice: 9999.99,
-      description: 'Fully customized agricultural intelligence platform',
-      icon: <Zap className="h-6 w-6" />,
-      badge: 'Custom Build',
-      badgeVariant: 'outline' as const,
-      features: [
-        'Completely custom platform development',
-        'Your brand identity throughout',
-        'Custom domain & infrastructure',
-        'Unlimited API calls & storage',
-        'Custom feature development',
-        'Multi-tenant architecture',
-        'Advanced analytics & reporting',
-        'Custom ADAPT workflows',
-        'Dedicated development team',
-        '24/7 enterprise support',
-        'SLA guarantees & uptime monitoring',
-        'Custom revenue models available'
-      ]
-    },
-    {
-      id: 'licensing',
-      name: 'Technology Licensing',
-      monthlyPrice: 'Custom',
-      yearlyPrice: 'Custom',
-      description: 'License our patent-protected algorithms for your platform',
-      icon: <Leaf className="h-6 w-6" />,
-      badge: 'IP Licensing',
-      badgeVariant: 'secondary' as const,
-      features: [
-        'Environmental Impact Engine™ licensing',
-        'Multi-Parameter Optimization™ licensing',
-        'Hierarchical Geographic Intelligence licensing',
-        'ADAPT Standard 1.0 implementation rights',
-        'Patent portfolio sub-licensing',
-        'Source code access & documentation',
-        'Integration consulting & support',
-        'Ongoing algorithm updates',
-        'Geographic territory licensing',
-        'Exclusive industry vertical options',
-        'Custom terms & revenue models'
-      ]
-    }
-  ];
-
-  const handleSelectPlan = async (planId: string) => {
-    // Prevent multiple simultaneous requests
-    if (loading) return;
-    
-    if (planId === 'free') return;
-    
-    // Check if user is authenticated before proceeding
-    if (!user) {
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to subscribe to a plan.",
-        variant: "destructive",
-      });
-      navigate('/auth');
-      return;
-    }
-    
-    setLoading(true);
-    try {
-      const interval = isAnnual ? 'year' : 'month';
-      
-      console.log(`Starting checkout for plan: ${planId}, interval: ${interval}`);
-      
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { plan: planId, interval }
-      });
-
-      if (error) {
-        console.error('Checkout error:', error);
-        throw error;
-      }
-      
-      if (!data?.url) {
-        throw new Error('No checkout URL received');
-      }
-      
-      console.log('Checkout URL received, opening in new tab');
-      // Open Stripe checkout in a new tab
-      window.open(data.url, '_blank');
-      
-      toast({
-        title: "Redirecting to checkout",
-        description: "Opening secure checkout page...",
-      });
-    } catch (error: any) {
-      console.error('Error creating checkout:', error);
-      toast({
-        title: "Checkout Error",
-        description: error?.message || "Failed to start checkout process. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleManageSubscription = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('customer-portal');
-      if (error) throw error;
-      
-      // Open customer portal in a new tab
-      window.open(data.url, '_blank');
-    } catch (error) {
-      console.error('Error opening customer portal:', error);
-      toast({
-        title: "Error",
-        description: "Failed to open subscription management. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getPrice = (plan: typeof plans[0]) => {
-    return isAnnual ? plan.yearlyPrice : plan.monthlyPrice;
-  };
-
-  const isCurrentPlan = (planId: string) => {
-    if (planId === 'free') {
-      return !subscriptionData?.subscribed && !user;
-    }
-    // Check if this matches the current subscription tier
-    const currentTier = subscriptionData?.subscription_tier?.toLowerCase();
-    return currentTier === planId.toLowerCase();
+  const annualSavingsPercentage = (tier: typeof tiers[0]) => {
+    if (!tier.monthlyPrice || !tier.annualPrice) return 0;
+    const monthlyCost = tier.monthlyPrice * 12;
+    const savings = monthlyCost - tier.annualPrice;
+    return Math.round((savings / monthlyCost) * 100);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-hero parallax-scroll">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b glass-effect sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={handleBackHome}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-            <div className="flex items-center gap-2">
-              <Leaf className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold text-primary">SoilSidekick Pro</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            {subscriptionData?.subscribed && (
-              <div className="flex items-center gap-2">
-                <Badge variant="default">
-                  {subscriptionData.subscription_tier} - {subscriptionData.subscription_interval}ly
-                </Badge>
-                <Button variant="outline" size="sm" onClick={handleManageSubscription} disabled={loading}>
-                  <Settings className="h-4 w-4 mr-2" />
-                  Manage
-                </Button>
-              </div>
-            )}
-            <Button variant="outline" size="sm" onClick={refreshSubscription} disabled={loading}>
-              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-              Refresh
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          {/* Header Section */}
-          <div className="text-center mb-12 slide-in-up">
-            <h1 className="text-4xl font-bold mb-4 text-white animate-fade-in">
-              Choose Your <span className="text-white font-bold">Patent-Protected Agricultural Intelligence</span> Plan
+      <section className="border-b border-border bg-muted/30 py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-4xl text-center">
+            <Badge className="mb-4" variant="secondary">
+              Transparent Pricing
+            </Badge>
+            <h1 className="mb-6 text-4xl font-bold text-foreground md:text-5xl">
+              Licensing Tiers for Plant ID Apps
             </h1>
-            <p className="text-xl text-white/90 max-w-3xl mx-auto mb-6 animate-fade-in">
-              From hobby gardeners to enterprise ag-tech platforms. <span className="font-semibold text-white">4 patent-protected algorithms</span> delivering 
-              breakthrough environmental intelligence with <span className="font-semibold text-white">zero GIS skills required</span>.
+            <p className="mb-8 text-lg text-muted-foreground">
+              Choose the plan that fits your app's scale. All plans include patent-protected Environmental Compatibility Scores and multi-agency data integration.
             </p>
-            <Button variant="glass" onClick={() => window.location.href = '/features'} className="mb-8 hover:shadow-glow-primary">
-              View Detailed Feature Comparison
-            </Button>
-            
-            {/* Annual/Monthly Toggle */}
-            <div className="flex items-center justify-center gap-4 mb-8">
-              <Label htmlFor="billing-toggle" className={`cursor-pointer ${!isAnnual ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
+
+            {/* Billing Toggle */}
+            <div className="flex items-center justify-center gap-4">
+              <Label htmlFor="billing-toggle" className={billingCycle === "monthly" ? "font-semibold text-foreground" : "text-muted-foreground"}>
                 Monthly
               </Label>
               <Switch
                 id="billing-toggle"
-                checked={isAnnual}
-                onCheckedChange={setIsAnnual}
+                checked={billingCycle === "annual"}
+                onCheckedChange={(checked) => setBillingCycle(checked ? "annual" : "monthly")}
               />
-              <Label htmlFor="billing-toggle" className={`cursor-pointer ${isAnnual ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
+              <Label htmlFor="billing-toggle" className={billingCycle === "annual" ? "font-semibold text-foreground" : "text-muted-foreground"}>
                 Annual
+                <Badge variant="secondary" className="ml-2">
+                  Save up to 17%
+                </Badge>
               </Label>
-              <Badge variant="secondary" className="ml-2">Save 2 months</Badge>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Subscription Status */}
-          {user && subscriptionData && (
-            <div className="bg-primary/5 rounded-lg p-6 mb-8 border border-primary/20">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-primary mb-2">Current Subscription</h3>
-                  <p className="text-muted-foreground">
-                    {subscriptionData.subscribed 
-                      ? `${subscriptionData.subscription_tier?.toUpperCase() || 'UNKNOWN'} plan (${subscriptionData.subscription_interval}ly billing)`
-                      : 'Free plan - No active subscription'}
-                  </p>
-                  {subscriptionData.subscription_end && (
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Next billing: {new Date(subscriptionData.subscription_end).toLocaleDateString()}
-                    </p>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={refreshSubscription} disabled={loading}>
-                    <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                    Refresh Status
-                  </Button>
-                  {subscriptionData.subscribed && (
-                    <Button onClick={handleManageSubscription} disabled={loading}>
-                      <Settings className="h-4 w-4 mr-2" />
-                      Manage Subscription
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
+      {/* Pricing Cards */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-3">
+            {tiers.map((tier) => {
+              const Icon = tier.icon;
+              const displayPrice = billingCycle === "annual" ? tier.annualPrice : tier.monthlyPrice;
+              const displayPeriod = billingCycle === "annual" ? "year" : "month";
 
-          {/* Standard Pricing Cards */}
-          <div className="grid lg:grid-cols-4 gap-6 justify-center mb-16">
-            {plans.map((plan) => {
-              const price = getPrice(plan);
-              const isCurrentUserPlan = isCurrentPlan(plan.id);
-              
               return (
-                <Card 
-                  key={plan.id} 
-                  className={`relative overflow-hidden transition-all duration-300 hover:shadow-lg ${
-                    plan.id === 'pro' ? 'ring-2 ring-primary shadow-lg scale-105' : ''
-                  } ${isCurrentUserPlan ? 'border-green-500 bg-green-50/50' : ''}`}
+                <Card
+                  key={tier.id}
+                  className={`relative flex flex-col ${
+                    tier.popular ? "border-primary shadow-lg" : ""
+                  }`}
                 >
-                  {plan.badge && !isCurrentUserPlan && (
-                    <div className="absolute top-4 right-4 z-10">
-                      <Badge variant={plan.badgeVariant}>{plan.badge}</Badge>
+                  {tier.popular && (
+                    <div className="absolute -top-4 left-0 right-0 flex justify-center">
+                      <Badge className="bg-primary px-4 py-1 text-sm">Most Popular</Badge>
                     </div>
                   )}
-                  
-                  {isCurrentUserPlan && (
-                    <div className="absolute top-4 left-4 z-10">
-                      <Badge variant="default" className="bg-primary text-primary-foreground border-primary">
-                        Your Plan
-                      </Badge>
-                    </div>
-                  )}
-                  
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                        {plan.icon}
-                      </div>
-                      <CardTitle className="text-xl">{plan.name}</CardTitle>
-                    </div>
-                    
-                    <div className="mb-4">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-3xl font-bold text-primary">
-                          {typeof price === 'number' ? `$${price}` : price}
-                        </span>
-                        {typeof price === 'number' && (
-                          <span className="text-muted-foreground">
-                            /{isAnnual ? 'year' : 'month'}
-                          </span>
-                        )}
-                      </div>
-                      {isAnnual && plan.id === 'starter' && (
-                        <div className="text-sm text-green-600 font-medium mt-1">
-                          🎉 First 2 months just $19 each!
-                        </div>
-                      )}
-                      {isAnnual && plan.id === 'pro' && (
-                        <div className="text-sm text-green-600 font-medium mt-1">
-                          Save $158 per year
-                        </div>
-                      )}
-                    </div>
-                    
-                    <CardDescription className="text-sm">
-                      {plan.description}
-                    </CardDescription>
-                  </CardHeader>
 
-                  <CardContent className="space-y-4">
+                  <div className="p-6">
+                    <div className="mb-4 flex items-center gap-3">
+                      <div className="rounded-lg bg-primary/10 p-3">
+                        <Icon className="h-6 w-6 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-foreground">{tier.name}</h3>
+                      </div>
+                    </div>
+
+                    <p className="mb-6 text-sm text-muted-foreground">{tier.description}</p>
+
+                    <div className="mb-6">
+                      {displayPrice === null ? (
+                        <div>
+                          <p className="text-4xl font-bold text-foreground">{tier.customPricing}</p>
+                          <p className="text-sm text-muted-foreground">Contact for pricing</p>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="flex items-baseline gap-2">
+                            <p className="text-4xl font-bold text-foreground">
+                              ${billingCycle === "annual" ? Math.round(displayPrice! / 12).toLocaleString() : displayPrice!.toLocaleString()}
+                            </p>
+                            <p className="text-muted-foreground">/{billingCycle === "annual" ? "mo" : "month"}</p>
+                          </div>
+                          {billingCycle === "annual" && tier.annualPrice && (
+                            <p className="mt-1 text-sm text-muted-foreground">
+                              ${tier.annualPrice.toLocaleString()} billed annually • {tier.annualDiscount}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mb-6 space-y-2 rounded-lg bg-muted/50 p-4">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">API Calls</span>
+                        <span className="font-semibold text-foreground">{tier.limits.apiCalls}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Rate Limit</span>
+                        <span className="font-semibold text-foreground">{tier.limits.rateLimit}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Support</span>
+                        <span className="font-semibold text-foreground">{tier.limits.support}</span>
+                      </div>
+                    </div>
+
+                    <Button
+                      className="mb-6 w-full"
+                      variant={tier.popular ? "default" : "outline"}
+                      size="lg"
+                    >
+                      {tier.cta}
+                      {tier.id !== "enterprise" && <ArrowRight className="ml-2 h-4 w-4" />}
+                    </Button>
+
                     <div className="space-y-3">
-                      {plan.features.map((feature, index) => (
-                        <div key={index} className="flex items-start gap-2 text-sm">
-                          <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                          <span>{feature}</span>
+                      {tier.features.map((feature, idx) => (
+                        <div key={idx} className="flex items-start gap-2">
+                          <Check
+                            className={`mt-0.5 h-4 w-4 shrink-0 ${
+                              feature.included ? "text-primary" : "text-muted-foreground/30"
+                            }`}
+                          />
+                          <span
+                            className={`text-sm ${
+                              feature.included ? "text-foreground" : "text-muted-foreground/50 line-through"
+                            }`}
+                          >
+                            {feature.text}
+                          </span>
                         </div>
                       ))}
                     </div>
-
-                    <Button 
-                      className="w-full mt-6" 
-                      variant={plan.id === 'pro' ? 'default' : 'outline'}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (!loading && !isCurrentUserPlan && plan.id !== 'free') {
-                          handleSelectPlan(plan.id);
-                        }
-                      }}
-                      disabled={loading || isCurrentUserPlan || plan.id === 'free'}
-                    >
-                      {loading ? 'Processing...' :
-                       isCurrentUserPlan ? 'Current Plan' :
-                       plan.id === 'free' ? 'Get Started' : 
-                       plan.id === 'enterprise' ? 'Contact Sales' : 
-                       'Start Subscription'}
-                    </Button>
-                  </CardContent>
+                  </div>
                 </Card>
               );
             })}
           </div>
+        </div>
+      </section>
 
-          {/* White-Label Partnership Section */}
-          <div className="border-t border-border pt-16">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">
-                <span className="text-primary">White-Label & Partnership</span> Solutions
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Turn our patent-protected agricultural intelligence into your branded platform. 
-                Perfect for resellers, integrators, and enterprises building custom solutions.
+      {/* ROI Calculator Section */}
+      <section className="border-y border-border bg-muted/30 py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-4xl">
+            <div className="text-center">
+              <h2 className="mb-4 text-3xl font-bold text-foreground">ROI: Churn Reduction Math</h2>
+              <p className="mb-8 text-lg text-muted-foreground">
+                See how Environmental Intelligence directly impacts your bottom line
               </p>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-6 justify-center">
-              {whitelabelPlans.map((plan) => {
-                const price = typeof plan.monthlyPrice === 'string' ? plan.monthlyPrice : (isAnnual ? plan.yearlyPrice : plan.monthlyPrice);
-                
-                return (
-                  <Card 
-                    key={plan.id} 
-                    className="relative overflow-hidden transition-all duration-300 hover:shadow-lg border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5"
-                  >
-                    <div className="absolute top-4 right-4">
-                      <Badge variant={plan.badgeVariant}>{plan.badge}</Badge>
-                    </div>
-                    
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                          {plan.icon}
-                        </div>
-                        <CardTitle className="text-xl">{plan.name}</CardTitle>
-                      </div>
-                      
-                      <div className="mb-4">
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-3xl font-bold text-primary">
-                            {typeof price === 'string' ? price : `$${price}`}
-                          </span>
-                          {typeof price !== 'string' && (
-                            <span className="text-muted-foreground">
-                              /{isAnnual ? 'year' : 'month'}
-                            </span>
-                          )}
-                        </div>
-                        {isAnnual && typeof plan.monthlyPrice === 'number' && typeof plan.yearlyPrice === 'number' && (
-                          <div className="text-sm text-green-600 font-medium mt-1">
-                            Save ${((plan.monthlyPrice * 12) - plan.yearlyPrice).toFixed(2)} per year
-                          </div>
-                        )}
-                      </div>
-                      
-                      <CardDescription className="text-sm">
-                        {plan.description}
-                      </CardDescription>
-                    </CardHeader>
+            <div className="grid gap-6 md:grid-cols-3">
+              <Card className="p-6">
+                <div className="mb-4 rounded-lg bg-destructive/10 p-3">
+                  <TrendingUp className="h-8 w-8 text-destructive" />
+                </div>
+                <h3 className="mb-2 text-xl font-bold text-foreground">Without Environmental Intel</h3>
+                <p className="mb-4 text-3xl font-bold text-foreground">28%</p>
+                <p className="text-sm text-muted-foreground">
+                  Average 90-day churn when identified plants die without actionable care guidance
+                </p>
+              </Card>
 
-                    <CardContent className="space-y-4">
-                      <div className="space-y-3">
-                        {plan.features.map((feature, index) => (
-                          <div key={index} className="flex items-start gap-2 text-sm">
-                            <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                            <span>{feature}</span>
-                          </div>
-                        ))}
-                      </div>
+              <Card className="border-primary p-6">
+                <div className="mb-4 rounded-lg bg-primary/10 p-3">
+                  <TrendingUp className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="mb-2 text-xl font-bold text-foreground">With Environmental Intel</h3>
+                <p className="mb-4 text-3xl font-bold text-foreground">12%</p>
+                <p className="text-sm text-muted-foreground">
+                  Reduce churn by providing real-time environmental compatibility and care guidance
+                </p>
+              </Card>
 
-                      <Button 
-                        className="w-full mt-6" 
-                        variant="default"
-                        onClick={() => {
-                          // Contact sales for white-label options
-                          window.open('mailto:support@soilsidekickpro.com?subject=White-Label Partnership Inquiry&body=I am interested in learning more about your white-label and partnership solutions.', '_blank');
-                        }}
-                      >
-                        Contact Partnership Team
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+              <Card className="p-6">
+                <div className="mb-4 rounded-lg bg-green-500/10 p-3">
+                  <Users className="h-8 w-8 text-green-600" />
+                </div>
+                <h3 className="mb-2 text-xl font-bold text-foreground">Net Impact</h3>
+                <p className="mb-4 text-3xl font-bold text-foreground">57%</p>
+                <p className="text-sm text-muted-foreground">
+                  Reduction in churn = Higher LTV, better retention metrics, and predictable MRR growth
+                </p>
+              </Card>
+            </div>
+
+            <div className="mt-8 rounded-lg bg-primary/5 p-6">
+              <h4 className="mb-4 text-center text-lg font-semibold text-foreground">Conservative Revenue Impact Example</h4>
+              <div className="grid gap-4 text-center md:grid-cols-3">
+                <div>
+                  <p className="text-sm text-muted-foreground">10,000 MAU App</p>
+                  <p className="mt-2 text-2xl font-bold text-foreground">+$42K ARR</p>
+                  <p className="text-xs text-muted-foreground">From retention improvement alone</p>
+                </div>
+                <div className="border-x border-border">
+                  <p className="text-sm text-muted-foreground">50,000 MAU App</p>
+                  <p className="mt-2 text-2xl font-bold text-foreground">+$210K ARR</p>
+                  <p className="text-xs text-muted-foreground">Pays for Professional tier 14x over</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">100,000+ MAU App</p>
+                  <p className="mt-2 text-2xl font-bold text-foreground">+$420K+ ARR</p>
+                  <p className="text-xs text-muted-foreground">White-label enterprise makes sense</p>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Bottom CTA */}
-          <div className="text-center mt-12 p-8 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20">
-            <h3 className="text-2xl font-bold mb-4">Ready to Experience Patent-Protected Agricultural Intelligence?</h3>
-            <p className="text-muted-foreground mb-6 max-w-3xl mx-auto">
-              Join thousands of growers leveraging our breakthrough environmental impact algorithms and multi-parameter optimization systems. 
-              Now with ADAPT Standard 1.0 integration—break free from vendor lock-in and connect your soil intelligence to any farm management system.
-            </p>
-            <div className="flex flex-wrap gap-4 justify-center mb-6">
-              <div className="inline-flex items-center gap-2 bg-background/80 px-3 py-1 rounded-full text-sm">
-                <Check className="h-3 w-3 text-green-500" />
-                ADAPT Standard 1.0 Certified
-              </div>
-              <div className="inline-flex items-center gap-2 bg-background/80 px-3 py-1 rounded-full text-sm">
-                <Check className="h-3 w-3 text-green-500" />
-                Environmental Impact Engine™
-              </div>
-              <div className="inline-flex items-center gap-2 bg-background/80 px-3 py-1 rounded-full text-sm">
-                <Check className="h-3 w-3 text-green-500" />
-                Multi-Parameter Planting Optimization™
-              </div>
-              <div className="inline-flex items-center gap-2 bg-background/80 px-3 py-1 rounded-full text-sm">
-                <Check className="h-3 w-3 text-green-500" />
-                Hierarchical Geographic Intelligence
-              </div>
+      {/* Comparison Table */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-6xl">
+            <h2 className="mb-8 text-center text-3xl font-bold text-foreground">Detailed Feature Comparison</h2>
+
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="p-4 text-left text-sm font-semibold text-foreground">Feature</th>
+                    <th className="p-4 text-center text-sm font-semibold text-foreground">Starter</th>
+                    <th className="p-4 text-center text-sm font-semibold text-foreground">Professional</th>
+                    <th className="p-4 text-center text-sm font-semibold text-foreground">Enterprise</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { feature: "Environmental Compatibility Score API", starter: true, pro: true, enterprise: true },
+                    { feature: "EPA Water Quality Integration", starter: true, pro: true, enterprise: true },
+                    { feature: "Federal FIPS Location Intelligence", starter: true, pro: true, enterprise: true },
+                    { feature: "AlphaEarth Satellite Data", starter: false, pro: true, enterprise: true },
+                    { feature: "Real-time NDVI Monitoring", starter: false, pro: true, enterprise: true },
+                    { feature: "Monthly API Calls", starter: "50K", pro: "250K", enterprise: "Unlimited" },
+                    { feature: "Rate Limit (req/min)", starter: "1,000", pro: "2,500", enterprise: "Custom" },
+                    { feature: "Support Response Time", starter: "48hrs", pro: "24hrs", enterprise: "Immediate" },
+                    { feature: "White-label Branding", starter: false, pro: false, enterprise: true },
+                    { feature: "Custom Domain Support", starter: false, pro: false, enterprise: true },
+                    { feature: "Dedicated Account Manager", starter: false, pro: false, enterprise: true },
+                    { feature: "Custom Feature Development", starter: false, pro: false, enterprise: true },
+                    { feature: "On-premise Deployment", starter: false, pro: false, enterprise: true },
+                  ].map((row, idx) => (
+                    <tr key={idx} className="border-b border-border">
+                      <td className="p-4 text-sm text-foreground">{row.feature}</td>
+                      <td className="p-4 text-center">
+                        {typeof row.starter === "boolean" ? (
+                          row.starter ? (
+                            <Check className="mx-auto h-5 w-5 text-primary" />
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )
+                        ) : (
+                          <span className="text-sm font-semibold text-foreground">{row.starter}</span>
+                        )}
+                      </td>
+                      <td className="p-4 text-center">
+                        {typeof row.pro === "boolean" ? (
+                          row.pro ? (
+                            <Check className="mx-auto h-5 w-5 text-primary" />
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )
+                        ) : (
+                          <span className="text-sm font-semibold text-foreground">{row.pro}</span>
+                        )}
+                      </td>
+                      <td className="p-4 text-center">
+                        {typeof row.enterprise === "boolean" ? (
+                          row.enterprise ? (
+                            <Check className="mx-auto h-5 w-5 text-primary" />
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )
+                        ) : (
+                          <span className="text-sm font-semibold text-foreground">{row.enterprise}</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            <div className="flex gap-4 justify-center">
-              <Button onClick={() => navigate('/soil-analysis')}>
-                Try Patent-Protected Features Free
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="border-t border-border bg-muted/30 py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="mb-8 text-center text-3xl font-bold text-foreground">Frequently Asked Questions</h2>
+
+            <div className="space-y-6">
+              <Card className="p-6">
+                <h3 className="mb-2 font-semibold text-foreground">How does the free trial work?</h3>
+                <p className="text-sm text-muted-foreground">
+                  All paid tiers include a 14-day free trial with full access to features. No credit card required to start. You'll only be charged after the trial period ends.
+                </p>
+              </Card>
+
+              <Card className="p-6">
+                <h3 className="mb-2 font-semibold text-foreground">What happens if I exceed my API call limit?</h3>
+                <p className="text-sm text-muted-foreground">
+                  API calls beyond your tier limit are charged at $0.02 per additional call. You'll receive notifications at 80% and 100% usage to help you manage costs.
+                </p>
+              </Card>
+
+              <Card className="p-6">
+                <h3 className="mb-2 font-semibold text-foreground">Can I upgrade or downgrade my plan anytime?</h3>
+                <p className="text-sm text-muted-foreground">
+                  Yes! You can upgrade immediately to access more features. Downgrades take effect at the end of your current billing cycle to ensure uninterrupted service.
+                </p>
+              </Card>
+
+              <Card className="p-6">
+                <h3 className="mb-2 font-semibold text-foreground">Do you offer custom enterprise solutions?</h3>
+                <p className="text-sm text-muted-foreground">
+                  Absolutely. Our Enterprise tier is fully customizable to your needs, including white-labeling, custom SLAs, on-premise deployment, and strategic partnership opportunities. Contact sales to discuss your requirements.
+                </p>
+              </Card>
+
+              <Card className="p-6">
+                <h3 className="mb-2 font-semibold text-foreground">Is there a setup fee or integration cost?</h3>
+                <p className="text-sm text-muted-foreground">
+                  No setup fees for Starter and Professional tiers. Enterprise customers receive complimentary onboarding and integration support as part of their package.
+                </p>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-3xl text-center">
+            <h2 className="mb-6 text-3xl font-bold text-foreground md:text-4xl">
+              Ready to Reduce Churn and Boost Revenue?
+            </h2>
+            <p className="mb-8 text-lg text-muted-foreground">
+              Start your 14-day free trial today. No credit card required.
+            </p>
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Button size="lg" asChild>
+                <Link to="/api-docs">
+                  Explore API Documentation
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
-              <Button variant="outline" onClick={() => navigate('/api-docs')}>
-                Explore Enterprise APIs
+              <Button size="lg" variant="outline">
+                Schedule a Demo
               </Button>
             </div>
           </div>
         </div>
-      </main>
+      </section>
     </div>
   );
-};
-
-export default Pricing;
+}
