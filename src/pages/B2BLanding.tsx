@@ -33,6 +33,9 @@ export default function B2BLanding() {
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
+                <Link to="/privacy-advantage">Privacy Advantage</Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
                 <Link to="/pricing">View Licensing Tiers</Link>
               </Button>
             </div>
@@ -64,18 +67,101 @@ export default function B2BLanding() {
         </div>
       </section>
 
+      {/* GDPR/Privacy Hook */}
+      <section className="border-b border-border bg-gradient-to-br from-primary/5 via-background to-background py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-5xl">
+            <div className="grid items-center gap-8 md:grid-cols-2">
+              <div>
+                <Badge className="mb-4" variant="default">
+                  <Shield className="mr-2 h-3 w-3" />
+                  Patent-Protected Technology
+                </Badge>
+                <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl">
+                  Privacy-Preserving AI Processing
+                </h2>
+                <p className="mb-6 text-lg text-muted-foreground">
+                  The only plant intelligence platform with <strong className="text-foreground">on-device WebGPU AI</strong> that keeps user data private while delivering real-time environmental analysis.
+                </p>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="rounded-full bg-primary/10 p-2">
+                      <Check className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">GDPR Compliant by Design</p>
+                      <p className="text-sm text-muted-foreground">Zero PII transmission. All AI processing happens on-device via WebGPU.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="rounded-full bg-primary/10 p-2">
+                      <Check className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">Competitive Advantage in EU Markets</p>
+                      <p className="text-sm text-muted-foreground">Position your app as the privacy-first choice for European users.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="rounded-full bg-primary/10 p-2">
+                      <Check className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">Offline-First Architecture</p>
+                      <p className="text-sm text-muted-foreground">Works without internet. Perfect for remote farming locations.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="rounded-full bg-primary/10 p-2">
+                      <Check className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">No Cloud Hosting Costs</p>
+                      <p className="text-sm text-muted-foreground">Reduce infrastructure spend. AI inference runs on user devices.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <Card className="p-6">
+                <div className="mb-4 rounded-lg bg-muted p-4">
+                  <Code className="mb-2 h-8 w-8 text-primary" />
+                  <h3 className="text-lg font-semibold text-foreground">WebGPU Integration</h3>
+                </div>
+                <pre className="overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs text-green-400">
+{`// On-device AI processing
+import { pipeline } from "@huggingface/transformers";
+
+const analyzer = await pipeline(
+  "feature-extraction",
+  "plant-health-model",
+  { device: "webgpu" }
+);
+
+// All processing happens locally
+const result = await analyzer(imageData);
+// No data leaves the device`}
+                </pre>
+                <p className="mt-4 text-xs text-muted-foreground">
+                  Users' plant photos never leave their device. GDPR compliance built-in.
+                </p>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Solution */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-4xl text-center">
             <Badge className="mb-4" variant="outline">
-              The Solution
+              The Complete Solution
             </Badge>
             <h2 className="mb-6 text-3xl font-bold text-foreground md:text-4xl">
               Churn Reduction as a Service
             </h2>
             <p className="mb-12 text-lg text-muted-foreground">
-              Our Environmental Intelligence Layer provides the "How" (maintenance & location-specific care) after the "What" (identification). Powered by patent-protected multi-agency data integration.
+              Our Environmental Intelligence Layer provides the "How" (maintenance & location-specific care) after the "What" (identification). Powered by patent-protected multi-agency data integration + privacy-preserving on-device AI.
             </p>
 
             <div className="grid gap-8 md:grid-cols-3">
@@ -138,10 +224,10 @@ export default function B2BLanding() {
                   <div className="rounded-full bg-primary/10 p-2">
                     <Shield className="h-5 w-5 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold text-foreground">Patent Protection</h3>
+                  <h3 className="text-xl font-semibold text-foreground">Patent Protection + Privacy</h3>
                 </div>
                 <p className="text-muted-foreground">
-                  Our Environmental Compatibility Score methodology is patent-protected. Avoid infringement while offering cutting-edge features.
+                  Our Environmental Compatibility Score methodology is patent-protected, and our WebGPU on-device AI gives you a GDPR compliance advantage competitors can't match.
                 </p>
               </Card>
 

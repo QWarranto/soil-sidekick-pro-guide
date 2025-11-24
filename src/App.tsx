@@ -14,6 +14,8 @@ import B2BLanding from "./pages/B2BLanding";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import DeveloperSandbox from "./pages/DeveloperSandbox";
+import PrivacyAdvantage from "./pages/PrivacyAdvantage";
 import SoilAnalysis from "./pages/SoilAnalysis";
 import WaterQuality from "./pages/WaterQuality";
 import PlantingCalendar from "./pages/PlantingCalendar";
@@ -73,6 +75,8 @@ const App = () => (
         <Route path="/" element={<B2BLanding />} />
         <Route path="/dashboard" element={<Index />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/developer-sandbox" element={<DeveloperSandbox />} />
+        <Route path="/privacy-advantage" element={<PrivacyAdvantage />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/soil-analysis" element={<SoilAnalysis />} />
             <Route path="/water-quality" element={<WaterQuality />} />
