@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Globe, MapPin, DollarSign, Users, Rocket } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { TrendingUp, Globe, MapPin, DollarSign, Users, Rocket, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const GlobalMarketComparison = () => {
   return (
@@ -396,6 +398,15 @@ const GlobalMarketComparison = () => {
                   <li>✓ Patent commercialization strategy</li>
                 </ul>
               </div>
+            </div>
+            
+            <div className="mt-6">
+              <Button asChild size="lg">
+                <Link to="/revenue-projections">
+                  View Detailed 5-Year Revenue Projections
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
             </div>
           </CardContent>
         </Card>

@@ -29,6 +29,7 @@ import AdaptIntegration from "./pages/AdaptIntegration";
 import VariableRateTechnology from "./pages/VariableRateTechnology";
 import BusinessCase from "./pages/BusinessCase";
 import GlobalMarketComparison from "./pages/GlobalMarketComparison";
+import RevenueProjections from "./pages/RevenueProjections";
 import SeasonalPlanning from "./pages/SeasonalPlanning";
 import TourGuide from "./pages/TourGuide";
 import Disclaimer from "./pages/Disclaimer";
@@ -92,6 +93,7 @@ const App = () => (
         <Route path="/variable-rate-technology" element={<VariableRateTechnology />} />
         <Route path="/business-case" element={<BusinessCase />} />
         <Route path="/global-market-comparison" element={<GlobalMarketComparison />} />
+        <Route path="/revenue-projections" element={<RevenueProjections />} />
         <Route path="/seasonal-planning" element={<SeasonalPlanning />} />
         <Route path="/field-mapping" element={<FieldMapping />} />
         <Route path="/task-manager" element={<TaskManager />} />
