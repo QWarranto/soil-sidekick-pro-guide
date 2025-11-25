@@ -2,9 +2,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Code, Book, Key, Zap, Shield, Globe, ArrowRight, Copy, CheckCircle2 } from "lucide-react";
+import { Code, Book, Key, Zap, Shield, Globe, ArrowRight, Copy, CheckCircle2, ClipboardList } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 const LeafEnginesApiDocs = () => {
   const { toast } = useToast();
@@ -189,9 +190,11 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
             Turn "what is this plant?" into "how do I keep it alive here?"
           </p>
           <div className="mt-6 flex gap-4">
-            <Button size="lg">
-              <Key className="mr-2 h-4 w-4" />
-              Get API Key
+            <Button size="lg" asChild>
+              <Link to="/client-integration-guide">
+                <ClipboardList className="mr-2 h-4 w-4" />
+                Integration Guide
+              </Link>
             </Button>
             <Button size="lg" variant="outline" onClick={() => {
               document.getElementById('quickstart')?.scrollIntoView({ behavior: 'smooth' });
