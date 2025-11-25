@@ -119,28 +119,28 @@ const RevenueProjections = () => {
                         <td colSpan={5} className="p-3 font-semibold text-blue-500">YEAR 1: Foundation & Initial Sales</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q1 2025</td>
+                        <td className="p-3">Q1 2026</td>
                         <td className="text-right p-3 font-mono">5</td>
                         <td className="text-right p-3 font-mono">5</td>
                         <td className="text-right p-3 font-mono">$8K</td>
                         <td className="text-right p-3 font-mono">$30K</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q2 2025</td>
+                        <td className="p-3">Q2 2026</td>
                         <td className="text-right p-3 font-mono">12</td>
                         <td className="text-right p-3 font-mono">17</td>
                         <td className="text-right p-3 font-mono">$45K</td>
                         <td className="text-right p-3 font-mono">$180K</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q3 2025</td>
+                        <td className="p-3">Q3 2026</td>
                         <td className="text-right p-3 font-mono">18</td>
                         <td className="text-right p-3 font-mono">35</td>
                         <td className="text-right p-3 font-mono">$125K</td>
                         <td className="text-right p-3 font-mono">$500K</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q4 2025</td>
+                        <td className="p-3">Q4 2026</td>
                         <td className="text-right p-3 font-mono">25</td>
                         <td className="text-right p-3 font-mono">59</td>
                         <td className="text-right p-3 font-mono">$285K</td>
@@ -152,28 +152,28 @@ const RevenueProjections = () => {
                         <td colSpan={5} className="p-3 font-semibold text-blue-500">YEAR 2: Momentum Building</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q1 2026</td>
+                        <td className="p-3">Q1 2027</td>
                         <td className="text-right p-3 font-mono">32</td>
                         <td className="text-right p-3 font-mono">90</td>
                         <td className="text-right p-3 font-mono">$625K</td>
                         <td className="text-right p-3 font-mono">$2.5M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q2 2026</td>
+                        <td className="p-3">Q2 2027</td>
                         <td className="text-right p-3 font-mono">38</td>
                         <td className="text-right p-3 font-mono">127</td>
                         <td className="text-right p-3 font-mono">$1.15M</td>
                         <td className="text-right p-3 font-mono">$4.6M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q3 2026</td>
+                        <td className="p-3">Q3 2027</td>
                         <td className="text-right p-3 font-mono">42</td>
                         <td className="text-right p-3 font-mono">168</td>
                         <td className="text-right p-3 font-mono">$1.95M</td>
                         <td className="text-right p-3 font-mono">$7.8M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q4 2026</td>
+                        <td className="p-3">Q4 2027</td>
                         <td className="text-right p-3 font-mono">45</td>
                         <td className="text-right p-3 font-mono">212</td>
                         <td className="text-right p-3 font-mono">$2.95M</td>
@@ -185,28 +185,28 @@ const RevenueProjections = () => {
                         <td colSpan={5} className="p-3 font-semibold text-blue-500">YEAR 3: Scale & Expansion</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q1 2027</td>
+                        <td className="p-3">Q1 2028</td>
                         <td className="text-right p-3 font-mono">48</td>
                         <td className="text-right p-3 font-mono">258</td>
                         <td className="text-right p-3 font-mono">$5.1M</td>
                         <td className="text-right p-3 font-mono">$20.4M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q2 2027</td>
+                        <td className="p-3">Q2 2028</td>
                         <td className="text-right p-3 font-mono">50</td>
                         <td className="text-right p-3 font-mono">306</td>
                         <td className="text-right p-3 font-mono">$7.5M</td>
                         <td className="text-right p-3 font-mono">$30M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q3 2027</td>
+                        <td className="p-3">Q3 2028</td>
                         <td className="text-right p-3 font-mono">52</td>
                         <td className="text-right p-3 font-mono">356</td>
                         <td className="text-right p-3 font-mono">$10.2M</td>
                         <td className="text-right p-3 font-mono">$40.8M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q4 2027</td>
+                        <td className="p-3">Q4 2028</td>
                         <td className="text-right p-3 font-mono">54</td>
                         <td className="text-right p-3 font-mono">408</td>
                         <td className="text-right p-3 font-mono">$12.8M</td>
@@ -218,28 +218,28 @@ const RevenueProjections = () => {
                         <td colSpan={5} className="p-3 font-semibold text-blue-500">YEAR 4: Market Leadership</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q1 2028</td>
+                        <td className="p-3">Q1 2029</td>
                         <td className="text-right p-3 font-mono">24</td>
                         <td className="text-right p-3 font-mono">430</td>
                         <td className="text-right p-3 font-mono">$14.8M</td>
                         <td className="text-right p-3 font-mono">$59.2M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q2 2028</td>
+                        <td className="p-3">Q2 2029</td>
                         <td className="text-right p-3 font-mono">22</td>
                         <td className="text-right p-3 font-mono">450</td>
                         <td className="text-right p-3 font-mono">$16.2M</td>
                         <td className="text-right p-3 font-mono">$64.8M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q3 2028</td>
+                        <td className="p-3">Q3 2029</td>
                         <td className="text-right p-3 font-mono">20</td>
                         <td className="text-right p-3 font-mono">468</td>
                         <td className="text-right p-3 font-mono">$17.1M</td>
                         <td className="text-right p-3 font-mono">$68.4M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q4 2028</td>
+                        <td className="p-3">Q4 2029</td>
                         <td className="text-right p-3 font-mono">18</td>
                         <td className="text-right p-3 font-mono">484</td>
                         <td className="text-right p-3 font-mono">$17.8M</td>
@@ -251,28 +251,28 @@ const RevenueProjections = () => {
                         <td colSpan={5} className="p-3 font-semibold text-blue-500">YEAR 5: Optimization & Efficiency</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q1 2029</td>
+                        <td className="p-3">Q1 2030</td>
                         <td className="text-right p-3 font-mono">10</td>
                         <td className="text-right p-3 font-mono">492</td>
                         <td className="text-right p-3 font-mono">$18.2M</td>
                         <td className="text-right p-3 font-mono">$72.8M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q2 2029</td>
+                        <td className="p-3">Q2 2030</td>
                         <td className="text-right p-3 font-mono">8</td>
                         <td className="text-right p-3 font-mono">498</td>
                         <td className="text-right p-3 font-mono">$18.5M</td>
                         <td className="text-right p-3 font-mono">$74M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q3 2029</td>
+                        <td className="p-3">Q3 2030</td>
                         <td className="text-right p-3 font-mono">6</td>
                         <td className="text-right p-3 font-mono">502</td>
                         <td className="text-right p-3 font-mono">$18.7M</td>
                         <td className="text-right p-3 font-mono">$74.8M</td>
                       </tr>
                       <tr className="hover:bg-muted/50 bg-blue-500/10">
-                        <td className="p-3 font-semibold">Q4 2029</td>
+                        <td className="p-3 font-semibold">Q4 2030</td>
                         <td className="text-right p-3 font-mono font-semibold">5</td>
                         <td className="text-right p-3 font-mono font-semibold">495</td>
                         <td className="text-right p-3 font-mono font-semibold">$18.8M</td>
@@ -289,21 +289,21 @@ const RevenueProjections = () => {
                     <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
                       <Calendar className="w-5 h-5 text-blue-500 mt-0.5" />
                       <div>
-                        <p className="font-semibold text-sm">90-Day Checkpoint (Q1 2025)</p>
+                        <p className="font-semibold text-sm">90-Day Checkpoint (Q1 2026)</p>
                         <p className="text-xs text-muted-foreground">5 LOIs secured from European Plant ID apps. Validates GDPR advantage and pricing model.</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
                       <Calendar className="w-5 h-5 text-blue-500 mt-0.5" />
                       <div>
-                        <p className="font-semibold text-sm">6-Month Checkpoint (Q2 2025)</p>
+                        <p className="font-semibold text-sm">6-Month Checkpoint (Q2 2026)</p>
                         <p className="text-xs text-muted-foreground">17 paying customers, $180K ARR. Proves repeatable sales motion and API stability.</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
                       <Calendar className="w-5 h-5 text-blue-500 mt-0.5" />
                       <div>
-                        <p className="font-semibold text-sm">Year 1 Exit (Q4 2025)</p>
+                        <p className="font-semibold text-sm">Year 1 Exit (Q4 2026)</p>
                         <p className="text-xs text-muted-foreground">59 customers, $1.14M ARR. Establishes product-market fit and enables Series A fundraising.</p>
                       </div>
                     </div>
@@ -373,28 +373,28 @@ const RevenueProjections = () => {
                         <td colSpan={5} className="p-3 font-semibold text-primary">YEAR 1: Aggressive Market Entry</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q1 2025</td>
+                        <td className="p-3">Q1 2026</td>
                         <td className="text-right p-3 font-mono">8</td>
                         <td className="text-right p-3 font-mono">8</td>
                         <td className="text-right p-3 font-mono">$15K</td>
                         <td className="text-right p-3 font-mono">$60K</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q2 2025</td>
+                        <td className="p-3">Q2 2026</td>
                         <td className="text-right p-3 font-mono">22</td>
                         <td className="text-right p-3 font-mono">30</td>
                         <td className="text-right p-3 font-mono">$95K</td>
                         <td className="text-right p-3 font-mono">$380K</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q3 2025</td>
+                        <td className="p-3">Q3 2026</td>
                         <td className="text-right p-3 font-mono">35</td>
                         <td className="text-right p-3 font-mono">65</td>
                         <td className="text-right p-3 font-mono">$285K</td>
                         <td className="text-right p-3 font-mono">$1.14M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q4 2025</td>
+                        <td className="p-3">Q4 2026</td>
                         <td className="text-right p-3 font-mono">48</td>
                         <td className="text-right p-3 font-mono">112</td>
                         <td className="text-right p-3 font-mono">$625K</td>
@@ -406,28 +406,28 @@ const RevenueProjections = () => {
                         <td colSpan={5} className="p-3 font-semibold text-primary">YEAR 2: Rapid Scaling</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q1 2026</td>
+                        <td className="p-3">Q1 2027</td>
                         <td className="text-right p-3 font-mono">62</td>
                         <td className="text-right p-3 font-mono">173</td>
                         <td className="text-right p-3 font-mono">$1.45M</td>
                         <td className="text-right p-3 font-mono">$5.8M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q2 2026</td>
+                        <td className="p-3">Q2 2027</td>
                         <td className="text-right p-3 font-mono">72</td>
                         <td className="text-right p-3 font-mono">244</td>
                         <td className="text-right p-3 font-mono">$2.65M</td>
                         <td className="text-right p-3 font-mono">$10.6M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q3 2026</td>
+                        <td className="p-3">Q3 2027</td>
                         <td className="text-right p-3 font-mono">80</td>
                         <td className="text-right p-3 font-mono">323</td>
                         <td className="text-right p-3 font-mono">$4.5M</td>
                         <td className="text-right p-3 font-mono">$18M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q4 2026</td>
+                        <td className="p-3">Q4 2027</td>
                         <td className="text-right p-3 font-mono">85</td>
                         <td className="text-right p-3 font-mono">407</td>
                         <td className="text-right p-3 font-mono">$6.8M</td>
@@ -439,28 +439,28 @@ const RevenueProjections = () => {
                         <td colSpan={5} className="p-3 font-semibold text-primary">YEAR 3: Market Dominance</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q1 2027</td>
+                        <td className="p-3">Q1 2028</td>
                         <td className="text-right p-3 font-mono">92</td>
                         <td className="text-right p-3 font-mono">498</td>
                         <td className="text-right p-3 font-mono">$11.5M</td>
                         <td className="text-right p-3 font-mono">$46M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q2 2027</td>
+                        <td className="p-3">Q2 2028</td>
                         <td className="text-right p-3 font-mono">95</td>
                         <td className="text-right p-3 font-mono">592</td>
                         <td className="text-right p-3 font-mono">$16.8M</td>
                         <td className="text-right p-3 font-mono">$67.2M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q3 2027</td>
+                        <td className="p-3">Q3 2028</td>
                         <td className="text-right p-3 font-mono">96</td>
                         <td className="text-right p-3 font-mono">687</td>
                         <td className="text-right p-3 font-mono">$22.8M</td>
                         <td className="text-right p-3 font-mono">$91.2M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q4 2027</td>
+                        <td className="p-3">Q4 2028</td>
                         <td className="text-right p-3 font-mono">98</td>
                         <td className="text-right p-3 font-mono">784</td>
                         <td className="text-right p-3 font-mono">$28.5M</td>
@@ -472,28 +472,28 @@ const RevenueProjections = () => {
                         <td colSpan={5} className="p-3 font-semibold text-primary">YEAR 4: Consolidation</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q1 2028</td>
+                        <td className="p-3">Q1 2029</td>
                         <td className="text-right p-3 font-mono">18</td>
                         <td className="text-right p-3 font-mono">800</td>
                         <td className="text-right p-3 font-mono">$29.2M</td>
                         <td className="text-right p-3 font-mono">$116.8M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q2 2028</td>
+                        <td className="p-3">Q2 2029</td>
                         <td className="text-right p-3 font-mono">16</td>
                         <td className="text-right p-3 font-mono">814</td>
                         <td className="text-right p-3 font-mono">$29.6M</td>
                         <td className="text-right p-3 font-mono">$118.4M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q3 2028</td>
+                        <td className="p-3">Q3 2029</td>
                         <td className="text-right p-3 font-mono">14</td>
                         <td className="text-right p-3 font-mono">826</td>
                         <td className="text-right p-3 font-mono">$29.9M</td>
                         <td className="text-right p-3 font-mono">$119.6M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q4 2028</td>
+                        <td className="p-3">Q4 2029</td>
                         <td className="text-right p-3 font-mono">12</td>
                         <td className="text-right p-3 font-mono">836</td>
                         <td className="text-right p-3 font-mono">$30.1M</td>
@@ -505,28 +505,28 @@ const RevenueProjections = () => {
                         <td colSpan={5} className="p-3 font-semibold text-primary">YEAR 5: Sustained Growth</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q1 2029</td>
+                        <td className="p-3">Q1 2030</td>
                         <td className="text-right p-3 font-mono">10</td>
                         <td className="text-right p-3 font-mono">844</td>
                         <td className="text-right p-3 font-mono">$30.3M</td>
                         <td className="text-right p-3 font-mono">$121.2M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q2 2029</td>
+                        <td className="p-3">Q2 2030</td>
                         <td className="text-right p-3 font-mono">-12</td>
                         <td className="text-right p-3 font-mono">832</td>
                         <td className="text-right p-3 font-mono">$29.8M</td>
                         <td className="text-right p-3 font-mono">$119.2M</td>
                       </tr>
                       <tr className="hover:bg-muted/50">
-                        <td className="p-3">Q3 2029</td>
+                        <td className="p-3">Q3 2030</td>
                         <td className="text-right p-3 font-mono">-8</td>
                         <td className="text-right p-3 font-mono">824</td>
                         <td className="text-right p-3 font-mono">$29.9M</td>
                         <td className="text-right p-3 font-mono">$119.6M</td>
                       </tr>
                       <tr className="hover:bg-muted/50 bg-primary/10">
-                        <td className="p-3 font-semibold">Q4 2029</td>
+                        <td className="p-3 font-semibold">Q4 2030</td>
                         <td className="text-right p-3 font-mono font-semibold">1</td>
                         <td className="text-right p-3 font-mono font-semibold">825</td>
                         <td className="text-right p-3 font-mono font-semibold">$30M</td>
@@ -543,21 +543,21 @@ const RevenueProjections = () => {
                     <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
                       <Calendar className="w-5 h-5 text-primary mt-0.5" />
                       <div>
-                        <p className="font-semibold text-sm">90-Day Checkpoint (Q1 2025)</p>
+                        <p className="font-semibold text-sm">90-Day Checkpoint (Q1 2026)</p>
                         <p className="text-xs text-muted-foreground">8 LOIs secured (vs 5 in conservative). Strong early traction signals aggressive growth is achievable.</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
                       <Calendar className="w-5 h-5 text-primary mt-0.5" />
                       <div>
-                        <p className="font-semibold text-sm">6-Month Checkpoint (Q2 2025)</p>
+                        <p className="font-semibold text-sm">6-Month Checkpoint (Q2 2026)</p>
                         <p className="text-xs text-muted-foreground">30 paying customers, $380K ARR. 76% faster growth than conservative validates premium positioning.</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
                       <Calendar className="w-5 h-5 text-primary mt-0.5" />
                       <div>
-                        <p className="font-semibold text-sm">Year 1 Exit (Q4 2025)</p>
+                        <p className="font-semibold text-sm">Year 1 Exit (Q4 2026)</p>
                         <p className="text-xs text-muted-foreground">112 customers, $2.5M ARR. Clear product-market fit enables larger Series A raise ($15M+).</p>
                       </div>
                     </div>
@@ -645,18 +645,18 @@ const RevenueProjections = () => {
             </p>
             
             <div className="grid md:grid-cols-2 gap-4 mt-6">
-              <Card className="p-4 bg-background">
-                <h4 className="font-semibold mb-2 text-primary">Go/No-Go Decision Point</h4>
-                <p className="text-sm text-muted-foreground">
-                  <strong>90 days (Q1 2025):</strong> If 5+ LOIs cannot be secured from European Plant ID apps, the GDPR value proposition needs re-evaluation. This is the earliest derisking milestone.
-                </p>
-              </Card>
-              <Card className="p-4 bg-background">
-                <h4 className="font-semibold mb-2 text-primary">Recommended Initial Target</h4>
-                <p className="text-sm text-muted-foreground">
-                  <strong>Plan for conservative, execute for aggressive.</strong> Build financial models around $75M but allocate 20% additional resources to capitalize on early momentum if Q1-Q2 2025 exceed targets.
-                </p>
-              </Card>
+                <Card className="p-4 bg-background">
+                  <h4 className="font-semibold mb-2 text-primary">Go/No-Go Decision Point</h4>
+                  <p className="text-sm text-muted-foreground">
+                    <strong>90 days (Q1 2026):</strong> If 5+ LOIs cannot be secured from European Plant ID apps, the GDPR value proposition needs re-evaluation. This is the earliest derisking milestone.
+                  </p>
+                </Card>
+                <Card className="p-4 bg-background">
+                  <h4 className="font-semibold mb-2 text-primary">Recommended Initial Target</h4>
+                  <p className="text-sm text-muted-foreground">
+                    <strong>Plan for conservative, execute for aggressive.</strong> Build financial models around $75M but allocate 20% additional resources to capitalize on early momentum if Q1-Q2 2026 exceed targets.
+                  </p>
+                </Card>
             </div>
 
             <div className="mt-6 flex gap-4">
