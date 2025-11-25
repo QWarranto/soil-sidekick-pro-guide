@@ -4,10 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CheckCircle2, AlertCircle, Code, Database, Shield, Zap, FileText, Server } from "lucide-react";
 import { Link } from "react-router-dom";
+import { LeafEnginesNav } from "@/components/LeafEnginesNav";
 
 const ClientIntegrationGuide = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      <LeafEnginesNav />
       <div className="container mx-auto px-4 py-12 max-w-6xl">
         {/* Header */}
         <div className="text-center mb-12">
