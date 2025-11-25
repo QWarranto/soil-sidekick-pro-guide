@@ -602,7 +602,7 @@ const RevenueProjections = () => {
                   </div>
                   <div className="p-3 bg-muted/50 rounded-lg">
                     <p className="font-semibold mb-1">Pricing Pressure</p>
-                    <p className="text-xs text-muted-foreground">Apps with {"<"}100K users may resist $500/mo minimum</p>
+                    <p className="text-xs text-muted-foreground">Apps with {"<"}100K users may resist $500/mo minimum. Consider alternative pricing models: lower monthly minimums ($150-250/mo) in exchange for higher per-call rates ($0.025-0.035/call) to attract cost-sensitive smaller apps while maintaining revenue potential.</p>
                   </div>
                 </div>
               </div>
