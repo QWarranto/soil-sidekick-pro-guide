@@ -15,7 +15,7 @@ export const LeafEnginesNav = () => {
   
   const menuItems = [
     {
-      to: "/b2b",
+      to: "/",
       label: "LeafEngines Home",
       icon: Leaf,
       description: "Main LeafEngines page"
