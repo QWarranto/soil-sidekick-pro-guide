@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, Globe, MapPin, DollarSign, Users, Rocket, ArrowRight } from "lucide-react";
+import { TrendingUp, Globe, MapPin, DollarSign, Users, Rocket, ArrowRight, Book } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const GlobalMarketComparison = () => {
@@ -21,6 +21,15 @@ const GlobalMarketComparison = () => {
             Comparing the total addressable market for LeafEngines API licensing 
             versus the original US consumer agricultural market
           </p>
+          <div className="mt-6 flex gap-4 justify-center">
+            <Button onClick={() => window.location.href = '/leafengines-api'}>
+              <Book className="mr-2 h-4 w-4" />
+              View API Documentation
+            </Button>
+            <Button variant="outline" onClick={() => window.location.href = '/developer-sandbox'}>
+              Try Demo
+            </Button>
+          </div>
         </div>
 
         {/* Executive Summary */}
