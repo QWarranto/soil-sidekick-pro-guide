@@ -47,6 +47,7 @@ import OneSoilComparison from "./pages/OneSoilComparison";
 import HeirloomComparison from "./pages/HeirloomComparison";
 import SoilTestProComparison from "./pages/SoilTestProComparison";
 import LayoutDemo from "./pages/LayoutDemo";
+import LeafEnginesApiDocs from "./pages/LeafEnginesApiDocs";
 
 const queryClient = new QueryClient();
 
@@ -85,8 +86,9 @@ const App = () => (
             <Route path="/planting-calendar" element={<PlantingCalendar />} />
             <Route path="/fertilizer-footprint" element={<FertilizerFootprint />} />
             <Route path="/pricing" element={<Pricing />} />
-            <Route path="/api-docs" element={<ApiDocs />} />
-            <Route path="/faq" element={<FAQ />} />
+        <Route path="/api-docs" element={<ApiDocs />} />
+        <Route path="/leafengines-api" element={<LeafEnginesApiDocs />} />
+        <Route path="/faq" element={<FAQ />} />
             <Route path="/features" element={<Features />} />
             <Route path="/user-guide" element={<UserGuide />} />
         <Route path="/adapt-integration" element={<AdaptIntegration />} />

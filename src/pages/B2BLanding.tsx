@@ -27,7 +27,7 @@ export default function B2BLanding() {
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button size="lg" className="gap-2" asChild>
-                <Link to="/api-docs">
+                <Link to="/leafengines-api">
                   View API Documentation
                   <ArrowRight className="h-4 w-4" />
                 </Link>
