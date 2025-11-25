@@ -17,10 +17,10 @@ export default function B2BLanding() {
               Patent-Protected Technology
             </Badge>
             <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground md:text-6xl">
-              The Environmental Intelligence Layer
+              LeafEngines™
             </h1>
             <p className="mb-4 text-xl text-muted-foreground md:text-2xl">
-              For Plant Identification Apps
+              Environmental Intelligence API for Plant Apps
             </p>
             <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
               Stop losing users when their identified plants die. Power your app with real-time environmental compatibility scores and turn identification into actionable plant care.
@@ -161,7 +161,7 @@ const result = await analyzer(imageData);
               Churn Reduction as a Service
             </h2>
             <p className="mb-12 text-lg text-muted-foreground">
-              Our Environmental Intelligence Layer provides the "How" (maintenance & location-specific care) after the "What" (identification). Powered by patent-protected multi-agency data integration + privacy-preserving on-device AI.
+              LeafEngines provides the "How" (maintenance & location-specific care) after the "What" (identification). Powered by patent-protected multi-agency data integration + privacy-preserving on-device AI.
             </p>
 
             <div className="grid gap-8 md:grid-cols-3">

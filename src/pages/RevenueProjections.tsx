@@ -16,7 +16,7 @@ const RevenueProjections = () => {
             5-Year Revenue Buildout
           </Badge>
           <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
-            Environmental Intelligence Layer Revenue Projections
+            LeafEngines™ Revenue Projections
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Quarterly milestones and customer acquisition targets for $75M (Conservative) and $120M (Aggressive) ARR scenarios
