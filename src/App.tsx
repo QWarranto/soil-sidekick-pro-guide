@@ -48,6 +48,7 @@ import HeirloomComparison from "./pages/HeirloomComparison";
 import SoilTestProComparison from "./pages/SoilTestProComparison";
 import LayoutDemo from "./pages/LayoutDemo";
 import LeafEnginesApiDocs from "./pages/LeafEnginesApiDocs";
+import ClientIntegrationGuide from "./pages/ClientIntegrationGuide";
 
 const queryClient = new QueryClient();
 
@@ -88,6 +89,7 @@ const App = () => (
             <Route path="/pricing" element={<Pricing />} />
         <Route path="/api-docs" element={<ApiDocs />} />
         <Route path="/leafengines-api" element={<LeafEnginesApiDocs />} />
+        <Route path="/client-integration-guide" element={<ClientIntegrationGuide />} />
         <Route path="/faq" element={<FAQ />} />
             <Route path="/features" element={<Features />} />
             <Route path="/user-guide" element={<UserGuide />} />

@@ -6,7 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PlayCircle, Code, Zap, Book } from "lucide-react";
+import { PlayCircle, Code, Zap, Book, ClipboardList } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function DeveloperSandbox() {
   const [response, setResponse] = useState("");
@@ -41,14 +42,20 @@ export default function DeveloperSandbox() {
           <p className="text-lg text-muted-foreground">
             Test the Environmental Intelligence API in real-time
           </p>
-          <Button 
-            variant="outline" 
-            className="mt-4"
-            onClick={() => window.location.href = '/leafengines-api'}
-          >
-            <Book className="mr-2 h-4 w-4" />
-            View Full API Documentation
-          </Button>
+          <div className="mt-4 flex gap-3">
+            <Button variant="outline" asChild>
+              <Link to="/leafengines-api">
+                <Book className="mr-2 h-4 w-4" />
+                View API Documentation
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to="/client-integration-guide">
+                <ClipboardList className="mr-2 h-4 w-4" />
+                Integration Guide
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
 
