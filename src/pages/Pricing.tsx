@@ -123,6 +123,21 @@ export default function Pricing() {
               Choose the plan that fits your app's scale. All plans include patent-protected Environmental Compatibility Scores and multi-agency data integration.
             </p>
 
+            {/* Demo and Sandbox Links */}
+            <div className="mb-8 flex gap-4 justify-center">
+              <Button asChild>
+                <Link to="/leafengines-api">
+                  <ArrowRight className="mr-2 h-4 w-4" />
+                  View API Documentation
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link to="/developer-sandbox">
+                  Try Developer Sandbox
+                </Link>
+              </Button>
+            </div>
+
             {/* Billing Toggle */}
             <div className="flex items-center justify-center gap-4">
               <Label htmlFor="billing-toggle" className={billingCycle === "monthly" ? "font-semibold text-foreground" : "text-muted-foreground"}>

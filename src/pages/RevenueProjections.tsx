@@ -21,19 +21,6 @@ const RevenueProjections = () => {
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Quarterly milestones and customer acquisition targets for $75M (Conservative) and $120M (Aggressive) ARR scenarios
           </p>
-          <div className="mt-6 flex gap-4 justify-center">
-            <Button asChild>
-              <Link to="/leafengines-api">
-                <ArrowRight className="mr-2 h-4 w-4" />
-                View API Documentation
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link to="/developer-sandbox">
-                Try Demo
-              </Link>
-            </Button>
-          </div>
         </div>
 
         {/* Key Assumptions */}

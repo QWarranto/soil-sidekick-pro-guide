@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export default function PricingNew() {
   const [loading, setLoading] = useState<string | null>(null);
@@ -175,9 +175,22 @@ export default function PricingNew() {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
             Scale your agricultural success with AI-powered insights and comprehensive farm management tools
           </p>
-          <Button variant="outline" onClick={() => window.location.href = '/features'} className="mb-6">
-            View Detailed Feature Comparison
-          </Button>
+          <div className="flex gap-4 justify-center mb-6">
+            <Button variant="outline" onClick={() => window.location.href = '/features'}>
+              View Detailed Feature Comparison
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to="/leafengines-api">
+                <ArrowRight className="mr-2 h-4 w-4" />
+                View API Documentation
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to="/developer-sandbox">
+                Try Developer Sandbox
+              </Link>
+            </Button>
+          </div>
           
           {subscription?.isTrialActive && (
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg">
