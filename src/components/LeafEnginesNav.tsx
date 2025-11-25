@@ -31,12 +31,6 @@ export const LeafEnginesNav = () => {
       label: "Integration Guide",
       icon: FileText,
       description: "Implementation checklist"
-    },
-    {
-      to: "/revenue-projections",
-      label: "Revenue Projections",
-      icon: TrendingUp,
-      description: "Licensing & tiers"
     }
   ];
 
