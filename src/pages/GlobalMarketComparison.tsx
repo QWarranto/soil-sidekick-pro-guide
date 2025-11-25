@@ -15,10 +15,10 @@ const GlobalMarketComparison = () => {
             Market Analysis Update
           </Badge>
           <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
-            Global B2B API Market vs US-Only B2C Market
+            LeafEngines™: Global B2B API vs US-Only B2C Market
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Comparing the total addressable market for Environmental Intelligence APIs 
+            Comparing the total addressable market for LeafEngines API licensing 
             versus the original US consumer agricultural market
           </p>
         </div>

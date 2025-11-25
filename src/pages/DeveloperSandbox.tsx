@@ -37,9 +37,9 @@ export default function DeveloperSandbox() {
             <Code className="mr-2 h-3 w-3" />
             Interactive Demo
           </Badge>
-          <h1 className="mb-2 text-4xl font-bold text-foreground">Developer Sandbox</h1>
+          <h1 className="mb-2 text-4xl font-bold text-foreground">LeafEngines™ Developer Sandbox</h1>
           <p className="text-lg text-muted-foreground">
-            Test our Environmental Intelligence APIs in real-time
+            Test the Environmental Intelligence API in real-time
           </p>
         </div>
       </div>
