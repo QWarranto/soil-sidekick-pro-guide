@@ -35,15 +35,19 @@ export const LeafEnginesNav = () => {
   ];
 
   return (
-    <div className="fixed top-20 right-4 z-50">
+    <div className="fixed top-4 right-4 z-[9999]">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="gap-2 bg-background/95 backdrop-blur-sm">
-            <Menu className="h-4 w-4" />
+          <Button 
+            variant="default" 
+            size="lg" 
+            className="gap-2 bg-primary hover:bg-primary/90 shadow-lg"
+          >
+            <Menu className="h-5 w-5" />
             LeafEngines Menu
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-64 bg-background/95 backdrop-blur-sm">
+        <DropdownMenuContent align="end" className="w-72 bg-background border-2 shadow-xl">
           <DropdownMenuLabel className="font-semibold">LeafEngines™ Navigation</DropdownMenuLabel>
           <DropdownMenuSeparator />
           
