@@ -408,15 +408,6 @@ const GlobalMarketComparison = () => {
                 </ul>
               </div>
             </div>
-            
-            <div className="mt-6">
-              <Button asChild size="lg">
-                <Link to="/revenue-projections">
-                  View Detailed 5-Year Revenue Projections
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
           </CardContent>
         </Card>
       </div>

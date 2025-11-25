@@ -362,9 +362,6 @@ const result = await analyzer(imageData);
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link to="/revenue-projections">5-Year Revenue Projections</Link>
-              </Button>
             </div>
           </div>
         </div>
