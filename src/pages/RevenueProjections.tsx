@@ -38,7 +38,7 @@ const RevenueProjections = () => {
               <div>
                 <h3 className="font-semibold mb-3 text-lg">Market Entry Strategy</h3>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>✓ 18-month patent exclusivity window (no direct competitors)</li>
+                  <li>✓ Patent application in progress, approval expected Q3-Q4 2026 (17-year protection)</li>
                   <li>✓ Focus on European apps first (GDPR compliance advantage)</li>
                   <li>✓ Mid-tier Plant ID apps as initial beachhead (2,500 apps)</li>
                   <li>✓ Agricultural apps as secondary expansion (8,000 apps)</li>
@@ -310,8 +310,8 @@ const RevenueProjections = () => {
                     <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
                       <Calendar className="w-5 h-5 text-blue-500 mt-0.5" />
                       <div>
-                        <p className="font-semibold text-sm">Patent Expiration (Q2 2026)</p>
-                        <p className="text-xs text-muted-foreground">212 customers, $11.8M ARR by end of exclusive window. Strong market position before competitors emerge.</p>
+                        <p className="font-semibold text-sm">Patent Approval (Q3-Q4 2026)</p>
+                        <p className="text-xs text-muted-foreground">212 customers, $11.8M ARR. Patent approval secures 17-year competitive protection through 2043.</p>
                       </div>
                     </div>
                   </div>
@@ -564,8 +564,8 @@ const RevenueProjections = () => {
                     <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
                       <Calendar className="w-5 h-5 text-primary mt-0.5" />
                       <div>
-                        <p className="font-semibold text-sm">Patent Expiration (Q2 2026)</p>
-                        <p className="text-xs text-muted-foreground">407 customers, $27.2M ARR. Commanding market position makes competitive entry difficult despite patent expiration.</p>
+                        <p className="font-semibold text-sm">Patent Approval (Q3-Q4 2026)</p>
+                        <p className="text-xs text-muted-foreground">407 customers, $27.2M ARR. Patent approval secures 17-year competitive moat through 2043.</p>
                       </div>
                     </div>
                   </div>
@@ -593,8 +593,8 @@ const RevenueProjections = () => {
                     <p className="text-xs text-muted-foreground">6-9 month sales cycles could delay Q1-Q2 2025 targets</p>
                   </div>
                   <div className="p-3 bg-muted/50 rounded-lg">
-                    <p className="font-semibold mb-1">Patent Expiration (Q2 2026)</p>
-                    <p className="text-xs text-muted-foreground">Competitors can replicate methodology after 18 months</p>
+                    <p className="font-semibold mb-1">Patent Approval Risk (Q3-Q4 2026)</p>
+                    <p className="text-xs text-muted-foreground">Patent application could be delayed or denied, removing 17-year competitive protection</p>
                   </div>
                   <div className="p-3 bg-muted/50 rounded-lg">
                     <p className="font-semibold mb-1">API Integration Complexity</p>
@@ -615,7 +615,7 @@ const RevenueProjections = () => {
                   </div>
                   <div className="p-3 bg-muted/50 rounded-lg">
                     <p className="font-semibold mb-1">Network Effects + First-Mover Advantage</p>
-                    <p className="text-xs text-muted-foreground">407+ customers by patent expiration creates switching costs for apps</p>
+                    <p className="text-xs text-muted-foreground">Strong customer base and integration depth creates switching costs even if patent approval is delayed</p>
                   </div>
                   <div className="p-3 bg-muted/50 rounded-lg">
                     <p className="font-semibold mb-1">Pre-Built SDKs (React Native, Flutter)</p>
