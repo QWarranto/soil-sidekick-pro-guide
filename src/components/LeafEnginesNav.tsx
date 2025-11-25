@@ -52,11 +52,11 @@ export const LeafEnginesNav = () => {
           <DropdownMenuSeparator />
           
           <DropdownMenuItem asChild>
-            <Link to="/" className="flex items-start gap-3 cursor-pointer">
+            <Link to="/dashboard" className="flex items-start gap-3 cursor-pointer">
               <Home className="h-4 w-4 mt-0.5 text-primary" />
               <div>
-                <div className="font-medium">SoilSidekick Pro Home</div>
-                <div className="text-xs text-muted-foreground">Main product page</div>
+                <div className="font-medium">SoilSidekick Pro App</div>
+                <div className="text-xs text-muted-foreground">Access dashboard</div>
               </div>
             </Link>
           </DropdownMenuItem>
