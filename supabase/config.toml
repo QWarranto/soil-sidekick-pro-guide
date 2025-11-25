@@ -89,3 +89,6 @@ verify_jwt = true
 
 [functions.county-lookup]
 verify_jwt = false
+
+[functions.leafengines-query]
+verify_jwt = false
