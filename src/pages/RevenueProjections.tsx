@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TrendingUp, Target, Users, DollarSign, Calendar, CheckCircle, AlertCircle, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { LeafEnginesNav } from "@/components/LeafEnginesNav";
 
 const RevenueProjections = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-12 px-4 sm:px-6 lg:px-8">
+      <LeafEnginesNav />
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">

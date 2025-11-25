@@ -6,6 +6,7 @@ import { Code, Book, Key, Zap, Shield, Globe, ArrowRight, Copy, CheckCircle2, Cl
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import { LeafEnginesNav } from "@/components/LeafEnginesNav";
 
 const LeafEnginesApiDocs = () => {
   const { toast } = useToast();
@@ -175,6 +176,7 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      <LeafEnginesNav />
       {/* Header */}
       <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-16">
