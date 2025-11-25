@@ -3,10 +3,12 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Shield, Zap, TrendingDown, Check, Code, Database, Satellite } from "lucide-react";
 import { Link } from "react-router-dom";
+import { LeafEnginesNav } from "@/components/LeafEnginesNav";
 
 export default function B2BLanding() {
   return (
     <div className="min-h-screen bg-background">
+      <LeafEnginesNav />
       {/* Hero Section */}
       <section className="relative overflow-hidden border-b border-border">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background" />

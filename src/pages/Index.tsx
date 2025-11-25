@@ -1,4 +1,3 @@
-
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,6 +21,7 @@ import LeadCapture from '@/components/LeadCapture';
 import Footer from '@/components/Footer';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import heroAerialFarm from '@/assets/hero-aerial-farm.jpg';
+import { LeafEnginesNav } from '@/components/LeafEnginesNav';
 
 const Index = () => {
   const { user } = useAuth();
@@ -46,6 +46,7 @@ const Index = () => {
   if (!user) {
     return (
       <div className="min-h-screen relative overflow-hidden">
+        <LeafEnginesNav />
         {/* Background Hero Image */}
         <div className="absolute inset-0 z-0">
           <OptimizedImage
@@ -123,6 +124,7 @@ const Index = () => {
   // SCENARIO B: Authenticated User View (Logged In)
   return (
     <div className="min-h-screen relative overflow-hidden">
+      <LeafEnginesNav />
       {/* Background Hero Image */}
       <div className="absolute inset-0 z-0">
         <OptimizedImage
