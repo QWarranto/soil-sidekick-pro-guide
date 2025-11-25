@@ -15,7 +15,8 @@ import {
   Cloud, 
   Play,
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  Code2
 } from 'lucide-react';
 import LeadCapture from '@/components/LeadCapture';
 import Footer from '@/components/Footer';
@@ -78,18 +79,37 @@ const Index = () => {
               <CardContent className="space-y-6">
                 <LeadCapture />
                 
-                <div className="text-center pt-6 border-t border-border">
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Already have an account?
-                  </p>
-                  <Button
-                    onClick={() => navigate('/auth')}
-                    variant="outline"
-                    size="lg"
-                    className="w-full"
-                  >
-                    Log In to Dashboard
-                  </Button>
+                <div className="text-center pt-6 border-t border-border space-y-4">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground mb-3">
+                      Powered by Patent-Pending Technology
+                    </p>
+                    <Button
+                      onClick={() => navigate('/leafengines-api')}
+                      size="lg"
+                      className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                    >
+                      <Code2 className="mr-2 h-5 w-5" />
+                      Explore LeafEngines API
+                    </Button>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Enterprise-grade agricultural intelligence API
+                    </p>
+                  </div>
+                  
+                  <div className="pt-4 border-t border-border">
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Already have an account?
+                    </p>
+                    <Button
+                      onClick={() => navigate('/auth')}
+                      variant="outline"
+                      size="lg"
+                      className="w-full"
+                    >
+                      Log In to Dashboard
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -130,6 +150,29 @@ const Index = () => {
             </CardHeader>
             
             <CardContent className="space-y-6">
+              {/* LeafEngines API Highlight Banner */}
+              <div className="bg-gradient-to-r from-primary/20 via-primary/10 to-primary/5 p-6 rounded-lg border-2 border-primary/30 hover-scale">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-left">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Code2 className="h-6 w-6 text-primary" />
+                      <h3 className="text-xl font-bold text-foreground">LeafEngines API</h3>
+                      <Badge className="bg-primary/20 text-primary border-primary/30">Patent-Pending</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Enterprise agricultural intelligence API powered by SoilSidekick Pro technology
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => navigate('/leafengines-api')}
+                    size="lg"
+                    className="bg-primary hover:bg-primary/90 whitespace-nowrap"
+                  >
+                    Explore API
+                  </Button>
+                </div>
+              </div>
+
               {/* Main Action Grid - 4 columns */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {/* Primary: Soil Analysis */}
