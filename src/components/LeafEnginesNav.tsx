@@ -8,12 +8,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Menu, Home, FileText, Code2, TrendingUp } from "lucide-react";
+import { Menu, Home, FileText, Code2, TrendingUp, Leaf } from "lucide-react";
 
 export const LeafEnginesNav = () => {
   const location = useLocation();
   
   const menuItems = [
+    {
+      to: "/b2b",
+      label: "LeafEngines Home",
+      icon: Leaf,
+      description: "Main LeafEngines page"
+    },
     {
       to: "/leafengines-api",
       label: "API Documentation",
