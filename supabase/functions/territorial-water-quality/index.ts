@@ -1,4 +1,6 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { rateLimiter, exponentialBackoff, API_PROVIDERS } from '../_shared/api-rate-limiter.ts';
+import { APICacheManager } from '../_shared/api-cache-manager.ts';
 
 // Security utilities (inline)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -123,6 +125,9 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Initialize cache manager
+    const cacheManager = new APICacheManager(supabaseUrl, supabaseKey);
+
     // Authenticate user
     const { user, error: authError } = await authenticateUser(supabase, req);
     
@@ -161,24 +166,62 @@ Deno.serve(async (req) => {
     // Determine territory type and regulatory framework
     const territoryInfo = getTerritoryInfo(state_code);
     
-    // Generate territory-specific water quality data
-    const waterQualityData = await generateTerritorialWaterData(
-      fips_code, 
-      state_code, 
-      admin_unit_name, 
-      territoryInfo
+    // Use cache manager with aggressive caching (24 hour TTL)
+    const { data: waterQualityData, fromCache, cacheLevel } = await cacheManager.getOrFetch(
+      {
+        provider: 'EPA_WQP',
+        key: `water_quality_${fips_code}_${state_code}`,
+        ttl: 24 * 60 * 60 * 1000, // 24 hours
+        staleWhileRevalidate: true, // Serve stale while fetching fresh
+        countyFips: fips_code,
+      },
+      async () => {
+        // Check rate limits before calling EPA API
+        const canCall = await rateLimiter.canMakeRequest('EPA_WQP', 1);
+        if (!canCall) {
+          throw new Error('EPA API rate limit exceeded - request queued or blocked');
+        }
+
+        try {
+          const data = await generateTerritorialWaterData(
+            fips_code, 
+            state_code, 
+            admin_unit_name, 
+            territoryInfo
+          );
+          rateLimiter.recordSuccess('EPA_WQP');
+          return data;
+        } catch (error) {
+          rateLimiter.recordFailure('EPA_WQP', error as Error);
+          throw error;
+        }
+      }
     );
+
+    console.log(`[Water Quality] Data source: ${fromCache ? `cache (${cacheLevel})` : 'fresh API call'}`);
 
     // Log usage for analytics
     await logWaterQualityUsage(supabase, fips_code, state_code, user.id);
 
     console.log(`Successfully generated water quality data for ${admin_unit_name}, ${state_code}`);
 
+    // Get rate limiter status for monitoring
+    const rateLimitStatus = rateLimiter.getStatus('EPA_WQP');
+
     return new Response(
       JSON.stringify({
         success: true,
         data: waterQualityData,
         territory_info: territoryInfo,
+        cache_info: {
+          cached: fromCache,
+          cache_level: cacheLevel,
+        },
+        rate_limit_status: {
+          requests_this_minute: rateLimitStatus.requestsLastMinute,
+          requests_this_hour: rateLimitStatus.requestsLastHour,
+          circuit_open: rateLimitStatus.circuitOpen,
+        },
         timestamp: new Date().toISOString()
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -472,13 +515,17 @@ function getRandomRecentDate(): string {
 }
 
 async function fetchWQPData(fips_code: string, state_code: string, admin_unit_name: string): Promise<WaterQualityData | null> {
-  try {
+  // Use exponential backoff for EPA API calls
+  return await exponentialBackoff(async () => {
     // Water Quality Portal API endpoint for stations in the county
     const wqpUrl = `https://www.waterqualitydata.us/data/Station/search?countrycode=US&statecode=${state_code}&countycode=${fips_code.slice(-3)}&siteType=Well&siteType=Spring&siteType=Tap&mimeType=json&zip=no`;
     
     console.log(`Fetching WQP station data from: ${wqpUrl}`);
     
-    const stationResponse = await fetch(wqpUrl);
+    const stationResponse = await fetch(wqpUrl, {
+      signal: AbortSignal.timeout(10000) // 10 second timeout
+    });
+    
     if (!stationResponse.ok) {
       throw new Error(`WQP Station API responded with status: ${stationResponse.status}`);
     }
@@ -501,7 +548,10 @@ async function fetchWQPData(fips_code: string, state_code: string, admin_unit_na
     
     console.log(`Fetching WQP results data for ${stationIds.length} stations`);
     
-    const resultsResponse = await fetch(resultsUrl);
+    const resultsResponse = await fetch(resultsUrl, {
+      signal: AbortSignal.timeout(15000) // 15 second timeout
+    });
+    
     if (!resultsResponse.ok) {
       throw new Error(`WQP Results API responded with status: ${resultsResponse.status}`);
     }
@@ -514,11 +564,7 @@ async function fetchWQPData(fips_code: string, state_code: string, admin_unit_na
 
     // Process and normalize the WQP data
     return processWQPResults(results, stations[0], admin_unit_name, state_code);
-    
-  } catch (error) {
-    console.error(`Error fetching WQP data: ${error.message}`);
-    return null;
-  }
+  }, 3, 2000); // 3 retries, 2 second base delay
 }
 
 function processWQPResults(results: any[], primaryStation: any, admin_unit_name: string, state_code: string): WaterQualityData {
