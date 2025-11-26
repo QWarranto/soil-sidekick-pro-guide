@@ -1,39 +1,42 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
+import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateInput } from '../_shared/validation.ts';
+import { trackOpenAICost } from '../_shared/cost-tracker.ts';
+import { logComplianceAudit, logExternalAPICall } from '../_shared/compliance-logger.ts';
+import { safeExternalCall } from '../_shared/graceful-degradation.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface AnalysisRequest {
-  image: string; // base64 encoded image
-  analysis_type: 'pest_detection' | 'crop_health' | 'disease_screening';
-  location?: {
-    county_fips?: string;
-    county_name?: string;
-    state_code?: string;
-  };
-  crop_type?: string;
-}
+const analysisSchema = z.object({
+  image: z.string().min(1),
+  analysis_type: z.enum(['pest_detection', 'crop_health', 'disease_screening']),
+  location: z.object({
+    county_fips: z.string().optional(),
+    county_name: z.string().optional(),
+    state_code: z.string().optional(),
+  }).optional(),
+  crop_type: z.string().optional(),
+});
 
-serve(async (req) => {
-  // Handle CORS preflight requests
+Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
-    );
+  const startTime = Date.now();
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  );
 
-    // Authenticate user
+  try {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      throw new Error('Missing authorization header');
+      throw new Error('Authentication required');
     }
 
     const { data: { user }, error: authError } = await supabase.auth.getUser(
@@ -44,25 +47,51 @@ serve(async (req) => {
       throw new Error('Invalid authentication');
     }
 
-    const { image, analysis_type, location, crop_type }: AnalysisRequest = await req.json();
+    const body = await req.json();
+    const { image, analysis_type, location, crop_type } = validateInput(analysisSchema, body);
 
-    if (!image || !analysis_type) {
-      throw new Error('Missing required fields: image and analysis_type');
-    }
+    // Perform visual analysis with cost tracking
+    const analysisStart = Date.now();
+    const analysisResult = await safeExternalCall('openai', async () => {
+      return await performVisualAnalysis(image, analysis_type, crop_type);
+    });
 
-    // Call OpenAI Vision API for basic analysis
-    const analysisResult = await performVisualAnalysis(image, analysis_type, crop_type);
+    // Track OpenAI vision costs
+    await trackOpenAICost(supabase, {
+      model: 'vision-analysis',
+      featureName: 'visual-crop-analysis',
+      userId: user.id,
+      inputTokens: 0,
+      outputTokens: 800,
+    });
 
-    // Log usage for analytics
-    await logAnalysisUsage(supabase, user.id, analysis_type, location);
+    // Log compliance audit
+    await logComplianceAudit(supabase, {
+      table_name: 'visual_analysis',
+      operation: 'VISION_ANALYSIS',
+      user_id: user.id,
+      risk_level: 'medium',
+      compliance_tags: ['AI_VISION', 'CROP_ANALYSIS', analysis_type.toUpperCase()],
+      metadata: { analysis_type, has_location: !!location, crop_type },
+    });
+
+    // Log external API call
+    await logExternalAPICall(supabase, {
+      provider: 'openai',
+      endpoint: 'vision-gpt-4o',
+      user_id: user.id,
+      success: true,
+      cost_usd: 0.50,
+      response_time_ms: Date.now() - analysisStart,
+    });
 
     // Store analysis result
-    const { data: stored_analysis, error: storageError } = await supabase
+    const { data: stored_analysis } = await supabase
       .from('visual_analysis_results')
       .insert({
         user_id: user.id,
         analysis_type,
-        image_data: image.substring(0, 100) + '...', // Store truncated for reference
+        image_data: image.substring(0, 100) + '...',
         analysis_result: analysisResult,
         location_data: location,
         crop_type,
@@ -70,10 +99,8 @@ serve(async (req) => {
       .select()
       .single();
 
-    if (storageError) {
-      console.error('Storage error:', storageError);
-      // Continue even if storage fails
-    }
+    const duration = Date.now() - startTime;
+    console.log(`[Visual Analysis] Completed in ${duration}ms`);
 
     return new Response(
       JSON.stringify({
@@ -87,14 +114,24 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in visual-crop-analysis:', error);
+
+    await logComplianceAudit(supabase, {
+      table_name: 'visual_analysis',
+      operation: 'ANALYSIS_ERROR',
+      user_id: user?.id,
+      risk_level: 'high',
+      compliance_tags: ['ERROR', 'VISION_FAILURE'],
+      metadata: { error: error.message },
+    });
+
     return new Response(
-      JSON.stringify({ 
-        error: error.message,
-        success: false 
+      JSON.stringify({
+        error: 'Visual analysis service temporarily unavailable',
+        success: false
       }),
-      { 
+      {
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );
   }
