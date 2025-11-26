@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from "recharts";
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, AreaChart, Area, RadialBarChart, RadialBar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from "recharts";
 import { TrendingUp, Zap, DollarSign, Target, Clock, CheckCircle2 } from "lucide-react";
 
 interface AppCharacteristics {
@@ -65,26 +65,50 @@ export default function LeafEnginesImpactSimulator() {
 
   const impact = calculateImpact();
 
-  const comparisonData = [
+  const accuracyData = [
     {
       metric: "Accuracy",
       "Before LeafEngines": characteristics.currentAccuracy,
       "With LeafEngines": impact.accuracyImprovement,
     },
+  ];
+
+  const responseTimeData = [
+    { month: "Month 1", time: characteristics.avgResponseTime },
+    { month: "Month 2", time: characteristics.avgResponseTime * 0.85 },
+    { month: "Month 3", time: characteristics.avgResponseTime * 0.70 },
+    { month: "Month 4", time: characteristics.avgResponseTime * 0.55 },
+    { month: "Month 5", time: impact.responseTimeReduction },
+    { month: "Month 6", time: impact.responseTimeReduction * 0.98 },
+  ];
+
+  const costBreakdownData = [
+    { name: "Savings", value: impact.costSavings, color: "hsl(var(--primary))" },
+    { name: "Current Cost", value: characteristics.currentCostPerCall * characteristics.monthlyApiCalls, color: "hsl(var(--muted))" },
+  ];
+
+  const apiEfficiencyData = [
+    { month: "Jan", current: characteristics.monthlyApiCalls, optimized: characteristics.monthlyApiCalls * 0.7 },
+    { month: "Feb", current: characteristics.monthlyApiCalls, optimized: characteristics.monthlyApiCalls * 0.7 },
+    { month: "Mar", current: characteristics.monthlyApiCalls, optimized: characteristics.monthlyApiCalls * 0.7 },
+    { month: "Apr", current: characteristics.monthlyApiCalls, optimized: characteristics.monthlyApiCalls * 0.7 },
+    { month: "May", current: characteristics.monthlyApiCalls, optimized: characteristics.monthlyApiCalls * 0.7 },
+    { month: "Jun", current: characteristics.monthlyApiCalls, optimized: characteristics.monthlyApiCalls * 0.7 },
+  ];
+
+  const retentionGrowthData = [
+    { month: "Month 1", users: characteristics.userBase, retention: 75 },
+    { month: "Month 3", users: characteristics.userBase * 1.15, retention: 82 },
+    { month: "Month 6", users: characteristics.userBase * 1.35, retention: 88 },
+    { month: "Month 9", users: characteristics.userBase * 1.55, retention: 92 },
+    { month: "Month 12", users: characteristics.userBase * 1.80, retention: 95 },
+  ];
+
+  const dataQualityGaugeData = [
     {
-      metric: "Response Time (ms)",
-      "Before LeafEngines": characteristics.avgResponseTime,
-      "With LeafEngines": impact.responseTimeReduction,
-    },
-    {
-      metric: "Data Quality",
-      "Before LeafEngines": characteristics.dataQuality,
-      "With LeafEngines": impact.dataQualityScore,
-    },
-    {
-      metric: "Cost/1K Calls",
-      "Before LeafEngines": characteristics.currentCostPerCall * 1000,
-      "With LeafEngines": 20, // $0.02 per call
+      name: "Quality",
+      value: impact.dataQualityScore,
+      fill: "hsl(var(--primary))",
     },
   ];
 
@@ -287,48 +311,172 @@ export default function LeafEnginesImpactSimulator() {
             </TabsList>
 
             <TabsContent value="comparison" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Performance Comparison</CardTitle>
-                  <CardDescription>
-                    Side-by-side comparison of key metrics before and after LeafEngines integration
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={400}>
-                    <BarChart data={comparisonData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="metric" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="Before LeafEngines" fill="hsl(var(--muted))" />
-                      <Bar dataKey="With LeafEngines" fill="hsl(var(--primary))" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>📈 Accuracy Uplift</CardTitle>
+                    <CardDescription>
+                      Current vs. projected environmental data accuracy
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={accuracyData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="metric" />
+                        <YAxis domain={[0, 100]} />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="Before LeafEngines" fill="hsl(var(--muted))" />
+                        <Bar dataKey="With LeafEngines" fill="hsl(var(--primary))" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Capability Radar</CardTitle>
-                  <CardDescription>
-                    Multi-dimensional view of application improvements
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={400}>
-                    <RadarChart data={radarData}>
-                      <PolarGrid />
-                      <PolarAngleAxis dataKey="subject" />
-                      <PolarRadiusAxis angle={90} domain={[0, 100]} />
-                      <Radar name="Current" dataKey="current" stroke="hsl(var(--muted-foreground))" fill="hsl(var(--muted))" fillOpacity={0.3} />
-                      <Radar name="With LeafEngines" dataKey="improved" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.6} />
-                      <Legend />
-                    </RadarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>⚡ Response Time Improvement</CardTitle>
+                    <CardDescription>
+                      Reduced latency with LeafEngines™ on-device AI
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={responseTimeData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Line type="monotone" dataKey="time" stroke="hsl(var(--primary))" strokeWidth={3} name="Response Time (ms)" />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>📊 API Efficiency</CardTitle>
+                    <CardDescription>
+                      Monthly API calls vs. optimized calls
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={apiEfficiencyData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="current" fill="hsl(var(--muted))" name="Current Calls" />
+                        <Bar dataKey="optimized" fill="hsl(var(--primary))" name="With LeafEngines" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>💵 Cost Savings</CardTitle>
+                    <CardDescription>
+                      % reduction in cost per API call
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={costBreakdownData}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={(entry) => `${entry.name}: $${entry.value.toFixed(0)}`}
+                          outerRadius={80}
+                          fill="hsl(var(--primary))"
+                          dataKey="value"
+                        >
+                          {costBreakdownData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>🎯 Data Quality Score Boost</CardTitle>
+                    <CardDescription>
+                      Uplift in quality metrics
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <RadialBarChart
+                        cx="50%"
+                        cy="50%"
+                        innerRadius="60%"
+                        outerRadius="100%"
+                        barSize={30}
+                        data={dataQualityGaugeData}
+                        startAngle={180}
+                        endAngle={0}
+                      >
+                        <RadialBar
+                          background
+                          dataKey="value"
+                        />
+                        <text x="50%" y="60%" textAnchor="middle" dominantBaseline="middle" className="text-3xl font-bold fill-primary">
+                          {impact.dataQualityScore.toFixed(1)}%
+                        </text>
+                      </RadialBarChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>👥 Retention & User Growth</CardTitle>
+                    <CardDescription>
+                      Reduced churn and expanded user base projection
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <AreaChart data={retentionGrowthData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis yAxisId="left" />
+                        <YAxis yAxisId="right" orientation="right" />
+                        <Tooltip />
+                        <Legend />
+                        <Area
+                          yAxisId="left"
+                          type="monotone"
+                          dataKey="users"
+                          stroke="hsl(var(--primary))"
+                          fill="hsl(var(--primary))"
+                          fillOpacity={0.6}
+                          name="Active Users"
+                        />
+                        <Area
+                          yAxisId="right"
+                          type="monotone"
+                          dataKey="retention"
+                          stroke="hsl(var(--chart-2))"
+                          fill="hsl(var(--chart-2))"
+                          fillOpacity={0.3}
+                          name="Retention %"
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
 
             <TabsContent value="insights">
