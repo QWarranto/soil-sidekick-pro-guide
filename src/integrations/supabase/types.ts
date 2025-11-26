@@ -380,6 +380,7 @@ export type Database = {
           rate_limit: number | null
           rate_window_minutes: number | null
           rotation_required: boolean | null
+          subscription_tier: string | null
           updated_at: string | null
           user_id: string
         }
@@ -403,6 +404,7 @@ export type Database = {
           rate_limit?: number | null
           rate_window_minutes?: number | null
           rotation_required?: boolean | null
+          subscription_tier?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -426,8 +428,45 @@ export type Database = {
           rate_limit?: number | null
           rate_window_minutes?: number | null
           rotation_required?: boolean | null
+          subscription_tier?: string | null
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      api_tier_limits: {
+        Row: {
+          created_at: string | null
+          features: Json | null
+          id: string
+          max_concurrent_requests: number
+          requests_per_day: number
+          requests_per_hour: number
+          requests_per_minute: number
+          tier: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          features?: Json | null
+          id?: string
+          max_concurrent_requests: number
+          requests_per_day: number
+          requests_per_hour: number
+          requests_per_minute: number
+          tier: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          features?: Json | null
+          id?: string
+          max_concurrent_requests?: number
+          requests_per_day?: number
+          requests_per_hour?: number
+          requests_per_minute?: number
+          tier?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -2443,6 +2482,21 @@ export type Database = {
               user_id: string
             }[]
           }
+      validate_api_key_with_tier: {
+        Args: { client_ip?: unknown; key_hash: string }
+        Returns: {
+          access_count: number
+          api_key_id: string
+          is_locked: boolean
+          is_valid: boolean
+          lock_reason: string
+          permissions: Json
+          rate_limit: number
+          rate_window_minutes: number
+          subscription_tier: string
+          user_id: string
+        }[]
+      }
       validate_service_operation: { Args: never; Returns: boolean }
       validate_subscription_service_operation: { Args: never; Returns: boolean }
     }

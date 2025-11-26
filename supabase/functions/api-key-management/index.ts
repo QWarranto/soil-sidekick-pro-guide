@@ -121,7 +121,7 @@ async function handleGetApiKeys(user: any) {
   try {
     const { data: apiKeys, error } = await supabase
       .from('api_keys')
-      .select('id, key_name, permissions, rate_limit, rate_window_minutes, last_used_at, expires_at, is_active, created_at')
+      .select('id, key_name, permissions, rate_limit, rate_window_minutes, last_used_at, expires_at, is_active, created_at, subscription_tier')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
@@ -148,6 +148,7 @@ async function handleCreateApiKey(user: any, req: Request) {
     // Validate input
     const validationRules: InputValidationRule[] = [
       { field: 'key_name', type: 'string', required: true, minLength: 1, maxLength: 100 },
+      { field: 'subscription_tier', type: 'string', required: false, maxLength: 50 },
       { field: 'permissions', type: 'json', required: false },
       { field: 'rate_limit', type: 'number', required: false },
       { field: 'rate_window_minutes', type: 'number', required: false },
@@ -165,23 +166,41 @@ async function handleCreateApiKey(user: any, req: Request) {
       );
     }
 
+    // Validate subscription tier
+    const validTiers = ['free', 'starter', 'pro', 'enterprise'];
+    const subscriptionTier = validation.sanitized.subscription_tier || 'free';
+    if (!validTiers.includes(subscriptionTier)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid subscription tier. Must be one of: free, starter, pro, enterprise' }),
+        { status: 400, headers: getSecurityHeaders(corsHeaders) }
+      );
+    }
+
+    // Get tier-specific rate limits
+    const { data: tierLimits } = await supabase
+      .from('api_tier_limits')
+      .select('*')
+      .eq('tier', subscriptionTier)
+      .single();
+
     // Generate API key
     const apiKey = generateSecureApiKey();
     const keyHash = await hashApiKey(apiKey);
 
-    // Insert API key
+    // Insert API key with tier information
     const { data: newApiKey, error } = await supabase
       .from('api_keys')
       .insert({
         user_id: user.id,
         key_name: validation.sanitized.key_name,
         key_hash: keyHash,
+        subscription_tier: subscriptionTier,
         permissions: validation.sanitized.permissions || {},
-        rate_limit: validation.sanitized.rate_limit || 1000,
+        rate_limit: validation.sanitized.rate_limit || (tierLimits?.requests_per_hour || 1000),
         rate_window_minutes: validation.sanitized.rate_window_minutes || 60,
         expires_at: validation.sanitized.expires_at || null
       })
-      .select('id, key_name, permissions, rate_limit, rate_window_minutes, expires_at, created_at')
+      .select('id, key_name, permissions, rate_limit, rate_window_minutes, expires_at, created_at, subscription_tier')
       .single();
 
     if (error) {
