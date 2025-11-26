@@ -77,14 +77,23 @@
 
 ## Next Steps
 
-**⚠️ For detailed implementation guidance, see:** [COMPREHENSIVE_IMPLEMENTATION_GUIDE.md](./COMPREHENSIVE_IMPLEMENTATION_GUIDE.md)
+**⚠️ For detailed implementation guidance, see:** 
+- [COMPREHENSIVE_IMPLEMENTATION_GUIDE.md](./COMPREHENSIVE_IMPLEMENTATION_GUIDE.md)
+- [QUALITY_CONTROL_FRAMEWORK.md](./QUALITY_CONTROL_FRAMEWORK.md) ✅ **NEW**
 
 ### Immediate Actions (Week 1)
 1. ✅ Fix layout tilt animations (COMPLETED)
 2. ✅ Remove Lovable badge confusion (COMPLETED)
-3. 🔧 Address authentication issues (IN PROGRESS)
-4. 🔧 Migrate to React Router (see Implementation Guide Phase 1.1)
-5. 🔧 Replace mock data with Supabase (see Implementation Guide Phase 1.2)
+3. ✅ Implement comprehensive quality control framework (COMPLETED)
+   - Input validation with Zod
+   - Standardized error handling
+   - Cost tracking integration
+   - Graceful degradation patterns
+   - Compliance logging activation
+   - Fixed get-soil-data bug
+4. 🔧 Address authentication issues (IN PROGRESS)
+5. 🔧 Migrate to React Router (see Implementation Guide Phase 1.1)
+6. 🔧 Replace mock data with Supabase (see Implementation Guide Phase 1.2)
 
 ### Short-term Actions (Week 2-3)
 1. Implement API fallbacks for EPA database access

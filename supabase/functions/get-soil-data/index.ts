@@ -52,24 +52,38 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Check cache first
+    const cacheKey = `soil:${county_fips}:${property_address}`;
+    let fromCache = false;
+    let cacheLevel = 0;
+    let soilData: any;
+
     // Check if we already have analysis for this exact property address (unless force_refresh is true)
     if (!force_refresh) {
-      const { data: existingAnalysis } = await supabase
-        .from('soil_analyses')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('county_fips', county_fips)
-        .eq('property_address', property_address)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      const cachedData = await cacheManager.get(cacheKey, county_fips, 'soil');
+      if (cachedData) {
+        console.log('Returning cached soil data');
+        fromCache = true;
+        cacheLevel = cachedData.cache_level;
+        soilData = cachedData.data;
+      } else {
+        const { data: existingAnalysis } = await supabase
+          .from('soil_analyses')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('county_fips', county_fips)
+          .eq('property_address', property_address)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-      if (existingAnalysis) {
-        console.log('Returning existing analysis for this property address');
-        return new Response(
-          JSON.stringify({ soilAnalysis: existingAnalysis }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        if (existingAnalysis) {
+          console.log('Returning existing analysis for this property address');
+          return new Response(
+            JSON.stringify({ soilAnalysis: existingAnalysis }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
       }
     } else {
       console.log('Force refresh requested - fetching fresh data');
@@ -82,9 +96,23 @@ Deno.serve(async (req) => {
         .eq('property_address', property_address);
     }
 
-    // Fetch real soil data from USDA Soil Data Access (SDA) API
-    console.log('Fetching real SSURGO data from SDA API...');
-    const soilData = await fetchRealSoilData(county_fips, property_address, state_code);
+    // Fetch real soil data if not cached
+    if (!soilData) {
+      console.log('Fetching real SSURGO data from SDA API...');
+      
+      // Check rate limiter and wait if needed
+      await rateLimiter.checkRateLimit('USDA_SDA');
+      
+      try {
+        soilData = await fetchRealSoilData(county_fips, property_address, state_code);
+        
+        // Cache the result
+        await cacheManager.set(cacheKey, soilData, county_fips, 'soil');
+      } catch (error) {
+        console.error('Failed to fetch soil data:', error);
+        throw error;
+      }
+    }
 
     // Store the analysis in the database with property address
     const { data: newAnalysis, error: insertError } = await supabase
