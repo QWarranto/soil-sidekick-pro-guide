@@ -1,28 +1,27 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateInput } from '../_shared/validation.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+};
+
+const countySearchSchema = z.object({
+  term: z.string().min(2).max(60).trim(),
+});
 
 Deno.serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { term } = await req.json()
+    const body = await req.json();
+    const { term } = validateInput(countySearchSchema, body);
 
-    if (!term || typeof term !== 'string' || term.trim().length < 2) {
-      return new Response(
-        JSON.stringify({ error: 'Search term must be at least 2 characters' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    // Basic sanitization - remove commas and trim spaces
-    const cleanTerm = String(term).replace(/,/g, '').trim().slice(0, 60)
+    // Sanitization
+    const cleanTerm = term.replace(/[,;'"<>]/g, '').trim();
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!

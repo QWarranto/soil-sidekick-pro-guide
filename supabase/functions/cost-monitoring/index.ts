@@ -1,68 +1,46 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateInput, costTrackingSchema } from '../_shared/validation.ts';
+import { trackCost, COST_RATES } from '../_shared/cost-tracker.ts';
+import { logComplianceAudit } from '../_shared/compliance-logger.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Cost calculation constants (updated rates as of 2024)
-const COST_RATES = {
-  openai: {
-    'gpt-4-analysis': { input: 0.03, output: 0.06 }, // per 1K tokens
-    'vision-analysis': 0.50, // per image
-    'embeddings': 0.0001, // per 1K tokens
-  },
-  supabase: {
-    'database-query': 0.0001, // per query
-    'function-invocation': 0.00002, // per invocation
-    'storage-gb': 0.021, // per GB/month
-  },
-  usda: {
-    'api-request': 0.005, // per request
-  },
-  google_earth: {
-    'processing-unit': 0.08, // per processing unit
-    'api-request': 0.01, // per request
-  },
-  census: {
-    'api-request': 0.003, // per request
-  }
-};
+const actionSchema = z.object({
+  action: z.enum(['track_cost', 'track_usage', 'get_cost_summary', 'get_user_costs']),
+});
 
-const logStep = (step: string, details?: any) => {
-  const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
-  console.log(`[COST-MONITORING] ${step}${detailsStr}`);
-};
-
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const supabaseClient = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    { auth: { persistSession: false } }
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   );
 
   try {
-    logStep('Cost monitoring request started');
-
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      throw new Error('No authorization header provided');
+      throw new Error('Authentication required');
     }
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
-    if (userError) throw new Error(`Authentication error: ${userError.message}`);
-    
-    const user = userData.user;
-    if (!user) throw new Error('User not authenticated');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(
+      authHeader.replace('Bearer ', '')
+    );
 
-    const { action, ...body } = await req.json();
-    logStep('Processing action', { action, userId: user.id });
+    if (authError || !user) {
+      throw new Error('Invalid authentication');
+    }
+
+    const body = await req.json();
+    const { action } = validateInput(actionSchema, body);
+
+    console.log(`[COST-MONITORING] ${action} for user ${user.id}`);
 
     switch (action) {
       case 'track_cost': {

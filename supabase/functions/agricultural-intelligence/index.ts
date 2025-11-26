@@ -1,77 +1,8 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2'
-
-// Security utilities (inline for now since imports from _shared don't work in edge functions)
-const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
-
-function sanitizeError(error: any): string {
-  if (error.message?.includes('JWT') || error.message?.includes('auth')) {
-    return 'Authentication failed';
-  }
-  if (error.message?.includes('database') || error.message?.includes('SQL')) {
-    return 'Database operation failed';
-  }
-  if (error.message?.includes('API key') || error.message?.includes('secret')) {
-    return 'External service unavailable';
-  }
-  if (error.message?.includes('timeout') || error.message?.includes('network')) {
-    return 'Service temporarily unavailable';
-  }
-  return 'An unexpected error occurred';
-}
-
-function checkRateLimit(identifier: string, limit: number = 30, windowMs: number = 60000): boolean {
-  const now = Date.now();
-  const entry = rateLimitStore.get(identifier);
-  
-  if (!entry || now > entry.resetTime) {
-    rateLimitStore.set(identifier, { count: 1, resetTime: now + windowMs });
-    return true;
-  }
-  
-  if (entry.count >= limit) {
-    return false;
-  }
-  
-  entry.count++;
-  return true;
-}
-
-async function logSecurityEvent(supabase: any, event: any, request?: Request): Promise<void> {
-  try {
-    const ip_address = request?.headers.get('x-forwarded-for') || 'unknown';
-    const user_agent = request?.headers.get('user-agent') || 'unknown';
-    
-    await supabase.from('security_audit_log').insert({
-      event_type: event.event_type,
-      user_id: event.user_id,
-      ip_address,
-      user_agent,
-      details: event.details
-    });
-  } catch (logError) {
-    console.error('Failed to log security event:', logError);
-  }
-}
-
-async function authenticateUser(supabase: any, request: Request): Promise<{ user: any; error?: string }> {
-  try {
-    const authHeader = request.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return { user: null, error: 'Authentication required' };
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error } = await supabase.auth.getUser(token);
-    
-    if (error || !user) {
-      return { user: null, error: 'Invalid authentication' };
-    }
-    
-    return { user };
-  } catch (error) {
-    return { user: null, error: 'Authentication failed' };
-  }
-}
+import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { validateInput, agriculturalIntelligenceSchema } from '../_shared/validation.ts';
+import { trackOpenAICost, trackExternalAPICost } from '../_shared/cost-tracker.ts';
+import { logComplianceAudit, logExternalAPICall } from '../_shared/compliance-logger.ts';
+import { withFallback, safeExternalCall } from '../_shared/graceful-degradation.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -85,93 +16,98 @@ interface IntelligenceRequest {
     soil_data?: any;
     user_location?: string;
   };
+  useGPT5?: boolean;
 }
 
 Deno.serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const startTime = Date.now();
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  );
+
   try {
-    // Rate limiting
-    const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
-    if (!checkRateLimit(clientIP, 30, 60000)) {
-      const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
-      await logSecurityEvent(supabase, {
-        event_type: 'rate_limit_exceeded',
-        details: { endpoint: 'agricultural-intelligence', ip: clientIP },
-        severity: 'medium'
-      }, req);
-      
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: 'Too many requests' 
-      }), {
-        status: 429,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    // Authenticate
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('Authentication required');
     }
 
-    // Authenticate user
-    const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
-    const { user, error: authError } = await authenticateUser(supabase, req);
-    
-    if (!user) {
-      await logSecurityEvent(supabase, {
-        event_type: 'authentication_failure',
-        details: { endpoint: 'agricultural-intelligence', error: authError },
-        severity: 'medium'
-      }, req);
-      
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: 'Authentication required' 
-      }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    const { data: { user }, error: authError } = await supabase.auth.getUser(
+      authHeader.replace('Bearer ', '')
+    );
+
+    if (authError || !user) {
+      throw new Error('Invalid authentication');
     }
 
-    const { query, context, useGPT5 = false }: IntelligenceRequest & { useGPT5?: boolean } = await req.json();
-    
-    if (!query) {
-      throw new Error('Query is required');
-    }
+    // Validate input
+    const body = await req.json();
+    const validatedInput = validateInput(agriculturalIntelligenceSchema, body);
+    const { query, context, useGPT5 = false } = validatedInput;
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
     }
 
-    // Enhanced intent analysis with GPT-5 for superior reasoning
-    const intentAnalysis = await analyzeIntent(query, openAIApiKey, useGPT5);
-    console.log('Intent analysis (GPT-5 enhanced):', intentAnalysis);
+    // Enhanced intent analysis with fallback
+    const intentAnalysis = await safeExternalCall('openai', async () => {
+      return await analyzeIntent(query, openAIApiKey, useGPT5);
+    });
 
-    // Based on intent, call appropriate analytics functions and gather data
-    const analyticsData = await gatherRelevantData(intentAnalysis, context, supabase);
-    console.log('Analytics data gathered:', analyticsData);
+    console.log('Intent analysis:', intentAnalysis);
 
-    // Generate natural language response using analytics data with GPT-5 enhanced reasoning
-    const response = await generateIntelligentResponse(
-      query,
-      intentAnalysis,
-      analyticsData,
-      openAIApiKey,
-      useGPT5
-    );
-
-    // Log successful request
-    await logSecurityEvent(supabase, {
-      event_type: 'successful_query',
+    // Log compliance audit for AI query
+    await logComplianceAudit(supabase, {
+      table_name: 'ai_queries',
+      operation: 'ANALYZE_INTENT',
       user_id: user.id,
-      details: { 
-        endpoint: 'agricultural-intelligence',
-        intent: intentAnalysis.intent,
-        confidence: intentAnalysis.confidence 
-      },
-      severity: 'low'
-    }, req);
+      risk_level: 'low',
+      compliance_tags: ['AI_USAGE', 'AGRICULTURAL_INTELLIGENCE'],
+      metadata: { intent: intentAnalysis.intent, confidence: intentAnalysis.confidence },
+    });
+
+    // Gather relevant data
+    const analyticsData = await gatherRelevantData(intentAnalysis, context, supabase);
+
+    // Generate response with cost tracking
+    const responseStart = Date.now();
+    const response = await safeExternalCall('openai', async () => {
+      return await generateIntelligentResponse(
+        query,
+        intentAnalysis,
+        analyticsData,
+        openAIApiKey,
+        useGPT5
+      );
+    });
+
+    // Track OpenAI costs
+    const model = useGPT5 ? 'gpt-5-mini' : 'gpt-4o-mini';
+    await trackOpenAICost(supabase, {
+      model,
+      featureName: 'agricultural-intelligence',
+      userId: user.id,
+      inputTokens: response.usage?.input_tokens || 0,
+      outputTokens: response.usage?.output_tokens || 0,
+    });
+
+    // Log API call for compliance
+    await logExternalAPICall(supabase, {
+      provider: 'openai',
+      endpoint: model,
+      user_id: user.id,
+      success: true,
+      response_time_ms: Date.now() - responseStart,
+    });
+
+    const duration = Date.now() - startTime;
+    console.log(`[AI Intelligence] Completed in ${duration}ms`);
 
     return new Response(JSON.stringify({
       success: true,
@@ -180,41 +116,28 @@ Deno.serve(async (req) => {
       confidence: intentAnalysis.confidence,
       data_sources: analyticsData.sources
     }), {
-      headers: { 
-        ...corsHeaders, 
-        'Content-Type': 'application/json',
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '1; mode=block'
-      },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
     console.error('Error in agricultural intelligence:', error);
-    
-    // Log security event for errors
-    const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
-    await logSecurityEvent(supabase, {
-      event_type: 'function_error',
-      details: { 
-        endpoint: 'agricultural-intelligence', 
-        sanitized_error: sanitizeError(error),
-        timestamp: new Date().toISOString()
-      },
-      severity: 'high'
-    }, req);
-    
-    return new Response(JSON.stringify({ 
+
+    // Log compliance audit for error
+    await logComplianceAudit(supabase, {
+      table_name: 'ai_queries',
+      operation: 'QUERY_ERROR',
+      user_id: user?.id,
+      risk_level: 'high',
+      compliance_tags: ['ERROR', 'AI_FAILURE'],
+      metadata: { error: error.message, timestamp: new Date().toISOString() },
+    });
+
+    return new Response(JSON.stringify({
       success: false,
-      error: sanitizeError(error)
+      error: 'Agricultural intelligence service temporarily unavailable'
     }), {
       status: 500,
-      headers: { 
-        ...corsHeaders, 
-        'Content-Type': 'application/json',
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY'
-      },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });
