@@ -1,6 +1,8 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
+import { rateLimiter, exponentialBackoff } from '../_shared/api-rate-limiter.ts';
+import { APICacheManager } from '../_shared/api-cache-manager.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -23,11 +25,17 @@ serve(async (req) => {
 
   try {
     const authHeader = req.headers.get('Authorization')!;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    
     const supabase = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_ANON_KEY')!,
+      supabaseUrl,
+      supabaseKey,
       { global: { headers: { Authorization: authHeader } } }
     );
+
+    // Initialize cache manager
+    const cacheManager = new APICacheManager(supabaseUrl, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -39,8 +47,34 @@ serve(async (req) => {
 
     const { analysis_id, county_fips, lat, lng, soil_data, water_body_data }: EnhancementRequest = await req.json();
 
-    // Get satellite embeddings from Google Earth Engine
-    const satelliteData = await getSatelliteEmbeddings(lat, lng);
+    // Use cache manager for satellite data (12 hour TTL)
+    const { data: satelliteData, fromCache, cacheLevel } = await cacheManager.getOrFetch(
+      {
+        provider: 'GOOGLE_EE',
+        key: `satellite_${lat}_${lng}`,
+        ttl: 12 * 60 * 60 * 1000, // 12 hours
+        staleWhileRevalidate: true,
+        countyFips: county_fips,
+      },
+      async () => {
+        // Check rate limits before calling Google Earth Engine
+        const canCall = await rateLimiter.canMakeRequest('GOOGLE_EE', 3); // Priority 3 for satellite
+        if (!canCall) {
+          throw new Error('Google Earth Engine rate limit exceeded');
+        }
+
+        try {
+          const data = await getSatelliteEmbeddings(lat, lng);
+          rateLimiter.recordSuccess('GOOGLE_EE');
+          return data;
+        } catch (error) {
+          rateLimiter.recordFailure('GOOGLE_EE', error as Error);
+          throw error;
+        }
+      }
+    );
+
+    console.log(`[Satellite] Data source: ${fromCache ? `cache (${cacheLevel})` : 'fresh GEE call'}`);
     
     // Enhance environmental impact analysis
     const enhancedAnalysis = await enhanceEnvironmentalImpact(
@@ -74,10 +108,21 @@ serve(async (req) => {
       });
     }
 
+    // Get rate limiter status
+    const rateLimitStatus = rateLimiter.getStatus('GOOGLE_EE');
+
     return new Response(JSON.stringify({
       success: true,
       enhanced_analysis: enhancedAnalysis,
-      satellite_insights: satelliteData.insights
+      satellite_insights: satelliteData.insights,
+      cache_info: {
+        cached: fromCache,
+        cache_level: cacheLevel,
+      },
+      rate_limit_status: {
+        requests_this_minute: rateLimitStatus.requestsLastMinute,
+        requests_this_hour: rateLimitStatus.requestsLastHour,
+      }
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
@@ -94,7 +139,8 @@ serve(async (req) => {
 async function getSatelliteEmbeddings(lat: number, lng: number) {
   const earthEngineApiKey = Deno.env.get('GOOGLE_EARTH_ENGINE_API_KEY');
   
-  try {
+  // Use exponential backoff for GEE API calls
+  return await exponentialBackoff(async () => {
     // Initialize Google Earth Engine
     const initResponse = await fetch('https://earthengine.googleapis.com/v1/projects/earthengine-legacy/value:compute', {
       method: 'POST',
@@ -111,7 +157,8 @@ async function getSatelliteEmbeddings(lat: number, lng: number) {
             }
           }
         }
-      })
+      }),
+      signal: AbortSignal.timeout(20000) // 20 second timeout
     });
 
     // Get satellite embeddings for the specific location
@@ -143,8 +190,13 @@ async function getSatelliteEmbeddings(lat: number, lng: number) {
             scale: { constantValue: 10 }
           }
         }
-      })
+      }),
+      signal: AbortSignal.timeout(25000) // 25 second timeout
     });
+
+    if (!embedResponse.ok) {
+      throw new Error(`GEE API returned ${embedResponse.status}`);
+    }
 
     const embedData = await embedResponse.json();
     
@@ -153,14 +205,7 @@ async function getSatelliteEmbeddings(lat: number, lng: number) {
       insights: analyzeSatelliteInsights(embedData.result || []),
       confidence: calculateConfidence(embedData.result || [])
     };
-  } catch (error) {
-    console.error('Error fetching satellite embeddings:', error);
-    return {
-      embeddings: [],
-      insights: { vegetation_health: 'moderate', water_stress: 'low', soil_moisture: 'moderate' },
-      confidence: 0.5
-    };
-  }
+  }, 3, 3000); // 3 retries, 3 second base delay
 }
 
 function analyzeSatelliteInsights(embeddings: number[]) {

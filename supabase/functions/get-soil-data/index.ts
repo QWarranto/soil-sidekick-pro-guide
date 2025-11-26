@@ -1,4 +1,6 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { rateLimiter, exponentialBackoff } from '../_shared/api-rate-limiter.ts';
+import { APICacheManager } from '../_shared/api-cache-manager.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -27,6 +29,9 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Initialize cache manager
+    const cacheManager = new APICacheManager(supabaseUrl, supabaseKey);
 
     // Get user from authorization header
     const authHeader = req.headers.get('authorization');
@@ -96,7 +101,11 @@ Deno.serve(async (req) => {
         phosphorus_level: soilData.phosphorus_level,
         potassium_level: soilData.potassium_level,
         recommendations: soilData.recommendations,
-        analysis_data: soilData
+        analysis_data: {
+          ...soilData,
+          cached: fromCache,
+          cache_level: cacheLevel,
+        }
       })
       .select()
       .single();
@@ -109,8 +118,21 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Get rate limiter status
+    const rateLimitStatus = rateLimiter.getStatus('USDA_SDA');
+
     return new Response(
-      JSON.stringify({ soilAnalysis: newAnalysis }),
+      JSON.stringify({ 
+        soilAnalysis: newAnalysis,
+        cache_info: {
+          cached: fromCache,
+          cache_level: cacheLevel,
+        },
+        rate_limit_status: {
+          requests_this_minute: rateLimitStatus.requestsLastMinute,
+          requests_this_hour: rateLimitStatus.requestsLastHour,
+        }
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
@@ -125,11 +147,11 @@ Deno.serve(async (req) => {
 
 // Fetch real soil data from USDA Soil Data Access (SDA) API
 async function fetchRealSoilData(countyFips: string, propertyAddress: string, stateCode: string) {
-  const SDA_URL = 'https://SDMDataAccess.sc.egov.usda.gov/Tabular/post.rest';
-  
-  try {
+  // Use exponential backoff for USDA API calls
+  return await exponentialBackoff(async () => {
+    const SDA_URL = 'https://SDMDataAccess.sc.egov.usda.gov/Tabular/post.rest';
+    
     // Construct proper areasymbol: state code + county numeric portion
-    // Example: FIPS "13247" with state "GA" becomes "GA247"
     const countyNumeric = countyFips.substring(2);
     const areasymbol = `${stateCode}${countyNumeric}`;
     
@@ -171,7 +193,8 @@ async function fetchRealSoilData(countyFips: string, propertyAddress: string, st
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ query: sqlQuery })
+      body: JSON.stringify({ query: sqlQuery }),
+      signal: AbortSignal.timeout(15000) // 15 second timeout
     });
 
     if (!response.ok) {
@@ -189,12 +212,7 @@ async function fetchRealSoilData(countyFips: string, propertyAddress: string, st
       console.log('No SSURGO data available, using regional estimates');
       return getRegionalEstimates(countyFips);
     }
-    
-  } catch (error) {
-    console.error('Error fetching SSURGO data:', error);
-    // Fallback to regional estimates if API fails
-    return getRegionalEstimates(countyFips);
-  }
+  }, 3, 2000); // 3 retries, 2 second base delay
 }
 
 function parseSDAResponse(tableData: any[]) {
