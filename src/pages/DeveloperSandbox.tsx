@@ -55,6 +55,12 @@ export default function DeveloperSandbox() {
                 Integration Guide
               </Link>
             </Button>
+            <Button asChild>
+              <Link to="/impact-simulator">
+                <Zap className="mr-2 h-4 w-4" />
+                Impact Calculator
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
