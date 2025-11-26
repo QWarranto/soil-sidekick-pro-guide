@@ -535,15 +535,17 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
               <Card className="border-2">
                 <CardHeader>
                   <CardTitle>Starter</CardTitle>
-                  <CardDescription>For testing and development</CardDescription>
+                  <CardDescription>For emerging plant ID apps</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-bold mb-2">$0.10</p>
-                  <p className="text-sm text-muted-foreground mb-4">per request</p>
+                  <p className="text-3xl font-bold mb-2">$500</p>
+                  <p className="text-sm text-muted-foreground mb-4">per month</p>
                   <ul className="text-sm space-y-2">
-                    <li>✓ 10 requests/minute</li>
-                    <li>✓ All data sources</li>
-                    <li>✓ Email support</li>
+                    <li>✓ 50,000 calls/month</li>
+                    <li>✓ 1,000 requests/minute</li>
+                    <li>✓ EPA water quality data</li>
+                    <li>✓ FIPS location intelligence</li>
+                    <li>✓ Email support (48hr)</li>
                   </ul>
                 </CardContent>
               </Card>
@@ -551,44 +553,46 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
               <Card className="border-2 border-primary">
                 <CardHeader>
                   <Badge className="w-fit mb-2">Most Popular</Badge>
-                  <CardTitle>Growth</CardTitle>
-                  <CardDescription>For scaling apps</CardDescription>
+                  <CardTitle>Professional</CardTitle>
+                  <CardDescription>With satellite monitoring</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-bold mb-2">$0.05</p>
-                  <p className="text-sm text-muted-foreground mb-4">per request</p>
+                  <p className="text-3xl font-bold mb-2">$1,500</p>
+                  <p className="text-sm text-muted-foreground mb-4">per month</p>
                   <ul className="text-sm space-y-2">
-                    <li>✓ 100 requests/minute</li>
-                    <li>✓ All data sources</li>
-                    <li>✓ Priority support</li>
-                    <li>✓ Custom plant database</li>
+                    <li>✓ 250,000 calls/month</li>
+                    <li>✓ 2,500 requests/minute</li>
+                    <li>✓ AlphaEarth satellite data</li>
+                    <li>✓ Real-time NDVI & soil moisture</li>
+                    <li>✓ Priority support (24hr)</li>
                   </ul>
                 </CardContent>
               </Card>
 
               <Card className="border-2">
                 <CardHeader>
-                  <CardTitle>Enterprise</CardTitle>
-                  <CardDescription>For high-volume applications</CardDescription>
+                  <CardTitle>Custom</CardTitle>
+                  <CardDescription>White-label enterprise solution</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-3xl font-bold mb-2">Custom</p>
-                  <p className="text-sm text-muted-foreground mb-4">volume pricing</p>
+                  <p className="text-sm text-muted-foreground mb-4">pricing</p>
                   <ul className="text-sm space-y-2">
-                    <li>✓ Unlimited requests</li>
-                    <li>✓ Dedicated infrastructure</li>
-                    <li>✓ 24/7 support</li>
-                    <li>✓ Custom integrations</li>
-                    <li>✓ SLA guarantees</li>
+                    <li>✓ Unlimited API calls</li>
+                    <li>✓ Custom rate limits</li>
+                    <li>✓ White-label options</li>
+                    <li>✓ Dedicated account manager</li>
+                    <li>✓ 24/7 phone & Slack support</li>
+                    <li>✓ Custom SLA agreements</li>
                   </ul>
                 </CardContent>
               </Card>
             </div>
 
             <div className="border-l-4 border-primary pl-4 py-2">
-              <p className="text-sm font-semibold">Volume Discounts Available</p>
+              <p className="text-sm font-semibold">Need Help Choosing?</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Contact <a href="mailto:sales@leafengines.com" className="text-primary hover:underline">sales@leafengines.com</a> for custom pricing on 1M+ requests/month
+                Contact <a href="mailto:sales@leafengines.com" className="text-primary hover:underline">sales@leafengines.com</a> to discuss your app's needs and find the right tier
               </p>
             </div>
           </CardContent>

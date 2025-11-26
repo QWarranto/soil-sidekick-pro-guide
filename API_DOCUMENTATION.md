@@ -259,16 +259,16 @@ GET /usage-analytics
 ### 4.1 Rate Limiting
 
 **Tier-based Limits**:
-- Free: 10 requests/hour
-- Basic: 100 requests/hour  
-- Premium: 1000 requests/hour
-- Enterprise: 10,000 requests/hour
+- **Starter**: 50,000 calls/month, 1,000 req/min - Email support (48hr response)
+- **Professional**: 250,000 calls/month, 2,500 req/min - Priority support (24hr response)
+- **Custom**: Unlimited calls, custom rate limits - 24/7 dedicated support
 
-**Headers**:
+**Response Headers**:
 ```
-X-RateLimit-Limit: 100
-X-RateLimit-Remaining: 95
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 950
 X-RateLimit-Reset: 1642694400
+X-Tier: starter
 ```
 
 ### 4.2 Error Handling

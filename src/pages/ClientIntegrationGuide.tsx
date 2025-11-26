@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle2, AlertCircle, Code, Database, Shield, Zap, FileText, Server } from "lucide-react";
+import { CheckCircle2, AlertCircle, Code, Database, Shield, Zap, FileText, Server, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { LeafEnginesNav } from "@/components/LeafEnginesNav";
 
@@ -60,13 +60,221 @@ const ClientIntegrationGuide = () => {
         </div>
 
         {/* Main Content Tabs */}
-        <Tabs defaultValue="technical" className="mb-12">
-          <TabsList className="grid w-full grid-cols-4">
+        <Tabs defaultValue="tier-guide" className="mb-12">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="tier-guide">Tier Guide</TabsTrigger>
             <TabsTrigger value="technical">Technical Setup</TabsTrigger>
             <TabsTrigger value="integration">Integration</TabsTrigger>
             <TabsTrigger value="business">Business Prep</TabsTrigger>
             <TabsTrigger value="demo">Demo Checklist</TabsTrigger>
           </TabsList>
+
+          {/* Tier-Specific Guidance */}
+          <TabsContent value="tier-guide" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Choose Your Integration Path</CardTitle>
+                <CardDescription>Each tier is designed for different scales and use cases</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Starter Tier */}
+                <div className="border-2 border-blue-200 rounded-lg p-6 bg-blue-50/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="rounded-lg bg-blue-100 p-3">
+                      <Zap className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold">Starter - $500/month</h3>
+                      <p className="text-sm text-muted-foreground">Perfect for emerging plant ID apps testing market fit</p>
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <h4 className="font-semibold mb-2">Best For:</h4>
+                      <ul className="text-sm space-y-1 text-muted-foreground">
+                        <li>• Apps with &lt;50k users</li>
+                        <li>• MVP and beta testing</li>
+                        <li>• Small development teams</li>
+                        <li>• Budget-conscious startups</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-2">What You Get:</h4>
+                      <ul className="text-sm space-y-1 text-muted-foreground">
+                        <li>• 50,000 API calls/month</li>
+                        <li>• 1,000 requests/minute</li>
+                        <li>• EPA water quality data</li>
+                        <li>• Email support (48hr)</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="border-t pt-4">
+                    <h4 className="font-semibold mb-2">Integration Priority:</h4>
+                    <p className="text-sm text-muted-foreground">Focus on core compatibility scores. Skip satellite features. Implement caching aggressively to stay within limits.</p>
+                  </div>
+                </div>
+
+                {/* Professional Tier */}
+                <div className="border-2 border-primary rounded-lg p-6 bg-primary/5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="rounded-lg bg-primary/10 p-3">
+                      <Sparkles className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold">Professional - $1,500/month</h3>
+                      <Badge className="ml-2">Most Popular</Badge>
+                      <p className="text-sm text-muted-foreground mt-1">Complete environmental intelligence with satellite monitoring</p>
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <h4 className="font-semibold mb-2">Best For:</h4>
+                      <ul className="text-sm space-y-1 text-muted-foreground">
+                        <li>• Apps with 50k-500k users</li>
+                        <li>• Revenue-generating products</li>
+                        <li>• Premium feature differentiation</li>
+                        <li>• Agricultural focus apps</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-2">What You Get:</h4>
+                      <ul className="text-sm space-y-1 text-muted-foreground">
+                        <li>• 250,000 API calls/month</li>
+                        <li>• 2,500 requests/minute</li>
+                        <li>• AlphaEarth satellite data</li>
+                        <li>• Real-time NDVI & soil moisture</li>
+                        <li>• Priority support (24hr)</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="border-t pt-4">
+                    <h4 className="font-semibold mb-2">Integration Priority:</h4>
+                    <p className="text-sm text-muted-foreground">Implement full satellite intelligence. Build premium features around thermal stress indicators and NDVI data. Perfect for subscription upsells.</p>
+                  </div>
+                </div>
+
+                {/* Custom Tier */}
+                <div className="border-2 border-purple-200 rounded-lg p-6 bg-purple-50/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="rounded-lg bg-purple-100 p-3">
+                      <Shield className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold">Custom - Enterprise Pricing</h3>
+                      <p className="text-sm text-muted-foreground">White-label solution with dedicated infrastructure</p>
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <h4 className="font-semibold mb-2">Best For:</h4>
+                      <ul className="text-sm space-y-1 text-muted-foreground">
+                        <li>• Apps with 500k+ users</li>
+                        <li>• Enterprise clients</li>
+                        <li>• White-label requirements</li>
+                        <li>• Mission-critical applications</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-2">What You Get:</h4>
+                      <ul className="text-sm space-y-1 text-muted-foreground">
+                        <li>• Unlimited API calls</li>
+                        <li>• Custom rate limits</li>
+                        <li>• White-label branding</li>
+                        <li>• Dedicated account manager</li>
+                        <li>• 24/7 support & SLA</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="border-t pt-4">
+                    <h4 className="font-semibold mb-2">Integration Priority:</h4>
+                    <p className="text-sm text-muted-foreground">Full platform integration with custom features. Work directly with your dedicated account manager for custom data sources and integrations.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Tier Comparison Matrix</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left p-3">Feature</th>
+                        <th className="text-center p-3">Starter</th>
+                        <th className="text-center p-3">Professional</th>
+                        <th className="text-center p-3">Custom</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b">
+                        <td className="p-3">API Calls/Month</td>
+                        <td className="text-center p-3">50,000</td>
+                        <td className="text-center p-3">250,000</td>
+                        <td className="text-center p-3">Unlimited</td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="p-3">Rate Limit</td>
+                        <td className="text-center p-3">1,000/min</td>
+                        <td className="text-center p-3">2,500/min</td>
+                        <td className="text-center p-3">Custom</td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="p-3">EPA Water Quality</td>
+                        <td className="text-center p-3">✓</td>
+                        <td className="text-center p-3">✓</td>
+                        <td className="text-center p-3">✓</td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="p-3">FIPS Intelligence</td>
+                        <td className="text-center p-3">✓</td>
+                        <td className="text-center p-3">✓</td>
+                        <td className="text-center p-3">✓</td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="p-3">AlphaEarth Satellite</td>
+                        <td className="text-center p-3">-</td>
+                        <td className="text-center p-3">✓</td>
+                        <td className="text-center p-3">✓</td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="p-3">Real-time NDVI</td>
+                        <td className="text-center p-3">-</td>
+                        <td className="text-center p-3">✓</td>
+                        <td className="text-center p-3">✓</td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="p-3">White-label Options</td>
+                        <td className="text-center p-3">-</td>
+                        <td className="text-center p-3">-</td>
+                        <td className="text-center p-3">✓</td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="p-3">Support Response</td>
+                        <td className="text-center p-3">48hr</td>
+                        <td className="text-center p-3">24hr</td>
+                        <td className="text-center p-3">24/7</td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="p-3">Account Manager</td>
+                        <td className="text-center p-3">-</td>
+                        <td className="text-center p-3">-</td>
+                        <td className="text-center p-3">✓</td>
+                      </tr>
+                      <tr>
+                        <td className="p-3 font-semibold">Pricing</td>
+                        <td className="text-center p-3 font-semibold">$500/mo</td>
+                        <td className="text-center p-3 font-semibold">$1,500/mo</td>
+                        <td className="text-center p-3 font-semibold">Custom</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           {/* Technical Prerequisites */}
           <TabsContent value="technical" className="space-y-6">
@@ -112,7 +320,7 @@ const ClientIntegrationGuide = () => {
                     <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
                     <div>
                       <h4 className="font-semibold">Rate Limit Tracking System</h4>
-                      <p className="text-sm text-muted-foreground">Local tracking to stay within tier quotas (Tier 1: 100/day, Tier 2: 10,000/day, Tier 3: Unlimited)</p>
+                      <p className="text-sm text-muted-foreground">Local tracking to stay within tier quotas (Starter: 1,000 req/min, Professional: 2,500 req/min, Custom: Unlimited)</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -195,13 +403,13 @@ const ClientIntegrationGuide = () => {
                       <p className="text-sm text-muted-foreground">Internal dashboard to monitor API consumption, track usage against tier limits, and view cost projections</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-semibold">Billing Integration</h4>
-                      <p className="text-sm text-muted-foreground">System to track usage, calculate overage fees, and generate invoices (Tier 2/3 only)</p>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-semibold">Usage Monitoring & Billing</h4>
+                        <p className="text-sm text-muted-foreground">System to track API usage, monitor against tier limits, and alert when approaching monthly caps (All tiers)</p>
+                      </div>
                     </div>
-                  </div>
                   <div className="flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
                     <div>
@@ -293,35 +501,38 @@ const ClientIntegrationGuide = () => {
                       <p className="text-sm text-muted-foreground mb-2">Choose the appropriate tier based on expected usage:</p>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-2">
                         <div className="p-3 border rounded-lg">
-                          <p className="font-semibold text-sm">Tier 1: Prototype</p>
-                          <p className="text-xs text-muted-foreground">100 queries/day</p>
+                          <p className="font-semibold text-sm">Starter</p>
+                          <p className="text-xs text-muted-foreground">50,000 API calls/month</p>
+                          <p className="text-xs text-muted-foreground">1,000 req/min rate limit</p>
                           <p className="text-xs text-muted-foreground">$500/month</p>
                         </div>
-                        <div className="p-3 border rounded-lg">
-                          <p className="font-semibold text-sm">Tier 2: Growth</p>
-                          <p className="text-xs text-muted-foreground">10,000 queries/day</p>
-                          <p className="text-xs text-muted-foreground">$5,000/month + overage</p>
+                        <div className="p-3 border rounded-lg border-primary">
+                          <p className="font-semibold text-sm">Professional</p>
+                          <p className="text-xs text-muted-foreground">250,000 API calls/month</p>
+                          <p className="text-xs text-muted-foreground">2,500 req/min rate limit</p>
+                          <p className="text-xs text-muted-foreground">$1,500/month</p>
                         </div>
                         <div className="p-3 border rounded-lg">
-                          <p className="font-semibold text-sm">Tier 3: Enterprise</p>
-                          <p className="text-xs text-muted-foreground">Unlimited</p>
-                          <p className="text-xs text-muted-foreground">Custom pricing + overage</p>
+                          <p className="font-semibold text-sm">Custom</p>
+                          <p className="text-xs text-muted-foreground">Unlimited API calls</p>
+                          <p className="text-xs text-muted-foreground">Custom rate limits</p>
+                          <p className="text-xs text-muted-foreground">Custom pricing</p>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-semibold">Budget for Overage Charges</h4>
-                      <p className="text-sm text-muted-foreground">Tier 2/3 contracts include overage fees beyond base limits. Plan for:</p>
-                      <ul className="text-xs text-muted-foreground space-y-1 ml-4 mt-2">
-                        <li>• Seasonal usage spikes (planting/harvest seasons)</li>
-                        <li>• Marketing campaigns that drive user growth</li>
-                        <li>• Unexpected viral adoption</li>
-                      </ul>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-semibold">Budget for Overage Charges</h4>
+                        <p className="text-sm text-muted-foreground">Starter and Professional tiers have fixed monthly limits. Custom tier includes flexible usage. Plan for:</p>
+                        <ul className="text-xs text-muted-foreground space-y-1 ml-4 mt-2">
+                          <li>• Seasonal usage spikes (planting/harvest seasons)</li>
+                          <li>• Marketing campaigns that drive user growth</li>
+                          <li>• Upgrading tiers if consistently hitting limits</li>
+                        </ul>
+                      </div>
                     </div>
-                  </div>
                   <div className="flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
                     <div>
