@@ -110,7 +110,36 @@ SoilSidekick Pro is built on a modern, scalable architecture leveraging React/Ty
 - **Census API**: Geographic and demographic data
 - **FIPS Code Services**: County identification and validation
 
-### 5.2 Caching Strategy
+### 5.2 SDK/API Client Integration
+
+**Enterprise SDK Access**: SoilSidekick Pro provides comprehensive SDK and API integration for enterprise clients.
+
+📋 **Integration Guide**: See [SDK_CLIENT_ONBOARDING_PLAN.md](./SDK_CLIENT_ONBOARDING_PLAN.md)
+
+**Client Integration Architecture**:
+```
+Client Application
+├── SoilSidekick SDK
+├── JWT Authentication
+├── API Request Management
+└── Response Handling
+
+SoilSidekick Platform
+├── API Gateway (Rate Limiting)
+├── Authentication Service
+├── Edge Functions
+└── Data Processing
+```
+
+**SDK Features**:
+- RESTful API access to all platform features
+- Automatic authentication and token management
+- Rate limiting and retry logic
+- Webhook integration support
+- TypeScript type definitions
+- Comprehensive error handling
+
+### 5.3 Caching Strategy
 ```
 Level 1: County-specific (1 hour)
 Level 2: State-level (6 hours)
@@ -118,10 +147,11 @@ Level 3: Regional (24 hours)
 Level 4: National (7 days)
 ```
 
-### 5.3 API Rate Limiting
+### 5.4 API Rate Limiting
 - **Tier-based limits**: Different limits per subscription tier
 - **Hierarchical throttling**: Progressive slowdown before hard limits
 - **Geographic distribution**: Regional rate limiting for load balancing
+- **SDK Client Support**: Automatic rate limit handling with retry logic
 
 ## 6. Security Architecture
 

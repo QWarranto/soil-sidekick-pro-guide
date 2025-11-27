@@ -198,7 +198,8 @@ Based on impact and dependencies:
 2. Performance optimization (lazy loading, code splitting)
 3. Monitoring and analytics integration
 4. Advanced UX patterns (optimistic updates, skeletons)
-5. Documentation and testing
+5. SDK/API client integration support (see [SDK_CLIENT_ONBOARDING_PLAN.md](./SDK_CLIENT_ONBOARDING_PLAN.md))
+6. Documentation and testing
 
 ---
 
