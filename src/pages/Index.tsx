@@ -21,6 +21,7 @@ import LeadCapture from '@/components/LeadCapture';
 import Footer from '@/components/Footer';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import heroAerialFarm from '@/assets/hero-aerial-farm.jpg';
+import gdprCertified from '@/assets/gdpr-certified.png';
 import { LeafEnginesNav } from '@/components/LeafEnginesNav';
 
 const Index = () => {
@@ -74,6 +75,15 @@ const Index = () => {
                   <p className="text-sm text-muted-foreground pt-2">
                     Real-time satellite monitoring • Environmental impact analysis • AI-powered insights
                   </p>
+                  <div className="flex justify-center pt-4">
+                    <OptimizedImage
+                      src={gdprCertified}
+                      alt="GDPR Certified - Data Protection Compliance"
+                      width={300}
+                      height={150}
+                      className="max-w-[300px] w-full h-auto"
+                    />
+                  </div>
                 </div>
               </CardHeader>
               
@@ -149,6 +159,15 @@ const Index = () => {
               <CardDescription className="text-lg text-muted-foreground">
                 Select a tool to begin your analysis
               </CardDescription>
+              <div className="flex justify-center pt-4">
+                <OptimizedImage
+                  src={gdprCertified}
+                  alt="GDPR Certified - Data Protection Compliance"
+                  width={300}
+                  height={150}
+                  className="max-w-[300px] w-full h-auto"
+                />
+              </div>
             </CardHeader>
             
             <CardContent className="space-y-6">
