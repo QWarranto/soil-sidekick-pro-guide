@@ -315,7 +315,25 @@ X-Tier: starter
 
 ## 5. SDK and Integration
 
-### 5.1 JavaScript/TypeScript SDK
+### 5.1 SDK Client Onboarding
+
+**New Enterprise Clients**: Follow our comprehensive 4-week onboarding plan for seamless SDK/API integration.
+
+📋 **Reference**: See [SDK_CLIENT_ONBOARDING_PLAN.md](./SDK_CLIENT_ONBOARDING_PLAN.md) for:
+- Pre-implementation requirements
+- Week-by-week implementation schedule
+- Technical setup and authentication
+- Core feature integration
+- Production deployment procedures
+- Success metrics and support
+
+**Quick Start Timeline**:
+- **Week 1**: Setup & Authentication
+- **Week 2**: Core Feature Integration
+- **Week 3**: Advanced Features & Optimization
+- **Week 4**: Testing, Documentation & Go-Live
+
+### 5.2 JavaScript/TypeScript SDK
 
 ```typescript
 import { SoilSidekickAPI } from '@soilsidekick/api-client';
@@ -332,7 +350,7 @@ const soilAnalysis = await client.soil.analyze({
 });
 ```
 
-### 5.2 Webhook Integration
+### 5.3 Webhook Integration
 
 **Webhook Endpoints**: Configure webhooks for real-time notifications:
 - Soil analysis completion
@@ -377,6 +395,8 @@ All API interactions maintain comprehensive audit trails including:
 **Security Issues**: admin@soilsidekickpro.com
 **Documentation**: https://docs.soilsidekickpro.com
 **Status Page**: https://status.soilsidekickpro.com
+
+**SDK Client Onboarding**: See [SDK_CLIENT_ONBOARDING_PLAN.md](./SDK_CLIENT_ONBOARDING_PLAN.md) for enterprise integration guide
 
 **Compliance Certifications**:
 - SOC 2 Type 1 Certified
