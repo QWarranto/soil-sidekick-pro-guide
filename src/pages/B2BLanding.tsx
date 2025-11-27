@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Shield, Zap, TrendingDown, Check, Code, Database, Satellite } from "lucide-react";
 import { Link } from "react-router-dom";
 import { LeafEnginesNav } from "@/components/LeafEnginesNav";
+import { OptimizedImage } from "@/components/OptimizedImage";
+import gdprCertified from "@/assets/gdpr-certified.png";
 
 export default function B2BLanding() {
   return (
@@ -124,12 +126,13 @@ export default function B2BLanding() {
                   </div>
                 </div>
               </div>
-              <Card className="p-6">
-                <div className="mb-4 rounded-lg bg-muted p-4">
-                  <Code className="mb-2 h-8 w-8 text-primary" />
-                  <h3 className="text-lg font-semibold text-foreground">WebGPU Integration</h3>
-                </div>
-                <pre className="overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs text-green-400">
+              <div className="space-y-6">
+                <Card className="p-6">
+                  <div className="mb-4 rounded-lg bg-muted p-4">
+                    <Code className="mb-2 h-8 w-8 text-primary" />
+                    <h3 className="text-lg font-semibold text-foreground">WebGPU Integration</h3>
+                  </div>
+                  <pre className="overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs text-green-400">
 {`// On-device AI processing
 import { pipeline } from "@huggingface/transformers";
 
@@ -142,11 +145,22 @@ const analyzer = await pipeline(
 // All processing happens locally
 const result = await analyzer(imageData);
 // No data leaves the device`}
-                </pre>
-                <p className="mt-4 text-xs text-muted-foreground">
-                  Users' plant photos never leave their device. GDPR compliance built-in.
-                </p>
-              </Card>
+                  </pre>
+                  <p className="mt-4 text-xs text-muted-foreground">
+                    Users' plant photos never leave their device. GDPR compliance built-in.
+                  </p>
+                </Card>
+                
+                <div className="flex justify-center">
+                  <OptimizedImage
+                    src={gdprCertified}
+                    alt="GDPR Certified - Data Protection Compliance"
+                    width={300}
+                    height={150}
+                    className="max-w-full w-auto h-auto"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
