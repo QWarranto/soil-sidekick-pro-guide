@@ -61,7 +61,7 @@ const Index = () => {
         </div>
 
         {/* Main Content */}
-        <main className="container mx-auto px-4 py-16 relative z-10">
+        <main className="container mx-auto px-4 pt-24 pb-16 relative z-10">
           <div className="max-w-2xl mx-auto">
             <Card className="card-subtle backdrop-blur-md bg-card/95 border-border shadow-elegant">
               <CardHeader className="space-y-4 pb-8 text-center">
@@ -148,7 +148,7 @@ const Index = () => {
       </div>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 relative z-10 flex items-center justify-center min-h-screen">
+      <main className="container mx-auto px-4 pt-24 pb-8 relative z-10 flex items-center justify-center min-h-screen">
         <div className="max-w-5xl mx-auto w-full">
           <Card className="card-subtle backdrop-blur-md bg-card/95 border-border shadow-elegant animate-fade-in">
             {/* Simple Header */}
