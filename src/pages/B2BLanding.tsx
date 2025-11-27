@@ -39,9 +39,6 @@ export default function B2BLanding() {
               <Button size="lg" variant="outline" asChild>
                 <Link to="/privacy-advantage">Privacy Advantage</Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link to="/global-market-comparison">Market Analysis</Link>
-              </Button>
             </div>
           </div>
         </div>
