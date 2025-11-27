@@ -84,8 +84,11 @@ export default function B2BLanding() {
                 <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl">
                   Privacy-Preserving AI Processing
                 </h2>
-                <p className="mb-6 text-lg text-muted-foreground">
+                <p className="mb-4 text-lg text-muted-foreground">
                   The only plant intelligence platform with <strong className="text-foreground">on-device WebGPU AI</strong> that keeps user data private while delivering real-time environmental analysis.
+                </p>
+                <p className="mb-6 text-lg font-semibold text-foreground">
+                  LeafEngines™ is ready for European licensing — privacy-first, audit-ready, and built for trust.
                 </p>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">

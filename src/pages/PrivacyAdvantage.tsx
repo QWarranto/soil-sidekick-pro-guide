@@ -21,8 +21,11 @@ export default function PrivacyAdvantage() {
             <p className="mb-4 text-xl text-muted-foreground md:text-2xl">
               The European Market Advantage
             </p>
-            <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
+            <p className="mx-auto mb-4 max-w-2xl text-lg text-muted-foreground">
               The only plant intelligence platform with on-device WebGPU AI processing. GDPR compliant by architectural design.
+            </p>
+            <p className="mx-auto mb-8 max-w-2xl text-lg font-semibold text-foreground">
+              LeafEngines™ is ready for European licensing — privacy-first, audit-ready, and built for trust.
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button size="lg" asChild>
