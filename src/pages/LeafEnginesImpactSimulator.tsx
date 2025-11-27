@@ -42,12 +42,31 @@ export default function LeafEnginesImpactSimulator() {
     // LeafEngines improvements based on real-world benchmarks
     const accuracyBoost = Math.min(95, characteristics.currentAccuracy + (100 - characteristics.currentAccuracy) * 0.65);
     const speedImprovement = characteristics.avgResponseTime * 0.45; // 55% faster
-    const costPerCallWithLeafEngines = 0.02; // Optimized cost structure
+    
+    // Volume-based pricing for LeafEngines (economies of scale)
+    let costPerCallWithLeafEngines = 0.02;
+    if (characteristics.monthlyApiCalls > 500000) {
+      costPerCallWithLeafEngines = 0.01; // 50% discount for very high volume
+    } else if (characteristics.monthlyApiCalls > 100000) {
+      costPerCallWithLeafEngines = 0.015; // 25% discount for high volume
+    }
+    
     const monthlySavings = (characteristics.currentCostPerCall - costPerCallWithLeafEngines) * characteristics.monthlyApiCalls;
     const dataQualityImprovement = Math.min(95, characteristics.dataQuality + (100 - characteristics.dataQuality) * 0.70);
     
+    // Tiered implementation cost (economies of scale for larger deployments)
+    let implementationCost = 5000; // Base implementation
+    const userBase = characteristics.userBase;
+    
+    if (userBase <= 1000) {
+      implementationCost += userBase * 2;
+    } else if (userBase <= 5000) {
+      implementationCost += (1000 * 2) + ((userBase - 1000) * 1);
+    } else {
+      implementationCost += (1000 * 2) + (4000 * 1) + ((userBase - 5000) * 0.5);
+    }
+    
     const annualSavings = monthlySavings * 12;
-    const implementationCost = 5000 + (characteristics.userBase * 2); // Base + per-user cost
     const roiMonths = implementationCost / monthlySavings;
 
     return {
