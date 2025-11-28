@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Network } from '@capacitor/network';
 import { useToast } from '@/hooks/use-toast';
 
@@ -6,17 +6,23 @@ export const useNetworkStatus = () => {
   const [isOnline, setIsOnline] = useState(true);
   const [networkType, setNetworkType] = useState<string>('unknown');
   const { toast } = useToast();
+  const previousOnlineStatus = useRef(true);
 
   useEffect(() => {
+    let handler: any = null;
+
     const initNetworkStatus = async () => {
       // Get initial status
       const status = await Network.getStatus();
       setIsOnline(status.connected);
       setNetworkType(status.connectionType);
+      previousOnlineStatus.current = status.connected;
 
       // Listen for network changes
-      const handler = await Network.addListener('networkStatusChange', (status) => {
-        const wasOffline = !isOnline;
+      handler = await Network.addListener('networkStatusChange', (status) => {
+        const wasOffline = !previousOnlineStatus.current;
+        previousOnlineStatus.current = status.connected;
+        
         setIsOnline(status.connected);
         setNetworkType(status.connectionType);
 
@@ -26,7 +32,7 @@ export const useNetworkStatus = () => {
             description: "Auto-syncing pending changes...",
             duration: 3000
           });
-        } else if (!status.connected) {
+        } else if (!status.connected && !wasOffline) {
           toast({
             title: "Offline mode",
             description: "Changes will sync when connection is restored",
@@ -34,14 +40,16 @@ export const useNetworkStatus = () => {
           });
         }
       });
-
-      return () => {
-        handler.remove();
-      };
     };
 
     initNetworkStatus();
-  }, [isOnline, toast]);
+
+    return () => {
+      if (handler) {
+        handler.remove();
+      }
+    };
+  }, [toast]);
 
   return {
     isOnline,
