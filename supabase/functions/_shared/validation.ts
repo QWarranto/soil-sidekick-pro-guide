@@ -88,6 +88,23 @@ export const securityIncidentSchema = z.object({
   incident_details: z.record(z.any()).optional(),
 });
 
+// Rate limit configuration schema
+export const rateLimitConfigSchema = z.object({
+  tier: z.enum(['free', 'starter', 'professional', 'enterprise']),
+  requests_per_minute: z.number().int().positive(),
+  requests_per_hour: z.number().int().positive(),
+  requests_per_day: z.number().int().positive(),
+});
+
+// Rate limit tracking schema
+export const rateLimitTrackingSchema = z.object({
+  identifier: z.string().min(1), // user_id or IP address
+  endpoint: z.string().min(1),
+  window_start: z.string().datetime(),
+  window_end: z.string().datetime(),
+  request_count: z.number().int().nonnegative().default(0),
+});
+
 /**
  * Validate and parse input data against a schema
  * Returns validated data or throws descriptive error

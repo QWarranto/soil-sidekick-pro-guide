@@ -82,18 +82,7 @@ export async function handleRequest<T>(
         }
       }
 
-      // Rate limiting
-      if (config.rateLimit) {
-        const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
-        const rateLimitKey = `${config.functionName}:${clientIP}`;
-        
-        // Simple in-memory rate limiting (will be replaced by rateLimiter)
-        const now = Date.now();
-        const key = rateLimitKey;
-        // TODO: Implement proper rate limiting check
-      }
-
-      // Authentication
+      // Authentication (must happen before rate limiting to get user ID)
       let user = null;
       if (config.requireAuth) {
         const authResult = await authenticateUser(supabase, req);
@@ -116,6 +105,49 @@ export async function handleRequest<T>(
           });
         }
         user = authResult.user;
+      }
+
+      // Database-backed rate limiting with sliding window
+      if (config.rateLimit) {
+        const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0] || req.headers.get('x-real-ip') || 'unknown';
+        const identifier = user?.id || clientIP; // Use user ID if authenticated, otherwise IP
+        const endpoint = config.functionName;
+        
+        const rateLimitResult = await checkDatabaseRateLimit(
+          supabase,
+          identifier,
+          endpoint,
+          config.rateLimit.requests,
+          config.rateLimit.windowMs
+        );
+
+        if (!rateLimitResult.allowed) {
+          await logSecurityEvent(supabase, {
+            event_type: 'rate_limit_exceeded',
+            severity: 'medium',
+            user_id: user?.id,
+            details: {
+              function: config.functionName,
+              identifier,
+              current_count: rateLimitResult.currentCount,
+              limit: config.rateLimit.requests,
+            },
+          }, req);
+
+          return new Response(JSON.stringify({
+            success: false,
+            error: 'Rate limit exceeded. Please try again later.',
+          }), {
+            status: 429,
+            headers: { 
+              ...corsHeaders, 
+              'Content-Type': 'application/json',
+              'X-RateLimit-Limit': String(config.rateLimit.requests),
+              'X-RateLimit-Remaining': '0',
+              'X-RateLimit-Reset': String(rateLimitResult.resetTime),
+            },
+          });
+        }
       }
 
       // Execute handler
@@ -160,11 +192,24 @@ export async function handleRequest<T>(
         }
       }
 
+      // Add rate limit headers to response
+      const responseHeaders = { ...getSecurityHeaders(corsHeaders), 'Content-Type': 'application/json' };
+      
+      if (config.rateLimit) {
+        const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0] || req.headers.get('x-real-ip') || 'unknown';
+        const identifier = user?.id || clientIP;
+        const rateLimitInfo = await getRateLimitInfo(supabase, identifier, config.functionName);
+        
+        responseHeaders['X-RateLimit-Limit'] = String(config.rateLimit.requests);
+        responseHeaders['X-RateLimit-Remaining'] = String(Math.max(0, config.rateLimit.requests - rateLimitInfo.currentCount));
+        responseHeaders['X-RateLimit-Reset'] = String(rateLimitInfo.resetTime);
+      }
+
       return new Response(JSON.stringify({
         success: true,
         data: result,
       }), {
-        headers: { ...getSecurityHeaders(corsHeaders), 'Content-Type': 'application/json' },
+        headers: responseHeaders,
       });
 
     } catch (error) {
@@ -190,4 +235,123 @@ export async function handleRequest<T>(
       });
     }
   };
+}
+
+/**
+ * Check rate limit using database-backed sliding window algorithm
+ */
+async function checkDatabaseRateLimit(
+  supabase: any,
+  identifier: string,
+  endpoint: string,
+  limit: number,
+  windowMs: number
+): Promise<{ allowed: boolean; currentCount: number; resetTime: number }> {
+  const now = new Date();
+  const windowStart = new Date(now.getTime() - windowMs);
+  
+  try {
+    // Get or create rate limit tracking record
+    const { data: existing, error: fetchError } = await supabase
+      .from('rate_limit_tracking')
+      .select('*')
+      .eq('identifier', identifier)
+      .eq('endpoint', endpoint)
+      .gte('window_end', now.toISOString())
+      .maybeSingle();
+
+    if (fetchError) {
+      console.error('[Rate Limit] Database fetch error:', fetchError);
+      return { allowed: true, currentCount: 0, resetTime: Math.floor((now.getTime() + windowMs) / 1000) }; // Fail open
+    }
+
+    if (existing) {
+      // Check if limit exceeded
+      if (existing.request_count >= limit) {
+        const resetTime = Math.floor(new Date(existing.window_end).getTime() / 1000);
+        console.log(`[Rate Limit] Limit exceeded for ${identifier} on ${endpoint}: ${existing.request_count}/${limit}`);
+        return { allowed: false, currentCount: existing.request_count, resetTime };
+      }
+
+      // Increment counter
+      const { error: updateError } = await supabase
+        .from('rate_limit_tracking')
+        .update({ 
+          request_count: existing.request_count + 1,
+          window_end: new Date(now.getTime() + windowMs).toISOString()
+        })
+        .eq('id', existing.id);
+
+      if (updateError) {
+        console.error('[Rate Limit] Update error:', updateError);
+        return { allowed: true, currentCount: 0, resetTime: Math.floor((now.getTime() + windowMs) / 1000) }; // Fail open
+      }
+
+      console.log(`[Rate Limit] Request counted: ${existing.request_count + 1}/${limit} for ${identifier}`);
+      const resetTime = Math.floor(new Date(existing.window_end).getTime() / 1000);
+      return { allowed: true, currentCount: existing.request_count + 1, resetTime };
+    } else {
+      // Create new tracking record
+      const windowEnd = new Date(now.getTime() + windowMs);
+      const { error: insertError } = await supabase
+        .from('rate_limit_tracking')
+        .insert({
+          identifier,
+          endpoint,
+          window_start: windowStart.toISOString(),
+          window_end: windowEnd.toISOString(),
+          request_count: 1,
+        });
+
+      if (insertError) {
+        console.error('[Rate Limit] Insert error:', insertError);
+        return { allowed: true, currentCount: 0, resetTime: Math.floor((now.getTime() + windowMs) / 1000) }; // Fail open
+      }
+
+      console.log(`[Rate Limit] New window started for ${identifier} on ${endpoint}`);
+      const resetTime = Math.floor(windowEnd.getTime() / 1000);
+      return { allowed: true, currentCount: 1, resetTime };
+    }
+  } catch (error) {
+    console.error('[Rate Limit] Unexpected error:', error);
+    return { allowed: true, currentCount: 0, resetTime: Math.floor((now.getTime() + windowMs) / 1000) }; // Fail open
+  }
+}
+
+/**
+ * Get current rate limit information for an identifier
+ */
+async function getRateLimitInfo(
+  supabase: any,
+  identifier: string,
+  endpoint: string
+): Promise<{ currentCount: number; resetTime: number }> {
+  const now = new Date();
+  
+  try {
+    const { data, error } = await supabase
+      .from('rate_limit_tracking')
+      .select('request_count, window_end')
+      .eq('identifier', identifier)
+      .eq('endpoint', endpoint)
+      .gte('window_end', now.toISOString())
+      .maybeSingle();
+
+    if (error) {
+      console.error('[Rate Limit Info] Database error:', error);
+      return { currentCount: 0, resetTime: Math.floor(Date.now() / 1000) + 3600 };
+    }
+
+    if (data) {
+      return {
+        currentCount: data.request_count,
+        resetTime: Math.floor(new Date(data.window_end).getTime() / 1000),
+      };
+    }
+
+    return { currentCount: 0, resetTime: Math.floor(Date.now() / 1000) + 3600 };
+  } catch (error) {
+    console.error('[Rate Limit Info] Unexpected error:', error);
+    return { currentCount: 0, resetTime: Math.floor(Date.now() / 1000) + 3600 };
+  }
 }
