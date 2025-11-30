@@ -105,6 +105,26 @@ export const rateLimitTrackingSchema = z.object({
   request_count: z.number().int().nonnegative().default(0),
 });
 
+// Payment & Subscription validation schemas
+export const checkoutSchema = z.object({
+  plan: z.enum(['starter', 'pro', 'enterprise'], {
+    errorMap: () => ({ message: 'Plan must be starter, pro, or enterprise' })
+  }),
+  interval: z.enum(['month', 'year'], {
+    errorMap: () => ({ message: 'Interval must be month or year' })
+  }),
+});
+
+export const customerPortalSchema = z.object({
+  // No specific fields required - just validates request structure
+  returnUrl: urlSchema.optional(),
+});
+
+export const subscriptionCheckSchema = z.object({
+  // No specific fields required - user ID comes from auth token
+  forceRefresh: z.boolean().optional(),
+});
+
 /**
  * Validate and parse input data against a schema
  * Returns validated data or throws descriptive error
