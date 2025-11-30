@@ -82,10 +82,10 @@ export default function B2BLanding() {
                   Privacy-Preserving AI Processing
                 </h2>
                 <p className="mb-4 text-lg text-muted-foreground">
-                  The only plant intelligence platform with <strong className="text-foreground">on-device WebGPU AI</strong> that keeps user data private while delivering real-time environmental analysis.
+                  The only plant intelligence platform with <strong className="text-foreground">on-device WebGPU AI</strong> that keeps user data private while delivering real-time environmental analysis powered by federal data authority.
                 </p>
                 <p className="mb-6 text-lg font-semibold text-foreground">
-                  LeafEngines™ is ready for European licensing — privacy-first, audit-ready, and built for trust.
+                  Trusted by America's leading agricultural technology companies — privacy-first, audit-ready, and built on USDA/EPA standards.
                 </p>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
@@ -102,8 +102,8 @@ export default function B2BLanding() {
                       <Check className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="font-semibold text-foreground">Competitive Advantage in EU Markets</p>
-                      <p className="text-sm text-muted-foreground">Position your app as the privacy-first choice for European users.</p>
+                      <p className="font-semibold text-foreground">Federal Data Authority</p>
+                      <p className="text-sm text-muted-foreground">Direct access to USDA, EPA, and NOAA data for regulatory-grade insights.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -112,7 +112,7 @@ export default function B2BLanding() {
                     </div>
                     <div>
                       <p className="font-semibold text-foreground">Offline-First Architecture</p>
-                      <p className="text-sm text-muted-foreground">Works without internet. Perfect for remote farming locations.</p>
+                      <p className="text-sm text-muted-foreground">Works without internet. Perfect for remote US agricultural regions.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -166,100 +166,75 @@ const result = await analyzer(imageData);
         </div>
       </section>
 
-      {/* Global Data Integration */}
+      {/* US Federal Data Advantage */}
       <section className="border-b border-border py-16">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-5xl">
             <div className="mb-12 text-center">
               <Badge className="mb-4" variant="outline">
-                Strategic Positioning for European & Global Markets
+                Serving America's Agricultural Technology Leaders
               </Badge>
               <h2 className="mb-6 text-3xl font-bold text-foreground md:text-4xl">
-                Global Environmental Intelligence
+                Federal Data Authority
               </h2>
               <p className="mx-auto max-w-3xl text-lg text-muted-foreground">
-                While SoilSidekick Pro focuses on U.S. regulatory-grade data, LeafEngines™ is positioned as a lightweight, licensable API for global plant ID and ag-tech platforms using internationally recognized, open-access datasets.
+                LeafEngines™ leverages the most comprehensive US agricultural data sources — USDA, EPA, and NOAA — to deliver regulatory-grade environmental intelligence across all 50 states.
               </p>
             </div>
 
-            <div className="mb-12 grid gap-6 md:grid-cols-2">
+            <div className="mb-12 grid gap-6 md:grid-cols-3">
               <Card className="p-6">
                 <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
                   <Database className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="mb-3 text-xl font-semibold text-foreground">Global Soil & Water Data Integration</h3>
+                <h3 className="mb-3 text-xl font-semibold text-foreground">USDA SSURGO Integration</h3>
                 <p className="mb-4 text-muted-foreground">
-                  Tap into internationally recognized, open-access datasets for relevance across diverse geographies:
+                  The gold standard for US soil data, covering every county with unmatched detail:
                 </p>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span><strong className="text-foreground">ISRIC World Soil Information:</strong> SoilGrids & WISE datasets with 1,000+ global soil profiles</span>
+                    <span>County-level soil composition analysis</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span><strong className="text-foreground">FAO's Global Soil Partnership (GLOSIS):</strong> Federated global soil data infrastructure</span>
+                    <span>pH, organic matter, nutrient levels</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span><strong className="text-foreground">UNEP's World Environment Situation Room:</strong> Real-time land degradation & ecosystem health</span>
+                    <span>USDA soil taxonomy classifications</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span><strong className="text-foreground">NASA's ISRIC-WISE:</strong> Homogenized global soil profiles for predictive analytics</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span><strong className="text-foreground">UN Global Water Data Portal:</strong> Hydrological data supporting SDG 6 (Clean Water & Sanitation)</span>
+                    <span>Agricultural productivity ratings</span>
                   </li>
                 </ul>
               </Card>
 
               <Card className="p-6">
                 <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
-                  <Zap className="h-6 w-6 text-primary" />
+                  <Shield className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="mb-3 text-xl font-semibold text-foreground">On-Device Environmental Intelligence</h3>
+                <h3 className="mb-3 text-xl font-semibold text-foreground">EPA Water Quality</h3>
                 <p className="mb-4 text-muted-foreground">
-                  Privacy-first architecture enables powerful offline capabilities:
+                  Real-time contamination monitoring and environmental compliance:
                 </p>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span><strong className="text-foreground">Offline Inference:</strong> LocalLLM and embedded soil/water models work without connectivity</span>
+                    <span>PFAS contamination alerts</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span><strong className="text-foreground">Localized Calibration:</strong> Regional datasets (ISRIC, FAO) without U.S. API reliance</span>
+                    <span>Nitrate and heavy metal testing</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span><strong className="text-foreground">Dynamic Layering:</strong> Real-time, in-field decision support for soil, water, and plant health</span>
+                    <span>Agricultural runoff risk assessment</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span><strong className="text-foreground">Data Sovereignty:</strong> Valuable in low-connectivity regions or where data sovereignty is critical</span>
-                  </li>
-                </ul>
-              </Card>
-
-              <Card className="p-6">
-                <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
-                  <Code className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="mb-3 text-xl font-semibold text-foreground">Interoperability with Global Standards</h3>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span><strong className="text-foreground">FAIR Data Principles:</strong> Findable, Accessible, Interoperable, Reusable</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span><strong className="text-foreground">INSPIRE & OGC Standards:</strong> Geospatial interoperability compliance</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span><strong className="text-foreground">Plug-and-Play Integration:</strong> Compatible with regional platforms and national registries</span>
+                    <span>Environmental compliance reporting</span>
                   </li>
                 </ul>
               </Card>
@@ -268,22 +243,26 @@ const result = await analyzer(imageData);
                 <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
                   <Satellite className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="mb-3 text-xl font-semibold text-foreground">Strategic Positioning for Plant ID Apps</h3>
+                <h3 className="mb-3 text-xl font-semibold text-foreground">NOAA Climate Intelligence</h3>
                 <p className="mb-4 text-muted-foreground">
-                  Embed soil and water context into plant recognition workflows for enhanced utility in global markets:
+                  Real-time weather and climate data for agricultural decision-making:
                 </p>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span><strong className="text-foreground">India, Brazil, Kenya, Southeast Asia:</strong> Value-added environmental intelligence</span>
+                    <span>Precipitation and temperature trends</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span><strong className="text-foreground">European Market Focus:</strong> Initial target clients in privacy-conscious European countries</span>
+                    <span>Growing season predictions</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span><strong className="text-foreground">Globally Harmonized Insights:</strong> Regionally relevant with international data standards</span>
+                    <span>Drought and flood risk monitoring</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>Regional climate zone data</span>
                   </li>
                 </ul>
               </Card>
@@ -291,7 +270,7 @@ const result = await analyzer(imageData);
 
             <div className="rounded-lg border border-primary/20 bg-primary/5 p-6 text-center">
               <p className="text-lg font-semibold text-foreground">
-                LeafEngines™ sustains competitive advantage in global plant ID applications where USDA and US EPA data are less relevant — offering regionally calibrated, globally harmonized environmental intelligence.
+                Purpose-built for the US agricultural market with direct access to federal data sources — delivering the most accurate environmental intelligence for American growers and agricultural technology platforms.
               </p>
             </div>
           </div>
