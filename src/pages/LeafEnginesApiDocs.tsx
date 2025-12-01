@@ -178,7 +178,7 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 relative">
       {/* Large Logo Background - Behind all content */}
-      <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center">
+      <div className="fixed inset-0 pointer-events-none z-[15] flex items-center justify-center">
         <img 
           src={leafEnginesLogo} 
           alt="" 
@@ -187,7 +187,7 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
         />
       </div>
 
-      <div className="relative z-10">
+      <div className="relative z-20">
         <LeafEnginesNav />
         
         {/* Header */}
