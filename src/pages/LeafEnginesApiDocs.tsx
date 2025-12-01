@@ -177,21 +177,11 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 relative">
-      {/* Large Logo Background - Higher in stack */}
-      <div className="fixed inset-0 pointer-events-none z-[5] flex items-center justify-center">
-        <img 
-          src={leafEnginesLogo} 
-          alt="" 
-          className="w-[900px] h-auto opacity-20 select-none floating-animation"
-          style={{ maxWidth: '80vw' }}
-        />
-      </div>
-      
       <div className="relative z-10">
         <LeafEnginesNav />
         
         {/* Header */}
-        <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
         <div className="container mx-auto px-4 py-16">
           <Badge className="mb-4" variant="outline">
             <Book className="mr-2 h-3 w-3" />
@@ -219,6 +209,16 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
             </Button>
           </div>
         </div>
+      </div>
+
+      {/* Large Logo Background - Behind content but visible through transparency */}
+      <div className="fixed inset-0 pointer-events-none z-[1] flex items-center justify-center">
+        <img 
+          src={leafEnginesLogo} 
+          alt="" 
+          className="w-[900px] h-auto opacity-20 select-none floating-animation"
+          style={{ maxWidth: '80vw' }}
+        />
       </div>
 
       <div className="container mx-auto px-4 py-12">
