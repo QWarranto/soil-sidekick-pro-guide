@@ -4,6 +4,24 @@
 
 This document outlines the phased approach to completing the Quality Control Framework implementation, including rate limiting and edge function migration.
 
+## ⚠️ CRITICAL DEPENDENCY ALERT
+
+**THE INTEGRATED ACTION PLAN CANNOT PROCEED UNTIL DAYS 6+**
+
+The marketing timeline in the Integrated Action Plan assumes APIs are demo-ready on Day 1. This is **INCORRECT and DANGEROUS**. 
+
+**REQUIRED TECHNICAL FOUNDATION (Days 1-5):**
+- Days 1-2: Rate limiting infrastructure MUST be complete
+- Days 3-5: Core agricultural APIs MUST be migrated and tested
+- Day 6: EARLIEST date marketing/demos can begin with stable APIs
+
+**ADJUSTED MARKETING TIMELINE:**
+- Original: "Phase 1 (Days 1-30): Showcase & Target"
+- **CORRECTED: "Phase 1 (Days 6-35): Showcase & Target"**
+- All subsequent phases shift by 5 days
+
+**Risk if ignored:** Demos with unstable APIs will damage credibility, waste prospect time, and potentially lose LOI opportunities. Technical debt must be resolved BEFORE sales activities begin.
+
 ---
 
 ## Phase 1: Rate Limiting Infrastructure (Priority: HIGH)
@@ -269,12 +287,27 @@ Track during migration:
 
 ## Next Steps (US-First Launch Alignment)
 
+### 🚨 GATE 0: NO MARKETING UNTIL COMPLETE
+**All sales outreach, demos, and prospect contact BLOCKED until Gate 1 complete.**
+
+### Gate 1: Technical Foundation (Days 1-5) - MANDATORY BEFORE SALES
 1. **Days 1-2 (CRITICAL):** Complete Phase 1 rate limiting (3 hrs)
 2. **Days 3-5 (CRITICAL):** Migrate core agricultural APIs (Phase 2C, 6-8 hrs)
-   - Required for prospect API testing during sales demos
-3. **US Sales Launch:** Begin outreach with stable API platform
-4. **Post-LOI (Days 6-15):** Payment/Auth migration (Phase 2A/B, 7-10 hrs)
-5. **Post-LOI (Days 16-20):** Optional enhancements (Phase 3-4)
+   - `get-soil-data`, `territorial-water-quality`, `environmental-impact-engine`, `multi-parameter-planting-calendar`
+   - **GATES ALL SALES ACTIVITIES** - API stability required for prospect testing
+3. **Day 5 Checkpoint:** Load testing, error rate validation, response time verification
+
+### Gate 2: Marketing Launch (Day 6+)
+4. **Day 6 Onwards:** BEGIN sales outreach with stable API platform
+   - Impact Simulator demos now safe to run
+   - Prospect API testing won't cause embarrassment
+   - Can confidently show technical capabilities
+
+### Gate 3: Post-LOI Enhancement (Days 6-15)
+5. **Days 6-15:** Payment/Auth migration (Phase 2A/B, 7-10 hrs) - deferred until LOIs secured
+
+### Gate 4: Optional Polish (Days 16-20)
+6. **Days 16-20:** Optional enhancements (Phase 3-4)
 
 ---
 
@@ -286,8 +319,22 @@ Track during migration:
 - [ ] Rollback procedures validated
 - [ ] Go-live date confirmed
 
+## 🚨 Marketing Timeline Approval (REQUIRED BEFORE ANY OUTREACH)
+
+**This section MUST be completed before the Integrated Action Plan proceeds:**
+
+- [ ] **Gate 1 Complete:** Days 1-5 technical work finished (rate limiting + core APIs)
+- [ ] **Load Testing Passed:** All 4 core APIs handle 100 concurrent users
+- [ ] **Error Rate Validated:** < 1% error rate across all core endpoints
+- [ ] **Response Times Verified:** < 2s average response time under load
+- [ ] **Demo Environment Stable:** Impact Simulator runs without API failures
+- [ ] **Rollback Procedures Tested:** Can revert changes if production issues occur
+- [ ] **Marketing Timeline Adjusted:** All references to "Day 1-30" changed to "Day 6-35" in Integrated Action Plan
+
+**ONLY AFTER ALL ITEMS CHECKED:** Sales team authorized to begin outreach.
+
 ---
 
-**Last Updated:** 2025-11-26
+**Last Updated:** 2025-12-01
 **Owner:** Development Team
-**Status:** PLANNING
+**Status:** PLANNING - MARKETING BLOCKED UNTIL TECHNICAL FOUNDATION COMPLETE
