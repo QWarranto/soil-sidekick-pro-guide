@@ -184,11 +184,13 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
         <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-16">
           <div className="flex justify-center mb-8">
-            <img 
-              src={leafEnginesLogo} 
-              alt="LeafEngines Logo" 
-              className="w-64 h-auto floating-animation"
-            />
+            <div className="bg-white/90 p-6 rounded-lg shadow-lg">
+              <img 
+                src={leafEnginesLogo} 
+                alt="LeafEngines Logo" 
+                className="w-64 h-auto floating-animation"
+              />
+            </div>
           </div>
           <Badge className="mb-4" variant="outline">
             <Book className="mr-2 h-3 w-3" />
