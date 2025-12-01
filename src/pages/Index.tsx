@@ -181,9 +181,9 @@ const Index = () => {
                 <Button
                   onClick={() => navigate('/soil-analysis')}
                   size="lg"
-                  className="w-full h-32 text-lg font-semibold bg-primary hover:bg-primary/90 flex flex-col gap-2 hover-scale"
+                  className="w-full h-32 text-lg font-semibold bg-primary hover:bg-primary/90 flex flex-col gap-2 hover-scale group"
                 >
-                  <Droplets className="h-8 w-8" />
+                  <Droplets className="h-8 w-8 transition-all duration-300 group-hover:scale-110 group-hover:text-primary-foreground" />
                   Soil Analysis
                 </Button>
 
@@ -192,9 +192,9 @@ const Index = () => {
                   onClick={() => navigate('/water-quality')}
                   variant="outline"
                   size="lg"
-                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2"
+                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2 group"
                 >
-                  <Waves className="h-8 w-8" />
+                  <Waves className="h-8 w-8 transition-all duration-300 group-hover:scale-110 group-hover:text-primary" />
                   Water Quality
                 </Button>
 
@@ -203,9 +203,9 @@ const Index = () => {
                   onClick={() => navigate('/planting-calendar')}
                   variant="outline"
                   size="lg"
-                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2"
+                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2 group"
                 >
-                  <Calendar className="h-8 w-8" />
+                  <Calendar className="h-8 w-8 transition-all duration-300 group-hover:scale-110 group-hover:text-primary" />
                   Planting Calendar
                 </Button>
 
@@ -214,9 +214,9 @@ const Index = () => {
                   onClick={() => navigate('/fertilizer-footprint')}
                   variant="outline"
                   size="lg"
-                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2"
+                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2 group"
                 >
-                  <Sprout className="h-8 w-8" />
+                  <Sprout className="h-8 w-8 transition-all duration-300 group-hover:scale-110 group-hover:text-primary" />
                   Fertilizer Footprint
                 </Button>
 
@@ -224,9 +224,9 @@ const Index = () => {
                 <Button
                   onClick={() => navigate('/adapt-integration')}
                   size="lg"
-                  className="w-full h-32 text-lg font-semibold bg-secondary hover:bg-secondary/90 text-secondary-foreground flex flex-col gap-2 hover-scale"
+                  className="w-full h-32 text-lg font-semibold bg-secondary hover:bg-secondary/90 text-secondary-foreground flex flex-col gap-2 hover-scale group"
                 >
-                  <Sparkles className="h-8 w-8" />
+                  <Sparkles className="h-8 w-8 transition-all duration-300 group-hover:scale-110 group-hover:text-accent" />
                   ADAPT Integration
                 </Button>
 
@@ -235,10 +235,10 @@ const Index = () => {
                   onClick={() => navigate('/variable-rate-technology')}
                   variant="outline"
                   size="lg"
-                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2 relative"
+                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2 relative group"
                 >
                   <Badge className="absolute -top-2 -right-2 bg-green-500 text-white">NEW</Badge>
-                  <Sparkles className="h-8 w-8" />
+                  <Sparkles className="h-8 w-8 transition-all duration-300 group-hover:scale-110 group-hover:text-primary" />
                   Variable Rate Tech
                 </Button>
 
@@ -247,10 +247,10 @@ const Index = () => {
                   onClick={() => navigate('/property-report')}
                   variant="outline"
                   size="lg"
-                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2 relative"
+                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2 relative group"
                 >
                   <Badge className="absolute -top-2 -right-2 bg-yellow-500 text-black">BETA</Badge>
-                  <Map className="h-8 w-8" />
+                  <Map className="h-8 w-8 transition-all duration-300 group-hover:scale-110 group-hover:text-primary" />
                   Property Report
                 </Button>
 
@@ -259,9 +259,9 @@ const Index = () => {
                   onClick={() => navigate('/dashboard')}
                   variant="outline"
                   size="lg"
-                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2"
+                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2 group"
                 >
-                  <BarChart3 className="h-8 w-8" />
+                  <BarChart3 className="h-8 w-8 transition-all duration-300 group-hover:scale-110 group-hover:text-primary" />
                   Dashboard
                 </Button>
               </div>
