@@ -10,6 +10,8 @@ import { localLLMService } from "@/services/localLLMService";
 import { LocalLLMToggle } from "@/components/LocalLLMToggle";
 import { useSmartLLMSelection } from "@/hooks/useSmartLLMSelection";
 import AppHeader from "@/components/AppHeader";
+import { usePlantTracking } from "@/hooks/usePlantTracking";
+import { PlantHistorySection } from "@/components/PlantHistorySection";
 
 export default function OfflinePlantID() {
   const { toast } = useToast();
@@ -28,6 +30,13 @@ export default function OfflinePlantID() {
     setManualMode,
     enableAutoMode,
   } = useSmartLLMSelection();
+
+  const {
+    frequentPlants,
+    recentPlants,
+    isLoading: historyLoading,
+    logPlantQuery,
+  } = usePlantTracking();
 
   const handleIdentifyPlant = async () => {
     if (!plantDescription.trim()) {
@@ -57,6 +66,15 @@ export default function OfflinePlantID() {
         localLLMConfig
       );
       setResult(response);
+      
+      // Extract plant name from response (first line typically contains the name)
+      const lines = response.split('\n');
+      const plantNameLine = lines.find(line => line.toLowerCase().includes('plant') || line.toLowerCase().includes('species'));
+      const extractedName = plantNameLine || plantDescription.substring(0, 50);
+      
+      // Log the query
+      await logPlantQuery(extractedName, 'identify', { description: plantDescription });
+      
       toast({
         title: "Identification Complete",
         description: "Plant identified using offline AI.",
@@ -102,6 +120,10 @@ export default function OfflinePlantID() {
         localLLMConfig
       );
       setResult(response);
+      
+      // Log the query
+      await logPlantQuery(plantName, 'health', { symptoms });
+      
       toast({
         title: "Analysis Complete",
         description: "Health diagnosis generated using offline AI.",
@@ -147,6 +169,10 @@ export default function OfflinePlantID() {
         localLLMConfig
       );
       setResult(response);
+      
+      // Log the query
+      await logPlantQuery(plantName, 'care', { context: careContext });
+      
       toast({
         title: "Care Advice Generated",
         description: "Recommendations provided using offline AI.",
@@ -200,6 +226,21 @@ export default function OfflinePlantID() {
             currentConfig={localLLMConfig}
           />
         </div>
+
+        {/* Plant History Section */}
+        <PlantHistorySection
+          frequentPlants={frequentPlants}
+          recentPlants={recentPlants}
+          isLoading={historyLoading}
+          onPlantClick={(name, type) => {
+            setActiveTab(type);
+            if (type === 'identify') {
+              setPlantDescription(name);
+            } else {
+              setPlantName(name);
+            }
+          }}
+        />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3">
