@@ -116,6 +116,52 @@ export class LocalLLMService {
     return this.generateChatResponse(messages, config);
   }
 
+  async identifyPlant(
+    description: string,
+    config: LocalLLMConfig
+  ): Promise<string> {
+    const systemPrompt = this.getPlantIDSystemPrompt();
+    
+    const messages: ChatMessage[] = [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: description }
+    ];
+
+    return this.generateChatResponse(messages, config);
+  }
+
+  async analyzePlantHealth(
+    plantName: string,
+    symptoms: string,
+    config: LocalLLMConfig
+  ): Promise<string> {
+    const systemPrompt = this.getPlantHealthSystemPrompt();
+    const userPrompt = `Plant: ${plantName}\nSymptoms: ${symptoms}\n\nProvide diagnosis and treatment recommendations.`;
+    
+    const messages: ChatMessage[] = [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt }
+    ];
+
+    return this.generateChatResponse(messages, config);
+  }
+
+  async getPlantCareAdvice(
+    plantName: string,
+    context: string,
+    config: LocalLLMConfig
+  ): Promise<string> {
+    const systemPrompt = this.getPlantCareSystemPrompt();
+    const userPrompt = `Plant: ${plantName}\nContext: ${context}\n\nProvide care recommendations.`;
+    
+    const messages: ChatMessage[] = [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt }
+    ];
+
+    return this.generateChatResponse(messages, config);
+  }
+
   private formatMessagesForGemma(messages: ChatMessage[]): string {
     let prompt = '';
     
@@ -141,6 +187,35 @@ export class LocalLLMService {
     } else {
       return 'You are an agricultural AI assistant specializing in water quality analysis. Create concise, actionable summaries of water quality test results. Focus on safety concerns, agricultural implications, and treatment recommendations. Keep responses under 200 words and use simple, clear language.';
     }
+  }
+
+  private getPlantIDSystemPrompt(): string {
+    return `You are a botanist AI assistant specializing in plant identification. Based on user descriptions of plant characteristics (leaves, flowers, stem, habitat, size, etc.), identify the most likely plant species. Provide:
+1. Most likely plant name (common and scientific)
+2. Key identifying features
+3. Confidence level (high/medium/low)
+4. 2-3 similar species if identification is uncertain
+Keep responses under 250 words and use clear, accessible language.`;
+  }
+
+  private getPlantHealthSystemPrompt(): string {
+    return `You are a plant pathology AI assistant. Analyze plant health issues and symptoms to provide:
+1. Most likely diagnosis (disease, pest, or environmental stress)
+2. Confidence level in diagnosis
+3. Immediate treatment recommendations
+4. Prevention strategies
+5. When to seek professional help
+Keep responses practical and under 300 words. Prioritize organic and environmentally-friendly solutions.`;
+  }
+
+  private getPlantCareSystemPrompt(): string {
+    return `You are a horticulture AI assistant specializing in plant care. Provide tailored care advice including:
+1. Watering schedule and requirements
+2. Light and temperature needs
+3. Soil and fertilization recommendations
+4. Common issues and how to prevent them
+5. Seasonal care tips
+Keep responses practical and under 250 words. Adapt advice to the specific context provided.`;
   }
 
   private formatReportData(reportType: 'soil' | 'water', data: any): string {
