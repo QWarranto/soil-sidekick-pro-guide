@@ -98,6 +98,21 @@ const Index = () => {
                       Enterprise-grade agricultural intelligence API
                     </p>
                   </div>
+
+                  <div className="pt-4 border-t border-border">
+                    <Button
+                      onClick={() => navigate('/leafengines-impact-simulator')}
+                      variant="outline"
+                      size="lg"
+                      className="w-full group"
+                    >
+                      <TrendingUp className="mr-2 h-5 w-5 transition-all duration-300 group-hover:scale-110 group-hover:text-primary" />
+                      View Impact Simulator
+                    </Button>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Model ROI and visualize integration impact
+                    </p>
+                  </div>
                   
                   <div className="pt-4 border-t border-border">
                     <p className="text-sm text-muted-foreground mb-4">
