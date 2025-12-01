@@ -58,6 +58,15 @@ const Index = () => {
             className="w-full h-full"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-background/98 via-background/95 to-background/98" />
+          
+          {/* Floating Decorative Elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-10 w-16 h-16 rounded-full bg-primary/10 blur-xl floating-animation" style={{ animationDelay: '0s' }} />
+            <div className="absolute top-40 right-20 w-24 h-24 rounded-full bg-accent/10 blur-xl floating-animation" style={{ animationDelay: '2s' }} />
+            <div className="absolute bottom-32 left-1/4 w-20 h-20 rounded-full bg-primary/15 blur-xl floating-animation" style={{ animationDelay: '1s' }} />
+            <div className="absolute top-1/3 right-1/3 w-12 h-12 rounded-full bg-accent/15 blur-xl floating-animation" style={{ animationDelay: '3s' }} />
+            <div className="absolute bottom-20 right-10 w-28 h-28 rounded-full bg-primary/10 blur-xl floating-animation" style={{ animationDelay: '1.5s' }} />
+          </div>
         </div>
 
         {/* Main Content */}
@@ -151,6 +160,15 @@ const Index = () => {
           className="w-full h-full"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/90 to-background/95" />
+        
+        {/* Floating Decorative Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-16 h-16 rounded-full bg-primary/10 blur-xl floating-animation" style={{ animationDelay: '0s' }} />
+          <div className="absolute top-40 right-20 w-24 h-24 rounded-full bg-accent/10 blur-xl floating-animation" style={{ animationDelay: '2s' }} />
+          <div className="absolute bottom-32 left-1/4 w-20 h-20 rounded-full bg-primary/15 blur-xl floating-animation" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-1/3 right-1/3 w-12 h-12 rounded-full bg-accent/15 blur-xl floating-animation" style={{ animationDelay: '3s' }} />
+          <div className="absolute bottom-20 right-10 w-28 h-28 rounded-full bg-primary/10 blur-xl floating-animation" style={{ animationDelay: '1.5s' }} />
+        </div>
       </div>
 
       {/* Main Content */}
