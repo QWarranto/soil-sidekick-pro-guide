@@ -15,7 +15,8 @@ import {
   Play,
   Sparkles,
   AlertCircle,
-  Code2
+  Code2,
+  TrendingUp
 } from 'lucide-react';
 import LeadCapture from '@/components/LeadCapture';
 import Footer from '@/components/Footer';
@@ -254,7 +255,18 @@ const Index = () => {
                   Property Report
                 </Button>
 
-                {/* Settings */}
+                {/* Impact Simulator */}
+                <Button
+                  onClick={() => navigate('/leafengines-impact-simulator')}
+                  variant="outline"
+                  size="lg"
+                  className="w-full h-32 text-lg font-semibold flex flex-col gap-2 hover-scale border-2 group"
+                >
+                  <TrendingUp className="h-8 w-8 transition-all duration-300 group-hover:scale-110 group-hover:text-primary" />
+                  Impact Simulator
+                </Button>
+
+                {/* Dashboard */}
                 <Button
                   onClick={() => navigate('/dashboard')}
                   variant="outline"
@@ -264,6 +276,23 @@ const Index = () => {
                   <BarChart3 className="h-8 w-8 transition-all duration-300 group-hover:scale-110 group-hover:text-primary" />
                   Dashboard
                 </Button>
+              </div>
+
+              {/* Impact Simulator Description */}
+              <div className="bg-gradient-to-r from-accent/10 to-accent/5 p-6 rounded-lg border border-accent/20">
+                <div className="flex items-start gap-3">
+                  <TrendingUp className="h-6 w-6 text-accent mt-1 flex-shrink-0" />
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                      Impact Simulator
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Model ROI scenarios and visualize the environmental and financial impact of LeafEngines API integration. 
+                      Compare baseline metrics against projected improvements across yield optimization, resource efficiency, 
+                      and sustainability goals to build your business case.
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* Tour Section */}
