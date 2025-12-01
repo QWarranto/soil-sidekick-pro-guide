@@ -160,21 +160,24 @@ subscriptionCheckSchema: {
 
 ## Implementation Strategy
 
-### Daily Execution Plan
+### Daily Execution Plan (US-First Launch Priority)
 
-**Week 1:**
-- **Day 1-2:** Phase 1 (Rate limiting infrastructure)
-- **Day 3-4:** Phase 2A (Payment functions) + Testing
-- **Day 5:** Phase 2B (Auth functions) + Testing
+**Pre-Launch Critical Path (Days 1-5):**
+- **Day 1-2:** Phase 1 (Rate limiting infrastructure) - 3 hrs
+- **Day 3-5:** Phase 2C (Core agricultural APIs) + Testing - 6-8 hrs
+  - `get-soil-data`, `territorial-water-quality`, `environmental-impact-engine`, `multi-parameter-planting-calendar`
+  - **Gates sales demos** - API stability required for prospect testing
 
-**Week 2:**
-- **Day 1-3:** Phase 2C (Core agricultural APIs) + Testing
-- **Day 4-5:** Phase 3A (AI/ML functions)
+**Post-LOI Implementation (Days 6-15):**
+- **Day 6-8:** Phase 2A (Payment functions) + Testing - 4-6 hrs
+  - Deferred until LOIs secured (not needed for pilots)
+- **Day 9-10:** Phase 2B (Auth functions) + Testing - 3-4 hrs
+- **Day 11-13:** Phase 3A (AI/ML functions) - 4-5 hrs
+- **Day 14-15:** Phase 3B (Data services) - 5-6 hrs
 
-**Week 3:**
-- **Day 1-2:** Phase 3B (Data services)
-- **Day 3:** Phase 3C (Utility functions)
-- **Day 4-5:** Phase 4 (Remaining functions) + Final testing
+**Optional Enhancements (Days 16-20):**
+- **Day 16-17:** Phase 3C (Utility functions) - 3-4 hrs
+- **Day 18-20:** Phase 4 (Remaining functions) + Final testing - 6-8 hrs
 
 ---
 
@@ -264,12 +267,14 @@ Track during migration:
 
 ---
 
-## Next Steps
+## Next Steps (US-First Launch Alignment)
 
-1. **Immediate:** Complete Phase 1 rate limiting (3 hrs)
-2. **This Week:** Migrate payment functions (Batch 2A)
-3. **Next Week:** Complete critical functions (Phase 2)
-4. **Following Week:** Standard functions (Phase 3-4)
+1. **Days 1-2 (CRITICAL):** Complete Phase 1 rate limiting (3 hrs)
+2. **Days 3-5 (CRITICAL):** Migrate core agricultural APIs (Phase 2C, 6-8 hrs)
+   - Required for prospect API testing during sales demos
+3. **US Sales Launch:** Begin outreach with stable API platform
+4. **Post-LOI (Days 6-15):** Payment/Auth migration (Phase 2A/B, 7-10 hrs)
+5. **Post-LOI (Days 16-20):** Optional enhancements (Phase 3-4)
 
 ---
 
