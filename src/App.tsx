@@ -50,6 +50,7 @@ import LayoutDemo from "./pages/LayoutDemo";
 import LeafEnginesApiDocs from "./pages/LeafEnginesApiDocs";
 import LeafEnginesImpactSimulator from "./pages/LeafEnginesImpactSimulator";
 import ClientIntegrationGuide from "./pages/ClientIntegrationGuide";
+import OfflinePlantID from "./pages/OfflinePlantID";
 
 const queryClient = new QueryClient();
 
@@ -116,6 +117,7 @@ const App = () => (
         <Route path="/compare/heirloom" element={<HeirloomComparison />} />
         <Route path="/compare/soiltest-pro" element={<SoilTestProComparison />} />
         <Route path="/layout-demo" element={<LayoutDemo />} />
+        <Route path="/offline-plant-id" element={<OfflinePlantID />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
