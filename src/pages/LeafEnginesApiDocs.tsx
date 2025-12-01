@@ -184,7 +184,7 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
         <img 
           src={leafEnginesLogo} 
           alt="" 
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[900px] h-auto opacity-[0.12] select-none floating-animation"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[900px] h-auto opacity-20 select-none floating-animation"
         />
       </div>
       
