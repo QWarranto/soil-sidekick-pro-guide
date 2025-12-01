@@ -1155,6 +1155,36 @@ export type Database = {
         }
         Relationships: []
       }
+      plant_query_history: {
+        Row: {
+          created_at: string
+          id: string
+          plant_name: string
+          query_details: Json | null
+          query_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          plant_name: string
+          query_details?: Json | null
+          query_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          plant_name?: string
+          query_details?: Json | null
+          query_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       planting_optimizations: {
         Row: {
           alternative_crops: Json | null
@@ -2305,6 +2335,16 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_recent_plant_queries: {
+        Args: { limit_count?: number; target_user_id?: string }
+        Returns: {
+          created_at: string
+          id: string
+          plant_name: string
+          query_details: Json
+          query_type: string
+        }[]
+      }
       get_secure_account_security_info: {
         Args: { target_user_id?: string }
         Returns: {
@@ -2360,6 +2400,15 @@ export type Database = {
       get_user_email_securely: {
         Args: { target_user_id?: string }
         Returns: string
+      }
+      get_user_frequent_plants: {
+        Args: { limit_count?: number; target_user_id?: string }
+        Returns: {
+          last_queried: string
+          plant_name: string
+          query_count: number
+          query_types: string[]
+        }[]
       }
       handle_login_attempt: {
         Args: {
