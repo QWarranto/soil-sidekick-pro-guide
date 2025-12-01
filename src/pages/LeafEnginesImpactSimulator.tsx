@@ -8,6 +8,7 @@ import ImpactSimulatorBaseline from "@/components/impact-simulator/ImpactSimulat
 import ImpactSimulatorCharts from "@/components/impact-simulator/ImpactSimulatorCharts";
 import ImpactSimulatorROI from "@/components/impact-simulator/ImpactSimulatorROI";
 import ImpactSimulatorRoadmap from "@/components/impact-simulator/ImpactSimulatorRoadmap";
+import ImpactSimulatorSampleTable from "@/components/impact-simulator/ImpactSimulatorSampleTable";
 
 interface AppCharacteristics {
   currentAccuracy: number;
@@ -121,6 +122,28 @@ export default function LeafEnginesImpactSimulator() {
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             See how LeafEngines Environmental Intelligence transforms your agricultural application's performance, accuracy, and ROI
           </p>
+        </div>
+
+        {/* Sample Scenarios Table */}
+        <div className="mb-12">
+          <ImpactSimulatorSampleTable
+            onUseScenario={(scenario) => {
+              // Parse scenario values to populate the form
+              const userBase = parseInt(scenario.userBase.split('-')[0].replace(/[^0-9]/g, '')) || 1000;
+              const accuracy = parseInt(scenario.currentAccuracy.split('-')[0]) || 75;
+              const apiCalls = parseInt(scenario.monthlyApiCalls.replace(/[^0-9]/g, '')) * 1000 || 10000;
+              
+              setCharacteristics({
+                currentAccuracy: accuracy,
+                avgResponseTime: 2000,
+                monthlyApiCalls: apiCalls,
+                currentCostPerCall: 0.05,
+                dataQuality: 60,
+                userBase: userBase,
+              });
+              setCurrentStep(0);
+            }}
+          />
         </div>
 
         {/* Step Progress Indicator */}
