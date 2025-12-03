@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Code, Book, Key, Zap, Shield, Globe, ArrowRight, Copy, CheckCircle2, ClipboardList } from "lucide-react";
+import { Code, Book, Key, Zap, Shield, Globe, ArrowRight, Copy, CheckCircle2, ClipboardList, Package, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -45,7 +45,36 @@ const LeafEnginesApiDocs = () => {
     }
   }'`;
 
-  const jsExample = `const leafEngines = {
+  const sdkInstallExample = `npm install @soilsidekick/sdk`;
+
+  const sdkExample = `import { Configuration, DefaultApi } from '@soilsidekick/sdk';
+
+// Initialize the SDK
+const config = new Configuration({
+  apiKey: 'your_api_key_here',
+  basePath: 'https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1'
+});
+const api = new DefaultApi(config);
+
+// Query plant-environment compatibility
+const result = await api.leafenginesQuery({
+  location: { latitude: 40.7128, longitude: -74.0060 },
+  plant: {
+    common_name: 'Tomato',
+    care_requirements: {
+      sun_exposure: 'full_sun',
+      water_needs: 'medium',
+      soil_ph_range: { min: 6.0, max: 6.8 }
+    }
+  },
+  options: { include_satellite_data: true }
+});
+
+console.log('Compatibility Score:', result.data.overall_score);
+console.log('Recommendations:', result.data.recommendations);`;
+
+  const jsExample = `// Alternative: Direct fetch without SDK
+const leafEngines = {
   apiKey: 'your_api_key_here',
   baseUrl: 'https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1',
   
@@ -314,6 +343,110 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
                   </p>
                 </div>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Official SDK */}
+        <Card className="mb-12 border-2 border-primary">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <Badge className="mb-2 bg-primary">
+                  <Package className="mr-2 h-3 w-3" />
+                  Official SDK
+                </Badge>
+                <CardTitle className="text-2xl">Install the SDK</CardTitle>
+                <CardDescription>The fastest way to integrate LeafEngines</CardDescription>
+              </div>
+              <a 
+                href="https://www.npmjs.com/package/@soilsidekick/sdk" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                <img 
+                  src="https://img.shields.io/npm/v/@soilsidekick/sdk?style=flat-square&logo=npm&label=npm" 
+                  alt="npm version"
+                  className="h-5"
+                />
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <h3 className="font-semibold mb-3">Installation</h3>
+              <div className="relative">
+                <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm">
+                  <code>{sdkInstallExample}</code>
+                </pre>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="absolute top-2 right-2"
+                  onClick={() => copyToClipboard(sdkInstallExample, "Install")}
+                >
+                  {copiedCode === "Install" ? (
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-3">Quick Example</h3>
+              <div className="relative">
+                <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-xs">
+                  <code>{sdkExample}</code>
+                </pre>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="absolute top-2 right-2"
+                  onClick={() => copyToClipboard(sdkExample, "SDK")}
+                >
+                  {copiedCode === "SDK" ? (
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                <div>
+                  <p className="font-medium text-sm">TypeScript Support</p>
+                  <p className="text-xs text-muted-foreground">Full type definitions included</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                <div>
+                  <p className="font-medium text-sm">Auto-Generated</p>
+                  <p className="text-xs text-muted-foreground">Always matches latest API</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                <div>
+                  <p className="font-medium text-sm">Rate Limit Headers</p>
+                  <p className="text-xs text-muted-foreground">Built-in usage tracking</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-l-4 border-primary pl-4 py-2">
+              <p className="text-sm font-semibold">Multi-Language SDKs Available</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                SDKs for Python, Go, Ruby, Java, and PHP available on request. 
+                Contact <a href="mailto:sales@leafengines.com" className="text-primary hover:underline">sales@leafengines.com</a>
+              </p>
             </div>
           </CardContent>
         </Card>
