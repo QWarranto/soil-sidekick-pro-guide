@@ -302,7 +302,7 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
                 <div>
                   <h3 className="font-semibold mb-1">Get Your API Key</h3>
                   <p className="text-sm text-muted-foreground">
-                    Contact <a href="mailto:sales@leafengines.com" className="text-primary hover:underline">sales@leafengines.com</a> for partner access and API credentials.
+                    Contact <a href="mailto:support@soilsidekickpro.com" className="text-primary hover:underline">support@soilsidekickpro.com</a> for partner access and API credentials.
                   </p>
                 </div>
               </div>
@@ -445,7 +445,7 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
               <p className="text-sm font-semibold">Multi-Language SDKs Available</p>
               <p className="text-sm text-muted-foreground mt-1">
                 SDKs for Python, Go, Ruby, Java, and PHP available on request. 
-                Contact <a href="mailto:sales@leafengines.com" className="text-primary hover:underline">sales@leafengines.com</a>
+                Contact <a href="mailto:support@soilsidekickpro.com" className="text-primary hover:underline">support@soilsidekickpro.com</a>
               </p>
             </div>
           </CardContent>
@@ -737,7 +737,7 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
             <div className="border-l-4 border-primary pl-4 py-2">
               <p className="text-sm font-semibold">Need Help Choosing?</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Contact <a href="mailto:sales@leafengines.com" className="text-primary hover:underline">sales@leafengines.com</a> to discuss your app's needs and find the right tier
+                Contact <a href="mailto:support@soilsidekickpro.com" className="text-primary hover:underline">support@soilsidekickpro.com</a> to discuss your app's needs and find the right tier
               </p>
             </div>
           </CardContent>
@@ -757,7 +757,7 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
                   Schedule a demo or discuss enterprise plans
                 </p>
                 <Button variant="outline">
-                  <a href="mailto:sales@leafengines.com">sales@leafengines.com</a>
+                  <a href="mailto:support@soilsidekickpro.com">support@soilsidekickpro.com</a>
                 </Button>
               </div>
 
