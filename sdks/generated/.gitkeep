@@ -1,0 +1,5 @@
+# Generated SDK output directory
+# SDKs will be generated here by running:
+#   ./generate-sdk.sh all
+# or
+#   npm run generate:all
