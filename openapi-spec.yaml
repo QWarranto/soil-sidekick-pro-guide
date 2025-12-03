@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: SoilSidekick Pro API
-  version: 1.0.0
+  version: 1.1.0
   description: |
     Agricultural intelligence and soil analysis API with tier-based access control.
     
@@ -32,7 +32,7 @@ info:
     url: https://soilsidekick.com/license
 
 servers:
-  - url: https://your-project.supabase.co/functions/v1
+  - url: https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1
     description: Production server
   - url: http://localhost:54321/functions/v1
     description: Local development server
@@ -47,12 +47,18 @@ tags:
     description: County and location-based endpoints
   - name: Water Quality
     description: Water quality assessment
+  - name: Environmental
+    description: Environmental impact and analytics
   - name: Satellite Data
     description: Satellite imagery and analysis
   - name: AI Services
     description: AI-powered agricultural intelligence
   - name: VRT
     description: Variable rate technology and prescription maps
+  - name: Carbon
+    description: Carbon credit calculation and tracking
+  - name: LeafEngines
+    description: LeafEngines plant compatibility API
 
 paths:
   /get-soil-data:
@@ -181,6 +187,51 @@ paths:
         '429':
           $ref: '#/components/responses/RateLimited'
 
+  /territorial-water-analytics:
+    post:
+      tags:
+        - Water Quality
+      summary: Get territorial water analytics
+      description: Generate territorial water quality analytics across regions
+      operationId: getTerritorialWaterAnalytics
+      x-tier-required: starter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                territory_type:
+                  type: string
+                  enum: [state, territory, compact_state]
+                  description: Type of territory to analyze
+                epa_region:
+                  type: string
+                  description: EPA region identifier
+                date_range:
+                  type: object
+                  properties:
+                    start_date:
+                      type: string
+                      format: date
+                    end_date:
+                      type: string
+                      format: date
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TerritorialWaterAnalytics'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
   /multi-parameter-planting-calendar:
     post:
       tags:
@@ -212,6 +263,123 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PlantingCalendar'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /live-agricultural-data:
+    post:
+      tags:
+        - Soil Analysis
+      summary: Get live agricultural data
+      description: Fetch real-time agricultural data from multiple federal sources (NOAA, USDA, EPA)
+      operationId: getLiveAgriculturalData
+      x-tier-required: starter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - county_fips
+                - data_types
+                - state_code
+                - county_name
+              properties:
+                county_fips:
+                  type: string
+                  pattern: '^[0-9]{5}$'
+                data_types:
+                  type: array
+                  items:
+                    type: string
+                    enum: [weather, soil, crop, environmental]
+                  description: Types of data to fetch
+                state_code:
+                  type: string
+                  maxLength: 2
+                county_name:
+                  type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LiveAgriculturalData'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /environmental-impact-engine:
+    post:
+      tags:
+        - Environmental
+      summary: Calculate environmental impact
+      description: Assess environmental impact including runoff risk, contamination, and eco-friendly alternatives
+      operationId: calculateEnvironmentalImpact
+      x-tier-required: starter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - analysis_id
+                - county_fips
+                - soil_data
+              properties:
+                analysis_id:
+                  type: string
+                  format: uuid
+                county_fips:
+                  type: string
+                  pattern: '^[0-9]{5}$'
+                soil_data:
+                  type: object
+                  properties:
+                    ph_level:
+                      type: number
+                    organic_matter:
+                      type: number
+                    slope:
+                      type: string
+                      enum: [flat, gentle, moderate, steep, very_steep]
+                    drainage:
+                      type: string
+                      enum: [poor, moderate, good, excessive]
+                    nitrogen_level:
+                      type: string
+                    phosphorus_level:
+                      type: string
+                proposed_treatments:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        enum: [nitrogen_fertilizer, phosphorus_fertilizer, pesticide]
+                water_body_data:
+                  type: object
+                  properties:
+                    distance_miles:
+                      type: number
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvironmentalImpact'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -299,6 +467,147 @@ paths:
         '429':
           $ref: '#/components/responses/RateLimited'
 
+  /seasonal-planning-assistant:
+    post:
+      tags:
+        - AI Services
+      summary: Get seasonal planning recommendations
+      description: AI-powered seasonal planning with weather integration
+      operationId: getSeasonalPlanningAssistant
+      x-tier-required: pro
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - location
+                - planningType
+              properties:
+                location:
+                  type: object
+                  properties:
+                    county_fips:
+                      type: string
+                    state_code:
+                      type: string
+                    county_name:
+                      type: string
+                soilData:
+                  type: object
+                  description: Optional soil data for enhanced recommendations
+                planningType:
+                  type: string
+                  enum: [spring_planting, fall_harvest, winter_prep, year_round]
+                cropPreferences:
+                  type: array
+                  items:
+                    type: string
+                timeframe:
+                  type: string
+                  description: Planning timeframe (e.g., "3 months", "1 year")
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeasonalPlanningResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /smart-report-summary:
+    post:
+      tags:
+        - AI Services
+      summary: Generate AI report summary
+      description: Generate AI-powered summaries for soil or water quality reports
+      operationId: generateSmartReportSummary
+      x-tier-required: pro
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - reportType
+                - reportData
+              properties:
+                reportType:
+                  type: string
+                  enum: [soil, water_quality]
+                reportData:
+                  type: object
+                  description: Report data to summarize
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmartReportSummary'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /carbon-credit-calculator:
+    post:
+      tags:
+        - Carbon
+      summary: Calculate carbon credits
+      description: Calculate carbon credits based on field data and soil organic matter
+      operationId: calculateCarbonCredits
+      x-tier-required: pro
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - field_name
+                - field_size_acres
+              properties:
+                field_name:
+                  type: string
+                  description: Name of the field
+                field_size_acres:
+                  type: number
+                  minimum: 0.1
+                  description: Field size in acres
+                soil_organic_matter:
+                  type: number
+                  description: Soil organic matter percentage
+                soil_analysis_id:
+                  type: string
+                  format: uuid
+                  description: Reference to existing soil analysis
+                verification_type:
+                  type: string
+                  enum: [self_reported, third_party, satellite]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarbonCreditCalculation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
   /generate-vrt-prescription:
     post:
       tags:
@@ -333,6 +642,135 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/VRTPrescription'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /leafengines-query:
+    post:
+      tags:
+        - LeafEngines
+      summary: Query plant-environment compatibility
+      description: LeafEngines API for plant compatibility scoring with environmental factors
+      operationId: leafenginesQuery
+      x-tier-required: pro
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - location
+                - plant
+              properties:
+                location:
+                  type: object
+                  properties:
+                    latitude:
+                      type: number
+                    longitude:
+                      type: number
+                    address:
+                      type: string
+                    county_fips:
+                      type: string
+                plant:
+                  type: object
+                  properties:
+                    common_name:
+                      type: string
+                    scientific_name:
+                      type: string
+                    plant_id:
+                      type: string
+                    care_requirements:
+                      type: object
+                      properties:
+                        sun_exposure:
+                          type: string
+                          enum: [full_sun, partial_shade, full_shade]
+                        water_needs:
+                          type: string
+                          enum: [low, medium, high]
+                        soil_ph_range:
+                          type: object
+                          properties:
+                            min:
+                              type: number
+                            max:
+                              type: number
+                options:
+                  type: object
+                  properties:
+                    include_satellite_data:
+                      type: boolean
+                    include_water_quality:
+                      type: boolean
+                    include_recommendations:
+                      type: boolean
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeafEnginesCompatibility'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /visual-crop-analysis:
+    post:
+      tags:
+        - AI Services
+      summary: Analyze crop images
+      description: AI-powered visual crop analysis for pest detection, health assessment, and disease screening
+      operationId: visualCropAnalysis
+      x-tier-required: enterprise
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - image
+                - analysis_type
+              properties:
+                image:
+                  type: string
+                  description: Base64 encoded image or image URL
+                analysis_type:
+                  type: string
+                  enum: [pest_detection, crop_health, disease_screening]
+                location:
+                  type: object
+                  properties:
+                    county_fips:
+                      type: string
+                    county_name:
+                      type: string
+                    state_code:
+                      type: string
+                crop_type:
+                  type: string
+                  description: Type of crop being analyzed
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisualCropAnalysis'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -417,6 +855,29 @@ components:
         phosphates:
           type: number
           format: float
+        contamination_risk:
+          type: string
+          enum: [low, medium, high]
+
+    TerritorialWaterAnalytics:
+      type: object
+      properties:
+        success:
+          type: boolean
+        analytics:
+          type: object
+          properties:
+            territorial_coverage:
+              type: object
+            water_quality_metrics:
+              type: object
+            regional_insights:
+              type: object
+            compliance_status:
+              type: object
+        generated_at:
+          type: string
+          format: date-time
 
     PlantingCalendar:
       type: object
@@ -436,6 +897,95 @@ components:
           type: object
         soil_factors:
           type: object
+        recommendations:
+          type: array
+          items:
+            type: string
+
+    LiveAgriculturalData:
+      type: object
+      properties:
+        county_fips:
+          type: string
+        county_name:
+          type: string
+        state_code:
+          type: string
+        data:
+          type: object
+          properties:
+            weather:
+              type: object
+            soil:
+              type: object
+            crop:
+              type: object
+            environmental:
+              type: object
+        sources:
+          type: array
+          items:
+            type: string
+        timestamp:
+          type: string
+          format: date-time
+        cache_status:
+          type: string
+          enum: [updated, fallback]
+
+    EnvironmentalImpact:
+      type: object
+      properties:
+        impact_assessment:
+          type: object
+          properties:
+            runoff_risk_score:
+              type: number
+            water_body_proximity:
+              type: number
+            contamination_risk:
+              type: string
+            carbon_footprint_score:
+              type: number
+            biodiversity_impact:
+              type: string
+        detailed_analysis:
+          type: object
+          properties:
+            runoff_risk:
+              type: object
+              properties:
+                score:
+                  type: number
+                risk_level:
+                  type: string
+                  enum: [low, medium, high]
+                contributing_factors:
+                  type: object
+            contamination_assessment:
+              type: object
+            eco_alternatives:
+              type: object
+              properties:
+                alternatives:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      category:
+                        type: string
+                      alternative:
+                        type: string
+                      description:
+                        type: string
+                      environmental_benefit:
+                        type: string
+                      effectiveness_score:
+                        type: number
+            carbon_analysis:
+              type: object
+            biodiversity_assessment:
+              type: object
         recommendations:
           type: array
           items:
@@ -483,6 +1033,110 @@ components:
                 type: string
                 enum: [low, medium, high]
 
+    SeasonalPlanningResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        recommendations:
+          type: object
+          properties:
+            seasonal_tasks:
+              type: array
+              items:
+                type: object
+            crop_recommendations:
+              type: array
+              items:
+                type: string
+            timing_guidance:
+              type: object
+        weatherData:
+          type: object
+          properties:
+            currentSeason:
+              type: string
+            temperature:
+              type: string
+            rainfall:
+              type: string
+            frostDates:
+              type: object
+            growingSeason:
+              type: string
+            zone:
+              type: string
+        modelUsed:
+          type: string
+
+    SmartReportSummary:
+      type: object
+      properties:
+        success:
+          type: boolean
+        summary:
+          type: object
+          properties:
+            executive_summary:
+              type: string
+            key_findings:
+              type: array
+              items:
+                type: string
+            recommendations:
+              type: array
+              items:
+                type: string
+            risk_assessment:
+              type: string
+        modelUsed:
+          type: string
+
+    CarbonCreditCalculation:
+      type: object
+      properties:
+        success:
+          type: boolean
+        credit_record:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            field_name:
+              type: string
+            field_size_acres:
+              type: number
+            credits_earned:
+              type: number
+            verification_status:
+              type: string
+              enum: [pending, verified]
+        calculation_details:
+          type: object
+          properties:
+            credits_earned:
+              type: number
+            calculation_method:
+              type: string
+            baseline_carbon:
+              type: number
+            enhanced_carbon:
+              type: number
+            verification_confidence:
+              type: number
+            metadata:
+              type: object
+              properties:
+                calculation_factors:
+                  type: object
+                data_sources:
+                  type: array
+                  items:
+                    type: string
+                confidence_score:
+                  type: number
+
     VRTPrescription:
       type: object
       properties:
@@ -505,6 +1159,98 @@ components:
                 type: number
               geometry:
                 type: object
+
+    LeafEnginesCompatibility:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            overall_score:
+              type: number
+              description: Overall compatibility score (0-100)
+            soil_compatibility:
+              type: number
+            water_compatibility:
+              type: number
+            climate_compatibility:
+              type: number
+            breakdown:
+              type: object
+              properties:
+                soil:
+                  type: object
+                  properties:
+                    score:
+                      type: number
+                    factors:
+                      type: array
+                      items:
+                        type: string
+                    concerns:
+                      type: array
+                      items:
+                        type: string
+                water:
+                  type: object
+                climate:
+                  type: object
+            recommendations:
+              type: array
+              items:
+                type: string
+            risk_level:
+              type: string
+              enum: [low, medium, high]
+            metadata:
+              type: object
+              properties:
+                location:
+                  type: string
+                timestamp:
+                  type: string
+                  format: date-time
+                data_sources:
+                  type: array
+                  items:
+                    type: string
+        usage:
+          type: object
+          properties:
+            credits_used:
+              type: integer
+            response_time_ms:
+              type: integer
+
+    VisualCropAnalysis:
+      type: object
+      properties:
+        success:
+          type: boolean
+        analysis:
+          type: object
+          properties:
+            analysis_type:
+              type: string
+            confidence:
+              type: number
+            findings:
+              type: object
+            recommendations:
+              type: array
+              items:
+                type: string
+            severity:
+              type: string
+              enum: [low, medium, high]
+        analysis_id:
+          type: string
+          format: uuid
+        timestamp:
+          type: string
+          format: date-time
 
     Error:
       type: object
