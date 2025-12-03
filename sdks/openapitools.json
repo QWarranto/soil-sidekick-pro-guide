@@ -1,0 +1,73 @@
+{
+  "$schema": "node_modules/@openapitools/openapi-generator-cli/config.schema.json",
+  "spaces": 2,
+  "generator-cli": {
+    "version": "7.2.0",
+    "generators": {
+      "typescript": {
+        "generatorName": "typescript-fetch",
+        "output": "./generated/typescript",
+        "inputSpec": "../openapi-spec.yaml",
+        "additionalProperties": {
+          "npmName": "@soilsidekick/sdk",
+          "npmVersion": "1.1.0",
+          "supportsES6": true,
+          "typescriptThreePlus": true,
+          "withInterfaces": true,
+          "useSingleRequestParameter": true
+        }
+      },
+      "python": {
+        "generatorName": "python",
+        "output": "./generated/python",
+        "inputSpec": "../openapi-spec.yaml",
+        "additionalProperties": {
+          "packageName": "soilsidekick",
+          "packageVersion": "1.1.0",
+          "projectName": "soilsidekick-sdk"
+        }
+      },
+      "go": {
+        "generatorName": "go",
+        "output": "./generated/go",
+        "inputSpec": "../openapi-spec.yaml",
+        "additionalProperties": {
+          "packageName": "soilsidekick",
+          "packageVersion": "1.1.0",
+          "isGoSubmodule": true
+        }
+      },
+      "ruby": {
+        "generatorName": "ruby",
+        "output": "./generated/ruby",
+        "inputSpec": "../openapi-spec.yaml",
+        "additionalProperties": {
+          "gemName": "soilsidekick",
+          "gemVersion": "1.1.0",
+          "moduleName": "SoilSidekick"
+        }
+      },
+      "java": {
+        "generatorName": "java",
+        "output": "./generated/java",
+        "inputSpec": "../openapi-spec.yaml",
+        "additionalProperties": {
+          "artifactId": "soilsidekick-sdk",
+          "groupId": "com.soilsidekick",
+          "artifactVersion": "1.1.0",
+          "library": "native"
+        }
+      },
+      "php": {
+        "generatorName": "php",
+        "output": "./generated/php",
+        "inputSpec": "../openapi-spec.yaml",
+        "additionalProperties": {
+          "packageName": "SoilSidekick",
+          "invokerPackage": "SoilSidekick",
+          "artifactVersion": "1.1.0"
+        }
+      }
+    }
+  }
+}

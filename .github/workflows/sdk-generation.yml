@@ -1,0 +1,175 @@
+# SDK Generation Workflow
+# Automatically generates and publishes SDKs when openapi-spec.yaml changes
+
+name: SDK Generation
+
+on:
+  push:
+    paths:
+      - 'openapi-spec.yaml'
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'SDK Version'
+        required: true
+        default: '1.1.0'
+
+jobs:
+  validate-spec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install OpenAPI Generator
+        run: npm install -g @openapitools/openapi-generator-cli
+      
+      - name: Validate OpenAPI Spec
+        run: openapi-generator-cli validate -i openapi-spec.yaml
+
+  generate-typescript:
+    needs: validate-spec
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+      
+      - name: Install OpenAPI Generator
+        run: npm install -g @openapitools/openapi-generator-cli
+      
+      - name: Generate TypeScript SDK
+        run: |
+          VERSION=${{ github.event.inputs.version || '1.1.0' }}
+          openapi-generator-cli generate \
+            -i openapi-spec.yaml \
+            -g typescript-fetch \
+            -o ./sdks/generated/typescript \
+            --additional-properties=npmName=@soilsidekick/sdk,npmVersion=$VERSION,supportsES6=true,typescriptThreePlus=true
+      
+      - name: Build TypeScript SDK
+        working-directory: ./sdks/generated/typescript
+        run: |
+          npm install
+          npm run build
+      
+      - name: Upload TypeScript SDK
+        uses: actions/upload-artifact@v4
+        with:
+          name: typescript-sdk
+          path: ./sdks/generated/typescript
+
+  generate-python:
+    needs: validate-spec
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install OpenAPI Generator
+        run: npm install -g @openapitools/openapi-generator-cli
+      
+      - name: Generate Python SDK
+        run: |
+          VERSION=${{ github.event.inputs.version || '1.1.0' }}
+          openapi-generator-cli generate \
+            -i openapi-spec.yaml \
+            -g python \
+            -o ./sdks/generated/python \
+            --additional-properties=packageName=soilsidekick,packageVersion=$VERSION,projectName=soilsidekick-sdk
+      
+      - name: Test Python SDK
+        working-directory: ./sdks/generated/python
+        run: |
+          pip install -e .
+          python -c "import soilsidekick; print('SDK imported successfully')"
+      
+      - name: Upload Python SDK
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-sdk
+          path: ./sdks/generated/python
+
+  generate-go:
+    needs: validate-spec
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install OpenAPI Generator
+        run: npm install -g @openapitools/openapi-generator-cli
+      
+      - name: Generate Go SDK
+        run: |
+          VERSION=${{ github.event.inputs.version || '1.1.0' }}
+          openapi-generator-cli generate \
+            -i openapi-spec.yaml \
+            -g go \
+            -o ./sdks/generated/go \
+            --additional-properties=packageName=soilsidekick,packageVersion=$VERSION
+      
+      - name: Test Go SDK
+        working-directory: ./sdks/generated/go
+        run: go build ./...
+      
+      - name: Upload Go SDK
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-sdk
+          path: ./sdks/generated/go
+
+  test-sdk:
+    needs: [generate-typescript, generate-python, generate-go]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies
+        working-directory: ./sdks
+        run: npm install
+      
+      - name: Run SDK tests
+        working-directory: ./sdks
+        env:
+          SOILSIDEKICK_API_KEY: ${{ secrets.SOILSIDEKICK_TEST_API_KEY }}
+        run: |
+          if [ -n "$SOILSIDEKICK_API_KEY" ]; then
+            npx ts-node test-sdk.ts
+          else
+            echo "Skipping tests - no API key configured"
+          fi

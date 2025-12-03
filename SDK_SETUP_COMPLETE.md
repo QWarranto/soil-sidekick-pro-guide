@@ -16,166 +16,219 @@
 - API keys now automatically inherit rate limits from their tier
 - Tier information is returned when listing API keys
 
-### 3. SDK Configuration Files ✓
-- **`src/lib/sdk-tier-limits.ts`** - TypeScript tier configuration with helper functions
-- **`openapi-spec.yaml`** - Complete OpenAPI 3.0 specification with:
-  - All major endpoints documented
-  - Tier requirements per endpoint (`x-tier-required`)
-  - Rate limit headers
-  - Authentication schemes
-  - Request/response schemas
+### 3. OpenAPI Specification ✓ (v1.1.0)
+- **15 documented endpoints** organized by tier
+- Full request/response schemas
+- Rate limiting headers documented
+- Tier requirements per endpoint (`x-tier-required`)
 
-### 4. Documentation ✓
-- **`docs/SDK_GENERATION_GUIDE.md`** - Complete guide for:
-  - Generating SDKs in 6+ languages (TypeScript, Python, Go, Ruby, PHP, Java)
-  - Tier-specific SDK generation
-  - Authentication examples
-  - Rate limiting handling
-  - Testing and publishing SDKs
-  - CI/CD integration
+| Tier | Endpoints |
+|------|-----------|
+| Free | get-soil-data, county-lookup |
+| Starter | territorial-water-quality, territorial-water-analytics, multi-parameter-planting-calendar, live-agricultural-data, environmental-impact-engine |
+| Pro | alpha-earth-environmental-enhancement, agricultural-intelligence, seasonal-planning-assistant, smart-report-summary, carbon-credit-calculator, leafengines-query, generate-vrt-prescription |
+| Enterprise | visual-crop-analysis |
 
-## What You Can Do Now
+### 4. SDK Generation Tools ✓
+- **`sdks/package.json`** - npm scripts for SDK generation
+- **`sdks/generate-sdk.sh`** - Shell script for generating SDKs
+- **`sdks/openapitools.json`** - Configuration for all 6 language targets
+- **`sdks/generated/`** - Output directory for generated SDKs
 
-### Generate Your First SDK
+### 5. SDK Testing ✓
+- **`sdks/test-sdk.ts`** - Comprehensive test suite
+- **`sdks/README.md`** - Usage documentation with examples
 
-#### TypeScript/JavaScript
+### 6. CI/CD Pipeline ✓
+- **`.github/workflows/sdk-generation.yml`** - Automated SDK generation on OpenAPI changes
+
+---
+
+## Quick Start
+
+### Generate All SDKs
 ```bash
-npm install @openapitools/openapi-generator-cli -g
+cd sdks
 
-openapi-generator-cli generate \
-  -i openapi-spec.yaml \
-  -g typescript-fetch \
-  -o ./sdks/typescript \
-  --additional-properties=npmName=@soilsidekick/sdk,supportsES6=true
+# Install dependencies
+npm install
+
+# Generate all SDKs (TypeScript, Python, Go, Ruby, Java, PHP)
+npm run generate:all
+
+# Or use shell script
+chmod +x generate-sdk.sh
+./generate-sdk.sh all
 ```
 
-#### Python
+### Generate Single Language
 ```bash
-openapi-generator-cli generate \
-  -i openapi-spec.yaml \
-  -g python \
-  -o ./sdks/python \
-  --additional-properties=packageName=soilsidekick
+# TypeScript
+npm run generate:typescript
+
+# Python
+npm run generate:python
+
+# Go
+npm run generate:go
+
+# Using shell script
+./generate-sdk.sh typescript
+./generate-sdk.sh python 1.2.0  # with version
 ```
 
-### Create API Keys with Tiers
-
+### Test SDK
 ```bash
-# Via API
-curl -X POST https://your-project.supabase.co/functions/v1/api-key-management \
-  -H "Authorization: Bearer YOUR_AUTH_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "key_name": "My Pro API Key",
-    "subscription_tier": "pro",
-    "permissions": {
-      "soil_analysis": true,
-      "satellite_data": true
-    }
-  }'
-```
+# Set API key
+export SOILSIDEKICK_API_KEY=ss_prod_your_key
 
-### Use the SDK
-
-```typescript
-import { Configuration, DefaultApi } from '@soilsidekick/sdk';
-
-const config = new Configuration({
-  apiKey: 'ss_prod_your_api_key_here',
-  basePath: 'https://your-project.supabase.co/functions/v1'
-});
-
-const api = new DefaultApi(config);
-
-// Fetch soil data
-const result = await api.getSoilData({ county_fips: '12345' });
-console.log(result);
-```
-
-## Tier-Based Feature Access
-
-Each endpoint in the OpenAPI spec is annotated with `x-tier-required`:
-
-| Feature | Tier Required | Endpoints |
-|---------|--------------|-----------|
-| Soil Analysis | Free | `/get-soil-data` |
-| County Lookup | Free | `/county-lookup` |
-| Water Quality | Starter | `/territorial-water-quality` |
-| Planting Calendar | Starter | `/multi-parameter-planting-calendar` |
-| Satellite Data | Pro | `/alpha-earth-environmental-enhancement` |
-| AI Services | Pro | `/agricultural-intelligence` |
-| VRT Maps | Pro | `/generate-vrt-prescription` |
-
-## Next Steps
-
-1. **Test API Key Creation** - Create API keys with different tiers via the dashboard or API
-2. **Generate Your First SDK** - Follow the guide to generate an SDK in your preferred language
-3. **Add More Endpoints** - Update `openapi-spec.yaml` to include additional edge functions
-4. **Publish SDKs** - Publish to NPM, PyPI, RubyGems, etc.
-5. **Set Up CI/CD** - Automate SDK generation on OpenAPI spec changes
-
-## Rate Limiting
-
-Rate limits are enforced automatically based on API key tier:
-
-- Limits are returned in response headers:
-  - `X-RateLimit-Limit`
-  - `X-RateLimit-Remaining`
-  - `X-RateLimit-Reset`
-
-- 429 responses when exceeded:
-  ```json
-  {
-    "error": "Rate limit exceeded",
-    "message": "You have exceeded your rate limit. Retry after reset time.",
-    "code": "RATE_LIMITED"
-  }
-  ```
-
-## Updating the OpenAPI Spec
-
-When you add new edge functions, update `openapi-spec.yaml`:
-
-```yaml
-/your-new-endpoint:
-  post:
-    tags:
-      - Category
-    summary: Description
-    operationId: yourNewEndpoint
-    x-tier-required: pro  # Set minimum tier
-    requestBody:
-      # ... request schema
-    responses:
-      '200':
-        # ... response schema
-```
-
-Then regenerate SDKs to include the new endpoint.
-
-## Support
-
-- OpenAPI Spec: `openapi-spec.yaml`
-- Generation Guide: `docs/SDK_GENERATION_GUIDE.md`
-- Tier Config: `src/lib/sdk-tier-limits.ts`
-- Database Functions: `validate_api_key_with_tier()` in Supabase
-
-## Testing
-
-Test tier restrictions:
-```sql
--- Check tier limits
-SELECT * FROM api_tier_limits;
-
--- Check your API keys
-SELECT id, key_name, subscription_tier, rate_limit, created_at 
-FROM api_keys 
-WHERE user_id = auth.uid();
-
--- Test validation function
-SELECT * FROM validate_api_key_with_tier('your_key_hash_here');
+# Run tests
+npm test
 ```
 
 ---
 
-🎉 **Your SDK infrastructure is ready!** Start generating SDKs for your API in minutes.
+## SDK Structure
+
+```
+sdks/
+├── package.json           # npm scripts
+├── generate-sdk.sh        # Shell script generator
+├── openapitools.json      # Generator configuration
+├── test-sdk.ts            # Test suite
+├── README.md              # Documentation
+└── generated/             # Output directory
+    ├── typescript/
+    ├── python/
+    ├── go/
+    ├── ruby/
+    ├── java/
+    └── php/
+```
+
+---
+
+## Tier-Based Feature Access
+
+| Feature | Free | Starter | Pro | Enterprise |
+|---------|:----:|:-------:|:---:|:----------:|
+| Soil Analysis | ✓ | ✓ | ✓ | ✓ |
+| County Lookup | ✓ | ✓ | ✓ | ✓ |
+| Water Quality | | ✓ | ✓ | ✓ |
+| Planting Calendar | | ✓ | ✓ | ✓ |
+| Live Agricultural Data | | ✓ | ✓ | ✓ |
+| Environmental Impact | | ✓ | ✓ | ✓ |
+| Satellite Data | | | ✓ | ✓ |
+| AI Intelligence | | | ✓ | ✓ |
+| Seasonal Planning | | | ✓ | ✓ |
+| Report Summaries | | | ✓ | ✓ |
+| Carbon Credits | | | ✓ | ✓ |
+| LeafEngines API | | | ✓ | ✓ |
+| VRT Prescriptions | | | ✓ | ✓ |
+| Visual Crop Analysis | | | | ✓ |
+
+---
+
+## Create API Key
+
+### Via Dashboard
+Navigate to Settings → API Keys → Create New Key
+
+### Via API
+```bash
+curl -X POST https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/api-key-management \
+  -H "Authorization: Bearer YOUR_AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "key_name": "Production SDK Key",
+    "subscription_tier": "pro"
+  }'
+```
+
+---
+
+## Usage Examples
+
+### TypeScript
+```typescript
+import { Configuration, DefaultApi } from '@soilsidekick/sdk';
+
+const api = new DefaultApi(new Configuration({
+  apiKey: 'ss_prod_your_key',
+  basePath: 'https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1'
+}));
+
+const soil = await api.getSoilData({ county_fips: '12086' });
+console.log(soil.ph_level);
+```
+
+### Python
+```python
+from soilsidekick import Configuration, DefaultApi
+
+config = Configuration()
+config.api_key['Authorization'] = 'ss_prod_your_key'
+api = DefaultApi(config)
+
+soil = api.get_soil_data(county_fips='12086')
+print(soil.ph_level)
+```
+
+---
+
+## Rate Limiting
+
+Rate limits are returned in response headers:
+- `X-RateLimit-Limit` - Max requests per window
+- `X-RateLimit-Remaining` - Remaining requests
+- `X-RateLimit-Reset` - Unix timestamp when limit resets
+
+### Handling 429 Responses
+```typescript
+try {
+  const data = await api.getSoilData({ county_fips: '12086' });
+} catch (error) {
+  if (error.status === 429) {
+    const resetTime = error.headers.get('X-RateLimit-Reset');
+    await sleep(resetTime * 1000 - Date.now());
+    // Retry
+  }
+}
+```
+
+---
+
+## Publishing SDKs
+
+### NPM (TypeScript)
+```bash
+cd generated/typescript
+npm publish --access public
+```
+
+### PyPI (Python)
+```bash
+cd generated/python
+python -m build
+twine upload dist/*
+```
+
+### Go Modules
+```bash
+cd generated/go
+git tag v1.1.0
+git push origin v1.1.0
+```
+
+---
+
+## Support
+
+- **OpenAPI Spec**: `openapi-spec.yaml`
+- **Generation Guide**: `docs/SDK_GENERATION_GUIDE.md`
+- **Test Suite**: `sdks/test-sdk.ts`
+- **CI/CD**: `.github/workflows/sdk-generation.yml`
+
+---
+
+🎉 **SDK infrastructure is production-ready!**
