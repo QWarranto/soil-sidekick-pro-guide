@@ -183,4 +183,4 @@ try {
 
 - Documentation: https://soilsidekick.com/docs
 - API Reference: See `openapi-spec.yaml`
-- Email: support@soilsidekick.com
+- Email: support@soilsidekickpro.com
