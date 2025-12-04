@@ -125,6 +125,44 @@ export const subscriptionCheckSchema = z.object({
   forceRefresh: z.boolean().optional(),
 });
 
+// ============================================
+// Phase 2B: Authentication & Security Schemas
+// Added: December 4, 2025
+// ============================================
+
+// Trial auth schema - public endpoint with rate limiting
+export const trialAuthSchema = z.object({
+  email: emailSchema,
+  action: z.enum(['create_trial', 'verify_trial'], {
+    errorMap: () => ({ message: 'Action must be create_trial or verify_trial' })
+  }),
+  trialDuration: z.number().int().min(1).max(30).optional(), // Days, default 10
+});
+
+// External auth validation schema - validates before auth
+export const externalAuthSchema = z.object({
+  token: z.string().min(1).max(1000),
+  email: emailSchema,
+  provider: z.enum(['soilcertify', 'partner_api', 'oauth']).optional().default('soilcertify'),
+  metadata: z.record(z.any()).optional(),
+});
+
+// Sign-in notification schema
+export const signinNotificationSchema = z.object({
+  email: emailSchema,
+  userName: z.string().max(200).optional(),
+  ipAddress: z.string().max(45).optional(), // IPv6 max length
+  userAgent: z.string().max(500).optional(),
+  timestamp: z.string().datetime().optional(),
+});
+
+// Security monitoring schema - admin only
+export const securityMonitoringSchema = z.object({
+  time_range: z.enum(['1h', '24h', '7d', '30d']).optional().default('24h'),
+  severity_filter: z.enum(['low', 'medium', 'high', 'critical']).optional(),
+  event_types: z.array(z.string().max(100)).optional(),
+});
+
 /**
  * Validate and parse input data against a schema
  * Returns validated data or throws descriptive error

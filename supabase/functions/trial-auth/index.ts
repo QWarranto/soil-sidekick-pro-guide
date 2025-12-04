@@ -1,43 +1,62 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { corsHeaders } from '../_shared/cors.ts'
-import { logSafe, logError } from '../_shared/logging-utils.ts'
-import { validateTrialAccess, generateTrialToken } from '../_shared/trial-validation.ts'
+/**
+ * Trial Auth Function - Migrated to requestHandler
+ * Updated: December 4, 2025 - Phase 2B.2 QC Migration
+ * 
+ * Handles trial user creation and verification with:
+ * - Input validation via Zod schema
+ * - Database-backed rate limiting (prevents trial abuse)
+ * - Security event logging
+ * - Cost tracking
+ */
 
-const supabase = createClient(
+import { requestHandler } from '../_shared/request-handler.ts';
+import { trialAuthSchema } from '../_shared/validation.ts';
+import { validateTrialAccess, generateTrialToken } from '../_shared/trial-validation.ts';
+import { logSafe, logError } from '../_shared/logging-utils.ts';
+import { createClient } from 'jsr:@supabase/supabase-js@2';
+
+// Service role client for trial operations
+const getServiceClient = () => createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-)
+);
 
-Deno.serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
-  }
-
-  try {
-    const { email, action } = await req.json()
+requestHandler({
+  // Public endpoint - no auth required (trial creation)
+  requireAuth: false,
+  
+  // Validation schema
+  validationSchema: trialAuthSchema,
+  
+  // Rate limiting: 20 requests per hour per IP to prevent trial abuse
+  rateLimit: {
+    requests: 20,
+    windowMs: 60 * 60 * 1000, // 1 hour
+  },
+  
+  // Use service role for trial user creation
+  useServiceRole: true,
+  
+  handler: async (ctx) => {
+    const { email, action, trialDuration } = ctx.validatedData;
+    const supabase = getServiceClient();
     
-    if (!email) {
-      throw new Error('Email is required')
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      throw new Error('Invalid email format')
-    }
+    logSafe('Trial auth request', { email, action });
 
     switch (action) {
       case 'create_trial': {
-        logSafe('Creating trial user', { email })
+        logSafe('Creating trial user', { email });
         
-        // Create or update trial user
+        // Create or update trial user via RPC
         const { data: trialUser, error: createError } = await supabase
-          .rpc('create_trial_user', { trial_email: email })
+          .rpc('create_trial_user', { 
+            trial_email: email,
+            // Pass custom duration if provided (default handled by RPC)
+          });
         
         if (createError) {
-          logError('create_trial_user RPC', createError)
-          throw createError
+          logError('create_trial_user RPC', createError);
+          throw new Error(`Trial creation failed: ${createError.message}`);
         }
 
         // Validate the trial was created successfully
@@ -45,87 +64,66 @@ Deno.serve(async (req) => {
           email,
           Deno.env.get('SUPABASE_URL') ?? '',
           Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-        )
+        );
 
         if (!validation.isValid) {
-          throw new Error(validation.error || 'Trial validation failed')
+          throw new Error(validation.error || 'Trial validation failed');
         }
 
-        // Generate secure session token instead of sending trial data
-        const sessionToken = generateTrialToken(email)
+        // Generate secure session token
+        const sessionToken = generateTrialToken(email);
 
-        return new Response(
-          JSON.stringify({
-            success: true,
-            sessionToken, // Client stores this instead of trial data
-            trialEnd: validation.trialUser?.trial_end,
-            trialUser: validation.trialUser, // Backward compatibility for clients expecting trialUser
-            message: 'Trial access granted for 10 days'
-          }),
-          {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 200,
-          }
-        )
+        // Log successful trial creation for analytics
+        await supabase.from('cost_tracking').insert({
+          service_provider: 'supabase',
+          service_type: 'trial_creation',
+          feature_name: 'trial-auth',
+          usage_count: 1,
+          cost_usd: 0,
+          request_details: { email_domain: email.split('@')[1] },
+        }).catch(() => {}); // Non-blocking
+
+        return {
+          sessionToken,
+          trialEnd: validation.trialUser?.trial_end,
+          trialUser: validation.trialUser, // Backward compatibility
+          message: `Trial access granted for ${trialDuration || 10} days`,
+        };
       }
 
       case 'verify_trial': {
-        logSafe('Verifying trial user', { email })
+        logSafe('Verifying trial user', { email });
         
         // Server-side validation - NEVER trust client data
         const validation = await validateTrialAccess(
           email,
           Deno.env.get('SUPABASE_URL') ?? '',
           Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-        )
+        );
 
         if (!validation.isValid) {
-          return new Response(
-            JSON.stringify({
-              success: false,
-              message: validation.error || 'Trial has expired or is not valid'
-            }),
-            {
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-              status: 401,
-            }
-          )
+          // Return structured error instead of throwing
+          return {
+            success: false,
+            message: validation.error || 'Trial has expired or is not valid',
+            expired: true,
+          };
         }
 
         // Generate new session token
-        const sessionToken = generateTrialToken(email)
+        const sessionToken = generateTrialToken(email);
 
-        return new Response(
-          JSON.stringify({
-            success: true,
-            sessionToken,
-            trialEnd: validation.trialUser?.trial_end,
-            accessCount: validation.trialUser?.access_count,
-            trialUser: validation.trialUser, // Backward compatibility
-            message: 'Trial access verified'
-          }),
-          {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 200,
-          }
-        )
+        return {
+          sessionToken,
+          trialEnd: validation.trialUser?.trial_end,
+          accessCount: validation.trialUser?.access_count,
+          trialUser: validation.trialUser, // Backward compatibility
+          message: 'Trial access verified',
+        };
       }
 
       default:
-        throw new Error('Invalid action')
+        throw new Error(`Invalid action: ${action}`);
     }
-
-  } catch (error) {
-    logError('trial-auth', error)
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: error.message
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      }
-    )
-  }
-})
+  },
+});

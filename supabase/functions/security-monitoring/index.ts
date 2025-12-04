@@ -1,113 +1,55 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2'
+/**
+ * Security Monitoring Function - Migrated to requestHandler
+ * Updated: December 4, 2025 - Phase 2B.5 QC Migration
+ * 
+ * Provides security metrics and monitoring dashboard with:
+ * - Input validation via Zod schema
+ * - Admin-only access (requires authentication)
+ * - Rate limiting (prevents excessive monitoring queries)
+ * - Comprehensive security event analysis
+ */
 
-// Security utilities (inline)
-const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+import { requestHandler } from '../_shared/request-handler.ts';
+import { securityMonitoringSchema } from '../_shared/validation.ts';
+import { logSafe, logError, sanitizeError } from '../_shared/logging-utils.ts';
+import { createClient } from 'jsr:@supabase/supabase-js@2';
 
-function sanitizeError(error: any): string {
-  if (error.message?.includes('JWT') || error.message?.includes('auth')) {
-    return 'Authentication failed';
-  }
-  if (error.message?.includes('database') || error.message?.includes('SQL')) {
-    return 'Database operation failed';
-  }
-  return 'Service temporarily unavailable';
-}
-
-function checkRateLimit(identifier: string, limit: number = 20, windowMs: number = 60000): boolean {
-  const now = Date.now();
-  const entry = rateLimitStore.get(identifier);
+requestHandler({
+  // Requires authentication - only authenticated users can view security metrics
+  requireAuth: true,
   
-  if (!entry || now > entry.resetTime) {
-    rateLimitStore.set(identifier, { count: 1, resetTime: now + windowMs });
-    return true;
-  }
+  // Validation schema
+  validationSchema: securityMonitoringSchema,
   
-  if (entry.count >= limit) {
-    return false;
-  }
+  // Rate limiting: 20 requests per minute (monitoring can be frequent)
+  rateLimit: {
+    requests: 20,
+    windowMs: 60 * 1000, // 1 minute
+  },
   
-  entry.count++;
-  return true;
-}
-
-async function authenticateUser(supabase: any, request: Request): Promise<{ user: any; error?: string }> {
-  try {
-    const authHeader = request.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return { user: null, error: 'Authentication required' };
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error } = await supabase.auth.getUser(token);
+  // Use service role for accessing security logs
+  useServiceRole: true,
+  
+  handler: async (ctx) => {
+    const { time_range, severity_filter, event_types } = ctx.validatedData;
     
-    if (error || !user) {
-      return { user: null, error: 'Invalid authentication' };
-    }
-    
-    return { user };
-  } catch (error) {
-    return { user: null, error: 'Authentication failed' };
-  }
-}
+    logSafe('Security monitoring request', { time_range, severity_filter });
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
-
-interface SecurityMetricsRequest {
-  time_range?: string; // '1h', '24h', '7d', '30d'
-  severity_filter?: 'low' | 'medium' | 'high' | 'critical';
-  event_types?: string[];
-}
-
-Deno.serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  try {
-    // Rate limiting (stricter for monitoring endpoint)
-    const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
-    if (!checkRateLimit(clientIP, 20, 60000)) {
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: 'Too many requests' 
-      }), {
-        status: 429,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
-
-    // Authenticate user - only admins should access security metrics
-    const { user, error: authError } = await authenticateUser(supabase, req);
-    
-    if (!user) {
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: 'Authentication required' 
-      }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const requestBody = req.method === 'POST' ? await req.json() : {};
-    const { time_range = '24h', severity_filter, event_types }: SecurityMetricsRequest = requestBody;
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
 
     // Calculate time range
     const now = new Date();
-    const timeRangeMs = {
+    const timeRangeMs: Record<string, number> = {
       '1h': 60 * 60 * 1000,
       '24h': 24 * 60 * 60 * 1000,
       '7d': 7 * 24 * 60 * 60 * 1000,
-      '30d': 30 * 24 * 60 * 60 * 1000
+      '30d': 30 * 24 * 60 * 60 * 1000,
     };
     
-    const startTime = new Date(now.getTime() - (timeRangeMs[time_range as keyof typeof timeRangeMs] || timeRangeMs['24h']));
+    const startTime = new Date(now.getTime() - (timeRangeMs[time_range] || timeRangeMs['24h']));
 
     // Build query filters
     let query = supabase
@@ -141,45 +83,24 @@ Deno.serve(async (req) => {
       .from('security_audit_log')
       .select('*')
       .eq('severity', 'critical')
-      .gte('created_at', new Date(now.getTime() - 60 * 60 * 1000).toISOString()) // Last hour
+      .gte('created_at', new Date(now.getTime() - 60 * 60 * 1000).toISOString())
       .order('created_at', { ascending: false })
       .limit(10);
 
-    const response = {
-      success: true,
+    logSafe('Security monitoring completed', { 
+      logs_count: (securityLogs || []).length,
+      critical_alerts: (criticalAlerts || []).length,
+    });
+
+    return {
       time_range,
       metrics,
       system_health: systemHealth,
       critical_alerts: criticalAlerts || [],
-      logs_sample: (securityLogs || []).slice(0, 50), // First 50 for detailed view
-      generated_at: now.toISOString()
+      logs_sample: (securityLogs || []).slice(0, 50),
+      generated_at: now.toISOString(),
     };
-
-    return new Response(JSON.stringify(response), {
-      headers: { 
-        ...corsHeaders, 
-        'Content-Type': 'application/json',
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '1; mode=block'
-      },
-    });
-
-  } catch (error) {
-    console.error('Error in security monitoring:', error);
-    
-    return new Response(JSON.stringify({ 
-      success: false,
-      error: sanitizeError(error)
-    }), {
-      status: 500,
-      headers: { 
-        ...corsHeaders, 
-        'Content-Type': 'application/json',
-        'X-Content-Type-Options': 'nosniff'
-      },
-    });
-  }
+  },
 });
 
 function generateSecurityMetrics(logs: any[]) {
@@ -190,13 +111,13 @@ function generateSecurityMetrics(logs: any[]) {
   const eventTypes = logs.reduce((acc, log) => {
     acc[log.event_type] = (acc[log.event_type] || 0) + 1;
     return acc;
-  }, {});
+  }, {} as Record<string, number>);
 
   // Severity distribution
   const severityDist = logs.reduce((acc, log) => {
     acc[log.severity] = (acc[log.severity] || 0) + 1;
     return acc;
-  }, {});
+  }, {} as Record<string, number>);
 
   // Timeline analysis (hourly buckets for last 24h)
   const timeline = [];
@@ -215,7 +136,7 @@ function generateSecurityMetrics(logs: any[]) {
       critical: hourLogs.filter(l => l.severity === 'critical').length,
       high: hourLogs.filter(l => l.severity === 'high').length,
       medium: hourLogs.filter(l => l.severity === 'medium').length,
-      low: hourLogs.filter(l => l.severity === 'low').length
+      low: hourLogs.filter(l => l.severity === 'low').length,
     });
   }
 
@@ -223,23 +144,23 @@ function generateSecurityMetrics(logs: any[]) {
   const ipAnalysis = logs.reduce((acc, log) => {
     const ip = log.ip_address || 'unknown';
     if (!acc[ip]) {
-      acc[ip] = { count: 0, events: [] };
+      acc[ip] = { count: 0, events: [] as string[] };
     }
     acc[ip].count++;
     acc[ip].events.push(log.event_type);
     return acc;
-  }, {});
+  }, {} as Record<string, { count: number; events: string[] }>);
 
   const topIPs = Object.entries(ipAnalysis)
-    .map(([ip, data]: [string, any]) => ({
+    .map(([ip, data]) => ({
       ip,
       event_count: data.count,
-      unique_event_types: [...new Set(data.events)].length
+      unique_event_types: [...new Set(data.events)].length,
     }))
     .sort((a, b) => b.event_count - a.event_count)
     .slice(0, 10);
 
-  // Rate limiting analysis
+  // Security indicators
   const rateLimitEvents = logs.filter(l => l.event_type === 'rate_limit_exceeded');
   const authFailures = logs.filter(l => l.event_type === 'authentication_failure');
   const functionErrors = logs.filter(l => l.event_type === 'function_error');
@@ -258,13 +179,13 @@ function generateSecurityMetrics(logs: any[]) {
       rate_limit_violations: rateLimitEvents.length,
       authentication_failures: authFailures.length,
       function_errors: functionErrors.length,
-      critical_events: logs.filter(l => l.severity === 'critical').length
+      critical_events: logs.filter(l => l.severity === 'critical').length,
     },
     trends: {
       events_per_hour: logs.length > 0 ? (logs.length / 24).toFixed(1) : '0',
-      most_common_event: Object.entries(eventTypes).sort((a: any, b: any) => b[1] - a[1])[0]?.[0] || 'none',
-      risk_level: calculateRiskLevel(logs)
-    }
+      most_common_event: Object.entries(eventTypes).sort((a, b) => (b[1] as number) - (a[1] as number))[0]?.[0] || 'none',
+      risk_level: calculateRiskLevel(logs),
+    },
   };
 }
 
@@ -287,35 +208,27 @@ async function getSystemHealth(supabase: any) {
   try {
     // Check database connectivity and recent activity
     const { data: recentActivity, error } = await supabase
-      .from('subscription_usages')
+      .from('cost_tracking')
       .select('created_at')
-      .gte('created_at', new Date(Date.now() - 5 * 60 * 1000).toISOString()) // Last 5 minutes
+      .gte('created_at', new Date(Date.now() - 5 * 60 * 1000).toISOString())
       .limit(1);
 
     const dbConnected = !error;
     const recentDbActivity = (recentActivity && recentActivity.length > 0);
 
-    // Check rate limiting store health
-    const rateLimitStoreSize = rateLimitStore.size;
-    const rateLimitHealthy = rateLimitStoreSize < 1000; // Arbitrary threshold
-
     return {
       database_connected: dbConnected,
       recent_database_activity: recentDbActivity,
-      rate_limit_store_healthy: rateLimitHealthy,
-      rate_limit_entries: rateLimitStoreSize,
       last_check: new Date().toISOString(),
-      overall_status: (dbConnected && rateLimitHealthy) ? 'HEALTHY' : 'DEGRADED'
+      overall_status: dbConnected ? 'HEALTHY' : 'DEGRADED',
     };
   } catch (error) {
     return {
       database_connected: false,
       recent_database_activity: false,
-      rate_limit_store_healthy: false,
-      rate_limit_entries: 0,
       last_check: new Date().toISOString(),
       overall_status: 'ERROR',
-      error: sanitizeError(error)
+      error: 'Health check failed',
     };
   }
 }

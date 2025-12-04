@@ -1,88 +1,171 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+/**
+ * Validate External Auth Function - Migrated to requestHandler
+ * Updated: December 4, 2025 - Phase 2B.3 QC Migration
+ * 
+ * Validates external authentication tokens from partner systems (e.g., SoilCertify.com)
+ * with:
+ * - Input validation via Zod schema
+ * - Rate limiting (prevents brute force attacks)
+ * - Security event logging for auth attempts
+ * - Partner token validation
+ */
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { requestHandler } from '../_shared/request-handler.ts';
+import { externalAuthSchema } from '../_shared/validation.ts';
+import { logSafe, logError } from '../_shared/logging-utils.ts';
+import { logSecurityEvent } from '../_shared/security-utils.ts';
+import { createClient } from 'jsr:@supabase/supabase-js@2';
 
-serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+requestHandler({
+  // No auth required - this endpoint validates tokens before establishing auth
+  requireAuth: false,
+  
+  // Validation schema
+  validationSchema: externalAuthSchema,
+  
+  // Rate limiting: 10 requests per minute per IP (strict for auth endpoint)
+  rateLimit: {
+    requests: 10,
+    windowMs: 60 * 1000, // 1 minute
+  },
+  
+  // Use service role for user creation
+  useServiceRole: true,
+  
+  handler: async (ctx) => {
+    const { token, email, provider, metadata } = ctx.validatedData;
+    
+    logSafe('External auth validation request', { email, provider });
 
-  try {
-    const { token, email } = await req.json();
-
-    // Validate the external auth token
-    // This should match the token generation mechanism on SoilCertify.com
-    const expectedSecret = Deno.env.get('SOILCERTIFY_SECRET');
+    // Get the expected secret for the provider
+    const secretEnvKey = `${provider.toUpperCase()}_SECRET`;
+    const expectedSecret = Deno.env.get(secretEnvKey) || Deno.env.get('SOILCERTIFY_SECRET');
     
     if (!expectedSecret) {
+      logError('External auth config', new Error(`Secret not configured for provider: ${provider}`));
+      
+      // Log security event for missing config
+      await logSecurityEvent(ctx.supabaseClient, {
+        event_type: 'external_auth_config_error',
+        severity: 'high',
+        details: { provider, error: 'Secret not configured' },
+      }, ctx.req);
+      
       throw new Error('External auth secret not configured');
     }
 
-    // Simple token validation - you should implement your own secure mechanism
-    // that matches what SoilCertify.com sends
-    const isValidToken = token === expectedSecret || 
-                        token === `${expectedSecret}-${email}`;
+    // Validate the token
+    // Support multiple validation patterns:
+    // 1. Direct secret match
+    // 2. Secret + email combination
+    // 3. HMAC signature (future enhancement)
+    const isValidToken = 
+      token === expectedSecret || 
+      token === `${expectedSecret}-${email}`;
 
     if (!isValidToken) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid authentication token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      logSafe('External auth token validation failed', { email, provider });
+      
+      // Log security event for failed auth attempt
+      await logSecurityEvent(ctx.supabaseClient, {
+        event_type: 'external_auth_failure',
+        severity: 'medium',
+        details: { 
+          email, 
+          provider,
+          reason: 'Invalid token',
+        },
+      }, ctx.req);
+      
+      return {
+        success: false,
+        error: 'Invalid authentication token',
+      };
     }
 
-    // Create a temporary session for this external user
+    // Token validated - create or get user
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Create or get user
-    const { data: userData, error: userError } = await supabaseAdmin.auth.admin.createUser({
-      email: email,
-      email_confirm: true,
-      user_metadata: {
-        source: 'soilcertify',
-        external_auth: true
+    let userId: string | undefined;
+
+    try {
+      // Attempt to create user
+      const { data: userData, error: userError } = await supabaseAdmin.auth.admin.createUser({
+        email: email,
+        email_confirm: true,
+        user_metadata: {
+          source: provider,
+          external_auth: true,
+          ...metadata,
+        },
+      });
+
+      if (userError && !userError.message.includes('already registered')) {
+        throw userError;
       }
-    });
 
-    if (userError && !userError.message.includes('already registered')) {
-      throw userError;
-    }
+      userId = userData?.user?.id;
 
-    // Generate a session token
-    const userId = userData?.user?.id;
-    if (!userId) {
-      // User already exists, get their ID
-      const { data: existingUser } = await supabaseAdmin
-        .from('auth.users')
-        .select('id')
-        .eq('email', email)
-        .single();
-      
-      if (!existingUser) {
+      if (!userId) {
+        // User already exists - get their ID
+        const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers();
+        
+        if (!listError && users) {
+          const existingUser = users.find(u => u.email === email);
+          userId = existingUser?.id;
+        }
+      }
+
+      if (!userId) {
         throw new Error('Failed to create or retrieve user');
       }
-    }
 
-    return new Response(
-      JSON.stringify({ 
-        success: true,
+      // Log successful external auth
+      await logSecurityEvent(ctx.supabaseClient, {
+        event_type: 'external_auth_success',
+        severity: 'low',
+        user_id: userId,
+        details: { 
+          email, 
+          provider,
+        },
+      }, ctx.req);
+
+      // Track for analytics
+      await supabaseAdmin.from('cost_tracking').insert({
+        service_provider: 'supabase',
+        service_type: 'external_auth',
+        feature_name: 'validate-external-auth',
+        usage_count: 1,
+        cost_usd: 0,
+        request_details: { provider, email_domain: email.split('@')[1] },
+      }).catch(() => {}); // Non-blocking
+
+      logSafe('External auth validated successfully', { email, provider, userId });
+
+      return {
         message: 'External authentication validated',
-        sessionToken: token
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+        userId,
+        sessionToken: token, // Client can use this for subsequent requests
+      };
 
-  } catch (error) {
-    console.error('External auth validation error:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-  }
+    } catch (error) {
+      logError('External auth user creation', error);
+      
+      await logSecurityEvent(ctx.supabaseClient, {
+        event_type: 'external_auth_error',
+        severity: 'high',
+        details: { 
+          email, 
+          provider,
+          error: error.message,
+        },
+      }, ctx.req);
+      
+      throw new Error('Failed to process external authentication');
+    }
+  },
 });
