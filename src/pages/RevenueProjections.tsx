@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TrendingUp, Target, Users, DollarSign, Calendar, CheckCircle, AlertCircle, ArrowRight, Building2, Leaf, Cpu, Tractor, FlaskConical, CloudSun } from "lucide-react";
+import { TrendingUp, Target, Users, DollarSign, Calendar, CheckCircle, AlertCircle, ArrowRight, Building2, Leaf, Cpu, Tractor, FlaskConical, CloudSun, XCircle, Scale, Clock, Percent, UserCheck, Briefcase } from "lucide-react";
 import { Link } from "react-router-dom";
 import { LeafEnginesNav } from "@/components/LeafEnginesNav";
 
@@ -107,16 +107,199 @@ const RevenueProjections = () => {
         {/* Header */}
         <div className="text-center space-y-4">
           <Badge className="mb-4" variant="secondary">
-            <Target className="w-3 h-3 mr-1" />
-            Phase 1: US Market Focus
+            <Scale className="w-3 h-3 mr-1" />
+            B2C → B2B Strategic Pivot
           </Badge>
           <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
             LeafEngines™ Revenue Projections
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Middle-tier US company targets for rapid adoption and shorter sales cycles
+            From per-query consumer model to enterprise "Botanical Truth Layer" licensing
           </p>
         </div>
+
+        {/* B2C vs B2B Financial Comparison */}
+        <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-background">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Scale className="w-5 h-5 text-primary" />
+              B2C vs B2B Model Comparison
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">Strategic pivot from consumer to enterprise licensing</p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Original B2C Model */}
+              <div className="space-y-4 p-4 bg-muted/30 rounded-lg border border-destructive/30">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-lg flex items-center gap-2">
+                    <XCircle className="w-5 h-5 text-destructive" />
+                    Original B2C Model
+                  </h3>
+                  <Badge variant="outline" className="border-destructive/50 text-destructive">Retired</Badge>
+                </div>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between items-center p-2 bg-background/50 rounded">
+                    <span className="text-muted-foreground">Revenue Model</span>
+                    <span className="font-medium">Per-query API calls</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-background/50 rounded">
+                    <span className="text-muted-foreground">Pricing</span>
+                    <span className="font-medium">$0.001 - $0.01/query</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-background/50 rounded">
+                    <span className="text-muted-foreground">Target Customer</span>
+                    <span className="font-medium">Individual developers</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-background/50 rounded">
+                    <span className="text-muted-foreground">Sales Cycle</span>
+                    <span className="font-medium">Self-serve (days)</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-background/50 rounded">
+                    <span className="text-muted-foreground">Year 1 Revenue Target</span>
+                    <span className="font-medium">$50K - $100K</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-background/50 rounded">
+                    <span className="text-muted-foreground">CAC Recovery</span>
+                    <span className="font-medium">12-18 months</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-background/50 rounded">
+                    <span className="text-muted-foreground">LTV per Customer</span>
+                    <span className="font-medium">$50 - $500</span>
+                  </div>
+                </div>
+                <div className="pt-2 border-t border-destructive/20">
+                  <p className="text-xs text-muted-foreground">
+                    <strong>Why Retired:</strong> High churn, low LTV, commodity pricing pressure, unsustainable unit economics at scale.
+                  </p>
+                </div>
+              </div>
+
+              {/* Revised B2B Model */}
+              <div className="space-y-4 p-4 bg-primary/5 rounded-lg border border-primary/30">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-lg flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-primary" />
+                    Revised B2B Model
+                  </h3>
+                  <Badge className="bg-primary">Active</Badge>
+                </div>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between items-center p-2 bg-background/50 rounded">
+                    <span className="text-muted-foreground">Revenue Model</span>
+                    <span className="font-medium">Enterprise licensing</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-background/50 rounded">
+                    <span className="text-muted-foreground">Pricing</span>
+                    <span className="font-medium">$25K - $250K/year</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-background/50 rounded">
+                    <span className="text-muted-foreground">Target Customer</span>
+                    <span className="font-medium">Middle-tier companies</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-background/50 rounded">
+                    <span className="text-muted-foreground">Sales Cycle</span>
+                    <span className="font-medium">3-6 months</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-background/50 rounded">
+                    <span className="text-muted-foreground">Year 1 Revenue Target</span>
+                    <span className="font-medium text-primary">$500K - $1.5M</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-background/50 rounded">
+                    <span className="text-muted-foreground">CAC Recovery</span>
+                    <span className="font-medium text-primary">4-8 months</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-background/50 rounded">
+                    <span className="text-muted-foreground">LTV per Customer</span>
+                    <span className="font-medium text-primary">$75K - $500K+</span>
+                  </div>
+                </div>
+                <div className="pt-2 border-t border-primary/20">
+                  <p className="text-xs text-muted-foreground">
+                    <strong>Value Proposition:</strong> "Botanical Truth Layer" - verified, auditable infrastructure for risk mitigation and compliance.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Financial Impact Comparison */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              Financial Impact: B2C → B2B Pivot
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div className="text-center p-4 bg-primary/10 rounded-lg">
+                <div className="flex items-center justify-center gap-1 text-2xl font-bold text-primary">
+                  <Percent className="w-5 h-5" />
+                  10-15x
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">Revenue per Customer</div>
+              </div>
+              <div className="text-center p-4 bg-primary/10 rounded-lg">
+                <div className="flex items-center justify-center gap-1 text-2xl font-bold text-primary">
+                  <Clock className="w-5 h-5" />
+                  3x
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">Faster CAC Recovery</div>
+              </div>
+              <div className="text-center p-4 bg-primary/10 rounded-lg">
+                <div className="flex items-center justify-center gap-1 text-2xl font-bold text-primary">
+                  <UserCheck className="w-5 h-5" />
+                  85%+
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">Retention Rate</div>
+              </div>
+              <div className="text-center p-4 bg-primary/10 rounded-lg">
+                <div className="flex items-center justify-center gap-1 text-2xl font-bold text-primary">
+                  <Briefcase className="w-5 h-5" />
+                  31
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">Qualified Targets</div>
+              </div>
+            </div>
+
+            {/* Pricing by Vertical */}
+            <div className="space-y-3">
+              <h4 className="font-semibold text-sm">Value-Based Pricing by Vertical</h4>
+              <div className="grid md:grid-cols-2 gap-3 text-sm">
+                <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Leaf className="w-4 h-4 text-primary" />
+                    <span>Plant ID Apps</span>
+                  </div>
+                  <span className="font-medium">$25K-75K/yr</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Cpu className="w-4 h-4 text-primary" />
+                    <span>Smart Home/IoT</span>
+                  </div>
+                  <span className="font-medium">$50K-150K/yr</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Tractor className="w-4 h-4 text-primary" />
+                    <span>Precision Agriculture</span>
+                  </div>
+                  <span className="font-medium">$75K-200K/yr</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-primary" />
+                    <span>Urban Forestry</span>
+                  </div>
+                  <span className="font-medium">$100K-250K/yr</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Phase 1 Strategy Notice */}
         <Card className="border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-background">
