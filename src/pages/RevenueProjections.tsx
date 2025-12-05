@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TrendingUp, Target, Users, DollarSign, Calendar, CheckCircle, AlertCircle, ArrowRight, Building2, Leaf, Cpu, Tractor, FlaskConical, CloudSun, XCircle, Scale, Clock, Percent, UserCheck, Briefcase } from "lucide-react";
+import { TrendingUp, Target, Users, DollarSign, Calendar, CheckCircle, AlertCircle, ArrowRight, Building2, Leaf, Cpu, Tractor, FlaskConical, CloudSun, XCircle, Scale, Clock, Percent, UserCheck, Briefcase, Activity } from "lucide-react";
 import { Link } from "react-router-dom";
 import { LeafEnginesNav } from "@/components/LeafEnginesNav";
 
@@ -11,95 +11,142 @@ interface TargetCompany {
   decisionMaker: string;
   title: string;
   priority: number;
+  // API Volume metrics
+  estimatedApps: number;
+  avgUsersPerApp: number;
+  callsPerUserMonth: number;
 }
 
+// Calculate API Volume Priority Score: (Apps × Users × Calls) normalized to 0-10 scale
+const calculateVolumeScore = (t: TargetCompany): number => {
+  const monthlyVolume = t.estimatedApps * t.avgUsersPerApp * t.callsPerUserMonth;
+  // Normalize: 100M calls = 10.0, scale logarithmically
+  const score = Math.min(10, Math.log10(monthlyVolume + 1) * 1.25);
+  return Math.round(score * 10) / 10;
+};
+
+const formatVolume = (volume: number): string => {
+  if (volume >= 1_000_000_000) return `${(volume / 1_000_000_000).toFixed(1)}B`;
+  if (volume >= 1_000_000) return `${(volume / 1_000_000).toFixed(1)}M`;
+  if (volume >= 1_000) return `${(volume / 1_000).toFixed(0)}K`;
+  return volume.toString();
+};
+
 const plantIdTargets: TargetCompany[] = [
-  { company: "Plantum", decisionMaker: "Alex Rodionov", title: "CEO", priority: 9.5 },
-  { company: "Plant Parent", decisionMaker: "Contact Person", title: "VP of Product", priority: 8.8 },
-  { company: "Flora Incognita", decisionMaker: "Contact Person", title: "Chief Innovation Officer", priority: 8.7 },
-  { company: "Garden Tags", decisionMaker: "Contact Person", title: "CEO", priority: 8.5 },
-  { company: "PlantNet", decisionMaker: "Contact Person", title: "Head of Technology", priority: 8.2 },
-  { company: "Gardenize", decisionMaker: "Contact Person", title: "CEO", priority: 8.0 },
+  { company: "Plantum", decisionMaker: "Alex Rodionov", title: "CEO", priority: 9.5, estimatedApps: 1, avgUsersPerApp: 2_000_000, callsPerUserMonth: 12 },
+  { company: "Plant Parent", decisionMaker: "Contact Person", title: "VP of Product", priority: 8.8, estimatedApps: 1, avgUsersPerApp: 800_000, callsPerUserMonth: 10 },
+  { company: "Flora Incognita", decisionMaker: "Contact Person", title: "Chief Innovation Officer", priority: 8.7, estimatedApps: 1, avgUsersPerApp: 1_500_000, callsPerUserMonth: 8 },
+  { company: "Garden Tags", decisionMaker: "Contact Person", title: "CEO", priority: 8.5, estimatedApps: 1, avgUsersPerApp: 300_000, callsPerUserMonth: 15 },
+  { company: "PlantNet", decisionMaker: "Contact Person", title: "Head of Technology", priority: 8.2, estimatedApps: 2, avgUsersPerApp: 5_000_000, callsPerUserMonth: 6 },
+  { company: "Gardenize", decisionMaker: "Contact Person", title: "CEO", priority: 8.0, estimatedApps: 1, avgUsersPerApp: 200_000, callsPerUserMonth: 20 },
 ];
 
 const smartHomeTargets: TargetCompany[] = [
-  { company: "Wyze Labs", decisionMaker: "Yun Zhang", title: "CEO", priority: 9.2 },
-  { company: "SwitchBot", decisionMaker: "Contact Person", title: "CEO", priority: 8.9 },
-  { company: "Rachio", decisionMaker: "Contact Person", title: "CTO", priority: 8.6 },
-  { company: "Netro", decisionMaker: "Contact Person", title: "VP of Product", priority: 8.4 },
-  { company: "Click & Grow", decisionMaker: "Contact Person", title: "CEO", priority: 8.1 },
-  { company: "AeroGarden", decisionMaker: "Contact Person", title: "Chief Innovation Officer", priority: 7.9 },
+  { company: "Wyze Labs", decisionMaker: "Yun Zhang", title: "CEO", priority: 9.2, estimatedApps: 3, avgUsersPerApp: 4_000_000, callsPerUserMonth: 8 },
+  { company: "SwitchBot", decisionMaker: "Contact Person", title: "CEO", priority: 8.9, estimatedApps: 2, avgUsersPerApp: 1_500_000, callsPerUserMonth: 10 },
+  { company: "Rachio", decisionMaker: "Contact Person", title: "CTO", priority: 8.6, estimatedApps: 1, avgUsersPerApp: 800_000, callsPerUserMonth: 25 },
+  { company: "Netro", decisionMaker: "Contact Person", title: "VP of Product", priority: 8.4, estimatedApps: 1, avgUsersPerApp: 200_000, callsPerUserMonth: 20 },
+  { company: "Click & Grow", decisionMaker: "Contact Person", title: "CEO", priority: 8.1, estimatedApps: 1, avgUsersPerApp: 150_000, callsPerUserMonth: 30 },
+  { company: "AeroGarden", decisionMaker: "Contact Person", title: "Chief Innovation Officer", priority: 7.9, estimatedApps: 1, avgUsersPerApp: 100_000, callsPerUserMonth: 25 },
 ];
 
 const precisionAgTargets: TargetCompany[] = [
-  { company: "Farmers Edge", decisionMaker: "Wade Barnes", title: "CEO", priority: 9.0 },
-  { company: "Granular", decisionMaker: "Contact Person", title: "VP of Product", priority: 8.8 },
-  { company: "Cropio", decisionMaker: "Contact Person", title: "CEO", priority: 8.5 },
-  { company: "Taranis", decisionMaker: "Contact Person", title: "CTO", priority: 8.3 },
-  { company: "Gamaya", decisionMaker: "Contact Person", title: "CEO", priority: 8.0 },
-  { company: "Prospera", decisionMaker: "Contact Person", title: "Chief Innovation Officer", priority: 7.8 },
+  { company: "Farmers Edge", decisionMaker: "Wade Barnes", title: "CEO", priority: 9.0, estimatedApps: 5, avgUsersPerApp: 80_000, callsPerUserMonth: 50 },
+  { company: "Granular", decisionMaker: "Contact Person", title: "VP of Product", priority: 8.8, estimatedApps: 3, avgUsersPerApp: 120_000, callsPerUserMonth: 40 },
+  { company: "Cropio", decisionMaker: "Contact Person", title: "CEO", priority: 8.5, estimatedApps: 2, avgUsersPerApp: 60_000, callsPerUserMonth: 45 },
+  { company: "Taranis", decisionMaker: "Contact Person", title: "CTO", priority: 8.3, estimatedApps: 2, avgUsersPerApp: 40_000, callsPerUserMonth: 60 },
+  { company: "Gamaya", decisionMaker: "Contact Person", title: "CEO", priority: 8.0, estimatedApps: 1, avgUsersPerApp: 25_000, callsPerUserMonth: 50 },
+  { company: "Prospera", decisionMaker: "Contact Person", title: "Chief Innovation Officer", priority: 7.8, estimatedApps: 2, avgUsersPerApp: 30_000, callsPerUserMonth: 55 },
 ];
 
 const agSoftwareTargets: TargetCompany[] = [
-  { company: "Arable", decisionMaker: "Adam Wolf", title: "CEO", priority: 9.1 },
-  { company: "CropX", decisionMaker: "Contact Person", title: "CEO", priority: 8.9 },
-  { company: "Semios", decisionMaker: "Contact Person", title: "CTO", priority: 8.7 },
-  { company: "Trace Genomics", decisionMaker: "Contact Person", title: "CEO", priority: 8.4 },
-  { company: "Agworld", decisionMaker: "Contact Person", title: "VP of Product", priority: 8.2 },
-  { company: "Conservis", decisionMaker: "Contact Person", title: "Chief Innovation Officer", priority: 7.9 },
+  { company: "Arable", decisionMaker: "Adam Wolf", title: "CEO", priority: 9.1, estimatedApps: 2, avgUsersPerApp: 35_000, callsPerUserMonth: 80 },
+  { company: "CropX", decisionMaker: "Contact Person", title: "CEO", priority: 8.9, estimatedApps: 2, avgUsersPerApp: 50_000, callsPerUserMonth: 60 },
+  { company: "Semios", decisionMaker: "Contact Person", title: "CTO", priority: 8.7, estimatedApps: 3, avgUsersPerApp: 20_000, callsPerUserMonth: 100 },
+  { company: "Trace Genomics", decisionMaker: "Contact Person", title: "CEO", priority: 8.4, estimatedApps: 1, avgUsersPerApp: 15_000, callsPerUserMonth: 40 },
+  { company: "Agworld", decisionMaker: "Contact Person", title: "VP of Product", priority: 8.2, estimatedApps: 2, avgUsersPerApp: 45_000, callsPerUserMonth: 35 },
+  { company: "Conservis", decisionMaker: "Contact Person", title: "Chief Innovation Officer", priority: 7.9, estimatedApps: 1, avgUsersPerApp: 30_000, callsPerUserMonth: 45 },
 ];
 
 const envMonitoringTargets: TargetCompany[] = [
-  { company: "Aclima", decisionMaker: "Davida Herzl", title: "CEO", priority: 9.0 },
-  { company: "Clarity Movement", decisionMaker: "Contact Person", title: "CEO", priority: 8.8 },
-  { company: "Libelium", decisionMaker: "Contact Person", title: "CTO", priority: 8.5 },
-  { company: "Sentera", decisionMaker: "Contact Person", title: "VP of Product", priority: 8.3 },
-  { company: "Pycno", decisionMaker: "Contact Person", title: "CEO", priority: 8.0 },
-  { company: "Hortau", decisionMaker: "Contact Person", title: "Chief Innovation Officer", priority: 7.8 },
-  { company: "CropMetrics", decisionMaker: "Contact Person", title: "Sustainability Director", priority: 7.6 },
+  { company: "Aclima", decisionMaker: "Davida Herzl", title: "CEO", priority: 9.0, estimatedApps: 2, avgUsersPerApp: 50_000, callsPerUserMonth: 100 },
+  { company: "Clarity Movement", decisionMaker: "Contact Person", title: "CEO", priority: 8.8, estimatedApps: 1, avgUsersPerApp: 80_000, callsPerUserMonth: 60 },
+  { company: "Libelium", decisionMaker: "Contact Person", title: "CTO", priority: 8.5, estimatedApps: 3, avgUsersPerApp: 25_000, callsPerUserMonth: 80 },
+  { company: "Sentera", decisionMaker: "Contact Person", title: "VP of Product", priority: 8.3, estimatedApps: 2, avgUsersPerApp: 40_000, callsPerUserMonth: 50 },
+  { company: "Pycno", decisionMaker: "Contact Person", title: "CEO", priority: 8.0, estimatedApps: 1, avgUsersPerApp: 20_000, callsPerUserMonth: 70 },
+  { company: "Hortau", decisionMaker: "Contact Person", title: "Chief Innovation Officer", priority: 7.8, estimatedApps: 1, avgUsersPerApp: 35_000, callsPerUserMonth: 45 },
+  { company: "CropMetrics", decisionMaker: "Contact Person", title: "Sustainability Director", priority: 7.6, estimatedApps: 1, avgUsersPerApp: 25_000, callsPerUserMonth: 50 },
 ];
 
-const TargetTable = ({ targets, icon: Icon, title, strategicFit }: { targets: TargetCompany[], icon: React.ElementType, title: string, strategicFit: string }) => (
-  <Card className="border-border/50">
-    <CardHeader className="pb-3">
-      <CardTitle className="flex items-center gap-2 text-lg">
-        <Icon className="w-5 h-5 text-primary" />
-        {title}
-      </CardTitle>
-      <p className="text-sm text-muted-foreground">{strategicFit}</p>
-    </CardHeader>
-    <CardContent>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border/50">
-              <th className="text-left p-2 font-semibold">Company</th>
-              <th className="text-left p-2 font-semibold">Decision Maker</th>
-              <th className="text-left p-2 font-semibold">Title</th>
-              <th className="text-right p-2 font-semibold">Priority</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border/30">
-            {targets.map((target, idx) => (
-              <tr key={idx} className="hover:bg-muted/30">
-                <td className="p-2 font-medium">{target.company}</td>
-                <td className="p-2 text-muted-foreground">{target.decisionMaker}</td>
-                <td className="p-2 text-muted-foreground">{target.title}</td>
-                <td className="text-right p-2">
-                  <Badge variant={target.priority >= 9 ? "default" : target.priority >= 8.5 ? "secondary" : "outline"}>
-                    {target.priority.toFixed(1)}
-                  </Badge>
-                </td>
+const TargetTable = ({ targets, icon: Icon, title, strategicFit }: { targets: TargetCompany[], icon: React.ElementType, title: string, strategicFit: string }) => {
+  // Sort by volume score descending for optimal onboarding priority
+  const sortedTargets = [...targets].sort((a, b) => {
+    const volumeA = a.estimatedApps * a.avgUsersPerApp * a.callsPerUserMonth;
+    const volumeB = b.estimatedApps * b.avgUsersPerApp * b.callsPerUserMonth;
+    return volumeB - volumeA;
+  });
+
+  return (
+    <Card className="border-border/50">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Icon className="w-5 h-5 text-primary" />
+          {title}
+        </CardTitle>
+        <p className="text-sm text-muted-foreground">{strategicFit}</p>
+        <div className="mt-2 p-2 bg-muted/50 rounded text-xs text-muted-foreground">
+          <strong>Volume Score:</strong> log₁₀(Apps × Users × Calls/Mo) × 1.25 — sorted by monthly API volume potential
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border/50">
+                <th className="text-left p-2 font-semibold">Company</th>
+                <th className="text-right p-2 font-semibold">Apps</th>
+                <th className="text-right p-2 font-semibold">Users/App</th>
+                <th className="text-right p-2 font-semibold">Calls/User/Mo</th>
+                <th className="text-right p-2 font-semibold">Mo. Volume</th>
+                <th className="text-right p-2 font-semibold">Vol. Score</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </CardContent>
-  </Card>
-);
+            </thead>
+            <tbody className="divide-y divide-border/30">
+              {sortedTargets.map((target, idx) => {
+                const monthlyVolume = target.estimatedApps * target.avgUsersPerApp * target.callsPerUserMonth;
+                const volumeScore = calculateVolumeScore(target);
+                return (
+                  <tr key={idx} className="hover:bg-muted/30">
+                    <td className="p-2">
+                      <div className="font-medium">{target.company}</div>
+                      <div className="text-xs text-muted-foreground">{target.decisionMaker} • {target.title}</div>
+                    </td>
+                    <td className="text-right p-2 font-mono">{target.estimatedApps}</td>
+                    <td className="text-right p-2 font-mono">{formatVolume(target.avgUsersPerApp)}</td>
+                    <td className="text-right p-2 font-mono">{target.callsPerUserMonth}</td>
+                    <td className="text-right p-2 font-mono font-semibold text-primary">{formatVolume(monthlyVolume)}</td>
+                    <td className="text-right p-2">
+                      <Badge variant={volumeScore >= 8 ? "default" : volumeScore >= 7 ? "secondary" : "outline"}>
+                        {volumeScore.toFixed(1)}
+                      </Badge>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
 const RevenueProjections = () => {
+  // Calculate total potential volume across all targets
+  const allTargets = [...plantIdTargets, ...smartHomeTargets, ...precisionAgTargets, ...agSoftwareTargets, ...envMonitoringTargets];
+  const totalMonthlyVolume = allTargets.reduce((sum, t) => sum + t.estimatedApps * t.avgUsersPerApp * t.callsPerUserMonth, 0);
+  const totalApps = allTargets.reduce((sum, t) => sum + t.estimatedApps, 0);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-12 px-4 sm:px-6 lg:px-8">
       <LeafEnginesNav />
@@ -117,6 +164,37 @@ const RevenueProjections = () => {
             From per-query consumer model to enterprise "Botanical Truth Layer" licensing
           </p>
         </div>
+
+        {/* API Volume Summary */}
+        <Card className="border-primary/30 bg-gradient-to-br from-primary/10 to-background">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="w-5 h-5 text-primary" />
+              API Volume Onboarding Priority
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">Optimizing for maximum API call volume per onboarding effort</p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-4 gap-4">
+              <div className="text-center p-4 bg-background/50 rounded-lg border">
+                <div className="text-3xl font-bold text-primary">{totalApps}</div>
+                <div className="text-xs text-muted-foreground">Total Apps (Target List)</div>
+              </div>
+              <div className="text-center p-4 bg-background/50 rounded-lg border">
+                <div className="text-3xl font-bold text-primary">{allTargets.length}</div>
+                <div className="text-xs text-muted-foreground">Companies</div>
+              </div>
+              <div className="text-center p-4 bg-background/50 rounded-lg border">
+                <div className="text-3xl font-bold text-primary">{formatVolume(totalMonthlyVolume)}</div>
+                <div className="text-xs text-muted-foreground">Potential Monthly Calls</div>
+              </div>
+              <div className="text-center p-4 bg-background/50 rounded-lg border">
+                <div className="text-3xl font-bold text-primary">{(totalApps / allTargets.length).toFixed(1)}</div>
+                <div className="text-xs text-muted-foreground">Avg Apps/Company</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* B2C vs B2B Financial Comparison */}
         <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-background">
@@ -258,7 +336,7 @@ const RevenueProjections = () => {
               <div className="text-center p-4 bg-primary/10 rounded-lg">
                 <div className="flex items-center justify-center gap-1 text-2xl font-bold text-primary">
                   <Briefcase className="w-5 h-5" />
-                  31
+                  {allTargets.length}
                 </div>
                 <div className="text-xs text-muted-foreground mt-1">Qualified Targets</div>
               </div>
@@ -454,158 +532,128 @@ const RevenueProjections = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="w-5 h-5 text-primary" />
-              Priority Target Summary
+              Top Volume Priority Targets
             </CardTitle>
+            <p className="text-sm text-muted-foreground">Sorted by monthly API call potential — prioritize multi-app platforms and high-penetration apps</p>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="font-semibold mb-3 text-lg">Top Priority Targets (9.0+)</h3>
+                <h3 className="font-semibold mb-3 text-lg">Highest Volume Targets</h3>
                 <ul className="space-y-2 text-sm">
-                  <li className="flex justify-between items-center p-2 bg-primary/10 rounded">
-                    <span className="font-medium">Plantum</span>
-                    <Badge>9.5</Badge>
-                  </li>
-                  <li className="flex justify-between items-center p-2 bg-primary/10 rounded">
-                    <span className="font-medium">Wyze Labs</span>
-                    <Badge>9.2</Badge>
-                  </li>
-                  <li className="flex justify-between items-center p-2 bg-primary/10 rounded">
-                    <span className="font-medium">Arable</span>
-                    <Badge>9.1</Badge>
-                  </li>
-                  <li className="flex justify-between items-center p-2 bg-primary/10 rounded">
-                    <span className="font-medium">Farmers Edge</span>
-                    <Badge>9.0</Badge>
-                  </li>
-                  <li className="flex justify-between items-center p-2 bg-primary/10 rounded">
-                    <span className="font-medium">Aclima</span>
-                    <Badge>9.0</Badge>
-                  </li>
+                  {allTargets
+                    .map(t => ({ ...t, volume: t.estimatedApps * t.avgUsersPerApp * t.callsPerUserMonth }))
+                    .sort((a, b) => b.volume - a.volume)
+                    .slice(0, 6)
+                    .map((t, idx) => (
+                      <li key={idx} className="flex justify-between items-center p-2 bg-primary/10 rounded">
+                        <div>
+                          <span className="font-medium">{t.company}</span>
+                          <span className="text-xs text-muted-foreground ml-2">({t.estimatedApps} apps)</span>
+                        </div>
+                        <div className="text-right">
+                          <Badge>{formatVolume(t.volume)}/mo</Badge>
+                        </div>
+                      </li>
+                    ))}
                 </ul>
               </div>
               <div>
-                <h3 className="font-semibold mb-3 text-lg">Better Targets by Vertical</h3>
+                <h3 className="font-semibold mb-3 text-lg">Multi-App Companies (Higher Efficiency)</h3>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span><strong>Urban Forestry:</strong> Regional consulting firms, mid-size municipalities</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span><strong>Ag Insurance:</strong> Specialized crop insurance brokers, regional carriers</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span><strong>Precision Ag:</strong> Mid-size farm management software, regional cooperatives</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span><strong>Nutraceuticals:</strong> Growing supplement brands, specialized testing labs</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span><strong>ESG:</strong> Sustainability consulting firms, carbon credit platforms</span>
-                  </li>
+                  {allTargets
+                    .filter(t => t.estimatedApps >= 2)
+                    .sort((a, b) => b.estimatedApps - a.estimatedApps)
+                    .map((t, idx) => (
+                      <li key={idx} className="flex items-start gap-2 p-2 bg-muted/50 rounded">
+                        <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                        <span><strong>{t.company}:</strong> {t.estimatedApps} apps × {formatVolume(t.avgUsersPerApp)} users</span>
+                      </li>
+                    ))}
                 </ul>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Phase Expansion Roadmap */}
-        <Card className="border-border/50">
+        {/* Phased Expansion */}
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-primary" />
-              Phased Expansion Strategy
+              <Tractor className="w-5 h-5 text-primary" />
+              Phased Expansion Roadmap
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-start gap-4 p-4 bg-primary/10 rounded-lg border border-primary/20">
-                <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">1</div>
-                <div>
-                  <h3 className="font-semibold">Phase 1: US Market (Current)</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Focus on middle-tier US companies with 3-6 month sales cycles. Leverage existing US water and soils data infrastructure.
-                    Target: 31 companies across 5 verticals.
-                  </p>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Badge className="bg-primary">Phase 1</Badge>
+                  <span className="text-xs text-muted-foreground">Now - Q2 2026</span>
                 </div>
+                <h3 className="font-semibold">US Market Entry</h3>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• Focus on {allTargets.length} qualified US targets</li>
+                  <li>• {totalApps} total apps potential</li>
+                  <li>• Establish reference customers</li>
+                  <li>• Refine onboarding process</li>
+                </ul>
               </div>
-              <div className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg">
-                <div className="w-12 h-12 rounded-full bg-muted-foreground/20 flex items-center justify-center font-bold">2</div>
-                <div>
-                  <h3 className="font-semibold text-muted-foreground">Phase 2: European Expansion</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Add European companies after US revenues are steady and increasing. Leverage GDPR compliance advantage.
-                    Requires: Steady revenue growth, European data partnerships.
-                  </p>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary">Phase 2</Badge>
+                  <span className="text-xs text-muted-foreground">Q3 - Q4 2026</span>
                 </div>
+                <h3 className="font-semibold">European Expansion</h3>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• GDPR compliance advantage</li>
+                  <li>• EU-based plant ID apps</li>
+                  <li>• Agricultural platforms</li>
+                  <li>• Data infrastructure buildout</li>
+                </ul>
               </div>
-              <div className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg">
-                <div className="w-12 h-12 rounded-full bg-muted-foreground/20 flex items-center justify-center font-bold">3</div>
-                <div>
-                  <h3 className="font-semibold text-muted-foreground">Phase 3: Global Markets</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Expand to APAC, LATAM, and other regions. Target enterprise clients with proven product-market fit.
-                    Requires: Established revenue base, regional data integration.
-                  </p>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline">Phase 3</Badge>
+                  <span className="text-xs text-muted-foreground">2027+</span>
                 </div>
+                <h3 className="font-semibold">Global Scale</h3>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• Asia-Pacific markets</li>
+                  <li>• Latin America expansion</li>
+                  <li>• Enterprise tier offerings</li>
+                  <li>• Full vertical coverage</li>
+                </ul>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Why Middle Tier */}
-        <Card className="border-green-500/30 bg-gradient-to-br from-green-500/5 to-background">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-green-600 dark:text-green-400">
-              <TrendingUp className="w-5 h-5" />
-              Why Middle Tier Targets?
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              These middle-tier companies have the resources to invest in LeafEngines™ but lack the bureaucratic complexity of enterprise clients. 
-              They're hungry for competitive advantages and can move quickly on promising technologies.
-            </p>
-            <div className="grid md:grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-muted/50 rounded-lg">
-                <div className="text-2xl font-bold text-green-500">31</div>
-                <div className="text-xs text-muted-foreground">Total Target Companies</div>
-              </div>
-              <div className="text-center p-4 bg-muted/50 rounded-lg">
-                <div className="text-2xl font-bold text-green-500">5</div>
-                <div className="text-xs text-muted-foreground">Verticals</div>
-              </div>
-              <div className="text-center p-4 bg-muted/50 rounded-lg">
-                <div className="text-2xl font-bold text-green-500">3-6 mo</div>
-                <div className="text-xs text-muted-foreground">Avg Sales Cycle</div>
+        {/* CTA */}
+        <Card className="border-primary/30 bg-gradient-to-r from-primary/10 via-primary/5 to-background">
+          <CardContent className="py-8">
+            <div className="text-center space-y-4">
+              <h2 className="text-2xl font-bold">Ready to Integrate LeafEngines™?</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Join the growing ecosystem of agricultural technology providers enhancing their platforms with 
+                verified botanical intelligence and environmental data.
+              </p>
+              <div className="flex gap-4 justify-center pt-4">
+                <Link to="/leafengines-api">
+                  <Button size="lg">
+                    View API Documentation
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link to="/developer-sandbox">
+                  <Button variant="outline" size="lg">
+                    Try Developer Sandbox
+                  </Button>
+                </Link>
               </div>
             </div>
           </CardContent>
         </Card>
-
-        {/* Call to Action */}
-        <div className="text-center space-y-4">
-          <p className="text-muted-foreground">
-            Ready to integrate environmental intelligence into your platform?
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button asChild>
-              <Link to="/leafengines-api-docs">
-                View API Documentation
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link to="/developer-sandbox">
-                Try Developer Sandbox
-              </Link>
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   );
