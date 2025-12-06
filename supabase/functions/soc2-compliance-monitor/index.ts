@@ -251,8 +251,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in SOC 2 compliance monitor:', error);
     return new Response(JSON.stringify({ 
-      error: 'Internal server error',
-      details: error.message 
+      error: 'Internal server error'
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
