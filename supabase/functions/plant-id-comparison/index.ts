@@ -98,6 +98,27 @@ serve(async (req) => {
       });
     }
 
+    // Validate image URL if provided - must be a direct image URL
+    let validImageUrl: string | null = null;
+    if (image) {
+      // Check if it's a valid direct image URL
+      const imageUrlLower = image.toLowerCase();
+      const isDirectImageUrl = 
+        imageUrlLower.includes('.jpg') || 
+        imageUrlLower.includes('.jpeg') || 
+        imageUrlLower.includes('.png') || 
+        imageUrlLower.includes('.gif') || 
+        imageUrlLower.includes('.webp') ||
+        image.startsWith('data:image/');
+      
+      if (isDirectImageUrl) {
+        validImageUrl = image;
+        console.log("Valid image URL detected");
+      } else {
+        console.warn("Image URL is not a direct image link, will use description only:", image);
+      }
+    }
+
     // BASELINE: Simple plant identification without environmental context
     console.log("Starting baseline identification...");
     const baselineStart = performance.now();
@@ -117,19 +138,21 @@ Use a confidence value between 0.5 and 0.95 based on how certain you are.`
       }
     ];
 
-    // Build user message content
-    if (image) {
+    // Build user message content - prefer description if no valid image
+    const userContent = description || "Identify this plant based on the image";
+    
+    if (validImageUrl) {
       baselineMessages.push({
         role: "user",
         content: [
           { type: "text", text: `Identify this plant${description ? `: ${description}` : ""}` },
-          { type: "image_url", image_url: { url: image } }
+          { type: "image_url", image_url: { url: validImageUrl } }
         ]
       });
     } else {
       baselineMessages.push({
         role: "user",
-        content: `Identify this plant: ${description}`
+        content: `Identify this plant: ${description || "No description provided"}`
       });
     }
 
@@ -190,40 +213,72 @@ Use a confidence value between 0.5 and 0.95 based on how certain you are.`
     console.log("Starting enhanced identification...");
     const enhancedStart = performance.now();
     
-    // Fetch environmental data if location provided
+    // Fetch environmental data if location provided using reverse geocoding
     let environmentalContext: any = null;
     if (location?.latitude && location?.longitude) {
       console.log("Fetching environmental data for location:", location);
       try {
-        // Get county info
-        const countyResponse = await supabase.functions.invoke("county-lookup", {
-          body: { latitude: location.latitude, longitude: location.longitude }
-        });
+        // Use reverse geocoding to get county info
+        const geocodeResponse = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${location.latitude}&lon=${location.longitude}&format=json`,
+          {
+            headers: {
+              "User-Agent": "LeafEngines/1.0 (plant identification service)"
+            }
+          }
+        );
         
-        console.log("County lookup response:", countyResponse.data);
-        
-        if (countyResponse.data?.county) {
-          const countyFips = countyResponse.data.county.fips_code;
+        if (geocodeResponse.ok) {
+          const geocodeData = await geocodeResponse.json();
+          console.log("Geocode response:", geocodeData.address);
           
-          // Get soil data
-          const soilResponse = await supabase.functions.invoke("get-soil-data", {
-            body: { county_fips: countyFips }
-          });
-          console.log("Soil data response:", soilResponse.data);
+          const county = geocodeData.address?.county || geocodeData.address?.city || "Unknown";
+          const state = geocodeData.address?.state || "Unknown";
+          const country = geocodeData.address?.country || "USA";
           
-          // Get water quality
-          const waterResponse = await supabase.functions.invoke("territorial-water-quality", {
-            body: { county_fips: countyFips }
-          });
-          console.log("Water quality response:", waterResponse.data);
+          // Try to find FIPS code from our counties table
+          let countyFips = null;
+          if (county && state) {
+            const { data: countyData } = await supabase
+              .from("counties")
+              .select("fips_code, county_name, state_code")
+              .ilike("county_name", `%${county.replace(" County", "")}%`)
+              .ilike("state_name", `%${state}%`)
+              .limit(1)
+              .maybeSingle();
+            
+            if (countyData) {
+              countyFips = countyData.fips_code;
+              console.log("Found county FIPS:", countyFips);
+            }
+          }
+          
+          // Get soil data if we have FIPS
+          let soilData = null;
+          if (countyFips) {
+            const soilResponse = await supabase.functions.invoke("get-soil-data", {
+              body: { county_fips: countyFips }
+            });
+            soilData = soilResponse.data;
+            console.log("Soil data:", soilData);
+          }
           
           environmentalContext = {
-            county: countyResponse.data.county,
-            soil: soilResponse.data,
-            water_quality: waterResponse.data,
+            county: {
+              county_name: county,
+              state_code: state,
+              fips_code: countyFips,
+            },
+            soil: soilData,
+            location: {
+              latitude: location.latitude,
+              longitude: location.longitude,
+              country: country,
+            },
           };
+          console.log("Environmental context built:", environmentalContext);
         } else {
-          console.log("No county data found for location");
+          console.error("Geocode API error:", geocodeResponse.status);
         }
       } catch (e) {
         console.error("Environmental data fetch error:", e);
@@ -233,11 +288,12 @@ Use a confidence value between 0.5 and 0.95 based on how certain you are.`
     const enhancedSystemPrompt = `You are LeafEngines, an advanced botanical identification system with environmental context integration.
 
 ${environmentalContext ? `ENVIRONMENTAL CONTEXT:
+- Location: ${environmentalContext.location?.latitude?.toFixed(4)}, ${environmentalContext.location?.longitude?.toFixed(4)}
 - County: ${environmentalContext.county?.county_name || "Unknown"}, ${environmentalContext.county?.state_code || "Unknown"}
-- Soil pH: ${environmentalContext.soil?.ph_level || "Not available"}
+- Country: ${environmentalContext.location?.country || "USA"}
+${environmentalContext.soil ? `- Soil pH: ${environmentalContext.soil?.ph_level || "Not available"}
 - Soil Organic Matter: ${environmentalContext.soil?.organic_matter || "Not available"}%
-- Water Quality Risk: ${environmentalContext.water_quality?.contamination_risk || "Not available"}
-- Climate Zone: ${environmentalContext.soil?.usda_zone || "Not available"}` : "No location data provided - using general analysis."}
+- Climate Zone: ${environmentalContext.soil?.usda_zone || "Not available"}` : "- Soil data: Not available for this location"}` : "No location data provided - using general analysis."}
 
 Provide comprehensive plant identification with environmental compatibility analysis.
 Your response must be ONLY valid JSON with no additional text before or after:
@@ -260,7 +316,7 @@ Your response must be ONLY valid JSON with no additional text before or after:
     "growth_rate": "medium",
     "optimal_planting_season": "spring"
   },
-  "detailed_analysis": "Comprehensive botanical analysis"
+  "detailed_analysis": "Comprehensive botanical analysis including how well this plant suits the location"
 }
 Use confidence and compatibility values between 0.5 and 0.95 based on the plant and environmental factors.`;
 
@@ -268,18 +324,18 @@ Use confidence and compatibility values between 0.5 and 0.95 based on the plant 
       { role: "system", content: enhancedSystemPrompt }
     ];
 
-    if (image) {
+    if (validImageUrl) {
       enhancedMessages.push({
         role: "user",
         content: [
           { type: "text", text: `Identify this plant with full environmental analysis${description ? `: ${description}` : ""}` },
-          { type: "image_url", image_url: { url: image } }
+          { type: "image_url", image_url: { url: validImageUrl } }
         ]
       });
     } else {
       enhancedMessages.push({
         role: "user",
-        content: `Identify this plant with full environmental analysis: ${description}`
+        content: `Identify this plant with full environmental analysis: ${description || "No description provided"}`
       });
     }
 
@@ -403,6 +459,8 @@ Use confidence and compatibility values between 0.5 and 0.95 based on the plant 
         baseline_result: baselineResult,
         enhanced_result: enhancedResult,
         metrics: comparison.comparison_metrics,
+        had_valid_image: !!validImageUrl,
+        had_location: !!environmentalContext,
       },
     });
 
@@ -411,6 +469,7 @@ Use confidence and compatibility values between 0.5 and 0.95 based on the plant 
       comparison,
       full_baseline: baselineResult,
       full_enhanced: enhancedResult,
+      warnings: !validImageUrl && image ? ["Image URL was not a direct image link - used description only"] : undefined,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
