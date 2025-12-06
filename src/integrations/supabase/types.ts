@@ -1706,12 +1706,10 @@ export type Database = {
       subscribers: {
         Row: {
           created_at: string
-          email: string | null
           encrypted_email: string | null
           encrypted_stripe_customer_id: string | null
           encryption_version: number | null
           id: string
-          stripe_customer_id: string | null
           subscribed: boolean
           subscription_end: string | null
           subscription_interval: string | null
@@ -1721,12 +1719,10 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          email?: string | null
           encrypted_email?: string | null
           encrypted_stripe_customer_id?: string | null
           encryption_version?: number | null
           id?: string
-          stripe_customer_id?: string | null
           subscribed?: boolean
           subscription_end?: string | null
           subscription_interval?: string | null
@@ -1736,12 +1732,10 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          email?: string | null
           encrypted_email?: string | null
           encrypted_stripe_customer_id?: string | null
           encryption_version?: number | null
           id?: string
-          stripe_customer_id?: string | null
           subscribed?: boolean
           subscription_end?: string | null
           subscription_interval?: string | null
