@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { LeafEnginesNav } from "@/components/LeafEnginesNav";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import gdprCertified from "@/assets/gdpr-certified.png";
-import leafEnginesLogo from "@/assets/leafengines-logo.png";
+import leafEnginesHeroVideo from "@/assets/leafengines-hero.mp4";
 
 export default function B2BLanding() {
   return (
@@ -18,11 +18,14 @@ export default function B2BLanding() {
         <div className="container relative mx-auto px-4 py-20 md:py-32">
           <div className="mx-auto max-w-4xl text-center">
             <div className="flex justify-center mb-8">
-              <div className="bg-white/90 p-6 rounded-lg shadow-lg">
-                <img 
-                  src={leafEnginesLogo} 
-                  alt="LeafEngines Logo" 
-                  className="w-64 h-auto floating-animation"
+              <div className="rounded-2xl shadow-2xl overflow-hidden">
+                <video
+                  src={leafEnginesHeroVideo}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-80 h-auto"
                 />
               </div>
             </div>
