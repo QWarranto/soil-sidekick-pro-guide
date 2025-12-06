@@ -87,31 +87,35 @@ export default function LeafEnginesImpactSimulator() {
       costPerCallWithLeafEngines = 0.015; // 25% discount for high volume
     }
     
-    const monthlySavings = (characteristics.currentCostPerCall - costPerCallWithLeafEngines) * characteristics.monthlyApiCalls;
+    // Calculate direct API cost savings
+    const apiCostSavings = Math.max(0, (characteristics.currentCostPerCall - costPerCallWithLeafEngines) * characteristics.monthlyApiCalls);
+    
+    // Calculate value from accuracy improvement (reduced support costs, better retention)
+    const accuracyGain = accuracyBoost - characteristics.currentAccuracy;
+    const retentionValue = (accuracyGain / 100) * characteristics.userBase * 2; // $2 value per retained user per month
+    
+    // Calculate value from speed improvement (better UX, reduced churn)
+    const speedValue = (speedImprovement / characteristics.avgResponseTime) * characteristics.userBase * 0.5;
+    
+    // Total monthly value (savings + indirect value)
+    const monthlySavings = apiCostSavings + retentionValue + speedValue;
     const dataQualityImprovement = Math.min(95, characteristics.dataQuality + (100 - characteristics.dataQuality) * 0.70);
     
-    // Tiered implementation cost (economies of scale for larger deployments)
-    let implementationCost = 5000; // Base implementation
-    const userBase = characteristics.userBase;
-    
-    if (userBase <= 1000) {
-      implementationCost += userBase * 2;
-    } else if (userBase <= 5000) {
-      implementationCost += (1000 * 2) + ((userBase - 1000) * 1);
-    } else {
-      implementationCost += (1000 * 2) + (4000 * 1) + ((userBase - 5000) * 0.5);
-    }
+    // Realistic implementation cost based on integration complexity
+    const baseImplementationCost = 2000; // Base SDK integration
+    const integrationCost = Math.min(3000, characteristics.monthlyApiCalls * 0.01); // Scales with volume, capped
+    const implementationCost = baseImplementationCost + integrationCost;
     
     const annualSavings = monthlySavings * 12;
-    const roiMonths = implementationCost / monthlySavings;
+    const roiMonths = monthlySavings > 0 ? Math.max(0.5, implementationCost / monthlySavings) : 12;
 
     return {
       accuracyImprovement: accuracyBoost,
       responseTimeReduction: speedImprovement,
       costSavings: monthlySavings,
       dataQualityScore: dataQualityImprovement,
-      roi: (annualSavings / implementationCost) * 100,
-      timeToValue: roiMonths,
+      roi: implementationCost > 0 ? (annualSavings / implementationCost) * 100 : 0,
+      timeToValue: Math.min(roiMonths, 24), // Cap at 24 months for realistic display
     };
   };
 
