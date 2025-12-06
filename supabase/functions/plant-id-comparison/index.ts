@@ -312,11 +312,16 @@ ${environmentalContext.soil ? `- Soil pH: ${environmentalContext.soil?.ph_level 
 - Climate Zone: ${environmentalContext.soil?.usda_zone || "Not available"}` : "- Soil data: Not available for this location"}` : "No location data provided - using general analysis."}
 
 Provide comprehensive plant identification with environmental compatibility analysis.
+
+IMPORTANT: The "confidence" field represents IDENTIFICATION confidence only - how certain you are about WHAT THE PLANT IS based on visual features. This should be the same or higher than a basic identification since you have MORE context (environmental data) to confirm the identification.
+
+The "environmental_compatibility" fields are SEPARATE from identification confidence - they represent how well the plant suits the location.
+
 Your response must be ONLY valid JSON with no additional text before or after:
 {
   "plant_name": "Common name",
   "scientific_name": "Scientific name", 
-  "confidence": 0.85,
+  "confidence": 0.90,
   "family": "Plant family",
   "native_region": "Origin region",
   "environmental_compatibility": {
@@ -334,7 +339,7 @@ Your response must be ONLY valid JSON with no additional text before or after:
   },
   "detailed_analysis": "Comprehensive botanical analysis including how well this plant suits the location"
 }
-Use confidence and compatibility values between 0.5 and 0.95 based on the plant and environmental factors.`;
+IDENTIFICATION confidence should be 0.85-0.98 when the plant is clearly visible. Environmental compatibility values should be 0.5-0.95 based on location match.`;
 
     const enhancedMessages: any[] = [
       { role: "system", content: enhancedSystemPrompt }
