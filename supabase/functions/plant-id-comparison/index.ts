@@ -98,10 +98,12 @@ serve(async (req) => {
       });
     }
 
-    // Validate image URL if provided - must be a direct image URL
+    // Validate image URL if provided
     let validImageUrl: string | null = null;
+    let imageWarning: string | null = null;
+    
     if (image) {
-      // Check if it's a valid direct image URL
+      // Check if it's a valid image URL (direct link or base64)
       const imageUrlLower = image.toLowerCase();
       const isDirectImageUrl = 
         imageUrlLower.includes('.jpg') || 
@@ -109,14 +111,30 @@ serve(async (req) => {
         imageUrlLower.includes('.png') || 
         imageUrlLower.includes('.gif') || 
         imageUrlLower.includes('.webp') ||
+        imageUrlLower.includes('images.unsplash') ||
+        imageUrlLower.includes('upload.wikimedia') ||
+        imageUrlLower.includes('i.imgur') ||
         image.startsWith('data:image/');
       
       if (isDirectImageUrl) {
         validImageUrl = image;
         console.log("Valid image URL detected");
       } else {
-        console.warn("Image URL is not a direct image link, will use description only:", image);
+        // Try to use it anyway - the AI gateway will reject if invalid
+        validImageUrl = image;
+        imageWarning = "Image URL may not be accessible. If identification fails, use a direct image URL ending in .jpg, .png, etc.";
+        console.warn("Image URL may not be direct, will attempt anyway:", image);
       }
+    }
+    
+    // Ensure we have at least a description if no valid image
+    const effectiveDescription = description || (image ? `Identify the plant in this image: ${image}` : null);
+    
+    if (!effectiveDescription && !validImageUrl) {
+      return new Response(JSON.stringify({ error: "Please provide a plant description or a direct image URL" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // BASELINE: Simple plant identification without environmental context
@@ -138,21 +156,19 @@ Use a confidence value between 0.5 and 0.95 based on how certain you are.`
       }
     ];
 
-    // Build user message content - prefer description if no valid image
-    const userContent = description || "Identify this plant based on the image";
-    
+    // Build user message content
     if (validImageUrl) {
       baselineMessages.push({
         role: "user",
         content: [
-          { type: "text", text: `Identify this plant${description ? `: ${description}` : ""}` },
+          { type: "text", text: `Identify this plant${effectiveDescription ? `. Additional context: ${effectiveDescription}` : ""}` },
           { type: "image_url", image_url: { url: validImageUrl } }
         ]
       });
-    } else {
+    } else if (effectiveDescription) {
       baselineMessages.push({
         role: "user",
-        content: `Identify this plant: ${description || "No description provided"}`
+        content: `Identify this plant: ${effectiveDescription}`
       });
     }
 
@@ -328,14 +344,14 @@ Use confidence and compatibility values between 0.5 and 0.95 based on the plant 
       enhancedMessages.push({
         role: "user",
         content: [
-          { type: "text", text: `Identify this plant with full environmental analysis${description ? `: ${description}` : ""}` },
+          { type: "text", text: `Identify this plant with full environmental analysis${effectiveDescription ? `. Additional context: ${effectiveDescription}` : ""}` },
           { type: "image_url", image_url: { url: validImageUrl } }
         ]
       });
-    } else {
+    } else if (effectiveDescription) {
       enhancedMessages.push({
         role: "user",
-        content: `Identify this plant with full environmental analysis: ${description || "No description provided"}`
+        content: `Identify this plant with full environmental analysis: ${effectiveDescription}`
       });
     }
 
@@ -464,12 +480,16 @@ Use confidence and compatibility values between 0.5 and 0.95 based on the plant 
       },
     });
 
+    const warnings: string[] = [];
+    if (imageWarning) warnings.push(imageWarning);
+    if (!environmentalContext?.soil) warnings.push("Soil data not available for this county");
+    
     return new Response(JSON.stringify({ 
       success: true, 
       comparison,
       full_baseline: baselineResult,
       full_enhanced: enhancedResult,
-      warnings: !validImageUrl && image ? ["Image URL was not a direct image link - used description only"] : undefined,
+      warnings: warnings.length > 0 ? warnings : undefined,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
