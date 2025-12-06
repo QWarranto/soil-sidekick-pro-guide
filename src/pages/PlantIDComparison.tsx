@@ -81,14 +81,23 @@ export default function PlantIDComparison() {
       return;
     }
 
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .eq("role", "admin")
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
 
-    setIsAdmin(!!data);
+      if (error) {
+        console.error("Admin check error:", error);
+      }
+      
+      setIsAdmin(!!data);
+    } catch (err) {
+      console.error("Admin check exception:", err);
+      setIsAdmin(false);
+    }
     setIsLoading(false);
   };
 
