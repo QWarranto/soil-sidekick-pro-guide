@@ -25,7 +25,10 @@ import {
   ShieldAlert,
   BarChart3,
   ArrowRight,
-  Calculator
+  Calculator,
+  ImageIcon,
+  Download,
+  Loader2
 } from "lucide-react";
 
 interface ComparisonResult {
@@ -65,6 +68,8 @@ export default function PlantIDComparison() {
   const [result, setResult] = useState<ComparisonResult | null>(null);
   const [fullBaseline, setFullBaseline] = useState<any>(null);
   const [fullEnhanced, setFullEnhanced] = useState<any>(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [comparisonImage, setComparisonImage] = useState<string | null>(null);
 
   useEffect(() => {
     checkAdminAccess();
@@ -110,6 +115,7 @@ export default function PlantIDComparison() {
 
     setIsAnalyzing(true);
     setResult(null);
+    setComparisonImage(null);
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -141,6 +147,45 @@ export default function PlantIDComparison() {
     } finally {
       setIsAnalyzing(false);
     }
+  };
+
+  const handleGenerateImage = async () => {
+    if (!result) return;
+    
+    setIsGeneratingImage(true);
+    try {
+      const response = await supabase.functions.invoke("generate-comparison-image", {
+        body: {
+          baseline: result.baseline,
+          enhanced: result.enhanced,
+          plantName: result.enhanced.identification || result.baseline.identification,
+          metrics: result.comparison_metrics,
+        },
+      });
+
+      if (response.error) throw response.error;
+
+      if (response.data?.imageUrl) {
+        setComparisonImage(response.data.imageUrl);
+        toast({ title: "Image generated", description: "Before/After comparison image ready" });
+      }
+    } catch (error) {
+      toast({ 
+        title: "Image generation failed", 
+        description: error instanceof Error ? error.message : "Unknown error",
+        variant: "destructive" 
+      });
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
+  const handleDownloadImage = () => {
+    if (!comparisonImage) return;
+    const link = document.createElement("a");
+    link.href = comparisonImage;
+    link.download = `leafengines-comparison-${Date.now()}.png`;
+    link.click();
   };
 
   if (isLoading) {
@@ -473,32 +518,85 @@ export default function PlantIDComparison() {
                       )}
                     </p>
                     
-                    {/* Link to Impact Simulator with real test data */}
-                    <Button 
-                      onClick={() => {
-                        // Store comparison results in sessionStorage for Impact Simulator
-                        const testData = {
-                          confidenceImprovement: result.comparison_metrics.confidence_improvement,
-                          additionalDataPoints: result.comparison_metrics.additional_data_points,
-                          responseTimeDiff: result.comparison_metrics.response_time_difference_ms,
-                          baselineConfidence: result.baseline.confidence * 100,
-                          enhancedConfidence: result.enhanced.confidence * 100,
-                          matchAgreement: result.comparison_metrics.match_agreement,
-                          testTimestamp: new Date().toISOString(),
-                        };
-                        sessionStorage.setItem('plantIdComparisonResults', JSON.stringify(testData));
-                        navigate('/impact-simulator?fromComparison=true');
-                      }}
-                      className="gap-2"
-                    >
-                      <Calculator className="h-4 w-4" />
-                      Calculate Business Impact
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
+                    {/* Action Buttons */}
+                    <div className="flex flex-wrap gap-3">
+                      {/* Generate Visual Comparison */}
+                      <Button 
+                        onClick={handleGenerateImage}
+                        disabled={isGeneratingImage}
+                        variant="outline"
+                        className="gap-2"
+                      >
+                        {isGeneratingImage ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Generating Image...
+                          </>
+                        ) : (
+                          <>
+                            <ImageIcon className="h-4 w-4" />
+                            Generate Visual Comparison
+                          </>
+                        )}
+                      </Button>
+
+                      {/* Link to Impact Simulator with real test data */}
+                      <Button 
+                        onClick={() => {
+                          // Store comparison results in sessionStorage for Impact Simulator
+                          const testData = {
+                            confidenceImprovement: result.comparison_metrics.confidence_improvement,
+                            additionalDataPoints: result.comparison_metrics.additional_data_points,
+                            responseTimeDiff: result.comparison_metrics.response_time_difference_ms,
+                            baselineConfidence: result.baseline.confidence * 100,
+                            enhancedConfidence: result.enhanced.confidence * 100,
+                            matchAgreement: result.comparison_metrics.match_agreement,
+                            testTimestamp: new Date().toISOString(),
+                          };
+                          sessionStorage.setItem('plantIdComparisonResults', JSON.stringify(testData));
+                          navigate('/impact-simulator?fromComparison=true');
+                        }}
+                        className="gap-2"
+                      >
+                        <Calculator className="h-4 w-4" />
+                        Calculate Business Impact
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
+
+            {/* Generated Comparison Image */}
+            {comparisonImage && (
+              <Card className="border-2 border-primary/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <ImageIcon className="h-5 w-5 text-primary" />
+                      Before / After Visual Comparison
+                    </span>
+                    <Button variant="outline" size="sm" onClick={handleDownloadImage} className="gap-2">
+                      <Download className="h-4 w-4" />
+                      Download
+                    </Button>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="rounded-lg overflow-hidden border">
+                    <img 
+                      src={comparisonImage} 
+                      alt="Before/After LeafEngines Comparison" 
+                      className="w-full h-auto"
+                    />
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-3 text-center">
+                    AI-generated infographic showing the difference between basic plant ID and LeafEngines-enhanced identification
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </>
         )}
       </div>
