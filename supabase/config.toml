@@ -64,7 +64,7 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.agricultural-intelligence]
-verify_jwt = false
+verify_jwt = true
 
 [functions.live-agricultural-data]
 verify_jwt = true
