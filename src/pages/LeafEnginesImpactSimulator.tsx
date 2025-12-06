@@ -11,6 +11,7 @@ import ImpactSimulatorCharts from "@/components/impact-simulator/ImpactSimulator
 import ImpactSimulatorROI from "@/components/impact-simulator/ImpactSimulatorROI";
 import ImpactSimulatorRoadmap from "@/components/impact-simulator/ImpactSimulatorRoadmap";
 import ImpactSimulatorSampleTable from "@/components/impact-simulator/ImpactSimulatorSampleTable";
+import UserImpactProjections from "@/components/impact-simulator/UserImpactProjections";
 
 interface AppCharacteristics {
   currentAccuracy: number;
@@ -122,6 +123,7 @@ export default function LeafEnginesImpactSimulator() {
 
   const steps = [
     { label: "Input Metrics", component: <ImpactSimulatorInputs characteristics={characteristics} setCharacteristics={setCharacteristics} onCalculate={handleCalculate} /> },
+    { label: "User Impact", component: <UserImpactProjections comparisonData={comparisonData} userBase={characteristics.userBase} /> },
     { label: "Baseline Snapshot", component: <ImpactSimulatorBaseline characteristics={characteristics} /> },
     { label: "Performance Charts", component: <ImpactSimulatorCharts characteristics={characteristics} impact={impact} /> },
     { label: "ROI Summary", component: <ImpactSimulatorROI impact={impact} characteristics={characteristics} /> },
