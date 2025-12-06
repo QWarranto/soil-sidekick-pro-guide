@@ -61,14 +61,14 @@ const Index = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-background/98 via-background/95 to-background/98" />
           
           {/* Hero Video */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
             <video
               src={leafEnginesHeroVideo}
               autoPlay
               loop
               muted
               playsInline
-              className="w-full max-w-3xl opacity-40"
+              className="w-full max-w-2xl rounded-2xl shadow-2xl opacity-80"
             />
           </div>
         </div>
@@ -166,14 +166,14 @@ const Index = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/90 to-background/95" />
         
         {/* Hero Video */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
           <video
             src={leafEnginesHeroVideo}
             autoPlay
             loop
             muted
             playsInline
-            className="w-full max-w-3xl opacity-40"
+            className="w-full max-w-2xl rounded-2xl shadow-2xl opacity-80"
           />
         </div>
       </div>
