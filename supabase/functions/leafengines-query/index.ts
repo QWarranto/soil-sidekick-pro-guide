@@ -251,8 +251,7 @@ serve(async (req) => {
 
     return createSecureResponse(
       { 
-        error: "Internal server error",
-        message: error.message 
+        error: "Internal server error"
       },
       500,
       corsHeaders
