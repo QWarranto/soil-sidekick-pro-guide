@@ -34,7 +34,7 @@ export default function B2BLanding() {
               Patent-Protected Technology
             </Badge>
             <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground md:text-6xl">
-              LeafEngines™
+              LeafEngines™ <span className="text-2xl md:text-3xl font-medium text-muted-foreground">by SoilSidekick Pro</span>
             </h1>
             <p className="mb-4 text-xl text-muted-foreground md:text-2xl">
               Environmental Intelligence API for Plant Apps
