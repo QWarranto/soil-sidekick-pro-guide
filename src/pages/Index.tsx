@@ -22,6 +22,7 @@ import LeadCapture from '@/components/LeadCapture';
 import Footer from '@/components/Footer';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import heroAerialFarm from '@/assets/hero-aerial-farm.jpg';
+import leafEnginesHeroVideo from '@/assets/leafengines-hero.mp4';
 import { LeafEnginesNav } from '@/components/LeafEnginesNav';
 
 const Index = () => {
@@ -59,14 +60,16 @@ const Index = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-background/98 via-background/95 to-background/98" />
           
-          {/* Floating Decorative Elements */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-20 left-10 w-20 h-20 rounded-full bg-primary/30 blur-2xl floating-animation" style={{ animationDelay: '0s' }} />
-            <div className="absolute top-40 right-20 w-32 h-32 rounded-full bg-accent/25 blur-2xl floating-animation" style={{ animationDelay: '2s' }} />
-            <div className="absolute bottom-32 left-1/4 w-24 h-24 rounded-full bg-primary/35 blur-2xl floating-animation" style={{ animationDelay: '1s' }} />
-            <div className="absolute top-1/3 right-1/3 w-16 h-16 rounded-full bg-accent/30 blur-2xl floating-animation" style={{ animationDelay: '3s' }} />
-            <div className="absolute bottom-20 right-10 w-36 h-36 rounded-full bg-primary/25 blur-2xl floating-animation" style={{ animationDelay: '1.5s' }} />
-            <div className="absolute top-1/2 left-1/2 w-28 h-28 rounded-full bg-accent/20 blur-3xl floating-animation" style={{ animationDelay: '2.5s' }} />
+          {/* Hero Video */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <video
+              src={leafEnginesHeroVideo}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full max-w-3xl opacity-40"
+            />
           </div>
         </div>
 
@@ -162,14 +165,16 @@ const Index = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/90 to-background/95" />
         
-        {/* Floating Decorative Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-20 h-20 rounded-full bg-primary/30 blur-2xl floating-animation" style={{ animationDelay: '0s' }} />
-          <div className="absolute top-40 right-20 w-32 h-32 rounded-full bg-accent/25 blur-2xl floating-animation" style={{ animationDelay: '2s' }} />
-          <div className="absolute bottom-32 left-1/4 w-24 h-24 rounded-full bg-primary/35 blur-2xl floating-animation" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/3 right-1/3 w-16 h-16 rounded-full bg-accent/30 blur-2xl floating-animation" style={{ animationDelay: '3s' }} />
-          <div className="absolute bottom-20 right-10 w-36 h-36 rounded-full bg-primary/25 blur-2xl floating-animation" style={{ animationDelay: '1.5s' }} />
-          <div className="absolute top-1/2 left-1/2 w-28 h-28 rounded-full bg-accent/20 blur-3xl floating-animation" style={{ animationDelay: '2.5s' }} />
+        {/* Hero Video */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <video
+            src={leafEnginesHeroVideo}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full max-w-3xl opacity-40"
+          />
         </div>
       </div>
 
