@@ -16,14 +16,17 @@ Deno.serve(async (req) => {
   try {
     const { county_fips, county_name, state_code, property_address, force_refresh } = await req.json();
     
-    if (!county_fips || !county_name || !state_code || !property_address) {
+    // property_address is optional - if not provided, we do county-level analysis
+    if (!county_fips || !county_name || !state_code) {
       return new Response(
-        JSON.stringify({ error: 'Missing required parameters (county_fips, county_name, state_code, property_address)' }),
+        JSON.stringify({ error: 'Missing required parameters (county_fips, county_name, state_code)' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log(`Getting soil data for ${property_address} in ${county_name}, ${state_code} (FIPS: ${county_fips})`);
+    // Use county-level identifier if no specific address provided
+    const analysisLocation = property_address || `${county_name}, ${state_code}`;
+    console.log(`Getting soil data for ${analysisLocation} (FIPS: ${county_fips})`);
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -53,7 +56,7 @@ Deno.serve(async (req) => {
     }
 
     // Check cache first
-    const cacheKey = `soil:${county_fips}:${property_address}`;
+    const cacheKey = `soil:${county_fips}:${analysisLocation}`;
     let fromCache = false;
     let cacheLevel = 0;
     let soilData: any;
@@ -72,7 +75,7 @@ Deno.serve(async (req) => {
           .select('*')
           .eq('user_id', user.id)
           .eq('county_fips', county_fips)
-          .eq('property_address', property_address)
+          .eq('property_address', analysisLocation)
           .order('created_at', { ascending: false })
           .limit(1)
           .maybeSingle();
@@ -87,13 +90,13 @@ Deno.serve(async (req) => {
       }
     } else {
       console.log('Force refresh requested - fetching fresh data');
-      // Delete old analyses for this property
+      // Delete old analyses for this location
       await supabase
         .from('soil_analyses')
         .delete()
         .eq('user_id', user.id)
         .eq('county_fips', county_fips)
-        .eq('property_address', property_address);
+        .eq('property_address', analysisLocation);
     }
 
     // Fetch real soil data if not cached
@@ -122,7 +125,7 @@ Deno.serve(async (req) => {
         county_name,
         county_fips,
         state_code,
-        property_address,
+        property_address: analysisLocation,
         ph_level: soilData.ph_level,
         organic_matter: soilData.organic_matter,
         nitrogen_level: soilData.nitrogen_level,
