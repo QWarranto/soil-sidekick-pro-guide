@@ -106,7 +106,7 @@ Style: Clean infographic, professional business presentation quality, 16:9 aspec
   } catch (error) {
     console.error("Image generation error:", error);
     return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : "Image generation failed" 
+      error: "Image generation failed" 
     }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

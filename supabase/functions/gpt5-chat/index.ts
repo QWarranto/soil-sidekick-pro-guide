@@ -143,8 +143,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in GPT-5 chat function:', error);
     return new Response(JSON.stringify({ 
-      error: 'An unexpected error occurred',
-      details: error.message 
+      error: 'An unexpected error occurred'
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -99,7 +99,7 @@ Deno.serve(async (req) => {
     console.error('Error in carbon credit calculator:', error);
     return new Response(
       JSON.stringify({ 
-        error: error.message || 'Failed to calculate carbon credits',
+        error: 'Failed to calculate carbon credits',
         success: false 
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
