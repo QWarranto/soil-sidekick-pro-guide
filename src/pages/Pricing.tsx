@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Zap, Shield, TrendingUp, Users, Sparkles, ArrowRight, AlertTriangle } from "lucide-react";
+import { Check, Zap, Shield, TrendingUp, Users, Sparkles, ArrowRight, AlertTriangle, Server, Brain, FileCheck, Radio, Clock, DollarSign, Building2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
@@ -498,6 +498,281 @@ export default function Pricing() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Enterprise Add-On Services */}
+      <section className="border-t border-border bg-gradient-to-br from-purple-500/5 via-background to-primary/5 py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-6xl">
+            <div className="mb-12 text-center">
+              <Badge className="mb-4" variant="secondary">
+                <Building2 className="mr-2 h-3 w-3" />
+                Enterprise Add-Ons
+              </Badge>
+              <h2 className="mb-4 text-3xl font-bold text-foreground">
+                Custom Enterprise Solutions
+              </h2>
+              <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+                Extend your Enterprise tier with specialized services designed for mission-critical deployments and regulatory compliance
+              </p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* Private Cloud / On-Premises */}
+              <Card className="relative overflow-hidden border-2 border-transparent transition-all hover:border-primary/20 hover:shadow-lg">
+                <div className="absolute right-0 top-0 h-24 w-24 -translate-y-4 translate-x-4 rounded-full bg-gradient-to-br from-blue-500/20 to-transparent" />
+                <div className="p-6">
+                  <div className="mb-4 flex items-start justify-between">
+                    <div className="rounded-lg bg-blue-500/10 p-3">
+                      <Server className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <Badge variant="outline" className="text-xs">
+                      SOC 2 / HIPAA Ready
+                    </Badge>
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold text-foreground">
+                    Private Cloud & On-Premises Deployment
+                  </h3>
+                  <p className="mb-4 text-sm text-muted-foreground">
+                    Full infrastructure isolation with your own dedicated environment. Ideal for regulated industries requiring complete data sovereignty.
+                  </p>
+                  
+                  <div className="mb-4 space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>Dedicated VPC or on-premises deployment</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>Custom security configurations & SSO integration</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>Air-gapped deployment options</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>Managed infrastructure with 99.99% SLA</span>
+                    </div>
+                  </div>
+
+                  <div className="mb-4 rounded-lg bg-muted/50 p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">Pricing</span>
+                      </div>
+                      <span className="text-lg font-bold text-foreground">$25,000 - $100,000+/year</span>
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Based on infrastructure complexity & data residency requirements
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Clock className="h-3 w-3" />
+                    <span>Implementation: 4-12 weeks</span>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Custom Model Fine-Tuning */}
+              <Card className="relative overflow-hidden border-2 border-transparent transition-all hover:border-primary/20 hover:shadow-lg">
+                <div className="absolute right-0 top-0 h-24 w-24 -translate-y-4 translate-x-4 rounded-full bg-gradient-to-br from-purple-500/20 to-transparent" />
+                <div className="p-6">
+                  <div className="mb-4 flex items-start justify-between">
+                    <div className="rounded-lg bg-purple-500/10 p-3">
+                      <Brain className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <Badge variant="outline" className="text-xs">
+                      Competitive Advantage
+                    </Badge>
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold text-foreground">
+                    Custom Model Fine-Tuning
+                  </h3>
+                  <p className="mb-4 text-sm text-muted-foreground">
+                    Domain-specific AI models trained on your proprietary data. Build defensible IP with models optimized for your unique botanical focus.
+                  </p>
+                  
+                  <div className="mb-4 space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>Species-specific model optimization</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>Regional flora specialization (EU, Asia, etc.)</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>Exclusive model licensing with IP protection</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>Ongoing model updates & performance tuning</span>
+                    </div>
+                  </div>
+
+                  <div className="mb-4 rounded-lg bg-muted/50 p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">Pricing</span>
+                      </div>
+                      <span className="text-lg font-bold text-foreground">$50,000 - $250,000</span>
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      One-time + $10,000-$30,000/year maintenance
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Clock className="h-3 w-3" />
+                    <span>Implementation: 8-16 weeks</span>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Compliance & Certification Package */}
+              <Card className="relative overflow-hidden border-2 border-transparent transition-all hover:border-primary/20 hover:shadow-lg">
+                <div className="absolute right-0 top-0 h-24 w-24 -translate-y-4 translate-x-4 rounded-full bg-gradient-to-br from-green-500/20 to-transparent" />
+                <div className="p-6">
+                  <div className="mb-4 flex items-start justify-between">
+                    <div className="rounded-lg bg-green-500/10 p-3">
+                      <FileCheck className="h-6 w-6 text-green-600" />
+                    </div>
+                    <Badge variant="outline" className="text-xs">
+                      Risk Mitigation
+                    </Badge>
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold text-foreground">
+                    Compliance & Certification Package
+                  </h3>
+                  <p className="mb-4 text-sm text-muted-foreground">
+                    Comprehensive audit support for regulatory requirements. Essential for pharmaceutical, agricultural, and government clients.
+                  </p>
+                  
+                  <div className="mb-4 space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>SOC 2 Type II & ISO 27001 audit support</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>GDPR Article 30 documentation & DPIAs</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>FDA 21 CFR Part 11 validation (pharma)</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>Quarterly compliance reviews & updates</span>
+                    </div>
+                  </div>
+
+                  <div className="mb-4 rounded-lg bg-muted/50 p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">Pricing</span>
+                      </div>
+                      <span className="text-lg font-bold text-foreground">$15,000 - $50,000/year</span>
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Based on compliance frameworks required
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Clock className="h-3 w-3" />
+                    <span>Implementation: 2-6 weeks</span>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Real-Time Event Streaming */}
+              <Card className="relative overflow-hidden border-2 border-transparent transition-all hover:border-primary/20 hover:shadow-lg">
+                <div className="absolute right-0 top-0 h-24 w-24 -translate-y-4 translate-x-4 rounded-full bg-gradient-to-br from-orange-500/20 to-transparent" />
+                <div className="p-6">
+                  <div className="mb-4 flex items-start justify-between">
+                    <div className="rounded-lg bg-orange-500/10 p-3">
+                      <Radio className="h-6 w-6 text-orange-600" />
+                    </div>
+                    <Badge variant="outline" className="text-xs">
+                      High Performance
+                    </Badge>
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold text-foreground">
+                    Real-Time Event Streaming & Webhooks
+                  </h3>
+                  <p className="mb-4 text-sm text-muted-foreground">
+                    Sub-second event delivery for mission-critical applications. Perfect for precision agriculture and IoT sensor networks.
+                  </p>
+                  
+                  <div className="mb-4 space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>WebSocket & Server-Sent Events (SSE)</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>Configurable webhooks with retry logic</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>Multi-region event distribution</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>Event filtering & transformation rules</span>
+                    </div>
+                  </div>
+
+                  <div className="mb-4 rounded-lg bg-muted/50 p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">Pricing</span>
+                      </div>
+                      <span className="text-lg font-bold text-foreground">$5,000 - $25,000/year</span>
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Based on event volume & regional distribution
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Clock className="h-3 w-3" />
+                    <span>Implementation: 1-3 weeks</span>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Enterprise CTA */}
+            <div className="mt-12 rounded-xl bg-gradient-to-r from-primary/10 via-purple-500/10 to-blue-500/10 p-8 text-center">
+              <h3 className="mb-3 text-2xl font-bold text-foreground">
+                Need a Custom Enterprise Solution?
+              </h3>
+              <p className="mx-auto mb-6 max-w-xl text-muted-foreground">
+                Our enterprise team will help you design the right combination of services for your specific requirements, compliance needs, and budget.
+              </p>
+              <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+                <Button size="lg" asChild>
+                  <Link to="/docs/ENTERPRISE_CLIENT_QUESTIONNAIRE.md">
+                    Complete Enterprise Assessment
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline">
+                  Schedule Technical Discovery Call
+                </Button>
+              </div>
             </div>
           </div>
         </div>
