@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -23,7 +23,9 @@ import {
   Upload,
   MapPin,
   ShieldAlert,
-  BarChart3
+  BarChart3,
+  ArrowRight,
+  Calculator
 } from "lucide-react";
 
 interface ComparisonResult {
@@ -461,15 +463,38 @@ export default function PlantIDComparison() {
               <CardContent className="pt-6">
                 <div className="flex items-start gap-4">
                   <TrendingUp className="h-8 w-8 text-primary flex-shrink-0" />
-                  <div>
+                  <div className="flex-1">
                     <h3 className="font-semibold text-lg mb-2">LeafEngines Value Add</h3>
-                    <p className="text-muted-foreground">
+                    <p className="text-muted-foreground mb-4">
                       Enhanced identification provides <strong>{result.comparison_metrics.additional_data_points} additional data points</strong> including 
                       environmental compatibility scoring, care recommendations, pest/disease risks, and growth predictions. 
                       {result.comparison_metrics.confidence_improvement > 0 && (
                         <> This results in <strong>{result.comparison_metrics.confidence_improvement.toFixed(1)}% higher confidence</strong> through environmental context integration.</>
                       )}
                     </p>
+                    
+                    {/* Link to Impact Simulator with real test data */}
+                    <Button 
+                      onClick={() => {
+                        // Store comparison results in sessionStorage for Impact Simulator
+                        const testData = {
+                          confidenceImprovement: result.comparison_metrics.confidence_improvement,
+                          additionalDataPoints: result.comparison_metrics.additional_data_points,
+                          responseTimeDiff: result.comparison_metrics.response_time_difference_ms,
+                          baselineConfidence: result.baseline.confidence * 100,
+                          enhancedConfidence: result.enhanced.confidence * 100,
+                          matchAgreement: result.comparison_metrics.match_agreement,
+                          testTimestamp: new Date().toISOString(),
+                        };
+                        sessionStorage.setItem('plantIdComparisonResults', JSON.stringify(testData));
+                        navigate('/impact-simulator?fromComparison=true');
+                      }}
+                      className="gap-2"
+                    >
+                      <Calculator className="h-4 w-4" />
+                      Calculate Business Impact
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               </CardContent>
