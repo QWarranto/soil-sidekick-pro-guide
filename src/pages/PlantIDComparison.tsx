@@ -54,9 +54,10 @@ interface ComparisonResult {
 }
 
 export default function PlantIDComparison() {
-  const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  
+  console.log("PlantIDComparison component rendering");
   
   const [isAdmin, setIsAdmin] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -71,23 +72,40 @@ export default function PlantIDComparison() {
   const [fullEnhanced, setFullEnhanced] = useState<any>(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [comparisonImage, setComparisonImage] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<string>("");
 
   useEffect(() => {
+    console.log("PlantIDComparison useEffect running");
+    
     const checkAdminAccess = async () => {
-      // Wait for auth to initialize
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session?.user) {
-        console.log("No authenticated session found");
-        setIsLoading(false);
-        return;
-      }
-
-      setIsAuthenticated(true);
-      const currentUserId = session.user.id;
-      console.log("Checking admin access for user:", currentUserId, session.user.email);
-
       try {
+        console.log("Starting admin check...");
+        
+        // Wait for auth to initialize
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        console.log("Session result:", { 
+          hasSession: !!session, 
+          userId: session?.user?.id,
+          email: session?.user?.email,
+          sessionError 
+        });
+        
+        if (sessionError) {
+          setDebugInfo(`Session error: ${sessionError.message}`);
+          setIsLoading(false);
+          return;
+        }
+        
+        if (!session?.user) {
+          setDebugInfo("No authenticated session found");
+          setIsLoading(false);
+          return;
+        }
+
+        setIsAuthenticated(true);
+        const currentUserId = session.user.id;
+
         const { data, error } = await supabase
           .from("user_roles")
           .select("role")
@@ -95,7 +113,8 @@ export default function PlantIDComparison() {
           .eq("role", "admin")
           .maybeSingle();
 
-        console.log("Admin check result:", { data, error });
+        console.log("Admin check result:", { data, error, currentUserId });
+        setDebugInfo(`User: ${session.user.email}, Admin data: ${JSON.stringify(data)}, Error: ${error?.message || 'none'}`);
 
         if (error) {
           console.error("Admin check error:", error);
@@ -104,6 +123,7 @@ export default function PlantIDComparison() {
         setIsAdmin(!!data);
       } catch (err) {
         console.error("Admin check exception:", err);
+        setDebugInfo(`Exception: ${err}`);
         setIsAdmin(false);
       }
       setIsLoading(false);
@@ -220,13 +240,19 @@ export default function PlantIDComparison() {
     return (
       <div className="min-h-screen bg-background">
         <AppHeader />
-        <div className="container mx-auto py-12 px-4">
+        <div className="container mx-auto py-12 px-4 space-y-4">
           <Alert variant="destructive">
             <ShieldAlert className="h-4 w-4" />
             <AlertDescription>
               This feature is restricted to administrators for internal testing purposes.
             </AlertDescription>
           </Alert>
+          <div className="p-4 bg-muted rounded-lg text-sm font-mono">
+            <p><strong>Debug Info:</strong></p>
+            <p>isAuthenticated: {String(isAuthenticated)}</p>
+            <p>isAdmin: {String(isAdmin)}</p>
+            <p>{debugInfo}</p>
+          </div>
         </div>
       </div>
     );
