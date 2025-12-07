@@ -72,34 +72,43 @@ export default function PlantIDComparison() {
   const [comparisonImage, setComparisonImage] = useState<string | null>(null);
 
   useEffect(() => {
-    checkAdminAccess();
-  }, [user]);
-
-  const checkAdminAccess = async () => {
-    if (!user) {
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .eq("role", "admin")
-        .maybeSingle();
-
-      if (error) {
-        console.error("Admin check error:", error);
-      }
+    const checkAdminAccess = async () => {
+      // Wait for auth to initialize
+      const { data: { session } } = await supabase.auth.getSession();
       
-      setIsAdmin(!!data);
-    } catch (err) {
-      console.error("Admin check exception:", err);
-      setIsAdmin(false);
-    }
-    setIsLoading(false);
-  };
+      if (!session?.user) {
+        console.log("No authenticated session found");
+        setIsLoading(false);
+        return;
+      }
+
+      const currentUserId = session.user.id;
+      console.log("Checking admin access for user:", currentUserId);
+
+      try {
+        const { data, error } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", currentUserId)
+          .eq("role", "admin")
+          .maybeSingle();
+
+        console.log("Admin check result:", { data, error });
+
+        if (error) {
+          console.error("Admin check error:", error);
+        }
+        
+        setIsAdmin(!!data);
+      } catch (err) {
+        console.error("Admin check exception:", err);
+        setIsAdmin(false);
+      }
+      setIsLoading(false);
+    };
+
+    checkAdminAccess();
+  }, []);
 
   const handleGetLocation = () => {
     if (navigator.geolocation) {
