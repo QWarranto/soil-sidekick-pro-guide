@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import AppHeader from "@/components/AppHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -59,9 +58,6 @@ export default function PlantIDComparison() {
   
   console.log("PlantIDComparison component rendering");
   
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -72,65 +68,6 @@ export default function PlantIDComparison() {
   const [fullEnhanced, setFullEnhanced] = useState<any>(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [comparisonImage, setComparisonImage] = useState<string | null>(null);
-  const [debugInfo, setDebugInfo] = useState<string>("");
-
-  useEffect(() => {
-    console.log("PlantIDComparison useEffect running");
-    
-    const checkAdminAccess = async () => {
-      try {
-        console.log("Starting admin check...");
-        
-        // Wait for auth to initialize
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        console.log("Session result:", { 
-          hasSession: !!session, 
-          userId: session?.user?.id,
-          email: session?.user?.email,
-          sessionError 
-        });
-        
-        if (sessionError) {
-          setDebugInfo(`Session error: ${sessionError.message}`);
-          setIsLoading(false);
-          return;
-        }
-        
-        if (!session?.user) {
-          setDebugInfo("No authenticated session found");
-          setIsLoading(false);
-          return;
-        }
-
-        setIsAuthenticated(true);
-        const currentUserId = session.user.id;
-
-        const { data, error } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", currentUserId)
-          .eq("role", "admin")
-          .maybeSingle();
-
-        console.log("Admin check result:", { data, error, currentUserId });
-        setDebugInfo(`User: ${session.user.email}, Admin data: ${JSON.stringify(data)}, Error: ${error?.message || 'none'}`);
-
-        if (error) {
-          console.error("Admin check error:", error);
-        }
-        
-        setIsAdmin(!!data);
-      } catch (err) {
-        console.error("Admin check exception:", err);
-        setDebugInfo(`Exception: ${err}`);
-        setIsAdmin(false);
-      }
-      setIsLoading(false);
-    };
-
-    checkAdminAccess();
-  }, []);
 
   const handleGetLocation = () => {
     if (navigator.geolocation) {
@@ -158,8 +95,6 @@ export default function PlantIDComparison() {
     setComparisonImage(null);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
       const response = await supabase.functions.invoke("plant-id-comparison", {
         body: {
           description,
@@ -227,31 +162,6 @@ export default function PlantIDComparison() {
     link.download = `leafengines-comparison-${Date.now()}.png`;
     link.click();
   };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
-  // Admin restriction temporarily disabled for testing
-  // if (!isAuthenticated || !isAdmin) {
-  //   return (
-  //     <div className="min-h-screen bg-background">
-  //       <AppHeader />
-  //       <div className="container mx-auto py-12 px-4 space-y-4">
-  //         <Alert variant="destructive">
-  //           <ShieldAlert className="h-4 w-4" />
-  //           <AlertDescription>
-  //             This feature is restricted to administrators for internal testing purposes.
-  //           </AlertDescription>
-  //         </Alert>
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   return (
     <div className="min-h-screen bg-background">
