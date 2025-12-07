@@ -1,41 +1,24 @@
+/**
+ * Seasonal Planning Assistant Function
+ * Migrated to requestHandler: December 7, 2025 (Phase 3A.4)
+ */
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { requestHandler } from '../_shared/request-handler.ts';
+import { seasonalPlanningSchema } from '../_shared/validation.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+type SeasonalPlanningRequest = z.infer<typeof seasonalPlanningSchema>;
 
-serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
-    );
-
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      throw new Error('No authorization header');
-    }
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    );
-
-    if (authError || !user) {
-      throw new Error('Authentication failed');
-    }
-
-    const { location, soilData, planningType, cropPreferences, timeframe } = await req.json();
-
-    if (!location || !planningType) {
-      throw new Error('Missing required parameters: location and planningType');
-    }
+requestHandler<SeasonalPlanningRequest>({
+  requireAuth: true,
+  requireSubscription: true,
+  validationSchema: seasonalPlanningSchema,
+  rateLimit: {
+    requests: 50,  // 50 plans per hour
+    windowMs: 60 * 60 * 1000,
+  },
+  handler: async ({ supabaseClient, user, validatedData, startTime }) => {
+    const { location, soilData, planningType, cropPreferences, timeframe } = validatedData;
 
     // Try GPT-5 first, fall back to GPT-4o
     const openaiKey = Deno.env.get('OPENAI_API_KEY') || Deno.env.get('GPT5_API_KEY');
@@ -47,6 +30,8 @@ serve(async (req) => {
     const weatherData = await getWeatherData(location);
     
     let recommendations;
+    let modelUsed = 'gpt-5-turbo';
+    
     try {
       recommendations = await generatePlanWithGPT5(
         location, soilData, planningType, cropPreferences, timeframe, weatherData, openaiKey
@@ -56,26 +41,31 @@ serve(async (req) => {
       recommendations = await generatePlanWithGPT4(
         location, soilData, planningType, cropPreferences, timeframe, weatherData, openaiKey
       );
+      modelUsed = 'gpt-4o';
     }
 
-    return new Response(JSON.stringify({ 
-      success: true, 
+    // Track cost
+    const costUsd = modelUsed === 'gpt-5-turbo' ? 0.005 : 0.01;
+    await supabaseClient.from('cost_tracking').insert({
+      service_provider: 'openai',
+      service_type: modelUsed,
+      feature_name: 'seasonal-planning-assistant',
+      user_id: user.id,
+      cost_usd: costUsd,
+      usage_count: 1,
+      request_details: {
+        planning_type: planningType,
+        timeframe: timeframe,
+        duration_ms: Date.now() - startTime,
+      },
+    });
+
+    return { 
       recommendations,
       weatherData: weatherData.summary,
-      modelUsed: recommendations.modelUsed || 'gpt-4o' 
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    console.error('Error in seasonal-planning-assistant:', error);
-    return new Response(JSON.stringify({ 
-      success: false, 
-      error: error.message 
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
+      modelUsed
+    };
+  },
 });
 
 async function getWeatherData(location: any) {
@@ -204,7 +194,7 @@ function formatPlanningRequest(
   return `
 LOCATION DETAILS:
 - County: ${location.county_name}, ${location.state_code}
-- FIPS: ${location.fips_code}
+- FIPS: ${location.fips_code || location.county_fips || 'Unknown'}
 - USDA Zone: ${weatherData.summary.zone}
 - Growing Season: ${weatherData.summary.growingSeason}
 - Last Spring Frost: ${weatherData.summary.frostDates.lastSpring}

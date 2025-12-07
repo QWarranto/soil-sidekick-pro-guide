@@ -1,51 +1,32 @@
+/**
+ * Alpha Earth Environmental Enhancement Function
+ * Migrated to requestHandler: December 7, 2025 (Phase 3A.5)
+ */
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
+import { requestHandler } from '../_shared/request-handler.ts';
+import { satelliteAnalysisSchema } from '../_shared/validation.ts';
 import { rateLimiter, exponentialBackoff } from '../_shared/api-rate-limiter.ts';
 import { APICacheManager } from '../_shared/api-cache-manager.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+type SatelliteAnalysisRequest = z.infer<typeof satelliteAnalysisSchema>;
 
-interface EnhancementRequest {
-  analysis_id: string;
-  county_fips: string;
-  lat: number;
-  lng: number;
-  soil_data: any;
-  water_body_data?: any;
-}
-
-serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  try {
-    const authHeader = req.headers.get('Authorization')!;
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    
-    const supabase = createClient(
-      supabaseUrl,
-      supabaseKey,
-      { global: { headers: { Authorization: authHeader } } }
-    );
+requestHandler<SatelliteAnalysisRequest>({
+  requireAuth: true,
+  requireSubscription: 'professional', // Professional tier required for satellite analysis
+  validationSchema: satelliteAnalysisSchema,
+  rateLimit: {
+    requests: 50,  // 50 satellite analyses per hour
+    windowMs: 60 * 60 * 1000,
+  },
+  handler: async ({ supabaseClient, user, validatedData, startTime }) => {
+    const { analysis_id, county_fips, lat, lng, soil_data, water_body_data } = validatedData;
 
     // Initialize cache manager
-    const cacheManager = new APICacheManager(supabaseUrl, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const { analysis_id, county_fips, lat, lng, soil_data, water_body_data }: EnhancementRequest = await req.json();
+    const cacheManager = new APICacheManager(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
 
     // Use cache manager for satellite data (12 hour TTL)
     const { data: satelliteData, fromCache, cacheLevel } = await cacheManager.getOrFetch(
@@ -58,7 +39,7 @@ serve(async (req) => {
       },
       async () => {
         // Check rate limits before calling Google Earth Engine
-        const canCall = await rateLimiter.canMakeRequest('GOOGLE_EE', 3); // Priority 3 for satellite
+        const canCall = await rateLimiter.canMakeRequest('GOOGLE_EE', 3);
         if (!canCall) {
           throw new Error('Google Earth Engine rate limit exceeded');
         }
@@ -84,35 +65,46 @@ serve(async (req) => {
     );
 
     // Store enhanced results
-    const { error: insertError } = await supabase
+    const { error: insertError } = await supabaseClient
       .from('environmental_impact_scores')
       .upsert({
         analysis_id,
         user_id: user.id,
         county_fips,
         runoff_risk_score: enhancedAnalysis.runoff_risk_score,
-        contamination_risk_score: enhancedAnalysis.contamination_risk_score,
-        biodiversity_impact_score: enhancedAnalysis.biodiversity_impact_score,
+        contamination_risk: enhancedAnalysis.contamination_risk_score > 0.6 ? 'high' : enhancedAnalysis.contamination_risk_score > 0.3 ? 'medium' : 'low',
+        biodiversity_impact: enhancedAnalysis.biodiversity_impact_score > 0.6 ? 'negative' : enhancedAnalysis.biodiversity_impact_score > 0.3 ? 'neutral' : 'positive',
         carbon_footprint_score: enhancedAnalysis.carbon_footprint_score,
-        overall_environmental_score: enhancedAnalysis.overall_score,
-        satellite_enhancement_data: satelliteData,
-        enhanced_recommendations: enhancedAnalysis.recommendations,
-        confidence_score: enhancedAnalysis.confidence_score
+        eco_friendly_alternatives: { recommendations: enhancedAnalysis.recommendations },
       });
 
     if (insertError) {
       console.error('Database error:', insertError);
-      return new Response(JSON.stringify({ error: 'Database error' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      throw new Error('Failed to store enhanced analysis');
     }
+
+    // Track cost
+    const costUsd = fromCache ? 0 : 0.01; // Only charge for fresh GEE calls
+    await supabaseClient.from('cost_tracking').insert({
+      service_provider: 'google_earth',
+      service_type: 'satellite-embeddings',
+      feature_name: 'alpha-earth-environmental-enhancement',
+      user_id: user.id,
+      cost_usd: costUsd,
+      usage_count: 1,
+      request_details: {
+        from_cache: fromCache,
+        cache_level: cacheLevel,
+        lat,
+        lng,
+        duration_ms: Date.now() - startTime,
+      },
+    });
 
     // Get rate limiter status
     const rateLimitStatus = rateLimiter.getStatus('GOOGLE_EE');
 
-    return new Response(JSON.stringify({
-      success: true,
+    return {
       enhanced_analysis: enhancedAnalysis,
       satellite_insights: satelliteData.insights,
       cache_info: {
@@ -123,17 +115,8 @@ serve(async (req) => {
         requests_this_minute: rateLimitStatus.requestsLastMinute,
         requests_this_hour: rateLimitStatus.requestsLastHour,
       }
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-
-  } catch (error) {
-    console.error('Error in alpha-earth-environmental-enhancement:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
+    };
+  },
 });
 
 async function getSatelliteEmbeddings(lat: number, lng: number) {
@@ -158,7 +141,7 @@ async function getSatelliteEmbeddings(lat: number, lng: number) {
           }
         }
       }),
-      signal: AbortSignal.timeout(20000) // 20 second timeout
+      signal: AbortSignal.timeout(20000)
     });
 
     // Get satellite embeddings for the specific location
@@ -191,7 +174,7 @@ async function getSatelliteEmbeddings(lat: number, lng: number) {
           }
         }
       }),
-      signal: AbortSignal.timeout(25000) // 25 second timeout
+      signal: AbortSignal.timeout(25000)
     });
 
     if (!embedResponse.ok) {
@@ -205,7 +188,7 @@ async function getSatelliteEmbeddings(lat: number, lng: number) {
       insights: analyzeSatelliteInsights(embedData.result || []),
       confidence: calculateConfidence(embedData.result || [])
     };
-  }, 3, 3000); // 3 retries, 3 second base delay
+  }, 3, 3000);
 }
 
 function analyzeSatelliteInsights(embeddings: number[]) {
@@ -218,7 +201,6 @@ function analyzeSatelliteInsights(embeddings: number[]) {
     };
   }
 
-  // Analyze embeddings to extract environmental insights
   const avgEmbedding = embeddings.reduce((sum, val) => sum + val, 0) / embeddings.length;
   
   return {
@@ -243,22 +225,17 @@ function calculateConfidence(embeddings: number[]): number {
 async function enhanceEnvironmentalImpact(soilData: any, satelliteData: any, waterBodyData?: any) {
   const insights = satelliteData.insights;
   
-  // Enhanced runoff risk calculation with satellite data
   const baseRunoffRisk = calculateBaseRunoffRisk(soilData);
   const satelliteRunoffAdjustment = insights.soil_moisture === 'high' ? -0.1 : 
                                    insights.soil_moisture === 'low' ? 0.2 : 0;
   const enhancedRunoffRisk = Math.max(0, Math.min(1, baseRunoffRisk + satelliteRunoffAdjustment));
 
-  // Enhanced contamination risk with vegetation health
   const baseContaminationRisk = calculateBaseContaminationRisk(soilData, waterBodyData);
   const vegetationProtection = insights.vegetation_health === 'high' ? -0.15 : 
                                insights.vegetation_health === 'low' ? 0.1 : 0;
   const enhancedContaminationRisk = Math.max(0, Math.min(1, baseContaminationRisk + vegetationProtection));
 
-  // Biodiversity impact assessment
   const biodiversityScore = calculateBiodiversityScore(insights);
-  
-  // Carbon footprint with vegetation carbon sequestration
   const carbonScore = calculateCarbonScore(soilData, insights);
   
   const overallScore = (enhancedRunoffRisk + enhancedContaminationRisk + biodiversityScore + carbonScore) / 4;

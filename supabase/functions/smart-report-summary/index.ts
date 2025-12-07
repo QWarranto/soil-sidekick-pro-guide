@@ -1,41 +1,24 @@
+/**
+ * Smart Report Summary Function
+ * Migrated to requestHandler: December 7, 2025 (Phase 3A.3)
+ */
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { requestHandler } from '../_shared/request-handler.ts';
+import { reportSummarySchema } from '../_shared/validation.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+type ReportSummaryRequest = z.infer<typeof reportSummarySchema>;
 
-serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
-    );
-
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      throw new Error('No authorization header');
-    }
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    );
-
-    if (authError || !user) {
-      throw new Error('Authentication failed');
-    }
-
-    const { reportType, reportData } = await req.json();
-
-    if (!reportType || !reportData) {
-      throw new Error('Missing reportType or reportData');
-    }
+requestHandler<ReportSummaryRequest>({
+  requireAuth: true,
+  requireSubscription: true,
+  validationSchema: reportSummarySchema,
+  rateLimit: {
+    requests: 100,  // 100 summaries per hour
+    windowMs: 60 * 60 * 1000,
+  },
+  handler: async ({ supabaseClient, user, validatedData, startTime }) => {
+    const { reportType, reportData } = validatedData;
 
     // Use Lovable AI Gateway
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
@@ -45,55 +28,39 @@ serve(async (req) => {
 
     const summary = await generateSummaryWithLovableAI(reportType, reportData, lovableApiKey);
 
-    return new Response(JSON.stringify({ 
-      success: true, 
+    // Track cost
+    await supabaseClient.from('cost_tracking').insert({
+      service_provider: 'lovable',
+      service_type: 'gemini-2.5-flash',
+      feature_name: 'smart-report-summary',
+      user_id: user.id,
+      cost_usd: 0.0005, // Approximate cost per summary
+      usage_count: 1,
+      request_details: {
+        report_type: reportType,
+        duration_ms: Date.now() - startTime,
+      },
+    });
+
+    return { 
       summary,
       modelUsed: summary.modelUsed 
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    console.error('Error in smart-report-summary:', error);
-    
-    // Handle rate limiting and payment errors
-    if (error.message?.includes('429') || error.message?.includes('rate limit')) {
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: 'Rate limit exceeded. Please try again in a moment.' 
-      }), {
-        status: 429,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-    
-    if (error.message?.includes('402') || error.message?.includes('payment')) {
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: 'AI service requires additional credits. Please contact support.' 
-      }), {
-        status: 402,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-    
-    return new Response(JSON.stringify({ 
-      success: false, 
-      error: error.message 
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
+    };
+  },
 });
 
 async function generateSummaryWithLovableAI(reportType: string, reportData: any, apiKey: string) {
   const systemPrompt = reportType === 'soil' 
     ? getSoilReportSystemPrompt() 
-    : getWaterQualitySystemPrompt();
+    : reportType === 'water'
+    ? getWaterQualitySystemPrompt()
+    : getEnvironmentalSystemPrompt();
 
   const userPrompt = reportType === 'soil'
     ? formatSoilReportData(reportData)
-    : formatWaterQualityData(reportData);
+    : reportType === 'water'
+    ? formatWaterQualityData(reportData)
+    : formatEnvironmentalData(reportData);
 
   console.log(`Generating ${reportType} summary using Lovable AI Gateway`);
 
@@ -151,6 +118,18 @@ Create a concise, professional executive summary that includes:
 Use clear, factual language suitable for property owners, agricultural operations, and lenders. Focus on health, safety, and property value implications.`;
 }
 
+function getEnvironmentalSystemPrompt(): string {
+  return `You are an environmental impact expert generating executive summaries for environmental assessments.
+
+Create a concise, professional executive summary that includes:
+1. Overall environmental health assessment (1-2 sentences)
+2. Key environmental risks and concerns (2-3 bullet points)
+3. Sustainability recommendations (2-3 bullet points)
+4. Regulatory and compliance implications (1-2 sentences)
+
+Use clear, factual language suitable for agricultural operations, environmental regulators, and investors.`;
+}
+
 function formatSoilReportData(data: any): string {
   return `
 SOIL ANALYSIS DATA:
@@ -189,5 +168,19 @@ ${contaminants.map((c: any) =>
 VIOLATIONS: ${violations.length} found
 Territory Type: ${data.territory_type}
 Regulatory Authority: ${data.regulatory_authority}
+`;
+}
+
+function formatEnvironmentalData(data: any): string {
+  return `
+ENVIRONMENTAL IMPACT DATA:
+Location: ${data.county_fips || 'Unknown'}
+Runoff Risk Score: ${data.runoff_risk_score || 'Not calculated'}
+Contamination Risk: ${data.contamination_risk || 'Not assessed'}
+Biodiversity Impact: ${data.biodiversity_impact || 'Not assessed'}
+Carbon Footprint Score: ${data.carbon_footprint_score || 'Not calculated'}
+Water Body Proximity: ${data.water_body_proximity ? `${data.water_body_proximity} km` : 'Unknown'}
+
+Eco-Friendly Alternatives: ${JSON.stringify(data.eco_friendly_alternatives || [])}
 `;
 }

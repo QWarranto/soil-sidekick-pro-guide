@@ -163,6 +163,55 @@ export const securityMonitoringSchema = z.object({
   event_types: z.array(z.string().max(100)).optional(),
 });
 
+// ============================================
+// Phase 3A: AI/ML Validation Schemas
+// Added: December 7, 2025 (prep for December 9)
+// ============================================
+
+// GPT-5 Chat schema
+export const gpt5ChatSchema = z.object({
+  messages: z.array(z.object({
+    role: z.enum(['system', 'user', 'assistant']),
+    content: z.string().min(1).max(50000),
+  })).min(1).max(100),
+  temperature: z.number().min(0).max(2).optional().default(0.7),
+  max_tokens: z.number().int().min(1).max(8000).optional().default(2000),
+  stream: z.boolean().optional().default(false),
+});
+
+// Smart report summary schema
+export const reportSummarySchema = z.object({
+  reportType: z.enum(['soil', 'water', 'environmental'], {
+    errorMap: () => ({ message: 'Report type must be soil, water, or environmental' })
+  }),
+  reportData: z.record(z.any()),
+  maxLength: z.number().int().min(100).max(5000).optional(),
+});
+
+// Seasonal planning assistant schema
+export const seasonalPlanningSchema = z.object({
+  location: z.object({
+    county_fips: fipsCodeSchema.optional(),
+    county_name: z.string().max(100),
+    state_code: stateCodeSchema,
+    fips_code: fipsCodeSchema.optional(),
+  }),
+  soilData: z.record(z.any()).optional(),
+  planningType: z.enum(['rotation', 'planting', 'harvest', 'cover-crop', 'general']),
+  cropPreferences: z.record(z.any()).optional(),
+  timeframe: z.enum(['season', 'year', 'multi-year']).optional().default('year'),
+});
+
+// Alpha Earth satellite analysis schema  
+export const satelliteAnalysisSchema = z.object({
+  analysis_id: z.string().min(1).max(100),
+  county_fips: fipsCodeSchema,
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+  soil_data: z.record(z.any()),
+  water_body_data: z.record(z.any()).optional(),
+});
+
 /**
  * Validate and parse input data against a schema
  * Returns validated data or throws descriptive error
