@@ -92,3 +92,9 @@ verify_jwt = false
 
 [functions.leafengines-query]
 verify_jwt = false
+
+[functions.plant-id-comparison]
+verify_jwt = false
+
+[functions.generate-comparison-image]
+verify_jwt = false
