@@ -431,14 +431,13 @@ IDENTIFICATION confidence should be 0.85-0.98 when the plant is clearly visible.
 
     console.log("Final comparison:", comparison);
 
-    // Log comparison for analytics
+    // Log comparison for analytics (no user_id since auth is disabled)
     await supabase.from("cost_tracking").insert({
       service_provider: "lovable_ai",
       service_type: "plant_id_comparison",
       feature_name: "admin_baseline_test",
       cost_usd: 0.002,
       usage_count: 1,
-      user_id: user.id,
       request_details: {
         baseline_result: baselineResult,
         enhanced_result: enhancedResult,
