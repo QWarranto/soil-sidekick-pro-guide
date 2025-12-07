@@ -59,6 +59,7 @@ export default function PlantIDComparison() {
   const navigate = useNavigate();
   
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [description, setDescription] = useState("");
@@ -82,8 +83,9 @@ export default function PlantIDComparison() {
         return;
       }
 
+      setIsAuthenticated(true);
       const currentUserId = session.user.id;
-      console.log("Checking admin access for user:", currentUserId);
+      console.log("Checking admin access for user:", currentUserId, session.user.email);
 
       try {
         const { data, error } = await supabase
@@ -214,7 +216,7 @@ export default function PlantIDComparison() {
     );
   }
 
-  if (!user || !isAdmin) {
+  if (!isAuthenticated || !isAdmin) {
     return (
       <div className="min-h-screen bg-background">
         <AppHeader />
