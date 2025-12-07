@@ -236,27 +236,22 @@ export default function PlantIDComparison() {
     );
   }
 
-  if (!isAuthenticated || !isAdmin) {
-    return (
-      <div className="min-h-screen bg-background">
-        <AppHeader />
-        <div className="container mx-auto py-12 px-4 space-y-4">
-          <Alert variant="destructive">
-            <ShieldAlert className="h-4 w-4" />
-            <AlertDescription>
-              This feature is restricted to administrators for internal testing purposes.
-            </AlertDescription>
-          </Alert>
-          <div className="p-4 bg-muted rounded-lg text-sm font-mono">
-            <p><strong>Debug Info:</strong></p>
-            <p>isAuthenticated: {String(isAuthenticated)}</p>
-            <p>isAdmin: {String(isAdmin)}</p>
-            <p>{debugInfo}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Admin restriction temporarily disabled for testing
+  // if (!isAuthenticated || !isAdmin) {
+  //   return (
+  //     <div className="min-h-screen bg-background">
+  //       <AppHeader />
+  //       <div className="container mx-auto py-12 px-4 space-y-4">
+  //         <Alert variant="destructive">
+  //           <ShieldAlert className="h-4 w-4" />
+  //           <AlertDescription>
+  //             This feature is restricted to administrators for internal testing purposes.
+  //           </AlertDescription>
+  //         </Alert>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen bg-background">
