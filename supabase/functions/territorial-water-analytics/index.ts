@@ -1,102 +1,72 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2'
+/**
+ * Territorial Water Analytics Function - Migrated to requestHandler
+ * Updated: December 9, 2025 - Phase 3B.5 QC Migration
+ * 
+ * Features:
+ * - Unified requestHandler with auth and subscription checks
+ * - Zod validation for inputs
+ * - Rate limiting: 50 requests/hour
+ * - Graceful degradation for EPA water metrics
+ * - Cost tracking for EPA API calls
+ */
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+import { requestHandler } from '../_shared/request-handler.ts';
+import { waterAnalyticsSchema } from '../_shared/validation.ts';
+import { trackExternalAPICost } from '../_shared/cost-tracker.ts';
+import { withFallback } from '../_shared/graceful-degradation.ts';
+import { logSafe, logError } from '../_shared/logging-utils.ts';
 
-interface TerritorialWaterAnalyticsRequest {
-  territory_type?: 'state' | 'territory' | 'compact_state';
-  epa_region?: string;
-  date_range?: {
-    start_date: string;
-    end_date: string;
-  };
-}
+requestHandler({
+  requireAuth: true,
+  requireSubscription: true,
+  validationSchema: waterAnalyticsSchema,
+  rateLimit: {
+    requests: 50,
+    windowMs: 60 * 60 * 1000, // 1 hour
+  },
+  useServiceRole: true,
+  handler: async ({ supabaseClient, user, validatedData }) => {
+    const { territory_type, epa_region, date_range } = validatedData;
 
-Deno.serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  try {
-    // Verify authentication
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Authentication required' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    
-    // Verify user with anon key first
-    const authClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } }
-    });
-    
-    const { data: { user }, error: authError } = await authClient.auth.getUser();
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Invalid authentication' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Use service role for data operations
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    const { territory_type, epa_region, date_range }: TerritorialWaterAnalyticsRequest = await req.json();
-
-    console.log('Processing territorial water analytics request:', {
-      user_id: user.id,
-      territory_type,
-      epa_region,
-      date_range
-    });
+    logSafe('Processing territorial water analytics request', { territory_type, epa_region, date_range });
 
     // Generate territorial water quality analytics
     const analytics = await generateTerritorialAnalytics(
-      supabase,
+      supabaseClient,
+      user.id,
       territory_type,
       epa_region,
       date_range
     );
 
-    console.log('Successfully generated territorial water analytics');
+    // Track EPA API cost for analytics
+    await trackExternalAPICost(supabaseClient, {
+      provider: 'epa',
+      endpoint: 'water-quality',
+      featureName: 'territorial-water-analytics',
+      userId: user.id,
+    });
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        analytics,
-        generated_at: new Date().toISOString()
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    logSafe('Successfully generated territorial water analytics');
 
-  } catch (error) {
-    console.error('Error in territorial-water-analytics function:', error);
-    return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: 'Failed to generate territorial water analytics'
-      }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-  }
+    return {
+      analytics,
+      generated_at: new Date().toISOString(),
+    };
+  },
 });
+
+// ============================================
+// Analytics Generation
+// ============================================
 
 async function generateTerritorialAnalytics(
   supabase: any,
+  userId: string,
   territory_type?: string,
   epa_region?: string,
   date_range?: any
 ) {
-  
   // Get usage statistics for territorial water quality requests
   let query = supabase
     .from('subscription_usages')
@@ -112,11 +82,16 @@ async function generateTerritorialAnalytics(
   const { data: usageData, error } = await query;
 
   if (error) {
-    console.error('Error fetching usage data:', error);
+    logError('Error fetching usage data', error);
   }
 
-  // Generate analytics based on territorial coverage
-  const territorialCoverage = await generateTerritorialCoverage(supabase);
+  // Generate analytics with graceful degradation
+  const territorialCoverage = await withFallback(
+    () => generateTerritorialCoverage(supabase),
+    () => ({ error: 'Coverage data unavailable', total_territories: 0 }),
+    'Territorial Coverage'
+  );
+  
   const waterQualityMetrics = generateWaterQualityMetrics(territory_type);
   const regionalInsights = generateRegionalInsights(epa_region);
 
@@ -127,45 +102,44 @@ async function generateTerritorialAnalytics(
     usage_statistics: {
       total_requests: usageData?.length || 0,
       recent_activity: usageData?.slice(-10) || [],
-      territory_breakdown: generateTerritoryBreakdown(usageData || [])
-    }
+      territory_breakdown: generateTerritoryBreakdown(usageData || []),
+    },
   };
 }
 
 async function generateTerritorialCoverage(supabase: any) {
-  try {
-    const { data: counties, error } = await supabase
-      .from('counties')
-      .select('state_code, state_name')
-      .in('state_code', ['PR', 'VI', 'AS', 'GU', 'MP', 'MH', 'FM', 'PW']);
+  const { data: counties, error } = await supabase
+    .from('counties')
+    .select('state_code, state_name')
+    .in('state_code', ['PR', 'VI', 'AS', 'GU', 'MP', 'MH', 'FM', 'PW']);
 
-    if (error) {
-      console.error('Error fetching territorial data:', error);
-      return { error: 'Failed to fetch territorial coverage' };
-    }
-
-    const territoryStats = counties.reduce((acc: any, county: any) => {
-      if (!acc[county.state_code]) {
-        acc[county.state_code] = {
-          state_name: county.state_name,
-          admin_units: 0
-        };
-      }
-      acc[county.state_code].admin_units++;
-      return acc;
-    }, {});
-
-    return {
-      total_territories: Object.keys(territoryStats).length,
-      total_admin_units: counties.length,
-      territory_details: territoryStats,
-      coverage_percentage: (Object.keys(territoryStats).length / 8) * 100 // 8 total territories
-    };
-  } catch (error) {
-    console.error('Error generating territorial coverage:', error);
-    return { error: 'Failed to generate coverage data' };
+  if (error) {
+    logError('Error fetching territorial data', error);
+    throw new Error('Failed to fetch territorial coverage');
   }
+
+  const territoryStats = counties.reduce((acc: any, county: any) => {
+    if (!acc[county.state_code]) {
+      acc[county.state_code] = {
+        state_name: county.state_name,
+        admin_units: 0,
+      };
+    }
+    acc[county.state_code].admin_units++;
+    return acc;
+  }, {});
+
+  return {
+    total_territories: Object.keys(territoryStats).length,
+    total_admin_units: counties.length,
+    territory_details: territoryStats,
+    coverage_percentage: (Object.keys(territoryStats).length / 8) * 100,
+  };
 }
+
+// ============================================
+// Water Quality Metrics
+// ============================================
 
 function generateWaterQualityMetrics(territory_type?: string) {
   const baseMetrics = {
@@ -175,18 +149,17 @@ function generateWaterQualityMetrics(territory_type?: string) {
       'Chlorine',
       'Lead',
       'Total Trihalomethanes',
-      'Nitrates'
+      'Nitrates',
     ],
     source_types: {
       'Surface Water': 30,
       'Groundwater': 25,
       'Desalination': 20,
       'Rainwater Collection': 15,
-      'Mixed Sources': 10
-    }
+      'Mixed Sources': 10,
+    },
   };
 
-  // Territory-specific adjustments
   if (territory_type === 'territory') {
     return {
       ...baseMetrics,
@@ -194,9 +167,9 @@ function generateWaterQualityMetrics(territory_type?: string) {
         'Limited infrastructure',
         'Saltwater intrusion',
         'Remote location logistics',
-        'Climate vulnerability'
+        'Climate vulnerability',
       ],
-      regulatory_framework: 'Federal oversight with local implementation'
+      regulatory_framework: 'Federal oversight with local implementation',
     };
   }
 
@@ -209,14 +182,18 @@ function generateWaterQualityMetrics(territory_type?: string) {
         'Very limited infrastructure',
         'Resource constraints',
         'Technical expertise shortages',
-        'Geographic isolation'
+        'Geographic isolation',
       ],
-      regulatory_framework: 'Self-governance with US assistance'
+      regulatory_framework: 'Self-governance with US assistance',
     };
   }
 
   return baseMetrics;
 }
+
+// ============================================
+// Regional Insights
+// ============================================
 
 function generateRegionalInsights(epa_region?: string) {
   const regionalData: Record<string, any> = {
@@ -224,24 +201,24 @@ function generateRegionalInsights(epa_region?: string) {
       territories: ['Puerto Rico', 'US Virgin Islands'],
       primary_challenges: ['Hurricane resilience', 'Aging infrastructure'],
       water_sources: 'Surface water, groundwater, desalination',
-      climate_impact: 'High - tropical storms and sea level rise'
+      climate_impact: 'High - tropical storms and sea level rise',
     },
     'Region 9': {
       territories: ['Guam', 'American Samoa', 'Northern Mariana Islands'],
       primary_challenges: ['Remote logistics', 'Coral reef protection'],
       water_sources: 'Groundwater aquifers, rainwater, limited desalination',
-      climate_impact: 'Very High - typhoons and sea level rise'
+      climate_impact: 'Very High - typhoons and sea level rise',
     },
     'Pacific Partnership': {
       territories: ['Marshall Islands', 'FSM', 'Palau'],
       primary_challenges: ['Extreme isolation', 'Limited technical resources'],
       water_sources: 'Rainwater catchment, small groundwater lenses',
-      climate_impact: 'Critical - sea level rise threatens freshwater'
-    }
+      climate_impact: 'Critical - sea level rise threatens freshwater',
+    },
   };
 
   return regionalData[epa_region || 'Region 2'] || {
-    note: 'Regional data not available for specified region'
+    note: 'Regional data not available for specified region',
   };
 }
 
