@@ -1,39 +1,32 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2'
+/**
+ * Hierarchical FIPS Cache Function - Migrated to requestHandler
+ * Updated: December 9, 2025 - Phase 3B.3 QC Migration
+ * 
+ * Features:
+ * - Unified requestHandler with auth checks
+ * - Zod validation for inputs
+ * - Rate limiting: 200 requests/hour
+ * - Preserves hierarchical cache invalidation (L1 → L2 → L3 → L4)
+ * - Access count tracking for cache optimization
+ */
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+import { requestHandler } from '../_shared/request-handler.ts';
+import { fipsCacheSchema } from '../_shared/validation.ts';
+import { logSafe, logError } from '../_shared/logging-utils.ts';
 
-interface CacheRequest {
-  county_fips: string;
-  data_sources: string[];
-  fallback_levels?: number[];
-  force_refresh?: boolean;
-}
-
-Deno.serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  try {
-    const { county_fips, data_sources, fallback_levels = [1, 2, 3, 4], force_refresh = false }: CacheRequest = await req.json();
+requestHandler({
+  requireAuth: true,
+  requireSubscription: false, // Allow free tier with rate limiting
+  validationSchema: fipsCacheSchema,
+  rateLimit: {
+    requests: 200,
+    windowMs: 60 * 60 * 1000, // 1 hour
+  },
+  useServiceRole: true,
+  handler: async ({ supabaseClient, user, validatedData }) => {
+    const { county_fips, data_sources, fallback_levels, force_refresh } = validatedData;
     
-    if (!county_fips || !data_sources?.length) {
-      return new Response(
-        JSON.stringify({ error: 'Missing required parameters: county_fips and data_sources' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    console.log(`Hierarchical FIPS cache request for ${county_fips}, sources: ${data_sources.join(', ')}`);
-
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    logSafe('Hierarchical FIPS cache request', { county_fips, data_sources, force_refresh });
 
     const results: Record<string, any> = {};
     
@@ -48,7 +41,7 @@ Deno.serve(async (req) => {
         
         // Check cache first (unless force refresh)
         if (!force_refresh) {
-          const { data: cachedData } = await supabase
+          const { data: cachedData } = await supabaseClient
             .from('fips_data_cache')
             .select('*')
             .eq('county_fips', county_fips)
@@ -58,20 +51,20 @@ Deno.serve(async (req) => {
             .maybeSingle();
 
           if (cachedData) {
-            console.log(`Cache hit: level ${level} for ${dataSource}`);
+            logSafe(`Cache hit: level ${level} for ${dataSource}`);
             results[dataSource] = {
               data: cachedData.cached_data,
               cache_level: level,
               cached: true,
-              last_updated: cachedData.last_accessed
+              last_updated: cachedData.last_accessed,
             };
             
             // Update access count and last accessed
-            await supabase
+            await supabaseClient
               .from('fips_data_cache')
               .update({ 
                 access_count: cachedData.access_count + 1,
-                last_accessed: new Date().toISOString()
+                last_accessed: new Date().toISOString(),
               })
               .eq('id', cachedData.id);
             
@@ -84,10 +77,10 @@ Deno.serve(async (req) => {
         const freshData = await fetchDataByLevel(county_fips, dataSource, level);
         
         if (freshData) {
-          console.log(`Fresh data fetched: level ${level} for ${dataSource}`);
+          logSafe(`Fresh data fetched: level ${level} for ${dataSource}`);
           
           // Store in cache
-          await supabase
+          await supabaseClient
             .from('fips_data_cache')
             .upsert({
               county_fips,
@@ -97,14 +90,14 @@ Deno.serve(async (req) => {
               cache_level: level,
               expires_at: new Date(Date.now() + getCacheExpiryMs(level)).toISOString(),
               access_count: 1,
-              last_accessed: new Date().toISOString()
+              last_accessed: new Date().toISOString(),
             });
           
           results[dataSource] = {
             data: freshData,
             cache_level: level,
             cached: false,
-            last_updated: new Date().toISOString()
+            last_updated: new Date().toISOString(),
           };
           
           found = true;
@@ -115,36 +108,30 @@ Deno.serve(async (req) => {
         results[dataSource] = {
           error: `No data available for ${dataSource} at any cache level`,
           cache_level: null,
-          cached: false
+          cached: false,
         };
       }
     }
 
-    return new Response(
-      JSON.stringify({ 
-        county_fips,
-        results,
-        cache_strategy: 'hierarchical_fips_optimized',
-        generated_at: new Date().toISOString()
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-
-  } catch (error) {
-    console.error('Error in hierarchical-fips-cache function:', error);
-    return new Response(
-      JSON.stringify({ error: 'Internal server error', details: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-  }
+    return {
+      county_fips,
+      results,
+      cache_strategy: 'hierarchical_fips_optimized',
+      generated_at: new Date().toISOString(),
+    };
+  },
 });
+
+// ============================================
+// Cache Key and Level Functions
+// ============================================
 
 function generateCacheKey(county_fips: string, dataSource: string, level: number): string {
   const hierarchicalKey = {
     1: county_fips, // County level
     2: county_fips.substring(0, 2), // State level
     3: getRegionCode(county_fips), // Regional level
-    4: 'national' // National level
+    4: 'national', // National level
   };
   
   return `${dataSource}_${hierarchicalKey[level as keyof typeof hierarchicalKey]}_${level}`;
@@ -155,7 +142,13 @@ function getRegionCode(county_fips: string): string {
   const regionMap: Record<string, string> = {
     '01': 'southeast', '04': 'southwest', '06': 'west', '08': 'west',
     '09': 'northeast', '10': 'northeast', '12': 'southeast', '13': 'southeast',
-    // Add more state-to-region mappings
+    '17': 'midwest', '18': 'midwest', '19': 'midwest', '20': 'midwest',
+    '21': 'southeast', '22': 'south', '24': 'northeast', '25': 'northeast',
+    '26': 'midwest', '27': 'midwest', '29': 'midwest', '31': 'midwest',
+    '33': 'northeast', '34': 'northeast', '36': 'northeast', '37': 'southeast',
+    '39': 'midwest', '40': 'south', '42': 'northeast', '45': 'southeast',
+    '47': 'southeast', '48': 'south', '51': 'southeast', '53': 'west',
+    '55': 'midwest',
   };
   return regionMap[stateCode] || 'unknown';
 }
@@ -165,13 +158,16 @@ function getCacheExpiryMs(level: number): number {
     1: 1,    // County: 1 hour
     2: 6,    // State: 6 hours
     3: 24,   // Region: 1 day
-    4: 168   // National: 7 days
+    4: 168,  // National: 7 days
   };
   return (expiryHours[level as keyof typeof expiryHours] || 24) * 60 * 60 * 1000;
 }
 
+// ============================================
+// Data Fetching by Level
+// ============================================
+
 async function fetchDataByLevel(county_fips: string, dataSource: string, level: number): Promise<any> {
-  // Simulate different data sources based on level
   switch (dataSource) {
     case 'usda_soil':
       return await fetchUSDAData(county_fips, level);
@@ -187,22 +183,21 @@ async function fetchDataByLevel(county_fips: string, dataSource: string, level: 
 }
 
 async function fetchUSDAData(county_fips: string, level: number): Promise<any> {
-  // Simulated USDA soil data with hierarchical fallback
   const baseData = {
     soil_types: ['loam', 'clay', 'sandy'],
     drainage: 'moderate',
     slope: 'gentle',
-    elevation_range: [100, 500]
+    elevation_range: [100, 500],
   };
   
   switch (level) {
-    case 1: // County-specific
+    case 1:
       return { ...baseData, county_fips, detail_level: 'high', samples: 250 };
-    case 2: // State-level
+    case 2:
       return { ...baseData, state_code: county_fips.substring(0, 2), detail_level: 'medium', samples: 50 };
-    case 3: // Regional
+    case 3:
       return { ...baseData, region: getRegionCode(county_fips), detail_level: 'low', samples: 10 };
-    case 4: // National
+    case 4:
       return { ...baseData, scope: 'national', detail_level: 'very_low', samples: 5 };
     default:
       return null;
@@ -213,7 +208,7 @@ async function fetchNOAAData(county_fips: string, level: number): Promise<any> {
   const baseData = {
     precipitation: 35.5,
     temperature_avg: 65.2,
-    frost_dates: { first: '2024-10-15', last: '2024-04-15' }
+    frost_dates: { first: '2024-10-15', last: '2024-04-15' },
   };
   
   switch (level) {
@@ -234,7 +229,7 @@ async function fetchEPAData(county_fips: string, level: number): Promise<any> {
   const baseData = {
     water_quality_index: 78,
     air_quality_aqi: 45,
-    superfund_sites: 0
+    superfund_sites: 0,
   };
   
   switch (level) {
@@ -255,7 +250,7 @@ async function fetchCensusData(county_fips: string, level: number): Promise<any>
   const baseData = {
     population: 125000,
     median_income: 52000,
-    agriculture_employment_pct: 8.5
+    agriculture_employment_pct: 8.5,
   };
   
   switch (level) {

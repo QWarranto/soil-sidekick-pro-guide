@@ -212,6 +212,76 @@ export const satelliteAnalysisSchema = z.object({
   water_body_data: z.record(z.any()).optional(),
 });
 
+// ============================================
+// Phase 3B: Data Services Validation Schemas
+// Added: December 9, 2025 (early prep for December 10)
+// ============================================
+
+// Live Agricultural Data schema
+export const liveAgDataSchema = z.object({
+  county_fips: fipsCodeSchema,
+  county_name: z.string().min(1).max(100).trim(),
+  state_code: stateCodeSchema,
+  data_types: z.array(z.enum(['weather', 'soil', 'crop', 'environmental'])).min(1).max(4),
+});
+
+// Hierarchical FIPS Cache schema
+export const fipsCacheSchema = z.object({
+  county_fips: fipsCodeSchema,
+  data_sources: z.array(z.enum(['usda_soil', 'noaa_weather', 'epa_water', 'census_demographics'])).min(1),
+  fallback_levels: z.array(z.number().int().min(1).max(4)).optional().default([1, 2, 3, 4]),
+  force_refresh: z.boolean().optional().default(false),
+});
+
+// Geo Consumption Analytics schema
+export const geoAnalyticsSchema = z.object({
+  action_type: z.string().min(1).max(100),
+  county_fips: fipsCodeSchema,
+  usage_metadata: z.record(z.any()).optional().default({}),
+  session_data: z.object({
+    duration: z.number().optional(),
+    features: z.array(z.string()).optional(),
+    search_terms: z.array(z.string()).optional(),
+    export_attempted: z.boolean().optional(),
+  }).optional().default({}),
+});
+
+// Territorial Water Analytics schema
+export const waterAnalyticsSchema = z.object({
+  territory_type: z.enum(['state', 'territory', 'compact_state']).optional(),
+  epa_region: z.string().max(50).optional(),
+  date_range: z.object({
+    start_date: z.string().datetime().or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
+    end_date: z.string().datetime().or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
+  }).optional(),
+});
+
+// LeafEngines Query schema (for API key authenticated requests)
+export const leafEnginesSchema = z.object({
+  location: z.object({
+    latitude: z.number().min(-90).max(90).optional(),
+    longitude: z.number().min(-180).max(180).optional(),
+    address: z.string().max(500).optional(),
+    county_fips: fipsCodeSchema.optional(),
+  }),
+  plant: z.object({
+    common_name: z.string().max(200).optional(),
+    scientific_name: z.string().max(200).optional(),
+    plant_id: z.string().max(100).optional(),
+    care_requirements: z.object({
+      sun_exposure: z.enum(['full_sun', 'partial_shade', 'full_shade']).optional(),
+      water_needs: z.enum(['low', 'medium', 'high']).optional(),
+      soil_ph_range: z.object({ min: z.number(), max: z.number() }).optional(),
+      hardiness_zones: z.array(z.string()).optional(),
+    }).optional(),
+  }),
+  options: z.object({
+    include_satellite_data: z.boolean().optional(),
+    include_water_quality: z.boolean().optional(),
+    include_recommendations: z.boolean().optional(),
+  }).optional(),
+});
+
 /**
  * Validate and parse input data against a schema
  * Returns validated data or throws descriptive error
