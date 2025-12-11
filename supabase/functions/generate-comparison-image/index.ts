@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { authenticateApiKey, logSecurityEvent } from "../_shared/security-utils.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -10,7 +12,29 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
   try {
+    // Authenticate using API key
+    const authResult = await authenticateApiKey(supabase, req);
+    
+    if (authResult.error) {
+      await logSecurityEvent(supabase, {
+        event_type: "comparison_image_auth_failed",
+        details: { error: authResult.error },
+      }, req);
+      
+      return new Response(JSON.stringify({ error: authResult.error }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const userId = authResult.user?.id;
+    console.log("Authenticated generate-comparison-image request", { userId });
+
     const { baseline, enhanced, plantName, metrics } = await req.json();
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -96,6 +120,27 @@ Style: Clean infographic, professional business presentation quality, 16:9 aspec
       });
     }
 
+    // Log cost tracking with authenticated user
+    await supabase.from("cost_tracking").insert({
+      service_provider: "lovable_ai",
+      service_type: "image_generation",
+      feature_name: "comparison_infographic",
+      cost_usd: 0.01,
+      usage_count: 1,
+      user_id: userId,
+      request_details: {
+        plantName,
+        baselineConfidence: baseline.confidence,
+        enhancedConfidence: enhanced.confidence,
+      },
+    });
+
+    // Log successful access
+    await logSecurityEvent(supabase, {
+      event_type: "comparison_image_success",
+      details: { userId, plantName },
+    }, req);
+
     return new Response(JSON.stringify({ 
       success: true, 
       imageUrl,
@@ -105,6 +150,12 @@ Style: Clean infographic, professional business presentation quality, 16:9 aspec
 
   } catch (error) {
     console.error("Image generation error:", error);
+    
+    await logSecurityEvent(supabase, {
+      event_type: "comparison_image_error",
+      details: { error: error.message },
+    }, req);
+    
     return new Response(JSON.stringify({ 
       error: "Image generation failed" 
     }), {
