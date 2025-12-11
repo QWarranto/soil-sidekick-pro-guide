@@ -1,9 +1,11 @@
 # 🚨 CRITICAL SECURITY CORRECTIONS
 ## Comprehensive Implementation Guide - Security Addendum
+## LeafEngines™ B2B API Platform Security
 
-> **Status**: CRITICAL - MUST READ BEFORE IMPLEMENTATION  
-> **Date**: 2025-11-19  
-> **Priority**: BLOCKING - These flaws could lead to data breaches and privilege escalation
+> **Status**: ACTIVE - CONTINUOUSLY UPDATED  
+> **Version**: 2.0  
+> **Date**: December 2025  
+> **Priority**: BLOCKING - These guidelines prevent data breaches and privilege escalation
 
 ---
 
@@ -16,6 +18,14 @@ The Comprehensive Implementation Guide contains **7 critical security flaws** th
 - ❌ **Injection attacks** - SQL injection, XSS, command injection
 - ❌ **Data corruption** - Malformed inputs breaking the database
 - ❌ **RLS policy bypass** - Unauthorized data access
+- ❌ **Information leakage** - Internal errors exposed to clients
+
+**Recent Security Improvements (December 2025)**:
+- ✅ **Error Message Sanitization**: Generic "Service temporarily unavailable" messages replace raw API errors
+- ✅ **Automatic Retry Logic**: Exponential backoff (1s, 2s, 4s) for transient failures
+- ✅ **XSS Protection**: All `dangerouslySetInnerHTML` uses DOMPurify sanitization
+- ✅ **API Key Security**: `x-api-key` header authentication with hashed storage
+- ✅ **Rate Limiting**: Tier-based limits (Free: 10/min, Pro: 100/min, Enterprise: 500/min)
 
 **This document supersedes conflicting guidance in the main implementation guide.**
 
@@ -716,6 +726,48 @@ Before implementing the comprehensive guide, ensure:
 4. **Add** server-side validation to all edge functions
 5. **Review** all INSERT operations to ensure user_id is set
 6. **Audit** existing RLS policies for nullable column dependencies
+7. **Verify** error messages don't expose internal details (OpenAI, database errors)
+8. **Ensure** retry logic provides user-friendly status feedback
+
+---
+
+## December 2025 Security Enhancements
+
+### Error Handling Improvements
+```typescript
+// ✅ CORRECT: Generic error messages
+catch (error) {
+  console.error('Internal error:', error); // Log details server-side
+  return new Response(
+    JSON.stringify({ error: 'Service temporarily unavailable. Please try again.' }),
+    { status: 503 }
+  );
+}
+
+// ❌ WRONG: Exposing internal errors
+catch (error) {
+  return new Response(
+    JSON.stringify({ error: error.message }), // May contain API keys, paths
+    { status: 500 }
+  );
+}
+```
+
+### Automatic Retry Implementation
+```typescript
+// Client-side retry with exponential backoff
+const invokeWithRetry = async (fn, maxRetries = 3, baseDelay = 1000) => {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      const isRetriable = /unavailable|timeout|502|503/i.test(error.message);
+      if (!isRetriable || attempt === maxRetries - 1) throw error;
+      await new Promise(r => setTimeout(r, baseDelay * Math.pow(2, attempt)));
+    }
+  }
+};
+```
 
 ---
 
@@ -724,7 +776,14 @@ Before implementing the comprehensive guide, ensure:
 - Supabase RLS Documentation: https://supabase.com/docs/guides/auth/row-level-security
 - OWASP Top 10: https://owasp.org/www-project-top-ten/
 - Zod Validation: https://zod.dev/
+- LeafEngines API Documentation: [API_DOCUMENTATION.md](./API_DOCUMENTATION.md)
 
 ---
+
+## Document Control
+
+**Version History:**
+- v1.0 - Initial security corrections (November 2025)
+- v2.0 - Added error handling improvements, retry logic, LeafEngines B2B security (December 2025)
 
 **This document must be reviewed by the security team before proceeding with implementation.**
