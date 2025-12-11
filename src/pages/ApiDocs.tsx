@@ -75,14 +75,14 @@ export default function ApiDocs() {
               </div>
               <div className="relative bg-slate-950 p-4">
                 <pre className="text-sm text-green-400">
-{`Authorization: Bearer YOUR_API_KEY
+{`x-api-key: ak_your_api_key_here
 Content-Type: application/json`}
                 </pre>
                 <Button
                   variant="ghost"
                   size="sm"
                   className="absolute right-2 top-2"
-                  onClick={() => copyToClipboard('Authorization: Bearer YOUR_API_KEY\nContent-Type: application/json', "auth")}
+                  onClick={() => copyToClipboard('x-api-key: ak_your_api_key_here\nContent-Type: application/json', "auth")}
                 >
                   {copiedEndpoint === "auth" ? (
                     <CheckCircle2 className="h-4 w-4 text-green-500" />

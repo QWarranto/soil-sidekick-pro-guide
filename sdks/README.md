@@ -47,7 +47,7 @@ npm install typescript ts-node @types/node
 npx ts-node test-sdk.ts YOUR_API_KEY
 
 # Or with environment variable
-export SOILSIDEKICK_API_KEY=ss_prod_xxx
+export SOILSIDEKICK_API_KEY=ak_your_api_key_here
 npx ts-node test-sdk.ts
 ```
 

@@ -1279,7 +1279,7 @@ const UserGuide = () => {
                               </p>
                               <div className="bg-blue-100 p-2 rounded text-xs font-mono">
                                 POST /api/sensor-data<br/>
-                                Authorization: Bearer YOUR_API_KEY
+                                x-api-key: ak_your_api_key_here
                               </div>
                             </div>
                             <div>
