@@ -1,8 +1,9 @@
 # Product Requirements Document (PRD)
 ## SoilSidekick Pro - Agricultural Intelligence Platform
+## LeafEngines™ B2B API Platform
 
-### Version: 1.0
-### Date: January 2025
+### Version: 2.0
+### Date: December 2025
 ### Owner: Product Team
 
 ---
@@ -11,9 +12,11 @@
 
 SoilSidekick Pro is a comprehensive agricultural intelligence platform that provides precision farming solutions through geographic data fusion, environmental impact assessment, and real-time agricultural analytics. The platform integrates federal data sources, GPS technology, and ADAPT Standard 1.0 compliance to deliver actionable insights for modern farming operations.
 
+**LeafEngines™ by SoilSidekick Pro** extends these capabilities as a B2B API platform, positioned as a "Botanical Truth Layer" - providing verified, auditable, standardized plant identification and environmental data for enterprise risk mitigation across Urban Forestry, Crop Insurance, Herbal Medicine, and Precision Agriculture verticals.
+
 ## 2. Product Vision
 
-To empower farmers and agricultural professionals with data-driven insights that optimize crop yields, minimize environmental impact, and enhance sustainable farming practices through cutting-edge technology integration.
+To empower farmers and agricultural professionals with data-driven insights that optimize crop yields, minimize environmental impact, and enhance sustainable farming practices through cutting-edge technology integration. Through LeafEngines, extend this capability to enterprise clients as verified botanical infrastructure for regulatory compliance and risk mitigation.
 
 ## 3. Core Features & Requirements
 
@@ -260,6 +263,12 @@ To empower farmers and agricultural professionals with data-driven insights that
 - CORS protection and XSS prevention
 - Multi-factor authentication support for enhanced security
 
+### 8.4 Service Resilience
+- **Automatic Retry Logic**: Exponential backoff (1s, 2s, 4s delays) for transient failures
+- **User Feedback**: Real-time retry status indicators during service recovery
+- **Error Handling**: Generic error messages to prevent information leakage
+- **Graceful Degradation**: Fallback mechanisms when external services are unavailable
+
 ## 9. Performance Requirements
 
 ### 9.1 Response Times
@@ -284,17 +293,29 @@ To empower farmers and agricultural professionals with data-driven insights that
 
 ### 10.2 API Ecosystem & SDK Integration
 
-**Enterprise SDK/API Access**: SoilSidekick Pro provides comprehensive SDK and API integration for enterprise clients.
+**LeafEngines™ B2B API Platform**: Enterprise-grade API and multi-language SDK for B2B clients.
 
 📋 **Integration Guide**: See [SDK_CLIENT_ONBOARDING_PLAN.md](./SDK_CLIENT_ONBOARDING_PLAN.md) for complete onboarding procedures
 
 **API Features**:
 - RESTful API design with comprehensive endpoints
-- Tier-based rate limiting and authentication
-- JavaScript/TypeScript SDK with type definitions
-- Webhook support for real-time notifications
-- Comprehensive API documentation
-- 4-week structured onboarding process
+- `x-api-key` header authentication for all API requests
+- Multi-language SDK (TypeScript, Python, Go, Ruby, Java, PHP)
+- Auto-generated from OpenAPI specification with CI/CD pipeline
+- Tier-based rate limiting (Free: 10/min, Starter: 30/min, Pro: 100/min, Enterprise: 500/min)
+- Webhook support for real-time event streaming
+- 4-hour "Trojan Horse" frictionless integration target
+
+**SDK Installation**:
+```bash
+npm install @soilsidekick/sdk
+```
+
+**Enterprise Add-On Services**:
+- **Private Cloud Deployment**: $150K-300K/year for isolated infrastructure
+- **Custom Model Fine-Tuning**: $50K-100K per engagement
+- **Compliance & Certification Package**: $75K-150K/year for GMP/FDA/ISA compliance
+- **Real-Time Event Streaming**: $35K-75K/year for webhook integration
 
 **SDK Client Onboarding**:
 - **Week 1**: Setup & Authentication
@@ -395,8 +416,9 @@ To empower farmers and agricultural professionals with data-driven insights that
 ## Document Control
 
 **Version History:**
-- v1.0 - Initial PRD creation
-- 
+- v1.0 - Initial PRD creation (January 2025)
+- v2.0 - Added LeafEngines B2B platform, multi-language SDK, enterprise add-ons, service resilience (December 2025)
+
 **Stakeholders:**
 - Product Manager
 - Engineering Team

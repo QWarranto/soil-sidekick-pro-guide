@@ -1,7 +1,8 @@
 # SoilSidekick Pro - Technical Architecture Documentation
+# LeafEngines™ B2B API Platform
 
-## Version: 1.0
-## Date: January 2025
+## Version: 2.0
+## Date: December 2025
 ## Owner: Engineering Team
 
 ---
@@ -84,22 +85,32 @@ SoilSidekick Pro is built on a modern, scalable architecture leveraging React/Ty
 ## 4. Edge Functions Architecture
 
 ### 4.1 Core Business Functions
-- `agricultural-intelligence`: Soil analysis and recommendations
+- `agricultural-intelligence`: Soil analysis and recommendations with automatic retry logic
 - `environmental-impact-engine`: Environmental risk assessment
 - `territorial-water-quality`: EPA water quality integration
 - `visual-crop-analysis`: Satellite data processing
 - `seasonal-planning-assistant`: Crop planning optimization
+- `plant-id-comparison`: B2B plant identification comparison API
+- `leafengines-query`: Plant-environment compatibility analysis
 
 ### 4.2 Infrastructure Functions
-- `api-key-management`: Secure API key operations
-- `cost-monitoring`: Usage tracking and billing
+- `api-key-management`: Secure API key operations with `x-api-key` authentication
+- `cost-monitoring`: Usage tracking and metered billing preparation
 - `security-monitoring`: Security incident detection
 - `enhanced-threat-detection`: Advanced security monitoring
+- `api-health-monitor`: Service health and availability monitoring
 
 ### 4.3 Payment & Subscription Functions
 - `create-checkout`: Stripe payment processing
 - `customer-portal`: Subscription management
 - `check-subscription`: Subscription validation
+- Future: Stripe metered billing for B2B API usage
+
+### 4.4 Error Handling & Resilience
+- **Automatic Retry Logic**: 3 retries with exponential backoff (1s, 2s, 4s)
+- **Retriable Error Detection**: 502, 503, timeout, unavailable errors trigger retry
+- **User Feedback**: Real-time retry status indicators
+- **Error Sanitization**: Generic error messages prevent information leakage
 
 ## 5. Integration Architecture
 
@@ -110,34 +121,47 @@ SoilSidekick Pro is built on a modern, scalable architecture leveraging React/Ty
 - **Census API**: Geographic and demographic data
 - **FIPS Code Services**: County identification and validation
 
-### 5.2 SDK/API Client Integration
+### 5.2 LeafEngines™ SDK/API Client Integration
 
-**Enterprise SDK Access**: SoilSidekick Pro provides comprehensive SDK and API integration for enterprise clients.
+**Multi-Language SDK**: Auto-generated from OpenAPI specification across 6 languages.
 
 📋 **Integration Guide**: See [SDK_CLIENT_ONBOARDING_PLAN.md](./SDK_CLIENT_ONBOARDING_PLAN.md)
 
 **Client Integration Architecture**:
 ```
 Client Application
-├── SoilSidekick SDK
-├── JWT Authentication
-├── API Request Management
-└── Response Handling
+├── @soilsidekick/sdk (npm)
+├── x-api-key Header Authentication
+├── Automatic Retry with Backoff
+└── Rate Limit Header Handling
 
-SoilSidekick Platform
-├── API Gateway (Rate Limiting)
-├── Authentication Service
+LeafEngines Platform
+├── API Gateway (Tier-Based Rate Limiting)
+├── x-api-key Validation
 ├── Edge Functions
-└── Data Processing
+└── Cost Tracking & Metered Billing
 ```
+
+**SDK Languages**:
+- TypeScript/JavaScript (`npm install @soilsidekick/sdk`)
+- Python (`pip install soilsidekick`)
+- Go, Ruby, Java, PHP (auto-generated)
 
 **SDK Features**:
 - RESTful API access to all platform features
-- Automatic authentication and token management
-- Rate limiting and retry logic
-- Webhook integration support
+- `x-api-key` header authentication (format: `ak_*`)
+- Automatic retry with exponential backoff
+- Rate limit headers (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset)
 - TypeScript type definitions
 - Comprehensive error handling
+
+**Rate Limits by Tier**:
+| Tier | Per Minute | Per Hour | Per Day |
+|------|------------|----------|---------|
+| Free | 10 | 100 | 1,000 |
+| Starter | 30 | 500 | 5,000 |
+| Pro | 100 | 2,000 | 25,000 |
+| Enterprise | 500 | 10,000 | 100,000 |
 
 ### 5.3 Caching Strategy
 ```
@@ -235,7 +259,8 @@ Level 4: National (7 days)
 ## Document Control
 
 **Version History:**
-- v1.0 - Initial technical architecture documentation with SOC 2 Type 1 compliance
+- v1.0 - Initial technical architecture documentation with SOC 2 Type 1 compliance (January 2025)
+- v2.0 - Added LeafEngines B2B platform, multi-language SDK, automatic retry logic, metered billing preparation (December 2025)
 
 **Review Cycle:** 
 - Quarterly architecture review
