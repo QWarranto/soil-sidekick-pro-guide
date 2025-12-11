@@ -1,4 +1,8 @@
 # Baseline Performance Metrics
+# LeafEngines™ B2B API Platform
+
+## Version: 2.0
+## Date: December 2025
 
 Record baseline metrics before optimization to measure improvements.
 
@@ -113,6 +117,45 @@ Record baseline metrics before optimization to measure improvements.
 
 ---
 
+## 6. LeafEngines Query (B2B API)
+
+**Test Command**: `k6 run scripts/test-leafengines-query.js --vus 50 --duration 5m`
+
+| Metric | Baseline | Current | Target | Status |
+|--------|----------|---------|--------|--------|
+| VUs | 50 | | 50 | |
+| Total requests | | | >2,000 | |
+| Avg response time | | | <2000ms | |
+| p95 response time | | | <4000ms | ✅/❌ |
+| Error rate | | | <2% | ✅/❌ |
+| Rate limit violations | | | <5% | ✅/❌ |
+
+**B2B API Performance**:
+- x-api-key validation time: ___ms
+- Average query processing: ___ms
+- Cache hit rate: ___%
+
+---
+
+## 7. Service Resilience (Retry Logic)
+
+**Test Command**: `k6 run scripts/test-retry-logic.js --vus 20 --duration 3m`
+
+| Metric | Baseline | Current | Target | Status |
+|--------|----------|---------|--------|--------|
+| Total requests | | | >500 | |
+| Retry attempts triggered | | | >50 | |
+| Retry success rate | | | >70% | ✅/❌ |
+| Average retry delay | | | 1-4s | ✅/❌ |
+| User-facing errors | | | <5% | ✅/❌ |
+
+**Resilience Metrics**:
+- Circuit breaker activations: ___
+- Fallback executions: ___
+- Graceful degradation success: ___%
+
+---
+
 ## Infrastructure Metrics
 
 ### Database
@@ -132,6 +175,12 @@ Record baseline metrics before optimization to measure improvements.
 - Cache hit rate: ___%
 - Cache miss penalty (avg): ___ms
 - Cache eviction rate: ___/min
+
+### Rate Limiting (December 2025)
+- Free tier violations: ___/day
+- Starter tier violations: ___/day
+- Pro tier violations: ___/day
+- Enterprise tier violations: ___/day
 
 ---
 
