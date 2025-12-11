@@ -89,7 +89,9 @@ requestHandler<ChatRequest>({
           });
 
           if (!response.ok) {
-            throw new Error(`OpenAI API error: ${await response.text()}`);
+            const errorText = await response.text();
+            console.error('All OpenAI models failed. Final error:', errorText);
+            throw new Error('AI service temporarily unavailable. Please try again later.');
           }
           modelUsed = 'gpt-4o-mini';
           fallbackNote = 'GPT-5 and GPT-4o not available, used GPT-4o-mini';
@@ -98,7 +100,9 @@ requestHandler<ChatRequest>({
           fallbackNote = 'GPT-5 not available, used GPT-4o instead';
         }
       } else {
-        throw new Error(`OpenAI API error: ${errorData}`);
+        // Log detailed error server-side only, return generic message to client
+        console.error('OpenAI API error (non-model issue):', errorData);
+        throw new Error('AI service temporarily unavailable. Please try again later.');
       }
     }
 
