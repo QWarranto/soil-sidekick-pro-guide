@@ -52,7 +52,7 @@ enabled = true
 port = 54329
 
 [functions.get-soil-data]
-verify_jwt = true
+verify_jwt = false
 
 [functions.populate-counties]
 verify_jwt = true

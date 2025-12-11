@@ -7,6 +7,62 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Helper function to hash API key
+async function hashApiKey(apiKey: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(apiKey);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Authenticate via JWT or API key
+async function authenticateRequest(
+  supabase: any,
+  authHeader: string | null
+): Promise<{ user: { id: string } | null; error?: string; authMethod?: string }> {
+  if (!authHeader) {
+    return { user: null, error: 'Authorization required' };
+  }
+
+  const token = authHeader.replace('Bearer ', '');
+
+  // Check if it's an API key (starts with 'ak_')
+  if (token.startsWith('ak_')) {
+    console.log('Authenticating via API key...');
+    const keyHash = await hashApiKey(token);
+    
+    const { data: keyData, error: keyError } = await supabase.rpc('validate_api_key', { 
+      key_hash: keyHash 
+    });
+
+    if (keyError) {
+      console.error('API key validation error:', keyError);
+      return { user: null, error: 'API key validation failed' };
+    }
+
+    if (!keyData || keyData.length === 0 || !keyData[0].is_valid) {
+      return { user: null, error: 'Invalid or expired API key' };
+    }
+
+    console.log('API key authenticated for user:', keyData[0].user_id);
+    return { 
+      user: { id: keyData[0].user_id }, 
+      authMethod: 'api_key' 
+    };
+  }
+
+  // Otherwise, try JWT auth
+  console.log('Authenticating via JWT...');
+  const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+  
+  if (authError || !user) {
+    return { user: null, error: 'Invalid authorization' };
+  }
+
+  return { user, authMethod: 'jwt' };
+}
+
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -36,24 +92,18 @@ Deno.serve(async (req) => {
     // Initialize cache manager
     const cacheManager = new APICacheManager(supabaseUrl, supabaseKey);
 
-    // Get user from authorization header
+    // Authenticate user (supports both JWT and API key)
     const authHeader = req.headers.get('authorization');
-    if (!authHeader) {
+    const { user, error: authError, authMethod } = await authenticateRequest(supabase, authHeader);
+    
+    if (authError || !user) {
       return new Response(
-        JSON.stringify({ error: 'Authorization required' }),
+        JSON.stringify({ error: authError || 'Invalid authorization' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid authorization' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    console.log(`Authenticated via ${authMethod} for user ${user.id}`);
 
     // Check cache first
     const cacheKey = `soil:${county_fips}:${analysisLocation}`;
