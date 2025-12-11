@@ -139,7 +139,7 @@ All SDKs use API key authentication:
 import { Configuration, DefaultApi } from '@soilsidekick/sdk';
 
 const config = new Configuration({
-  apiKey: 'ss_prod_abc123...',
+  apiKey: 'ak_your_api_key_here',
   basePath: 'https://your-project.supabase.co/functions/v1'
 });
 
@@ -159,7 +159,7 @@ from soilsidekick.rest import ApiException
 
 # Configure API key
 configuration = soilsidekick.Configuration(
-    api_key={'ApiKeyAuth': 'ss_prod_abc123...'},
+    api_key={'x-api-key': 'ak_your_api_key_here'},
     host='https://your-project.supabase.co/functions/v1'
 )
 

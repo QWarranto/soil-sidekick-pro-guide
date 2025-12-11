@@ -450,7 +450,7 @@ Causes algal blooms and ecosystem disruption.
 Configure your sensor system to send real-time data to SoilSidekick Pro endpoints.
 ```
 POST /api/sensor-data
-Authorization: Bearer YOUR_API_KEY
+x-api-key: ak_your_api_key_here
 ```
 
 **2. Polling Integration**

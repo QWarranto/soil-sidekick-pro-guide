@@ -80,7 +80,7 @@ npm run generate:go
 ### Test SDK
 ```bash
 # Set API key
-export SOILSIDEKICK_API_KEY=ss_prod_your_key
+export SOILSIDEKICK_API_KEY=ak_your_api_key_here
 
 # Run tests
 npm test
@@ -154,7 +154,7 @@ curl -X POST https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/api-key-manag
 import { Configuration, DefaultApi } from '@soilsidekick/sdk';
 
 const api = new DefaultApi(new Configuration({
-  apiKey: 'ss_prod_your_key',
+  apiKey: 'ak_your_api_key_here',
   basePath: 'https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1'
 }));
 
@@ -167,7 +167,7 @@ console.log(soil.ph_level);
 from soilsidekick import Configuration, DefaultApi
 
 config = Configuration()
-config.api_key['Authorization'] = 'ss_prod_your_key'
+config.api_key['x-api-key'] = 'ak_your_api_key_here'
 api = DefaultApi(config)
 
 soil = api.get_soil_data(county_fips='12086')
