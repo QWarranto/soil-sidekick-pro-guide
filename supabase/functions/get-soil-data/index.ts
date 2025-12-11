@@ -33,7 +33,8 @@ async function authenticateRequest(
     const keyHash = await hashApiKey(token);
     
     const { data: keyData, error: keyError } = await supabase.rpc('validate_api_key', { 
-      key_hash: keyHash 
+      key_hash: keyHash,
+      client_ip: null
     });
 
     if (keyError) {
