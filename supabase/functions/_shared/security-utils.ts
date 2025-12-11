@@ -467,7 +467,7 @@ export async function authenticateApiKey(
     
     console.log('Generated hash:', hashHex);
 
-    const { data: keyData, error } = await supabase.rpc('validate_api_key', { key_hash: hashHex });
+    const { data: keyData, error } = await supabase.rpc('validate_api_key', { key_hash: hashHex, client_ip: null });
     
     console.log('RPC result - error:', error);
     console.log('RPC result - keyData:', JSON.stringify(keyData));
