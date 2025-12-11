@@ -1,9 +1,14 @@
 # SoilSidekick Pro User Guide
 
+## Version: 2.0 | December 2025
+
 ## Master SoilSidekick Pro's agricultural intelligence platform with our comprehensive guides. From satellite data interpretation to environmental risk assessment, interactive data visualization, and Variable Rate Technology.
 
 ### SOC 2 Type 1 Compliance & Security
 SoilSidekick Pro maintains SOC 2 Type 1 compliance with enterprise-grade security standards. Your agricultural data is protected through comprehensive security controls including data encryption, access monitoring, and audit logging. Our security framework ensures your sensitive farm data remains private and secure.
+
+### Service Reliability
+SoilSidekick Pro includes automatic service resilience - if temporary service issues occur, the system will automatically retry with user-friendly status messages. You'll be notified during any retry attempts and can manually retry if automatic recovery is unsuccessful.
 
 ---
 

@@ -1,39 +1,41 @@
 # SoilSidekick Pro API Documentation
+# LeafEngines™ B2B API Platform
 
-## Version: 1.0
-## Date: January 2025
+## Version: 2.0
+## Date: December 2025
 ## Security: SOC 2 Type 1 Compliant
 
 ---
 
 ## 1. API Overview
 
-SoilSidekick Pro provides a comprehensive RESTful API for agricultural intelligence, soil analysis, environmental assessment, and satellite data integration. All API endpoints are SOC 2 Type 1 compliant with enterprise-grade security.
+SoilSidekick Pro provides a comprehensive RESTful API for agricultural intelligence, soil analysis, environmental assessment, and satellite data integration. **LeafEngines™** extends this as a B2B API platform positioned as a "Botanical Truth Layer" for enterprise risk mitigation. All API endpoints are SOC 2 Type 1 compliant with enterprise-grade security.
 
 ### 1.1 SOC 2 Type 1 Security Standards
 
 **Security Controls**: All API endpoints implement:
-- **Authentication**: JWT token-based authentication with rate limiting
+- **Authentication**: `x-api-key` header authentication for B2B/SDK access, JWT for user sessions
 - **Authorization**: Role-based access control with user data isolation
 - **Encryption**: TLS 1.3 encryption for all data transmission
 - **Audit Logging**: Comprehensive logging of all API requests and responses
 - **Input Validation**: Server-side validation and sanitization of all inputs
+- **Service Resilience**: Automatic retry with exponential backoff for transient failures
 
 ### 1.2 Base URL
 ```
 Production: https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/
-Development: https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/
 ```
 
 ### 1.3 Authentication
 
 SoilSidekick Pro API supports two authentication methods:
 
-**1. API Key Authentication (B2B/SDK Access)**
+**1. API Key Authentication (B2B/SDK Access) - Recommended for External Integrations**
+
 For external integrations and SDK usage, use the `x-api-key` header:
 
 ```bash
-curl -X POST https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/endpoint \
+curl -X POST https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/get-soil-data \
      -H "x-api-key: ak_your_api_key_here" \
      -H "Content-Type: application/json" \
      -d '{"county_fips": "48453"}'
@@ -42,14 +44,30 @@ curl -X POST https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/endpoint \
 API keys are generated through the dashboard or via the `/api-key-management` endpoint and use the `ak_*` format.
 
 **2. JWT Authentication (Internal/User Sessions)**
+
 For authenticated user sessions within the application:
 
 ```bash
-curl -X POST https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/endpoint \
+curl -X POST https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/agricultural-intelligence \
      -H "Authorization: Bearer YOUR_JWT_TOKEN" \
      -H "Content-Type: application/json" \
      -d '{"county_fips": "48453"}'
 ```
+
+### 1.4 Multi-Language SDK (December 2025)
+
+**Install via npm**:
+```bash
+npm install @soilsidekick/sdk
+```
+
+**Supported Languages** (auto-generated from OpenAPI specification):
+- TypeScript/JavaScript
+- Python
+- Go
+- Ruby
+- Java
+- PHP
 
 ## 2. Core API Endpoints
 
@@ -275,17 +293,21 @@ GET /usage-analytics
 
 ### 4.1 Rate Limiting
 
-**Tier-based Limits**:
-- **Starter**: 50,000 calls/month, 1,000 req/min - Email support (48hr response)
-- **Professional**: 250,000 calls/month, 2,500 req/min - Priority support (24hr response)
-- **Custom**: Unlimited calls, custom rate limits - 24/7 dedicated support
+**Tier-based Limits** (December 2025):
+
+| Tier | Per Minute | Per Hour | Per Day | Support |
+|------|------------|----------|---------|---------|
+| Free | 10 | 100 | 1,000 | Community |
+| Starter | 30 | 500 | 5,000 | Email (48hr) |
+| Pro | 100 | 2,000 | 25,000 | Priority (24hr) |
+| Enterprise | 500 | 10,000 | 100,000 | 24/7 Dedicated |
 
 **Response Headers**:
 ```
-X-RateLimit-Limit: 1000
-X-RateLimit-Remaining: 950
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
 X-RateLimit-Reset: 1642694400
-X-Tier: starter
+X-Tier: pro
 ```
 
 ### 4.2 Error Handling
@@ -303,12 +325,23 @@ X-Tier: starter
 }
 ```
 
+**Error Message Sanitization** (December 2025):
+- Internal errors (OpenAI, database) return generic "Service temporarily unavailable" messages
+- Detailed error information logged server-side only for debugging
+- No API keys, internal paths, or third-party service names exposed to clients
+
+**Automatic Retry Logic**:
+- Client SDKs implement exponential backoff (1s, 2s, 4s delays)
+- Maximum 3 retry attempts for transient errors (502, 503, timeout)
+- User-friendly status messages during retry attempts
+
 **Common Error Codes**:
-- `AUTHENTICATION_REQUIRED`: Missing or invalid JWT token
+- `AUTHENTICATION_REQUIRED`: Missing or invalid API key/JWT token
 - `INSUFFICIENT_PERMISSIONS`: User lacks required permissions
-- `RATE_LIMIT_EXCEEDED`: Too many requests
+- `RATE_LIMIT_EXCEEDED`: Too many requests - check X-RateLimit-Reset header
 - `INVALID_INPUT`: Request validation failed
 - `SUBSCRIPTION_REQUIRED`: Feature requires paid subscription
+- `SERVICE_UNAVAILABLE`: Temporary service issue - retry with backoff
 
 ### 4.3 SOC 2 Type 1 Compliance Features
 
@@ -350,22 +383,40 @@ X-Tier: starter
 - **Week 3**: Advanced Features & Optimization
 - **Week 4**: Testing, Documentation & Go-Live
 
-### 5.2 JavaScript/TypeScript SDK
+### 5.2 Multi-Language SDK Installation (December 2025)
+
+**TypeScript/JavaScript (npm)**:
+```bash
+npm install @soilsidekick/sdk
+```
 
 ```typescript
-import { SoilSidekickAPI } from '@soilsidekick/api-client';
+import { Configuration, DefaultApi } from '@soilsidekick/sdk';
 
-const client = new SoilSidekickAPI({
-  token: 'your-jwt-token',
-  baseUrl: 'https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/'
-});
+const api = new DefaultApi(new Configuration({
+  apiKey: 'ak_your_api_key_here',
+  basePath: 'https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1'
+}));
 
-const soilAnalysis = await client.soil.analyze({
-  county_fips: '48453',
-  county_name: 'Travis County',
-  state_code: 'TX'
-});
+// Get soil data
+const soil = await api.getSoilData({ county_fips: '12086' });
+console.log(soil.ph_level, soil.organic_matter);
 ```
+
+**Python**:
+```python
+from soilsidekick import Configuration, DefaultApi
+
+config = Configuration()
+config.api_key['x-api-key'] = 'ak_your_api_key_here'
+config.host = 'https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1'
+
+api = DefaultApi(config)
+soil = api.get_soil_data(county_fips='12086')
+print(f"pH: {soil.ph_level}")
+```
+
+**Also Available**: Go, Ruby, Java, PHP (auto-generated from OpenAPI specification)
 
 ### 5.3 Webhook Integration
 
@@ -378,8 +429,17 @@ const soilAnalysis = await client.soil.analyze({
 **Webhook Security**:
 - HTTPS endpoints required
 - Signature verification using HMAC-SHA256
-- Retry logic with exponential backoff
+- Retry logic with exponential backoff (1s, 2s, 4s)
 - Idempotency for duplicate handling
+
+### 5.4 Enterprise Add-On Services (December 2025)
+
+| Add-On | Pricing | Implementation |
+|--------|---------|----------------|
+| Private Cloud Deployment | $150K-300K/year | 12-16 weeks |
+| Custom Model Fine-Tuning | $50K-100K/engagement | 8-12 weeks |
+| Compliance Package (GMP/FDA/ISA) | $75K-150K/year | 6-8 weeks |
+| Real-Time Event Streaming | $35K-75K/year | 4-6 weeks |
 
 ## 6. Compliance & Governance
 

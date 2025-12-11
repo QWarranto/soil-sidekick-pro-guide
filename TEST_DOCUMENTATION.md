@@ -1,14 +1,15 @@
 # SoilSidekick Pro - Test Documentation
+# LeafEngines™ B2B API Platform
 
-## Version: 1.0
-## Date: January 2025
+## Version: 2.0
+## Date: December 2025
 ## Security: SOC 2 Type 1 Compliant Testing
 
 ---
 
 ## 1. Testing Overview
 
-SoilSidekick Pro implements comprehensive testing strategies to ensure functionality, security, and SOC 2 Type 1 compliance. All testing procedures include security validation and audit trail documentation.
+SoilSidekick Pro implements comprehensive testing strategies to ensure functionality, security, and SOC 2 Type 1 compliance. All testing procedures include security validation, audit trail documentation, and service resilience verification.
 
 ### 1.1 SOC 2 Type 1 Testing Requirements
 
@@ -107,6 +108,62 @@ describe('Agricultural Intelligence API Security', () => {
         timestamp: expect.any(String)
       })
     );
+  });
+});
+
+// Automatic retry logic testing (December 2025)
+describe('Service Resilience - Retry Logic', () => {
+  test('retries on transient failures with exponential backoff', async () => {
+    const mockService = jest.fn()
+      .mockRejectedValueOnce(new Error('Service unavailable'))
+      .mockRejectedValueOnce(new Error('502 Bad Gateway'))
+      .mockResolvedValue({ success: true, data: {} });
+
+    const result = await invokeWithRetry(mockService, 3, 1000);
+    
+    expect(mockService).toHaveBeenCalledTimes(3);
+    expect(result.success).toBe(true);
+  });
+
+  test('shows user-friendly error messages', async () => {
+    const response = await fetch('/agricultural-intelligence', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer valid_token' },
+      body: JSON.stringify({ county_fips: '48453' })
+    });
+    
+    // Should not expose internal error details
+    if (!response.ok) {
+      const error = await response.json();
+      expect(error.message).not.toContain('OpenAI');
+      expect(error.message).not.toContain('API key');
+      expect(error.message).toMatch(/temporarily unavailable|try again/i);
+    }
+  });
+
+  test('respects maximum retry attempts', async () => {
+    const failingService = jest.fn().mockRejectedValue(new Error('timeout'));
+    
+    await expect(invokeWithRetry(failingService, 3, 100))
+      .rejects.toThrow('Max retries exceeded');
+    
+    expect(failingService).toHaveBeenCalledTimes(3);
+  });
+
+  test('exponential backoff timing', async () => {
+    const timings: number[] = [];
+    const mockService = jest.fn().mockImplementation(() => {
+      timings.push(Date.now());
+      return Promise.reject(new Error('unavailable'));
+    });
+
+    try {
+      await invokeWithRetry(mockService, 3, 1000);
+    } catch {}
+
+    // Verify delays: 1s, 2s between attempts
+    expect(timings[1] - timings[0]).toBeGreaterThanOrEqual(900);
+    expect(timings[2] - timings[1]).toBeGreaterThanOrEqual(1800);
   });
 });
 ```

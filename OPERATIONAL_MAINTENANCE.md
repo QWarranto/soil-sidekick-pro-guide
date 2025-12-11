@@ -1,14 +1,15 @@
 # SoilSidekick Pro - Operational & Maintenance Documentation
+# LeafEngines™ B2B API Platform
 
-## Version: 1.0
-## Date: January 2025
+## Version: 2.0
+## Date: December 2025
 ## Security: SOC 2 Type 1 Compliant Operations
 
 ---
 
 ## 1. Operational Overview
 
-SoilSidekick Pro operates under SOC 2 Type 1 compliance standards with comprehensive monitoring, security controls, and maintenance procedures designed to ensure platform reliability and data protection.
+SoilSidekick Pro operates under SOC 2 Type 1 compliance standards with comprehensive monitoring, security controls, and maintenance procedures designed to ensure platform reliability and data protection. The platform includes automatic service resilience with retry logic and graceful degradation.
 
 ### 1.1 SOC 2 Type 1 Operational Controls
 
@@ -178,6 +179,7 @@ SELECT generate_compliance_report('monthly');
 - **Security Metrics**: Authentication success rates, input validation failures
 - **Business Metrics**: API usage patterns, feature adoption rates
 - **Cost Metrics**: Function execution costs and optimization opportunities
+- **Retry Metrics**: Automatic retry success rates and failure patterns
 
 **Function Maintenance**:
 ```typescript
@@ -186,11 +188,45 @@ const healthCheck = await Promise.all([
   checkFunction('agricultural-intelligence'),
   checkFunction('environmental-impact-engine'),
   checkFunction('territorial-water-quality'),
-  checkFunction('security-monitoring')
+  checkFunction('security-monitoring'),
+  checkFunction('plant-id-comparison'),
+  checkFunction('leafengines-query')
 ]);
 
 // Monthly function optimization review
 const optimizationReport = await generateOptimizationReport();
+```
+
+### 4.3 Service Resilience Operations
+
+**Automatic Retry Monitoring** (December 2025):
+- **Retry Success Rate**: Track percentage of transient failures recovered via retry
+- **Backoff Timing**: Monitor exponential backoff delays (1s, 2s, 4s)
+- **User Impact**: Measure user-facing error rates vs retry recovery
+- **Alert Thresholds**: Trigger alerts if retry success rate drops below 70%
+
+**Retry Logic Health Check**:
+```bash
+# Daily retry metrics analysis
+#!/bin/bash
+
+echo "Analyzing retry logic effectiveness..."
+
+# Check retry success rates
+psql -c "SELECT 
+  COUNT(*) FILTER (WHERE retry_succeeded) as recovered,
+  COUNT(*) FILTER (WHERE NOT retry_succeeded) as failed,
+  ROUND(100.0 * COUNT(*) FILTER (WHERE retry_succeeded) / COUNT(*), 2) as recovery_rate
+FROM service_retry_log 
+WHERE created_at > NOW() - INTERVAL '24 hours';"
+
+# Monitor error message sanitization
+psql -c "SELECT COUNT(*) as exposed_errors 
+FROM api_error_log 
+WHERE error_message LIKE '%OpenAI%' OR error_message LIKE '%API key%'
+AND created_at > NOW() - INTERVAL '24 hours';"
+
+echo "Retry analysis completed."
 ```
 
 ## 5. Security Operations
@@ -401,14 +437,19 @@ echo "Monthly maintenance completed successfully."
 - **Professional**: Priority support (24hr response)
 - **Custom/Enterprise**: 24/7 dedicated support
 
+**Multi-Language SDK Support** (December 2025):
+- TypeScript/JavaScript (`npm install @soilsidekick/sdk`)
+- Python (`pip install soilsidekick`)
+- Go, Ruby, Java, PHP (auto-generated from OpenAPI)
+
 ### 10.2 SDK Client Monitoring
 
 **Client Health Metrics**:
 - API success rates and error patterns
-- Rate limit utilization
-- Authentication failures
+- Rate limit utilization (per tier: Free 10/min, Starter 30/min, Pro 100/min, Enterprise 500/min)
+- Authentication failures (x-api-key validation)
 - Feature adoption rates
-- Cost tracking per client
+- Cost tracking per client (preparation for metered billing)
 
 **Support Operations**:
 ```bash
@@ -417,17 +458,40 @@ echo "Monthly maintenance completed successfully."
 
 echo "Checking SDK client health..."
 
-# Monitor API usage patterns
-psql -c "SELECT * FROM api_key_access_log WHERE access_time > NOW() - INTERVAL '24 hours';"
+# Monitor API usage patterns by tier
+psql -c "SELECT 
+  ak.subscription_tier,
+  COUNT(*) as total_requests,
+  COUNT(*) FILTER (WHERE al.success) as successful,
+  COUNT(*) FILTER (WHERE al.rate_limited) as rate_limited
+FROM api_key_access_log al
+JOIN api_keys ak ON al.api_key_id = ak.id
+WHERE al.access_time > NOW() - INTERVAL '24 hours'
+GROUP BY ak.subscription_tier;"
 
-# Check rate limit violations
+# Check rate limit violations by tier
 psql -c "SELECT * FROM rate_limit_tracking WHERE window_end > NOW() - INTERVAL '1 hour';"
 
 # Review integration status
 psql -c "SELECT * FROM adapt_integrations WHERE integration_status != 'active';"
 
+# Monitor retry recovery rates for SDK clients
+psql -c "SELECT 
+  COUNT(*) FILTER (WHERE retry_count > 0 AND success) as retry_recovered,
+  COUNT(*) FILTER (WHERE retry_count >= 3 AND NOT success) as retry_exhausted
+FROM api_key_access_log 
+WHERE access_time > NOW() - INTERVAL '24 hours';"
+
 echo "SDK client health check completed."
 ```
+
+### 10.3 Enterprise Add-On Operations
+
+**Add-On Service Monitoring** (December 2025):
+- **Private Cloud Deployments**: Health monitoring for isolated infrastructure
+- **Custom Model Fine-Tuning**: Model accuracy and performance tracking
+- **Compliance Package**: Audit log completeness and certification status
+- **Real-Time Event Streaming**: Webhook delivery rates and latency
 
 ---
 
