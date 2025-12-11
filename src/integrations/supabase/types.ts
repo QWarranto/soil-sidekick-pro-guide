@@ -2502,13 +2502,9 @@ export type Database = {
       }
       validate_api_key:
         | {
-            Args: { client_ip?: unknown; key_hash: string }
+            Args: { key_hash: string }
             Returns: {
-              access_count: number
-              api_key_id: string
-              is_locked: boolean
               is_valid: boolean
-              lock_reason: string
               permissions: Json
               rate_limit: number
               rate_window_minutes: number
@@ -2516,9 +2512,13 @@ export type Database = {
             }[]
           }
         | {
-            Args: { key_hash: string }
+            Args: { client_ip?: unknown; key_hash: string }
             Returns: {
+              access_count: number
+              api_key_id: string
+              is_locked: boolean
               is_valid: boolean
+              lock_reason: string
               permissions: Json
               rate_limit: number
               rate_window_minutes: number
