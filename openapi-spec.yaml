@@ -6,10 +6,12 @@ info:
     Agricultural intelligence and soil analysis API with tier-based access control.
     
     ## Authentication
-    All endpoints require an API key passed via the `Authorization` header:
+    All endpoints require an API key passed via the `x-api-key` header:
     ```
-    Authorization: Bearer ss_prod_your_api_key_here
+    x-api-key: ak_your_api_key_here
     ```
+    
+    API keys are generated through the dashboard and use the `ak_*` format.
     
     ## Rate Limiting
     Rate limits are enforced based on your subscription tier:
@@ -783,11 +785,11 @@ components:
     ApiKeyAuth:
       type: apiKey
       in: header
-      name: Authorization
+      name: x-api-key
       description: |
-        API key authentication. Format: `Bearer ss_prod_your_api_key`
+        API key authentication. Format: `ak_your_api_key_here`
         
-        Obtain your API key from the SoilSidekick dashboard.
+        Obtain your API key from the SoilSidekick dashboard or via the api-key-management endpoint.
 
   schemas:
     SoilData:

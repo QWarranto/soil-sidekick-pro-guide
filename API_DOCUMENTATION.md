@@ -26,12 +26,29 @@ Development: https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/
 ```
 
 ### 1.3 Authentication
-All API requests require authentication using JWT tokens:
+
+SoilSidekick Pro API supports two authentication methods:
+
+**1. API Key Authentication (B2B/SDK Access)**
+For external integrations and SDK usage, use the `x-api-key` header:
 
 ```bash
-curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+curl -X POST https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/endpoint \
+     -H "x-api-key: ak_your_api_key_here" \
      -H "Content-Type: application/json" \
-     https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/endpoint
+     -d '{"county_fips": "48453"}'
+```
+
+API keys are generated through the dashboard or via the `/api-key-management` endpoint and use the `ak_*` format.
+
+**2. JWT Authentication (Internal/User Sessions)**
+For authenticated user sessions within the application:
+
+```bash
+curl -X POST https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/endpoint \
+     -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{"county_fips": "48453"}'
 ```
 
 ## 2. Core API Endpoints

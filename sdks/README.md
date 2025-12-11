@@ -105,7 +105,7 @@ Rate limit info returned in headers:
 import { Configuration, DefaultApi } from '@soilsidekick/sdk';
 
 const api = new DefaultApi(new Configuration({
-  apiKey: 'ss_prod_your_key',
+  apiKey: 'ak_your_api_key_here',
   basePath: 'https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1'
 }));
 
@@ -126,7 +126,7 @@ console.log(`Credits earned: ${carbon.calculation_details.credits_earned}`);
 from soilsidekick import Configuration, DefaultApi
 
 config = Configuration()
-config.api_key['Authorization'] = 'ss_prod_your_key'
+config.api_key['x-api-key'] = 'ak_your_api_key_here'
 config.host = 'https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1'
 
 api = DefaultApi(config)
@@ -148,13 +148,13 @@ print(f"Runoff Risk: {impact.detailed_analysis.runoff_risk.risk_level}")
 ```bash
 # Get soil data
 curl -X POST https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/get-soil-data \
-  -H "Authorization: Bearer ss_prod_your_key" \
+  -H "x-api-key: ak_your_api_key_here" \
   -H "Content-Type: application/json" \
   -d '{"county_fips": "12086"}'
 
-# LeafEngines query (uses x-api-key header)
+# LeafEngines query
 curl -X POST https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/leafengines-query \
-  -H "x-api-key: ss_prod_your_key" \
+  -H "x-api-key: ak_your_api_key_here" \
   -H "Content-Type: application/json" \
   -d '{
     "location": {"county_fips": "12086"},
