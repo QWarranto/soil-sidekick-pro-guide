@@ -1,32 +1,38 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { authenticateApiKey, logSecurityEvent, createSecureResponse } from "../_shared/security-utils.ts";
 
-interface LeafEnginesQuery {
-  location: {
-    latitude?: number;
-    longitude?: number;
-    address?: string;
-    county_fips?: string;
-  };
-  plant: {
-    common_name?: string;
-    scientific_name?: string;
-    plant_id?: string;
-    care_requirements?: {
-      sun_exposure?: string; // full_sun, partial_shade, full_shade
-      water_needs?: string; // low, medium, high
-      soil_ph_range?: { min: number; max: number };
-      hardiness_zones?: string[];
-    };
-  };
-  options?: {
-    include_satellite_data?: boolean;
-    include_water_quality?: boolean;
-    include_recommendations?: boolean;
-  };
-}
+// FIPS code validation
+const fipsCodeSchema = z.string().regex(/^\d{5}$/, "FIPS code must be exactly 5 digits");
+
+// LeafEngines Query schema (matching validation.ts)
+const leafEnginesSchema = z.object({
+  location: z.object({
+    latitude: z.number().min(-90).max(90).optional(),
+    longitude: z.number().min(-180).max(180).optional(),
+    address: z.string().max(500).optional(),
+    county_fips: fipsCodeSchema.optional(),
+  }),
+  plant: z.object({
+    common_name: z.string().max(200).optional(),
+    scientific_name: z.string().max(200).optional(),
+    plant_id: z.string().max(100).optional(),
+    care_requirements: z.object({
+      sun_exposure: z.enum(['full_sun', 'partial_shade', 'full_shade']).optional(),
+      water_needs: z.enum(['low', 'medium', 'high']).optional(),
+      soil_ph_range: z.object({ min: z.number(), max: z.number() }).optional(),
+      hardiness_zones: z.array(z.string()).optional(),
+    }).optional(),
+  }),
+  options: z.object({
+    include_satellite_data: z.boolean().optional(),
+    include_water_quality: z.boolean().optional(),
+    include_recommendations: z.boolean().optional(),
+  }).optional(),
+});
+
+type LeafEnginesQuery = z.infer<typeof leafEnginesSchema>;
 
 interface EnvironmentalCompatibilityScore {
   overall_score: number; // 0-100
@@ -59,7 +65,7 @@ interface EnvironmentalCompatibilityScore {
   };
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -114,10 +120,41 @@ serve(async (req) => {
       );
     }
 
-    const query: LeafEnginesQuery = await req.json();
+    // Parse and validate input using Zod schema
+    let rawInput: unknown;
+    try {
+      rawInput = await req.json();
+    } catch {
+      return createSecureResponse(
+        { error: "Invalid JSON body" },
+        400,
+        corsHeaders
+      );
+    }
 
-    // Validate required fields
-    if (!query.location || (!query.location.county_fips && !query.location.latitude)) {
+    const validationResult = leafEnginesSchema.safeParse(rawInput);
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.errors
+        .map(e => `${e.path.join('.')}: ${e.message}`)
+        .join(', ');
+      
+      await logSecurityEvent(supabaseClient, {
+        event_type: "leafengines_query_validation_failed",
+        severity: "low",
+        details: { errors: validationResult.error.errors }
+      }, req);
+
+      return createSecureResponse(
+        { error: "Validation failed", details: errorMessage },
+        400,
+        corsHeaders
+      );
+    }
+
+    const query: LeafEnginesQuery = validationResult.data;
+
+    // Validate business logic requirements
+    if (!query.location.county_fips && !query.location.latitude) {
       return createSecureResponse(
         { error: "Location data required (county_fips or latitude/longitude)" },
         400,
@@ -125,7 +162,7 @@ serve(async (req) => {
       );
     }
 
-    if (!query.plant || (!query.plant.common_name && !query.plant.plant_id)) {
+    if (!query.plant.common_name && !query.plant.plant_id) {
       return createSecureResponse(
         { error: "Plant identification required (common_name or plant_id)" },
         400,
