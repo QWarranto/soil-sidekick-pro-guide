@@ -458,10 +458,14 @@ export async function authenticateApiKey(
       return { user: null, permissions: null, error: 'API key required' };
     }
 
+    console.log('API key received (first 10 chars):', apiKey.substring(0, 10) + '...');
+
     // Hash the API key for lookup
     const keyHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(apiKey));
     const hashArray = Array.from(new Uint8Array(keyHash));
     const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    
+    console.log('Generated hash:', hashHex);
 
     const { data: keyData, error } = await supabase.rpc('validate_api_key', { key_hash: hashHex });
 
