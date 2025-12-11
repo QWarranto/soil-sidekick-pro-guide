@@ -468,8 +468,12 @@ export async function authenticateApiKey(
     console.log('Generated hash:', hashHex);
 
     const { data: keyData, error } = await supabase.rpc('validate_api_key', { key_hash: hashHex });
+    
+    console.log('RPC result - error:', error);
+    console.log('RPC result - keyData:', JSON.stringify(keyData));
 
     if (error || !keyData || keyData.length === 0) {
+      console.log('Validation failed - error:', error, 'keyData empty:', !keyData || keyData.length === 0);
       return { user: null, permissions: null, error: 'Invalid API key' };
     }
 
