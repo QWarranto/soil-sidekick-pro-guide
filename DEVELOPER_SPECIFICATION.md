@@ -1,12 +1,20 @@
 # SoilSidekick Pro - Comprehensive Developer Specification for IP Analysis
+# LeafEngines™ B2B API Platform
 
 ## Executive Summary
 
 SoilSidekick Pro is an advanced agricultural intelligence platform that revolutionizes precision farming through breakthrough implementations in geographic data fusion, environmental impact assessment, and adaptive user analytics. The system incorporates multiple patentable innovations that create defensible intellectual property positions in critical areas of agricultural technology.
 
+**LeafEngines™ by SoilSidekick Pro** extends these capabilities as a B2B API platform, positioned as a "Botanical Truth Layer" - providing verified, auditable, standardized plant identification and environmental data for enterprise risk mitigation across Urban Forestry, Crop Insurance, Herbal Medicine, and Precision Agriculture verticals.
+
 **SOC 2 Type 1 Compliance**: The platform maintains enterprise-grade security with SOC 2 Type 1 compliance, ensuring rigorous point-in-time security assessments of our controls and processes, comprehensive data protection, and secure handling of agricultural and payment data.
 
-**Latest Enhancements (2025)**: The platform now integrates AlphaEarth satellite intelligence with Google Earth Engine for real-time environmental enhancement, combining EPA Water Quality Portal (WQP) data with satellite-derived insights covering vegetation health, soil moisture, and environmental risk assessment. This advancement includes six patent-protected algorithmic engines that address identified gaps in agricultural IP landscape, providing competitive advantages in satellite-enhanced environmental sustainability, geographic analytics, multi-parameter optimization, and real-time federal data integration.
+**Latest Enhancements (December 2025)**: 
+- **Service Resilience**: Automatic retry logic with exponential backoff (1s, 2s, 4s) for AI services
+- **Security Hardening**: Generic error messages prevent information leakage; detailed errors logged server-side only
+- **Multi-Language SDK**: Auto-generated SDK across 6 languages (TypeScript, Python, Go, Ruby, Java, PHP) published to npm
+- **B2B Enterprise Add-Ons**: Private Cloud ($150K-300K/yr), Custom Model Fine-Tuning ($50K-100K), Compliance Package ($75K-150K/yr)
+- **AlphaEarth Integration**: Google Earth Engine satellite intelligence for vegetation health and soil moisture analysis
 
 **Security & Compliance (2025)**: SoilSidekick Pro maintains SOC 2 Type 1 compliance with comprehensive security monitoring including data access controls, encryption protocols, API security, payment processing security, and database security. All agricultural and customer data is protected under enterprise-grade security standards.
 
