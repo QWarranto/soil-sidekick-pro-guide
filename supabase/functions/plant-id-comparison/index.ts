@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { authenticateApiKey, logSecurityEvent, createSecureResponse } from "../_shared/security-utils.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -33,14 +34,28 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Admin restriction temporarily disabled for testing
-    // TODO: Re-enable authentication when auth issues are resolved
-    console.log("Processing plant-id-comparison request (auth temporarily disabled)");
+  try {
+    // Authenticate using API key
+    const authResult = await authenticateApiKey(supabase, req);
+    
+    if (authResult.error) {
+      await logSecurityEvent(supabase, {
+        event_type: "plant_id_comparison_auth_failed",
+        details: { error: authResult.error },
+      }, req);
+      
+      return new Response(JSON.stringify({ error: authResult.error }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const userId = authResult.user?.id;
+    console.log("Authenticated plant-id-comparison request", { userId });
 
     const { image, description, location } = await req.json();
     console.log("Request payload:", { hasImage: !!image, hasDescription: !!description, location });
@@ -66,7 +81,6 @@ serve(async (req) => {
     let imageWarning: string | null = null;
     
     if (image) {
-      // Check if it's a valid image URL (direct link or base64)
       const imageUrlLower = image.toLowerCase();
       const isDirectImageUrl = 
         imageUrlLower.includes('.jpg') || 
@@ -83,14 +97,12 @@ serve(async (req) => {
         validImageUrl = image;
         console.log("Valid image URL detected");
       } else {
-        // Try to use it anyway - the AI gateway will reject if invalid
         validImageUrl = image;
         imageWarning = "Image URL may not be accessible. If identification fails, use a direct image URL ending in .jpg, .png, etc.";
         console.warn("Image URL may not be direct, will attempt anyway:", image);
       }
     }
     
-    // Ensure we have at least a description if no valid image
     const effectiveDescription = description || (image ? `Identify the plant in this image: ${image}` : null);
     
     if (!effectiveDescription && !validImageUrl) {
@@ -119,7 +131,6 @@ Use a confidence value between 0.5 and 0.95 based on how certain you are.`
       }
     ];
 
-    // Build user message content
     if (validImageUrl) {
       baselineMessages.push({
         role: "user",
@@ -159,17 +170,13 @@ Use a confidence value between 0.5 and 0.95 based on how certain you are.`
       console.log("Baseline raw response:", content.substring(0, 500));
       
       try {
-        // Try to extract JSON from the response
         let jsonContent = content.trim();
-        
-        // Remove markdown code blocks if present
         if (jsonContent.startsWith("```json")) {
           jsonContent = jsonContent.replace(/^```json\s*/, "").replace(/\s*```$/, "");
         } else if (jsonContent.startsWith("```")) {
           jsonContent = jsonContent.replace(/^```\s*/, "").replace(/\s*```$/, "");
         }
         
-        // Try to find JSON object in the content
         const jsonMatch = jsonContent.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           const parsed = JSON.parse(jsonMatch[0]);
@@ -192,12 +199,10 @@ Use a confidence value between 0.5 and 0.95 based on how certain you are.`
     console.log("Starting enhanced identification...");
     const enhancedStart = performance.now();
     
-    // Fetch environmental data if location provided using reverse geocoding
     let environmentalContext: any = null;
     if (location?.latitude && location?.longitude) {
       console.log("Fetching environmental data for location:", location);
       try {
-        // Use reverse geocoding to get county info
         const geocodeResponse = await fetch(
           `https://nominatim.openstreetmap.org/reverse?lat=${location.latitude}&lon=${location.longitude}&format=json`,
           {
@@ -215,7 +220,6 @@ Use a confidence value between 0.5 and 0.95 based on how certain you are.`
           const state = geocodeData.address?.state || "Unknown";
           const country = geocodeData.address?.country || "USA";
           
-          // Try to find FIPS code from our counties table
           let countyFips = null;
           if (county && state) {
             const { data: countyData } = await supabase
@@ -232,7 +236,6 @@ Use a confidence value between 0.5 and 0.95 based on how certain you are.`
             }
           }
           
-          // Get soil data if we have FIPS
           let soilData = null;
           if (countyFips) {
             const soilResponse = await supabase.functions.invoke("get-soil-data", {
@@ -362,8 +365,6 @@ IDENTIFICATION confidence should be 0.85-0.98 when the plant is clearly visible.
       
       try {
         let jsonContent = content.trim();
-        
-        // Remove markdown code blocks if present
         if (jsonContent.startsWith("```json")) {
           jsonContent = jsonContent.replace(/^```json\s*/, "").replace(/\s*```$/, "");
         } else if (jsonContent.startsWith("```")) {
@@ -431,40 +432,53 @@ IDENTIFICATION confidence should be 0.85-0.98 when the plant is clearly visible.
 
     console.log("Final comparison:", comparison);
 
-    // Log comparison for analytics (no user_id since auth is disabled)
+    // Log comparison for analytics with authenticated user
     await supabase.from("cost_tracking").insert({
       service_provider: "lovable_ai",
       service_type: "plant_id_comparison",
-      feature_name: "admin_baseline_test",
+      feature_name: "authenticated_comparison",
       cost_usd: 0.002,
       usage_count: 1,
+      user_id: userId,
       request_details: {
         baseline_result: baselineResult,
         enhanced_result: enhancedResult,
-        metrics: comparison.comparison_metrics,
-        had_valid_image: !!validImageUrl,
-        had_location: !!environmentalContext,
+        comparison_metrics: comparison.comparison_metrics,
       },
     });
 
-    const warnings: string[] = [];
-    if (imageWarning) warnings.push(imageWarning);
-    if (!environmentalContext?.soil) warnings.push("Soil data not available for this county");
-    
-    return new Response(JSON.stringify({ 
-      success: true, 
+    // Log successful API access
+    await logSecurityEvent(supabase, {
+      event_type: "plant_id_comparison_success",
+      details: { 
+        userId,
+        hasImage: !!validImageUrl,
+        hasLocation: !!location,
+        baselineConfidence: baselineResult.confidence,
+        enhancedConfidence: enhancedResult.confidence,
+      },
+    }, req);
+
+    return new Response(JSON.stringify({
       comparison,
-      full_baseline: baselineResult,
-      full_enhanced: enhancedResult,
-      warnings: warnings.length > 0 ? warnings : undefined,
+      baseline_full: baselineResult,
+      enhanced_full: enhancedResult,
+      warning: imageWarning,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
   } catch (error) {
-    console.error("Comparison error:", error);
+    console.error("Plant ID comparison error:", error);
+    
+    await logSecurityEvent(supabase, {
+      event_type: "plant_id_comparison_error",
+      details: { error: error.message },
+    }, req);
+    
     return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : "Comparison failed" 
+      error: "Comparison failed",
+      details: error.message 
     }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
