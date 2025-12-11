@@ -60,6 +60,46 @@ const AgriculturalChat: React.FC<AgriculturalChatProps> = ({ context }) => {
     scrollToBottom();
   }, [messages]);
 
+  const [retryStatus, setRetryStatus] = useState<string | null>(null);
+
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+  const invokeWithRetry = async (body: any, maxRetries = 3): Promise<any> => {
+    const delays = [1000, 2000, 4000]; // Exponential backoff: 1s, 2s, 4s
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const { data, error } = await supabase.functions.invoke('agricultural-intelligence', { body });
+        
+        if (error) {
+          // Check if it's a retriable error (service unavailable, timeout, etc.)
+          const isRetriable = error.message?.includes('unavailable') || 
+                              error.message?.includes('timeout') ||
+                              error.message?.includes('503') ||
+                              error.message?.includes('502');
+          
+          if (isRetriable && attempt < maxRetries) {
+            const waitTime = delays[attempt];
+            setRetryStatus(`Service temporarily unavailable. Retrying automatically (${attempt + 1}/${maxRetries})...`);
+            await delay(waitTime);
+            continue;
+          }
+          throw error;
+        }
+        
+        setRetryStatus(null);
+        return data;
+      } catch (err) {
+        if (attempt === maxRetries) {
+          throw err;
+        }
+        const waitTime = delays[attempt];
+        setRetryStatus(`Connection issue detected. Retrying automatically (${attempt + 1}/${maxRetries})...`);
+        await delay(waitTime);
+      }
+    }
+  };
+
   const handleSendMessage = async () => {
     if (!input.trim() || isLoading) return;
 
@@ -73,12 +113,13 @@ const AgriculturalChat: React.FC<AgriculturalChatProps> = ({ context }) => {
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
+    setRetryStatus(null);
 
     try {
       let assistantMessage: Message;
 
       if (useLocalLLM) {
-        // Use local LLM
+        // Use local LLM (no retry needed - runs locally)
         const conversationHistory: ChatMessage[] = [
           {
             role: 'system',
@@ -108,16 +149,12 @@ const AgriculturalChat: React.FC<AgriculturalChatProps> = ({ context }) => {
           model: `${localLLMConfig.model}-local`
         };
       } else {
-        // Use cloud LLM
-        const { data, error } = await supabase.functions.invoke('agricultural-intelligence', {
-          body: {
-            query: userMessage.content,
-            context: context,
-            useGPT5: useGPT5
-          }
+        // Use cloud LLM with automatic retry
+        const data = await invokeWithRetry({
+          query: userMessage.content,
+          context: context,
+          useGPT5: useGPT5
         });
-
-        if (error) throw error;
 
         assistantMessage = {
           id: (Date.now() + 1).toString(),
@@ -135,23 +172,31 @@ const AgriculturalChat: React.FC<AgriculturalChatProps> = ({ context }) => {
       setMessages(prev => [...prev, assistantMessage]);
 
     } catch (error) {
-      console.error('Error getting response:', error);
+      console.error('Error getting response after retries:', error);
+      
+      const wasRetried = retryStatus !== null;
+      
       toast({
-        title: "Error",
-        description: useLocalLLM ? "Local AI processing failed. Please try again." : "Failed to get response. Please try again.",
+        title: "Service Unavailable",
+        description: wasRetried 
+          ? "Automatic retry attempts were unsuccessful. Please try again manually."
+          : "Failed to get response. Please try again.",
         variant: "destructive",
       });
 
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
-        content: "I apologize, but I'm having trouble processing your request right now. Please try again in a moment.",
+        content: wasRetried
+          ? "I apologize, but the AI service is currently experiencing issues. I automatically attempted to reconnect 3 times without success. Please wait a moment and try your question again manually."
+          : "I apologize, but I'm having trouble processing your request right now. Please try again in a moment.",
         timestamp: new Date(),
       };
 
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
+      setRetryStatus(null);
     }
   };
 
@@ -338,9 +383,18 @@ const AgriculturalChat: React.FC<AgriculturalChatProps> = ({ context }) => {
                   <Bot className="w-4 h-4" />
                 </div>
                 <div className="bg-muted rounded-lg p-3">
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span className="text-sm text-muted-foreground">Analyzing your query...</span>
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span className="text-sm text-muted-foreground">
+                        {retryStatus || 'Analyzing your query...'}
+                      </span>
+                    </div>
+                    {retryStatus && (
+                      <span className="text-xs text-amber-600">
+                        Automatic reconnection in progress
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
