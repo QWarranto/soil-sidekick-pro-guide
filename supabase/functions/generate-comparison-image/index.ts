@@ -1,13 +1,33 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { authenticateApiKey, logSecurityEvent } from "../_shared/security-utils.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-api-key",
 };
 
-serve(async (req) => {
+// Zod schema for input validation
+const comparisonImageSchema = z.object({
+  baseline: z.object({
+    confidence: z.number().min(0).max(1),
+  }),
+  enhanced: z.object({
+    confidence: z.number().min(0).max(1),
+  }),
+  plantName: z.string()
+    .min(1, "Plant name is required")
+    .max(200, "Plant name must be less than 200 characters")
+    .trim()
+    .regex(/^[a-zA-Z\s\-']+$/, "Plant name must contain only letters, spaces, hyphens, and apostrophes"),
+  metrics: z.object({
+    additionalDataPoints: z.number().int().min(0).max(1000),
+  }),
+});
+
+type ComparisonImageInput = z.infer<typeof comparisonImageSchema>;
+
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -35,7 +55,38 @@ serve(async (req) => {
     const userId = authResult.user?.id;
     console.log("Authenticated generate-comparison-image request", { userId });
 
-    const { baseline, enhanced, plantName, metrics } = await req.json();
+    // Parse and validate input
+    let rawInput: unknown;
+    try {
+      rawInput = await req.json();
+    } catch {
+      return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const validationResult = comparisonImageSchema.safeParse(rawInput);
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.errors
+        .map(e => `${e.path.join('.')}: ${e.message}`)
+        .join(', ');
+      
+      await logSecurityEvent(supabase, {
+        event_type: "comparison_image_validation_failed",
+        details: { errors: validationResult.error.errors },
+      }, req);
+
+      return new Response(JSON.stringify({ 
+        error: "Validation failed", 
+        details: errorMessage 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const { baseline, enhanced, plantName, metrics }: ComparisonImageInput = validationResult.data;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -46,6 +97,7 @@ serve(async (req) => {
     }
 
     // Create a compelling Before/After comparison infographic prompt
+    // plantName is now validated and sanitized
     const prompt = `Create a professional side-by-side "Before vs After" infographic comparing basic plant identification with LeafEngines enhanced identification.
 
 LEFT SIDE (Before - Basic ID):
