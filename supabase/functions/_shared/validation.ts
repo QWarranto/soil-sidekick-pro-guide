@@ -282,6 +282,54 @@ export const leafEnginesSchema = z.object({
   }).optional(),
 });
 
+// ============================================
+// Phase 4A: Specialized Function Validation Schemas
+// Added: December 12, 2025
+// ============================================
+
+// Carbon Credit Calculator schema
+export const carbonCreditSchema = z.object({
+  field_name: z.string().min(1).max(200).trim(),
+  field_size_acres: z.number().positive().max(100000),
+  soil_organic_matter: z.number().min(0).max(100).optional(),
+  soil_analysis_id: uuidSchema.optional(),
+  verification_type: z.enum(['self_reported', 'third_party', 'satellite']).optional().default('self_reported'),
+});
+
+// VRT Prescription Generator schema
+export const vrtPrescriptionSchema = z.object({
+  fieldId: uuidSchema,
+  soilAnalysisId: uuidSchema.optional(),
+  applicationType: z.enum(['nitrogen', 'phosphorus', 'potassium', 'lime', 'herbicide', 'fungicide', 'insecticide']),
+  cropType: z.string().min(1).max(100).trim(),
+  baseRate: z.number().positive(),
+  rateUnit: z.string().min(1).max(50).trim(),
+  targetYield: z.number().positive().optional(),
+});
+
+// ADAPT Soil Export schema
+export const adaptExportSchema = z.object({
+  soilAnalysisIds: z.array(uuidSchema).min(1).max(100),
+  format: z.enum(['adapt_1.0', 'adapt_2.0', 'geojson']).optional().default('adapt_1.0'),
+  integrationId: uuidSchema.optional(),
+});
+
+// Enhanced Threat Detection schema
+export const threatDetectionSchema = z.object({
+  event_type: z.string().min(1).max(100),
+  source_ip: z.string().max(45).optional(),
+  user_agent: z.string().max(500).optional(),
+  metadata: z.record(z.any()).optional(),
+  severity_override: z.enum(['low', 'medium', 'high', 'critical']).optional(),
+});
+
+// SOC2 Compliance Monitor schema
+export const soc2ComplianceSchema = z.object({
+  action: z.enum(['run_compliance_check', 'get_compliance_history', 'create_compliance_audit_entry', 'schedule_compliance_monitoring']),
+  check_type: z.enum(['automated', 'manual', 'scheduled']).optional(),
+  details: z.record(z.any()).optional(),
+});
+
 /**
  * Validate and parse input data against a schema
  * Returns validated data or throws descriptive error
