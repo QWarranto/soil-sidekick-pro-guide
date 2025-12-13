@@ -202,14 +202,29 @@ export default function Pricing() {
                       ) : (
                         <div>
                           <div className="flex items-baseline gap-2">
+                            {billingCycle === "annual" && tier.monthlyPrice && (
+                              <p className="text-2xl font-medium text-muted-foreground line-through">
+                                ${tier.monthlyPrice.toLocaleString()}
+                              </p>
+                            )}
                             <p className="text-4xl font-bold text-foreground">
                               ${billingCycle === "annual" ? Math.round(displayPrice! / 12).toLocaleString() : displayPrice!.toLocaleString()}
                             </p>
-                            <p className="text-muted-foreground">/{billingCycle === "annual" ? "mo" : "month"}</p>
+                            <p className="text-muted-foreground">/month</p>
                           </div>
                           {billingCycle === "annual" && tier.annualPrice && (
+                            <div className="mt-2">
+                              <Badge variant="default" className="bg-green-600 hover:bg-green-600">
+                                {tier.annualDiscount}
+                              </Badge>
+                              <p className="mt-1 text-sm text-muted-foreground">
+                                ${tier.annualPrice.toLocaleString()} billed annually
+                              </p>
+                            </div>
+                          )}
+                          {billingCycle === "monthly" && (
                             <p className="mt-1 text-sm text-muted-foreground">
-                              ${tier.annualPrice.toLocaleString()} billed annually • {tier.annualDiscount}
+                              Switch to annual billing to save up to 17%
                             </p>
                           )}
                         </div>
