@@ -34,7 +34,7 @@ export default function Pricing() {
         { text: "White-label options", included: false },
         { text: "Dedicated account manager", included: false },
       ],
-      cta: "Start Free Trial",
+      cta: "Request Pilot Access",
       limits: {
         apiCalls: "50,000/month",
         rateLimit: "1,000 req/min",
@@ -63,7 +63,7 @@ export default function Pricing() {
         { text: "Quarterly business reviews", included: true },
         { text: "White-label options", included: false },
       ],
-      cta: "Start Free Trial",
+      cta: "Request Pilot Access",
       limits: {
         apiCalls: "250,000/month",
         rateLimit: "2,500 req/min",
