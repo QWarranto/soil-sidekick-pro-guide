@@ -15,8 +15,8 @@ export default function Pricing() {
       id: "starter",
       name: "Environmental Intelligence Starter",
       monthlyPrice: 500,
-      annualPrice: 5000,
-      annualDiscount: "Save $1,000",
+      annualPrice: 5520,
+      annualDiscount: "Save $480",
       description: "Perfect for emerging plant ID apps looking to differentiate with environmental data",
       icon: Zap,
       popular: false,
@@ -45,8 +45,8 @@ export default function Pricing() {
       id: "professional",
       name: "Satellite Monitoring Pro",
       monthlyPrice: 1500,
-      annualPrice: 15000,
-      annualDiscount: "Save $3,000",
+      annualPrice: 16560,
+      annualDiscount: "Save $1,440",
       description: "Complete environmental intelligence with real-time satellite monitoring",
       icon: Sparkles,
       popular: true,
@@ -151,7 +151,7 @@ export default function Pricing() {
               <Label htmlFor="billing-toggle" className={billingCycle === "annual" ? "font-semibold text-foreground" : "text-muted-foreground"}>
                 Annual
                 <Badge variant="secondary" className="ml-2">
-                  Save up to 17%
+                  Save up to 8%
                 </Badge>
               </Label>
             </div>
@@ -224,7 +224,7 @@ export default function Pricing() {
                           )}
                           {billingCycle === "monthly" && (
                             <p className="mt-1 text-sm text-muted-foreground">
-                              Switch to annual billing to save up to 17%
+                              Switch to annual billing to save up to 8%
                             </p>
                           )}
                         </div>
