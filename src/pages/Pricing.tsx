@@ -801,9 +801,9 @@ export default function Pricing() {
 
             <div className="space-y-6">
               <Card className="p-6">
-                <h3 className="mb-2 font-semibold text-foreground">How does the free trial work?</h3>
+                <h3 className="mb-2 font-semibold text-foreground">How do I request trial access?</h3>
                 <p className="text-sm text-muted-foreground">
-                  All paid tiers include a 14-day free trial with full access to features. No credit card required to start. You'll only be charged after the trial period ends.
+                  Request trial access to evaluate our API capabilities for your use case. Our team will review your request and provide access to a tailored pilot program with full feature access.
                 </p>
               </Card>
 
@@ -847,7 +847,7 @@ export default function Pricing() {
               Ready to Reduce Churn and Boost Revenue?
             </h2>
             <p className="mb-8 text-lg text-muted-foreground">
-              Start your 14-day free trial today. No credit card required.
+              Request pilot access today to experience the full power of environmental intelligence.
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button size="lg" asChild>
