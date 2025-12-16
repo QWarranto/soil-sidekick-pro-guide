@@ -330,6 +330,17 @@ export const soc2ComplianceSchema = z.object({
   details: z.record(z.any()).optional(),
 });
 
+// ============================================
+// Phase 4B: Public Endpoint Validation Schemas
+// Added: December 16, 2025
+// ============================================
+
+// Mapbox Token schema - public endpoint with minimal validation
+export const mapboxTokenSchema = z.object({
+  sessionId: z.string().max(100).optional(),
+  requestOrigin: z.string().max(500).optional(),
+}).optional();
+
 /**
  * Validate and parse input data against a schema
  * Returns validated data or throws descriptive error
