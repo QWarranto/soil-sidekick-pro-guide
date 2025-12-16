@@ -1,42 +1,42 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { corsHeaders } from '../_shared/cors.ts'
+/**
+ * Get Mapbox Token Function
+ * 
+ * Public endpoint to retrieve Mapbox token for map rendering.
+ * Migrated to requestHandler pattern: December 16, 2025
+ * 
+ * Rate Limit: 1000 requests/hour (higher for public endpoint)
+ * Auth: Not required (public endpoint)
+ */
 
-serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
-  }
+import { requestHandler } from '../_shared/request-handler.ts';
+import { mapboxTokenSchema } from '../_shared/validation.ts';
+import { logSafe, logError } from '../_shared/logging-utils.ts';
 
-  try {
+requestHandler({
+  requireAuth: false,
+  validationSchema: mapboxTokenSchema,
+  rateLimit: {
+    requests: 1000,
+    windowMs: 3600000, // 1 hour
+  },
+  handler: async ({ supabaseClient, req, validatedData }) => {
+    logSafe('Processing Mapbox token request', { 
+      sessionId: validatedData?.sessionId || 'none',
+      requestOrigin: validatedData?.requestOrigin || req.headers.get('origin') || 'unknown'
+    });
+
     // Get the Mapbox token from environment variables
-    const mapboxToken = Deno.env.get('MAPBOX_PUBLIC_TOKEN')
+    const mapboxToken = Deno.env.get('MAPBOX_PUBLIC_TOKEN');
     
     if (!mapboxToken) {
-      return new Response(
-        JSON.stringify({ error: 'Mapbox token not configured' }),
-        { 
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      )
+      logError('Mapbox token not configured in environment');
+      throw new Error('Mapbox token not configured');
     }
 
-    return new Response(
-      JSON.stringify({ MAPBOX_PUBLIC_TOKEN: mapboxToken }),
-      { 
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
-    )
-
-  } catch (error) {
-    console.error('Error retrieving Mapbox token:', error)
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { 
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
-    )
-  }
-})
+    logSafe('Mapbox token retrieved successfully');
+    
+    return {
+      MAPBOX_PUBLIC_TOKEN: mapboxToken,
+    };
+  },
+});
