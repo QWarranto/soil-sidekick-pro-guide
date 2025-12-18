@@ -310,6 +310,74 @@ X-RateLimit-Reset: 1642694400
 X-Tier: pro
 ```
 
+### 4.2 Input Validation (Zod Schemas)
+
+All API endpoints use **Zod** schemas for server-side validation. Invalid requests return `400 Bad Request` with descriptive error messages.
+
+**Common Validation Patterns**:
+- `county_fips`: Exactly 5 digits (regex: `/^\d{5}$/`)
+- `state_code`: 2 uppercase letters (regex: `/^[A-Z]{2}$/`)
+- `email`: Valid email format, max 255 characters
+- `uuid`: Valid UUID v4 format
+
+**Example Validation Error**:
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_FAILED",
+    "message": "Validation failed: county_fips: County FIPS must be exactly 5 digits",
+    "request_id": "req_abc123"
+  }
+}
+```
+
+📋 **Reference**: See [VALIDATION_SCHEMAS.md](./VALIDATION_SCHEMAS.md) for complete schema documentation.
+
+### 4.3 Graceful Degradation
+
+All external API integrations implement **graceful degradation** with fallback chains:
+
+| Service | Primary | Fallback 1 | Fallback 2 |
+|---------|---------|------------|------------|
+| AI Chat | GPT-5 | GPT-4o | GPT-4o-mini |
+| Water Quality | EPA Real-time | Cached Data | Simulated Data |
+| Soil Data | SSURGO | NRCS Soil Mart | Cached Data |
+| Satellite | Google Earth | Sentinel-2 | Historical Data |
+| Weather | NOAA Real-time | Historical Avg | Estimated |
+
+**Degradation Response**:
+```json
+{
+  "success": true,
+  "data": { /* response data */ },
+  "metadata": {
+    "source": "fallback",
+    "degraded": true,
+    "degradation_reason": "Primary API timeout"
+  }
+}
+```
+
+### 4.4 Circuit Breakers
+
+External services are protected by **circuit breakers** to prevent cascade failures:
+
+| Circuit | Threshold | Open Duration | Half-Open |
+|---------|-----------|---------------|-----------|
+| EPA | 5 failures | 60 seconds | 30 seconds |
+| USDA | 5 failures | 60 seconds | 30 seconds |
+| Google Earth | 5 failures | 60 seconds | 30 seconds |
+| NOAA | 5 failures | 60 seconds | 30 seconds |
+| OpenAI | 5 failures | 60 seconds | 30 seconds |
+
+**Circuit States**:
+- **Closed**: Normal operation
+- **Open**: All requests return fallback immediately
+- **Half-Open**: Single test request allowed; success closes circuit
+
+📋 **Reference**: See [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md) for implementation details.
+
 ### 4.2 Error Handling
 
 **Standard Error Response**:
