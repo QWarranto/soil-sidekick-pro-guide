@@ -495,6 +495,67 @@ echo "SDK client health check completed."
 
 ---
 
+## 11. Quality Control Migration Rollback
+
+### 11.1 QC Migration Overview (December 2025)
+
+All 36 edge functions have been migrated to the standardized `requestHandler()` pattern with:
+- Zod input validation
+- Rate limiting
+- Cost tracking
+- Graceful degradation
+- Circuit breakers
+
+### 11.2 Function Batch Rollback
+
+| Batch | Functions | Rollback Priority |
+|-------|-----------|-------------------|
+| **1: Payment** | create-checkout, customer-portal, check-subscription | CRITICAL |
+| **2: Auth** | trial-auth, validate-external-auth, send-signin-notification, security-monitoring | HIGH |
+| **3: Core APIs** | get-soil-data, territorial-water-quality, environmental-impact-engine, county-lookup | HIGH |
+| **4: AI/ML** | gpt5-chat, smart-report-summary, seasonal-planning-assistant, alpha-earth-environmental-enhancement | MEDIUM |
+| **5: Data Services** | live-agricultural-data, hierarchical-fips-cache, geo-consumption-analytics, territorial-water-analytics, leafengines-query | MEDIUM |
+| **6: Specialized** | carbon-credit-calculator, generate-vrt-prescription, adapt-soil-export, enhanced-threat-detection, soc2-compliance-monitor | LOW |
+
+### 11.3 Rollback Commands
+
+**Single Function Rollback:**
+```bash
+# Revert specific function to pre-QC version
+git checkout pre-qc-baseline -- supabase/functions/{function-name}/index.ts
+npx supabase functions deploy {function-name}
+```
+
+**Batch Rollback:**
+```bash
+# Rollback payment batch (critical)
+for func in create-checkout customer-portal check-subscription; do
+  git checkout pre-qc-baseline -- supabase/functions/$func/index.ts
+done
+npx supabase functions deploy
+```
+
+**Database Cleanup (if needed):**
+```sql
+-- Clear rate limit tracking
+TRUNCATE TABLE public.rate_limit_tracking;
+
+-- Reset cost tracking for current period
+DELETE FROM public.cost_tracking 
+WHERE date_bucket = CURRENT_DATE::text;
+```
+
+### 11.4 Post-Rollback Verification
+
+```bash
+# Verify all functions respond
+curl -s -o /dev/null -w "%{http_code}\n" \
+  "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/county-lookup" \
+  -X OPTIONS
+```
+
+---
+
 ## Operations Team Contacts
 
 **Operations Manager**: admin@soilsidekickpro.com
