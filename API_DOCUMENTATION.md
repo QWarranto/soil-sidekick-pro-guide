@@ -253,6 +253,211 @@ POST /alpha-earth-environmental-enhancement
 }
 ```
 
+## 2.5 Consumer Plant Care APIs
+
+These endpoints address the top pain points reported by users of commercial plant ID apps, including misidentification of toxic lookalikes, generic care advice, and intimidating community responses.
+
+### 2.5.1 Safe Identification (Toxic Lookalike Protection)
+```http
+POST /safe-identification
+```
+
+**Description**: Environmentally-contextualized plant identification with toxic lookalike warnings. Unlike generic plant ID, this endpoint checks against a curated toxic lookalike database and uses environmental context to weight identification probability.
+
+**Pain Point Solved**: Misidentification of dangerous plants (e.g., Poison Hemlock vs Wild Carrot)
+
+**Security**: Requires JWT authentication. All identifications logged for audit compliance.
+
+**Request Body**:
+```json
+{
+  "image": "base64_encoded_image_or_url",
+  "location": {
+    "county_fips": "48453",
+    "state_code": "TX",
+    "coordinates": { "latitude": 30.2672, "longitude": -97.7431 }
+  },
+  "context": {
+    "environment": "wild",
+    "purpose": "foraging",
+    "growth_stage": "mature"
+  }
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "identification": {
+    "primary_match": {
+      "common_name": "Wild Carrot (Queen Anne's Lace)",
+      "scientific_name": "Daucus carota",
+      "confidence": 78,
+      "family": "Apiaceae"
+    },
+    "environmental_probability": 92,
+    "growth_stage_detected": "flowering"
+  },
+  "safety_analysis": {
+    "toxicity_level": "safe",
+    "toxic_to": [],
+    "lookalikes": [
+      {
+        "plant_name": "Poison Hemlock",
+        "visual_similarity": 85,
+        "toxicity_level": "highly_toxic",
+        "distinguishing_features": [
+          "Purple blotches on smooth stem (vs hairy stem)",
+          "Musty smell when crushed (vs carrot smell)",
+          "Leaves are more finely divided"
+        ]
+      }
+    ],
+    "warnings": [
+      "⚠️ HIGH-RISK LOOKALIKE: Poison Hemlock (Conium maculatum) is DEADLY and looks very similar. Check stem for purple blotches before consuming.",
+      "Always verify with multiple sources before foraging"
+    ]
+  },
+  "confidence_breakdown": {
+    "visual_match": 78,
+    "environmental_context": 92,
+    "regional_prevalence": 88,
+    "growth_stage_alignment": 95
+  }
+}
+```
+
+### 2.5.2 Dynamic Care (Hyper-Localized Recommendations)
+```http
+POST /dynamic-care
+```
+
+**Description**: Real-time, environment-aware care recommendations that adjust based on current weather, container type, soil composition, and seasonal factors.
+
+**Pain Point Solved**: Generic "water every 7 days" advice that leads to overwatering/underwatering
+
+**Security**: Requires JWT authentication. Integrates with live weather APIs for real-time data.
+
+**Request Body**:
+```json
+{
+  "plant_species": "Monstera deliciosa",
+  "location": {
+    "county_fips": "12086",
+    "state_code": "FL",
+    "indoor": true
+  },
+  "environment": {
+    "light_exposure": "partial_sun",
+    "humidity_level": "medium"
+  },
+  "container_details": {
+    "type": "terracotta",
+    "size_inches": 10,
+    "has_drainage": true
+  },
+  "soil_type": "potting_mix",
+  "last_watered": "2025-01-18"
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "plant": {
+    "common_name": "Monstera deliciosa",
+    "scientific_name": "Monstera deliciosa",
+    "care_difficulty": "moderate"
+  },
+  "current_conditions": {
+    "temperature_f": 72,
+    "humidity_percent": 55,
+    "recent_rainfall_inches": 0,
+    "season": "winter",
+    "days_since_watered": 3
+  },
+  "care_recommendations": {
+    "watering": {
+      "action": "check_soil",
+      "reasoning": "Winter + terracotta pot = slower drying. Check top 2 inches of soil. Miami's 55% humidity helps reduce water needs.",
+      "next_check_days": 2,
+      "amount_guidance": "Water until it drains from bottom, then empty saucer"
+    },
+    "light": {
+      "current_assessment": "adequate",
+      "adjustment_needed": false,
+      "recommendation": "Partial sun is perfect for Monstera. No changes needed."
+    },
+    "humidity": {
+      "current_level": "adequate",
+      "ideal_range": "50-70%",
+      "adjustment_recommendation": "Your humidity is fine. No misting needed."
+    },
+    "seasonal_notes": "It's winter - your Monstera is growing slowly. Reduce watering and skip fertilizer until March."
+  },
+  "warnings": []
+}
+```
+
+### 2.5.3 Beginner Guidance (No-Jargon Support)
+```http
+POST /beginner-guidance
+```
+
+**Description**: Judgment-free, accessible plant guidance that translates scientific jargon into plain language and provides encouraging, supportive responses.
+
+**Pain Point Solved**: Community gatekeeping and intimidating technical responses that make beginners feel stupid
+
+**Security**: Requires JWT authentication. AI responses filtered for appropriate tone.
+
+**Request Body**:
+```json
+{
+  "question": "My plant has yellow leaves, what's wrong?",
+  "plant_context": {
+    "plant_name": "pothos"
+  },
+  "location": {
+    "county_fips": "36061",
+    "indoor": true
+  },
+  "user_expertise": "complete_beginner"
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "simple_answer": "Yellow leaves on a Pothos usually mean it's getting too much water. It's one of the most common plant parent mistakes - you're not alone!",
+  "what_to_do_now": "Let the soil dry out completely before watering again. Stick your finger 2 inches into the soil - if it's damp, wait a few more days.",
+  "why_this_happens": "When roots sit in wet soil too long, they can't breathe and start to struggle. The plant shows this stress through yellow leaves.",
+  "detailed_explanation": {
+    "technical_term": "Overwatering / Root stress",
+    "plain_english": "The roots are drowning because the soil stays wet too long",
+    "common_causes": [
+      "Watering on a schedule instead of when the plant needs it",
+      "Pot doesn't have drainage holes",
+      "Using soil that holds too much water"
+    ],
+    "prevention_tips": [
+      "Only water when the top 2 inches of soil are dry",
+      "Make sure your pot has drainage holes",
+      "Use a well-draining potting mix"
+    ]
+  },
+  "encouragement": "Pothos are super forgiving plants - this is totally fixable! Once you adjust your watering, new growth will come in green and healthy. You've got this! 🌱",
+  "related_questions": [
+    "How do I know when my Pothos needs water?",
+    "Should I remove the yellow leaves?",
+    "What's the best pot for a Pothos?"
+  ],
+  "confidence": 92
+}
+```
+
 ## 3. Subscription & Usage APIs
 
 ### 3.1 Check Subscription Status
