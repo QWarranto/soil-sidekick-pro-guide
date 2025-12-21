@@ -61,6 +61,8 @@ tags:
     description: Carbon credit calculation and tracking
   - name: LeafEngines
     description: LeafEngines plant compatibility API
+  - name: Consumer Plant Care
+    description: Consumer-focused plant identification, care, and guidance APIs designed to solve common pain points in plant ID apps
 
 paths:
   /get-soil-data:
@@ -730,6 +732,221 @@ paths:
         '429':
           $ref: '#/components/responses/RateLimited'
 
+  /safe-identification:
+    post:
+      tags:
+        - Consumer Plant Care
+      summary: Safe plant identification with toxic lookalike warnings
+      description: |
+        Environmentally-contextualized plant identification that addresses misidentification concerns.
+        Unlike generic plant ID, this endpoint:
+        - Checks against a toxic lookalike database with visual similarity scores
+        - Uses environmental context (soil, climate, regional flora) to weight identification probability
+        - Provides confidence breakdowns showing why alternatives were considered
+        - Issues explicit warnings for dangerous lookalikes (Poison Hemlock vs Wild Carrot)
+        - Accounts for plant growth stage (seedling identification challenges)
+      operationId: safeIdentification
+      x-tier-required: starter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - image
+              properties:
+                image:
+                  type: string
+                  description: Base64 encoded image or image URL
+                location:
+                  type: object
+                  properties:
+                    county_fips:
+                      type: string
+                      pattern: '^[0-9]{5}$'
+                    state_code:
+                      type: string
+                      maxLength: 2
+                    coordinates:
+                      type: object
+                      properties:
+                        latitude:
+                          type: number
+                        longitude:
+                          type: number
+                context:
+                  type: object
+                  properties:
+                    environment:
+                      type: string
+                      enum: [wild, garden, indoor, agricultural]
+                    purpose:
+                      type: string
+                      enum: [foraging, gardening, curiosity, pet_safety]
+                    growth_stage:
+                      type: string
+                      enum: [seedling, juvenile, mature, flowering, fruiting]
+      responses:
+        '200':
+          description: Successful identification with safety analysis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SafeIdentification'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /dynamic-care:
+    post:
+      tags:
+        - Consumer Plant Care
+      summary: Hyper-localized dynamic plant care recommendations
+      description: |
+        Real-time, environment-aware care recommendations that solve the "generic advice" problem.
+        Unlike static "water every 7 days" recommendations, this endpoint:
+        - Adjusts watering based on current humidity, temperature, and recent rainfall
+        - Considers container type, soil composition, and drainage
+        - Factors in seasonal changes and indoor environment conditions
+        - Accounts for plant maturity and growth phase
+        - Provides actionable guidance, not rigid schedules
+      operationId: dynamicCare
+      x-tier-required: starter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - plant_species
+                - location
+              properties:
+                plant_species:
+                  type: string
+                  description: Common or scientific plant name
+                  example: "Monstera deliciosa"
+                location:
+                  type: object
+                  required:
+                    - county_fips
+                  properties:
+                    county_fips:
+                      type: string
+                      pattern: '^[0-9]{5}$'
+                    state_code:
+                      type: string
+                    indoor:
+                      type: boolean
+                      description: Whether the plant is indoors
+                environment:
+                  type: object
+                  properties:
+                    light_exposure:
+                      type: string
+                      enum: [full_sun, partial_sun, partial_shade, full_shade, artificial]
+                    humidity_level:
+                      type: string
+                      enum: [low, medium, high]
+                      description: Approximate indoor humidity if applicable
+                container_details:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum: [terracotta, plastic, ceramic, fabric, ground]
+                    size_inches:
+                      type: number
+                    has_drainage:
+                      type: boolean
+                soil_type:
+                  type: string
+                  enum: [potting_mix, succulent_mix, orchid_bark, garden_soil, sandy, clay]
+                last_watered:
+                  type: string
+                  format: date
+                  description: Date plant was last watered
+      responses:
+        '200':
+          description: Dynamic care recommendations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DynamicCare'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /beginner-guidance:
+    post:
+      tags:
+        - Consumer Plant Care
+      summary: Beginner-friendly plant guidance without jargon
+      description: |
+        Judgment-free, accessible plant guidance that solves community gatekeeping issues.
+        This endpoint:
+        - Translates scientific jargon into plain language
+        - Never makes users feel stupid for asking about common plants
+        - Uses progressive disclosure (simple answer first, details on request)
+        - Provides encouraging, supportive tone
+        - Offers practical "what do I do right now" guidance
+      operationId: beginnerGuidance
+      x-tier-required: starter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - question
+              properties:
+                question:
+                  type: string
+                  description: User's plant question in natural language
+                  example: "My plant has yellow leaves, what's wrong?"
+                plant_context:
+                  type: object
+                  properties:
+                    plant_name:
+                      type: string
+                      description: Common plant name if known
+                    image:
+                      type: string
+                      description: Base64 image for context
+                location:
+                  type: object
+                  properties:
+                    county_fips:
+                      type: string
+                    indoor:
+                      type: boolean
+                user_expertise:
+                  type: string
+                  enum: [complete_beginner, some_experience, intermediate]
+                  default: complete_beginner
+                  description: User's self-assessed expertise level
+      responses:
+        '200':
+          description: Beginner-friendly guidance response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BeginnerGuidance'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
   /visual-crop-analysis:
     post:
       tags:
@@ -1253,6 +1470,221 @@ components:
         timestamp:
           type: string
           format: date-time
+
+    SafeIdentification:
+      type: object
+      description: Safe plant identification response with toxic lookalike analysis
+      properties:
+        success:
+          type: boolean
+        identification:
+          type: object
+          properties:
+            primary_match:
+              type: object
+              properties:
+                common_name:
+                  type: string
+                scientific_name:
+                  type: string
+                confidence:
+                  type: number
+                  description: Confidence percentage (0-100)
+                family:
+                  type: string
+            environmental_probability:
+              type: number
+              description: Likelihood this plant exists in the given environment
+            growth_stage_detected:
+              type: string
+              enum: [seedling, juvenile, mature, flowering, fruiting]
+        safety_analysis:
+          type: object
+          properties:
+            toxicity_level:
+              type: string
+              enum: [safe, mildly_toxic, toxic, highly_toxic]
+            toxic_to:
+              type: array
+              items:
+                type: string
+              description: List of animals/people this is toxic to (e.g., cats, dogs, children)
+            lookalikes:
+              type: array
+              items:
+                type: object
+                properties:
+                  plant_name:
+                    type: string
+                  visual_similarity:
+                    type: number
+                    description: Visual similarity score (0-100)
+                  toxicity_level:
+                    type: string
+                  distinguishing_features:
+                    type: array
+                    items:
+                      type: string
+            warnings:
+              type: array
+              items:
+                type: string
+        confidence_breakdown:
+          type: object
+          properties:
+            visual_match:
+              type: number
+            environmental_context:
+              type: number
+            regional_prevalence:
+              type: number
+            growth_stage_alignment:
+              type: number
+        metadata:
+          type: object
+          properties:
+            analysis_id:
+              type: string
+              format: uuid
+            timestamp:
+              type: string
+              format: date-time
+            environmental_data_used:
+              type: array
+              items:
+                type: string
+
+    DynamicCare:
+      type: object
+      description: Dynamic, environment-aware plant care recommendations
+      properties:
+        success:
+          type: boolean
+        plant:
+          type: object
+          properties:
+            common_name:
+              type: string
+            scientific_name:
+              type: string
+            care_difficulty:
+              type: string
+              enum: [easy, moderate, challenging]
+        current_conditions:
+          type: object
+          properties:
+            temperature_f:
+              type: number
+            humidity_percent:
+              type: number
+            recent_rainfall_inches:
+              type: number
+            season:
+              type: string
+            days_since_watered:
+              type: integer
+        care_recommendations:
+          type: object
+          properties:
+            watering:
+              type: object
+              properties:
+                action:
+                  type: string
+                  enum: [water_now, wait, check_soil, reduce_frequency]
+                reasoning:
+                  type: string
+                next_check_days:
+                  type: integer
+                amount_guidance:
+                  type: string
+            light:
+              type: object
+              properties:
+                current_assessment:
+                  type: string
+                adjustment_needed:
+                  type: boolean
+                recommendation:
+                  type: string
+            humidity:
+              type: object
+              properties:
+                current_level:
+                  type: string
+                ideal_range:
+                  type: string
+                adjustment_recommendation:
+                  type: string
+            seasonal_notes:
+              type: string
+              description: Season-specific care adjustments
+        warnings:
+          type: array
+          items:
+            type: string
+          description: Any urgent care warnings
+        metadata:
+          type: object
+          properties:
+            location_data_used:
+              type: boolean
+            weather_data_freshness:
+              type: string
+            confidence:
+              type: number
+
+    BeginnerGuidance:
+      type: object
+      description: Beginner-friendly plant guidance response
+      properties:
+        success:
+          type: boolean
+        simple_answer:
+          type: string
+          description: Plain-language answer without jargon, 1-2 sentences
+        what_to_do_now:
+          type: string
+          description: Immediate actionable step
+        why_this_happens:
+          type: string
+          description: Simple explanation of the cause
+        detailed_explanation:
+          type: object
+          description: More details for users who want to learn
+          properties:
+            technical_term:
+              type: string
+            plain_english:
+              type: string
+            common_causes:
+              type: array
+              items:
+                type: string
+            prevention_tips:
+              type: array
+              items:
+                type: string
+        encouragement:
+          type: string
+          description: Supportive message for the user
+        related_questions:
+          type: array
+          items:
+            type: string
+          description: Common follow-up questions
+        confidence:
+          type: number
+          description: Confidence in the guidance (0-100)
+        metadata:
+          type: object
+          properties:
+            expertise_level_used:
+              type: string
+            plant_identified:
+              type: boolean
+            environmental_context:
+              type: boolean
 
     Error:
       type: object
