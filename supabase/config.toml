@@ -101,3 +101,12 @@ verify_jwt = false
 
 [functions.get-mapbox-token]
 verify_jwt = false
+
+[functions.safe-identification]
+verify_jwt = true
+
+[functions.dynamic-care]
+verify_jwt = true
+
+[functions.beginner-guidance]
+verify_jwt = true
