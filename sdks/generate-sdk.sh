@@ -9,7 +9,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SPEC_FILE="$SCRIPT_DIR/../openapi-spec.yaml"
 OUTPUT_DIR="$SCRIPT_DIR/generated"
-VERSION="${2:-1.1.0}"
+VERSION="${2:-1.2.0}"
 LANGUAGE="${1:-all}"
 
 # Colors for output
