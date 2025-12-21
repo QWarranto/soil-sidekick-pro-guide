@@ -1,9 +1,15 @@
 openapi: 3.0.3
 info:
   title: SoilSidekick Pro API
-  version: 1.1.0
+  version: 1.2.0
   description: |
     Agricultural intelligence and soil analysis API with tier-based access control.
+    
+    ## What's New in 1.2.0
+    - **Consumer Plant Care APIs**: Three new endpoints addressing top pain points in plant ID apps:
+      - `/safe-identification`: Toxic lookalike warnings and environmental context
+      - `/dynamic-care`: Hyper-localized, real-time care recommendations
+      - `/beginner-guidance`: Judgment-free, jargon-free plant guidance
     
     ## Authentication
     All endpoints require an API key passed via the `x-api-key` header:
