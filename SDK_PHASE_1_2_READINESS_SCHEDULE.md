@@ -24,9 +24,9 @@
 | **1** | Add `X-Response-Time` header to all edge functions | Engineering | Code PR | Header visible in all API responses | +3% |
 | **1** | Document response time targets in OpenAPI spec | Engineering | `openapi-spec.yaml` update | SLA section in spec | +2% |
 | **1** | Create Flora Incognita GDPR pitch deck | Sales/Legal | PDF/slides | Privacy-first messaging, WebGPU architecture highlighted | +3% |
-| **2** | File provisional patent for Environmental Compatibility Score | Legal/External Counsel | USPTO filing receipt | Filing number received | +5% |
-| **2** | Create API sandbox environment | Engineering | `sandbox.leafengines.dev` | Working demo endpoint with test data | +3% |
-| **3** | Build Impact Simulator export for sales demos | Engineering | PDF/JSON export | Licensee-specific ROI projections exportable | +2% |
+| **1** | ✅ Patent protection confirmed | Legal | Documentation | Sustainability Scoring (Claims 8, 18, 19) covers Environmental Compatibility Score | +5% |
+| **2** | Create API sandbox environment | Engineering | `sandbox.leafengines.dev` | Working demo endpoint with test data | +4% |
+| **2** | Build Impact Simulator export for sales demos | Engineering | PDF/JSON export | Licensee-specific ROI projections exportable | +2% |
 | **3** | Document integration case study (internal demo) | Product | Markdown + video | <4 hour integration proof | +2% |
 | **4** | Complete Phase 1 client-specific API configurations | Engineering | Config files | Plantum, Plant Parent, Flora Incognita ready | +1% |
 
@@ -93,23 +93,24 @@ x-sla:
 
 ---
 
-### Week 2: Legal & Demo Infrastructure
+### Week 2: Demo Infrastructure
 
-#### Task 2.1: Provisional Patent Filing
-**Subject Matter:** Environmental Compatibility Score Engine
+#### Task 2.1: ✅ Patent Protection (COMPLETE)
+**Status:** Already covered by SoilSidekick Pro patent application (filed August/September 2024)
 
-**Claims to Protect:**
-1. Method for calculating location-specific plant survival probability
-2. System for integrating soil, water, and climate data into compatibility scoring
-3. Adaptive caching architecture for real-time environmental intelligence
+**Existing Coverage:**
+- **Claim 8:** Method for "performing environmental impact assessment" including "generating sustainability scores and eco-alternative recommendations"
+- **Claim 18:** Instructions to "calculate carbon footprint and sustainability metrics"
+- **Claim 19:** Adaptive caching for assessment results
+- **Claim 1:** Environmental Impact Assessment Engine (runoff risk, water body proximity, carbon footprint)
 
-**Process:**
-1. Draft claims with patent counsel
-2. Prepare specification document
-3. File USPTO provisional application
-4. Receive filing receipt (12-month priority window)
+**Terminology Mapping:**
+| B2B Marketing Term | Patent Term | Coverage |
+|--------------------|-------------|----------|
+| Environmental Compatibility Score | Sustainability Score | ✅ Claims 8, 18, 19 |
+| Environmental Intelligence Layer | Environmental Impact & Recommendation Engine | ✅ Claim 1 |
 
-**Budget:** $3,000-5,000 (provisional filing)
+**Note:** "Environmental Compatibility Score" is a B2B branding term for the patented "Sustainability Scoring" methodology. No additional patent filing required.
 
 #### Task 2.2: API Sandbox Environment
 **Deliverable:** `sandbox.leafengines.dev`
@@ -403,9 +404,9 @@ PHASE 1 (78% → 99%):
 [==Response Headers==]
 [==OpenAPI SLA==]
 [==Flora Pitch==]
-     [==Patent Filing==]
+[✓ Patent COMPLETE]
      [==Sandbox Env==]
-          [==Impact Export==]
+     [==Impact Export==]
           [==Case Study==]
                [==Client Configs==]
                               ✓ PHASE 1 COMPLETE (99%)
@@ -441,12 +442,12 @@ PHASE 2 (72% → 99%):
 ### Legal/External
 | Task | Cost Estimate | Priority |
 |------|---------------|----------|
-| Provisional patent | $3,000-5,000 | P0 |
+| ~~Provisional patent~~ | ~~$3,000-5,000~~ | ✅ Complete (SoilSidekick Pro) |
 | SOC 2 Type II audit | $15,000-40,000 | P1 |
 | External DPO (annual) | $6,000-24,000 | P1 |
 | DPA review (4 vendors) | $2,000-4,000 | P1 |
 
-**Total Legal/External:** $26,000-73,000
+**Total Legal/External:** $23,000-68,000
 
 ### Sales/Marketing
 | Task | Effort | Priority |
@@ -465,7 +466,7 @@ PHASE 2 (72% → 99%):
 - [ ] All API responses include `X-Response-Time` header
 - [ ] OpenAPI spec includes SLA section
 - [ ] Flora Incognita pitch deck approved
-- [ ] Provisional patent filing receipt received
+- [x] Patent protection confirmed (SoilSidekick Pro Claims 8, 18, 19)
 - [ ] Sandbox environment live at `sandbox.leafengines.dev`
 - [ ] Impact Simulator PDF export functional
 - [ ] Integration case study published
