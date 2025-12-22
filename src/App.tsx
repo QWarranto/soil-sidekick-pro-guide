@@ -52,6 +52,7 @@ import LeafEnginesImpactSimulator from "./pages/LeafEnginesImpactSimulator";
 import ClientIntegrationGuide from "./pages/ClientIntegrationGuide";
 import OfflinePlantID from "./pages/OfflinePlantID";
 import PlantIDComparison from "./pages/PlantIDComparison";
+import SDKChangelog from "./pages/SDKChangelog";
 
 const queryClient = new QueryClient();
 
@@ -120,6 +121,7 @@ const App = () => (
         <Route path="/layout-demo" element={<LayoutDemo />} />
         <Route path="/offline-plant-id" element={<OfflinePlantID />} />
         <Route path="/plant-id-comparison" element={<PlantIDComparison />} />
+        <Route path="/sdk-changelog" element={<SDKChangelog />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
