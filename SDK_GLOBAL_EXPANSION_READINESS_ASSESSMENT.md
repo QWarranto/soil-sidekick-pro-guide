@@ -1,20 +1,63 @@
 # LeafEngines™ SDK Global Expansion Readiness Assessment
 
 **Assessment Date:** December 2024  
-**Purpose:** Evaluate SDK positioning as foundation for global B2B expansion beyond current plant churn verticals  
+**Purpose:** Evaluate SDK positioning as foundation for phased B2B expansion  
 **Framework:** Three-Pillar Environmental Intelligence Layer Strategy
 
 ---
 
-## Executive Summary
+## Strategic Context: Three-Phase Client Acquisition
 
-| Pillar | Current Readiness | Score | Critical Gaps |
-|--------|------------------|-------|---------------|
-| I. Technical Standardization | ✅ Strong Foundation | 75% | GIS/CRUD interoperability |
-| II. Global Data & Privacy | ⚠️ Moderate | 55% | US-centric data sources, formal GDPR certification |
-| III. Vertical-Specific Alignment | ⚠️ Early Stage | 35% | No vertical-specific endpoints exist yet |
+LeafEngines™ is executing a strategic pivot from B2C to high-margin B2B API licensing, targeting the "Desperate Middle" of the plant identification ecosystem before expanding into adjacent verticals.
 
-**Overall Global Expansion Readiness: 55%**
+### Phase 1: Quick Wins (Q1 — Initial 90 Days)
+**Objective:** Validate business model with 3-5 LOIs, $134K revenue run rate
+
+| Priority | Target | Strategic Rationale | Pricing Tier |
+|----------|--------|---------------------|--------------|
+| 1 | **Plantum** | Mid-tier agility, quick LOI candidate | Starter ($500/mo) → upsell |
+| 2 | **Plant Parent** | "Survival Gap" churn reduction resonates | Satellite Monitoring Pro ($1,500/mo) |
+| 3 | **Flora Incognita** | EU app, validates GDPR/privacy-first advantage | Privacy-first pitch |
+
+### Phase 2: Strategic Scaling (Q2 — Q8)
+**Objective:** Scale to 8-12 licensees including major players
+
+**Tier 2 — Strategic Growth Partners (High-Volume API Usage):**
+
+| Priority | Target | Strategic Rationale | Pricing Tier |
+|----------|--------|---------------------|--------------|
+| 4 | **PictureThis** | Massive user base lacks Environmental Compatibility scoring | White-Label Enterprise |
+| 5 | **PlantSnap** | Existing education/gardening partnerships | Differentiation pitch |
+| 6 | **LeafSnap** | Strong vision tech, needs long-term care features | Satellite Monitoring Pro |
+
+**Tier 3 — Credibility Anchors (Scientific Legitimacy):**
+
+| Priority | Target | Strategic Rationale | Pricing Tier |
+|----------|--------|---------------------|--------------|
+| 7 | **iNaturalist** | Community-driven, mission alignment | Science enrichment pitch |
+| 8 | **PlantNet** | Global reach, academic validation | Biodiversity pitch |
+
+### Phase 3: Vertical Diversification (Post-Validation)
+**Objective:** Expand beyond plant ID ecosystem into adjacent B2B verticals
+
+| Priority | Vertical | Key Clients | Required Capabilities |
+|----------|----------|-------------|----------------------|
+| 1 | **Urban Forestry** | TreePlotter, Esri, municipal utilities | GIS CRUD, TRAQ/QTRA, i-Tree |
+| 2 | **Agricultural Insurance** | Carriers, AI claims platforms | Damage quantification API |
+| 3 | **Precision Agriculture** | FMS platforms, drone operators | VRT integration, protocol mapping |
+| 4 | **Herbal Medicine** | Nutraceutical supply chains | Certificate of Authenticity API |
+
+---
+
+## Executive Summary: SDK Readiness by Phase
+
+| Phase | Target Readiness | Current Score | Status |
+|-------|------------------|---------------|--------|
+| **Phase 1** (Plant ID Quick Wins) | 85% | **78%** | ✅ Ready with minor gaps |
+| **Phase 2** (Plant ID Scaling) | 90% | **72%** | ⚠️ Needs SLA documentation, certifications |
+| **Phase 3** (Vertical Diversification) | 90% | **35%** | ❌ Blocked by GIS/CRUD gaps |
+
+**Overall Assessment:** SDK is **Phase 1 ready** but requires work for Phase 2 enterprise credibility and significant development for Phase 3 vertical expansion.
 
 ---
 
@@ -35,7 +78,8 @@
 - ❌ No pre-built UI components (white-label widgets)
 - ⚠️ No "Trojan Horse" instant-demo capability for sales meetings
 
-**Recommendation:** Create `npx leafengines-demo` CLI that spins up local playground.
+**Phase 1 Impact:** Low — mid-tier apps have engineering capacity  
+**Phase 2 Impact:** Medium — larger apps expect polished developer experience
 
 ### 1.2 Performance and Latency (Target: <100ms)
 
@@ -49,58 +93,43 @@
 
 **Gap Analysis:**
 - ❌ No latency SLA in contracts/API spec
-- ❌ Cold start latency not mitigated (edge function warmup needed)
-- ❌ No multi-region edge deployment (US-centric currently)
 - ❌ No `X-Response-Time` header for client monitoring
+- ⚠️ Cold start latency not mitigated
 
-**Recommendation:** Add explicit SLA: "p95 < 100ms for cached requests, p99 < 500ms globally"
+**Phase 1 Impact:** Low — performance already good  
+**Phase 2 Impact:** High — PictureThis/PlantSnap require documented SLAs
 
 ### 1.3 Architecture and Cost Model (CapEx → OpEx)
 
 | Component | Status | Evidence |
 |-----------|--------|----------|
 | Serverless architecture | ✅ Complete | Supabase Edge Functions (Deno) |
-| Rate limiting | ✅ Robust | `api-rate-limiter.ts` with circuit breaker, exponential backoff |
+| Rate limiting | ✅ Robust | `api-rate-limiter.ts` with circuit breaker |
 | Per-tier rate limits | ✅ Documented | 10-500 req/min by tier in OpenAPI |
 | Cost tracking | ✅ Implemented | `cost_tracking` + `cost_alerts` tables |
-| SOC 2 compliance framework | ✅ Implemented | `soc2-compliance-monitor` function, `soc2_compliance_checks` table |
+| SOC 2 compliance framework | ✅ Implemented | `soc2-compliance-monitor` function |
 
 **Gap Analysis:**
-- ❌ No public SOC 2 Type II certification badge (framework exists, not audited)
+- ❌ No public SOC 2 Type II certification badge
 - ❌ No licensee-facing cost transparency dashboard/API
-- ⚠️ No documented uptime SLA (99.9%, 99.95%, etc.)
+- ⚠️ No documented uptime SLA
 
-**Recommendation:** Pursue SOC 2 Type II audit in Q2; create `/api/v2/usage` endpoint for licensee billing visibility.
+**Phase 1 Impact:** Low — LOI stage doesn't require audit  
+**Phase 2 Impact:** Critical — enterprise contracts require certification
 
-### 1.4 Interoperability and GIS Standards (CRITICAL GAP)
+### 1.4 Interoperability and GIS Standards
 
 | Requirement | Status | Score |
 |-------------|--------|-------|
-| CRUD operations (Create/Read/Update/Delete) | ❌ Not implemented | 0% |
+| CRUD operations | ❌ Not implemented | 0% |
 | Bi-directional data flow | ❌ Not implemented | 0% |
-| WFS (Web Feature Service) export | ❌ Not implemented | 0% |
-| WKT/GeoJSON output | ⚠️ Partial | 40% (some endpoints return GeoJSON) |
+| WFS export | ❌ Not implemented | 0% |
+| GeoJSON output | ⚠️ Partial | 40% |
 | TreePlotter™ integration | ❌ Not implemented | 0% |
 | Esri ArcGIS integration | ❌ Not implemented | 0% |
 
-**Current API Design:**
-```
-All endpoints: POST (read-only)
-No PUT/PATCH/DELETE methods
-No asset/field management endpoints
-```
-
-**Planned in B2B_API_ENHANCEMENT_ROADMAP.md:**
-```yaml
-Phase 1 (Weeks 1-4):
-  - POST /api/v2/assets (Create)
-  - GET /api/v2/assets/{id} (Read)
-  - PUT /api/v2/assets/{id} (Update)
-  - DELETE /api/v2/assets/{id} (Delete)
-  - GET /api/v2/assets/wfs (WFS export)
-```
-
-**Impact:** This gap BLOCKS Urban Forestry and Precision Agriculture verticals entirely.
+**Phase 1-2 Impact:** None — plant ID apps don't need GIS  
+**Phase 3 Impact:** CRITICAL — Urban Forestry/Precision Ag are blocked
 
 ---
 
@@ -108,203 +137,164 @@ Phase 1 (Weeks 1-4):
 
 ### 2.1 Data Source Globalization
 
-| Current State | Evidence |
-|--------------|----------|
-| US-centric data | `get-soil-data` → USDA SSURGO only |
-| US-centric location | `county-lookup` → FIPS codes only |
-| US-centric water | `territorial-water-quality` → EPA only |
+| Current State | Phase Impact |
+|---------------|--------------|
+| US-centric (USDA, EPA, FIPS) | Phase 1: Low (US apps first) |
+| | Phase 2: Medium (Flora Incognita needs EU data) |
+| | Phase 3: Critical (global verticals) |
 
-**Global Data Integration Spec (GLOBAL_DATA_INTEGRATION_SPEC.md):**
+**Global Sources Documented but Not Implemented:**
+- ISRIC SoilGrids, FAO GLOSIS, UN Water Portal, NASA EarthData
 
-| Global Source | API Ready | Cost | Status |
-|--------------|-----------|------|--------|
-| ISRIC SoilGrids | ✅ Documented | Free | ⏳ Not implemented |
-| FAO GLOSIS | ✅ Documented | Free | ⏳ Not implemented |
-| UN Water Portal | ✅ Documented | Free | ⏳ Not implemented |
-| NASA EarthData | ✅ Documented | Free | ⏳ Not implemented |
-| UNEP WESR | ✅ Documented | Free | ⏳ Not implemented |
+**Flora Incognita Consideration:** Phase 1 includes this EU target. Current US-centric data is a gap but the **privacy-first architecture** is the primary selling point, not soil data.
 
-**Architecture Gaps:**
-- ❌ No `global-data-router` edge function (region detection)
-- ❌ No `global-soil-data` edge function
-- ❌ No `_shared/data-harmonizer.ts` (format translation layer)
-- ❌ No coordinate-based queries (only FIPS codes)
-
-**Positive:** Spec exists and all global data sources are FREE/open-access.
-
-### 2.2 Privacy-First Architecture (GDPR)
+### 2.2 Privacy-First Architecture (GDPR) — KEY DIFFERENTIATOR
 
 | Requirement | Status | Evidence |
 |-------------|--------|----------|
-| GDPR documentation | ✅ Comprehensive | `GDPR_COMPLIANCE_DOCUMENTATION.md` (576 lines) |
-| ROPA template | ✅ Complete | `GDPR_ROPA_CONTROLLER.md` |
-| DPIA template | ✅ Complete | `GDPR_DPIA_TEMPLATE.md` |
-| SAR procedure | ✅ Complete | `GDPR_SAR_PROCEDURE.md` |
-| Data breach procedure | ✅ Complete | `GDPR_DATA_BREACH_PROCEDURE.md` |
-| Offline-first architecture | ✅ Implemented | Local AI via WebGPU, `localLLMService.ts` |
-| Privacy-preserving AI | ✅ Implemented | On-device Gemma models, no cloud PII |
-| Cookie consent | ✅ Implemented | Documented in code |
+| GDPR documentation | ✅ Comprehensive | 5 GDPR documents (576+ lines) |
+| Offline-first architecture | ✅ Implemented | WebGPU, `localLLMService.ts` |
+| Privacy-preserving AI | ✅ Implemented | On-device Gemma models, zero PII |
+| ROPA, DPIA, SAR, Breach procedures | ✅ Complete | All templates ready |
 
 **Gap Analysis:**
-- ❌ No formal DPO appointed (placeholder in docs)
-- ❌ No supervisory authority registration completed
-- ❌ No signed DPAs with vendors (Supabase, Stripe, OpenAI, MapBox)
-- ❌ No Transfer Impact Assessments for US cloud services
-- ❌ No GDPR certification badge (ISO 27701 or national scheme)
+- ❌ No formal DPO appointed
+- ❌ No signed DPAs with vendors
+- ❌ No GDPR certification badge
 
-**Competitive Advantage:** The offline-first + WebGPU architecture is a genuine differentiator vs. cloud-only competitors (Flora Incognita vulnerability).
+**Phase 1 Impact:** High — Flora Incognita pitch depends on this  
+**Competitive Advantage:** Cloud-only competitors cannot match this architecture
 
 ### 2.3 Legal Moat (Patent/IP)
 
-| Aspect | Status |
-|--------|--------|
-| Environmental Compatibility Score engine | ⚠️ No patent filed (mentioned in docs) |
-| 18-24 month market advantage claim | ⚠️ Unprotected currently |
-
-**Recommendation:** Engage patent counsel for provisional filing on scoring methodology.
+| Aspect | Status | Recommendation |
+|--------|--------|----------------|
+| Environmental Compatibility Score | ⚠️ Not filed | File provisional patent Q1 |
+| 18-24 month market advantage | ⚠️ Unprotected | Patent provides legal deterrent |
 
 ---
 
-## Pillar III: Vertical-Specific Data Standardization
+## Pillar III: Vertical-Specific Readiness
 
-### 3.1 Urban Forestry / GIS Asset Management
+### 3.1 Plant Identification Ecosystem (Phase 1-2 Targets)
 
-| Required Output | Status | Implementation |
-|----------------|--------|----------------|
-| Species ID | ✅ Available | `leafengines-query` |
-| Health/Vigor Rating | ⚠️ Partial | Via visual analysis |
-| TRAQ Risk Assessment Score | ❌ Not implemented | Planned Phase 2 |
-| QTRA Quantified Risk | ❌ Not implemented | Planned Phase 2 |
-| CTLA Appraisal Value | ❌ Not implemented | Planned Phase 2 |
-| i-Tree Eco Benefits | ❌ Not implemented | Planned Phase 2 |
-| Bi-directional PUT/POST | ❌ Not implemented | Planned Phase 1 |
+| Required Capability | Status | Phase 1-2 Clients |
+|--------------------|--------|-------------------|
+| Species identification | ✅ Complete | All 8 targets |
+| Environmental Compatibility Score | ✅ Complete | Plantum, Plant Parent |
+| Dynamic Care recommendations | ✅ Complete | All 8 targets |
+| Satellite monitoring integration | ✅ Complete | Plant Parent, LeafSnap |
+| Safe/toxic identification | ✅ Complete | All 8 targets |
+| Beginner guidance | ✅ Complete | Plant Parent |
+| Seasonal planning | ✅ Complete | PictureThis, PlantSnap |
+
+**Phase 1-2 Readiness: 85%**
+
+### 3.2 Urban Forestry / GIS Asset Management (Phase 3)
+
+| Required Output | Status |
+|----------------|--------|
+| Species ID | ✅ Available |
+| Health/Vigor Rating | ⚠️ Partial |
+| TRAQ Risk Assessment | ❌ Planned |
+| QTRA Quantified Risk | ❌ Planned |
+| CTLA Appraisal Value | ❌ Planned |
+| i-Tree Eco Benefits | ❌ Planned |
+| Bi-directional CRUD | ❌ Planned |
 
 **Readiness: 15%**
 
-### 3.2 Agricultural Insurance / Risk Modeling
+### 3.3 Agricultural Insurance (Phase 3)
 
-| Required Output | Status | Implementation |
-|----------------|--------|----------------|
-| Damage Type/Severity Index | ⚠️ Partial | `visual-crop-analysis` |
-| Percentage of Damage Area | ❌ Not implemented | Planned Phase 3 |
-| Historical Yield Comparison | ❌ Not implemented | Planned Phase 3 |
-| Field Polygon Data | ⚠️ Partial | `adapt_field_boundaries` table |
-| Tamper-evident audit trail | ✅ Implemented | `comprehensive_audit_log` |
-| AI Claims Agent integration | ❌ Not implemented | Planned Phase 3 |
+| Required Output | Status |
+|----------------|--------|
+| Damage Type/Severity | ⚠️ Partial |
+| Damage Area Percentage | ❌ Planned |
+| Historical Yield Comparison | ❌ Planned |
+| Field Polygon Data | ⚠️ Partial |
+| Tamper-evident audit | ✅ Implemented |
 
 **Readiness: 25%**
 
-### 3.3 Herbal Medicine / Nutraceuticals
+### 3.4 Herbal Medicine / Nutraceuticals (Phase 3)
 
-| Required Output | Status | Implementation |
-|----------------|--------|----------------|
-| Verified Species ID | ✅ Available | `safe-identification` |
-| Toxicological Markers | ❌ Not implemented | Planned Phase 4 |
-| Contaminant Screening | ❌ Not implemented | Planned Phase 4 |
-| GMP Compliance Notes | ❌ Not implemented | Planned Phase 4 |
-| Certificate of Authenticity endpoint | ❌ Not implemented | Planned Phase 4 |
-| Vendor Geolocation Verification | ❌ Not implemented | Planned Phase 4 |
+| Required Output | Status |
+|----------------|--------|
+| Verified Species ID | ✅ Available |
+| Toxicological Markers | ❌ Planned |
+| Contaminant Screening | ❌ Planned |
+| Certificate of Authenticity | ❌ Planned |
 
 **Readiness: 20%**
 
-### 3.4 Precision Agriculture
+### 3.5 Precision Agriculture (Phase 3)
 
-| Required Output | Status | Implementation |
-|----------------|--------|----------------|
-| Species ID (Weed/Crop) | ✅ Available | `leafengines-query` |
-| Disease/Pest Severity Index | ⚠️ Partial | `visual-crop-analysis` |
-| Phenological Stage | ❌ Not implemented | Not planned |
-| VPD Optimization Data | ❌ Not implemented | Not planned |
-| Protocol Index mapping | ❌ Not implemented | Not planned |
-| VRT Prescription Maps | ✅ Implemented | `generate-vrt-prescription` |
+| Required Output | Status |
+|----------------|--------|
+| Weed/Crop Species ID | ✅ Available |
+| Disease/Pest Severity | ⚠️ Partial |
+| VRT Prescription Maps | ✅ Implemented |
+| Phenological Stage | ❌ Not planned |
+| VPD Optimization | ❌ Not planned |
 
 **Readiness: 45%**
 
 ---
 
-## Competitive Position Assessment
+## Competitive Moat Alignment
 
-### Strengths (Leverage Immediately)
-
-1. **SOC 2 Framework Ready** - Compliance infrastructure exists, just needs audit
-2. **Privacy-First AI** - WebGPU/offline architecture is genuine competitive moat
-3. **SDK Maturity** - 6-language SDK with auto-generation is enterprise-ready
-4. **Rate Limiting & Cost Tracking** - B2B infrastructure in place
-5. **Roadmap Exists** - Clear 16-week phased plan in `B2B_API_ENHANCEMENT_ROADMAP.md`
-
-### Weaknesses (Address Urgently)
-
-1. **No CRUD/GIS Interoperability** - Blocks 2 of 4 target verticals
-2. **US-Only Data Sources** - Prevents European market entry
-3. **No Formal Certifications** - SOC 2 Type II, ISO 27701 missing
-4. **No Vertical-Specific Endpoints** - All planned but none shipped
-
-### Opportunities
-
-1. **Free Global Data Sources** - ISRIC, FAO, UN are all free vs. commercial US APIs
-2. **Flora Incognita Weakness** - Their cloud-dependency is your GDPR advantage
-3. **IRA Grant Compliance** - Urban forestry grants require CEJST integration (planned)
-
-### Threats
-
-1. **Integration Friction** - Without CRUD, licensees must build middleware
-2. **Credibility Gap** - No public certifications for enterprise sales
-3. **Time-to-Market** - 16-week roadmap delay while competitors may move
+| Moat | Phase 1 Leverage | Phase 2 Leverage | Phase 3 Leverage |
+|------|------------------|------------------|------------------|
+| **Churn Reduction as a Service** | ✅ Core pitch to all | ✅ Impact Simulator ROI | ⚠️ Adapt for verticals |
+| **GDPR/Privacy Advantage** | ✅ Flora Incognita | ⚠️ PlantNet (EU) | ✅ European forestry |
+| **Speed vs Build** (18-24 mo) | ✅ All targets | ✅ Patent deterrent | ✅ Patent deterrent |
+| **Impact Simulator** | ✅ Sales tool | ✅ Enterprise demos | ⚠️ Vertical customization needed |
 
 ---
 
-## Recommended Prioritization
+## Recommended Action Plan
 
-### Phase 0: Foundation (Immediate - 2 weeks)
-1. Add `X-Response-Time` header to all endpoints
+### Immediate (Phase 1 Support)
+1. ✅ SDK ready for Plantum, Plant Parent integration
+2. ⚠️ Prepare Flora Incognita-specific GDPR pitch deck
+3. ⚠️ Add `X-Response-Time` header to all endpoints
+4. ⚠️ File provisional patent on Environmental Compatibility Score
+
+### Short-Term (Phase 2 Support — Q2)
+1. Pursue SOC 2 Type II audit (enterprise credibility)
 2. Document SLA in OpenAPI spec (latency, uptime)
 3. Create `/api/v2/usage` cost transparency endpoint
-4. File provisional patent on Environmental Compatibility Score
+4. Sign DPAs with Supabase, Stripe, OpenAI, MapBox
 
-### Phase 1: GIS Interoperability (Weeks 1-4) - CRITICAL
+### Medium-Term (Phase 3 Preparation — Q3-Q4)
 1. Implement CRUD for `/api/v2/assets` and `/api/v2/fields`
-2. Add WFS export endpoint
-3. Standardize GeoJSON output across all endpoints
-4. Create TreePlotter integration guide
-
-### Phase 2: Global Data (Weeks 5-8)
-1. Implement `global-data-router` edge function
-2. Integrate ISRIC SoilGrids (coordinate-based queries)
-3. Create `_shared/data-harmonizer.ts`
-4. Update `leafengines-query` with regional routing
-
-### Phase 3: Compliance Certification (Parallel Track)
-1. Engage SOC 2 Type II auditor
-2. Complete GDPR DPAs with all vendors
-3. Pursue ISO 27701 certification
-4. Appoint formal DPO
-
-### Phase 4: Vertical Endpoints (Weeks 9-16)
-1. Urban Forestry: TRAQ/QTRA scoring, i-Tree integration
-2. Agricultural Insurance: Damage quantification API
-3. Herbal Medicine: Authenticity verification endpoint
+2. Add WFS/GeoJSON export endpoints
+3. Integrate global data sources (ISRIC, FAO)
+4. Build vertical-specific endpoints (TRAQ, damage quantification)
 
 ---
 
 ## Conclusion
 
-The LeafEngines™ SDK has a **strong technical foundation** (75% on Pillar I) but significant gaps in **global data readiness** (55%) and **vertical-specific capabilities** (35%).
+The LeafEngines™ SDK is **well-positioned for Phase 1-2** targeting the plant identification ecosystem:
 
-### Key Blockers to Global B2B Expansion:
-1. **No bi-directional CRUD** → Urban Forestry blocked
-2. **US-only data sources** → Europe/Asia blocked
-3. **No formal certifications** → Enterprise credibility gap
+| Phase | Readiness | Blockers |
+|-------|-----------|----------|
+| **Phase 1** | 78% | Minor: SLA docs, patent filing |
+| **Phase 2** | 72% | Medium: SOC 2 audit, DPAs |
+| **Phase 3** | 35% | Critical: GIS/CRUD, global data, vertical endpoints |
 
-### Key Enablers Already in Place:
-1. Mature multi-language SDK with CI/CD
-2. SOC 2 compliance *framework* (needs audit)
-3. Privacy-first architecture (competitive moat)
-4. Detailed roadmap with timeline
+**Key Strengths for Immediate Deployment:**
+- Mature 6-language SDK with CI/CD
+- Privacy-first architecture (competitive moat for Flora Incognita)
+- Environmental Compatibility Score API (core value proposition)
+- Impact Simulator for sales acceleration
 
-**Overall Assessment:** The SDK is approximately **6-8 months** from being truly "global B2B ready" if the roadmap is executed. The privacy-first architecture is a genuine differentiator. The critical path item is **Phase 1 GIS interoperability** - without CRUD operations, two of the four target verticals cannot adopt.
+**Critical Path for Phase 3:**
+The 16-week B2B API Enhancement Roadmap should commence after Phase 1 validation confirms the business model. GIS interoperability is the highest-priority blocker for Urban Forestry and Precision Agriculture verticals.
 
 ---
 
-*Document Version: 1.0*  
+*Document Version: 2.0*  
 *Last Updated: December 2024*  
-*Source: SDK Architecture Analysis*
+*Source: SDK Architecture Analysis + Client Acquisition Strategy*
