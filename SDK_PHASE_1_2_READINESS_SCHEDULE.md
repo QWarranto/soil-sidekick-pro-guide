@@ -185,20 +185,50 @@ x-sla:
 
 ## Phase 2: Strategic Scaling Readiness (72% → 99%)
 
-### Target Clients: PictureThis, PlantSnap, LeafSnap, iNaturalist, PlantNet
+### Client Phasing Strategy: Revenue Before Compliance
+
+**Principle:** Onboard low-compliance clients first to generate revenue that offsets costs for compliance-heavy enterprise clients.
+
+| Tier | Clients | Compliance Burden | Timeline | Revenue Model |
+|------|---------|-------------------|----------|---------------|
+| **Tier A (Weeks 1-4)** | Plantum, Plant Parent | Low (US-only, no SOC 2 requirement) | Immediate | ARR funds Tier B prep |
+| **Tier B (Weeks 5-8)** | LeafSnap, iNaturalist | Medium (research focus, flexible DPAs) | Post-revenue | GRC tooling operational |
+| **Tier C (Weeks 9-16)** | Flora Incognita, PlantNet | High (EU GDPR, institutional compliance) | Post-SOC 2 prep | Full compliance stack ready |
+| **Tier D (Weeks 17-24)** | PictureThis, PlantSnap | Very High (SOC 2 required, enterprise procurement) | Post-audit | Audit report in hand |
+
+### Revenue-to-Compliance Flow
+
+```
+WEEKS 1-4: Tier A Revenue ($X ARR)
+    ↓ funds
+WEEKS 3-6: GRC Tooling + Fractional DPO setup ($11K-16K)
+    ↓ automates
+WEEKS 5-8: Tier B Onboarding (streamlined DPAs)
+    ↓ revenue compounds
+WEEKS 9-12: SOC 2 Evidence Collection (automated via GRC)
+    ↓ 
+WEEKS 12-16: Tier C Onboarding (GDPR-ready)
+    ↓
+WEEKS 16-20: SOC 2 Audit Completion ($10K-25K)
+    ↓
+WEEKS 20-24: Tier D Enterprise Deals (audit report closes deals)
+```
+
+### Phase 2 Task Schedule (Resequenced)
 
 | Week | Action | Owner | Deliverable | Success Criteria | % Gain |
 |------|--------|-------|-------------|------------------|--------|
-| **1-2** | Initiate SOC 2 Type II audit engagement | Legal/Ops | Auditor contract | Audit firm selected, timeline agreed | +5% |
-| **3-4** | Execute DPA with Supabase | Legal | Signed DPA | Legal review complete, countersigned | +3% |
-| **3-4** | Execute DPA with Stripe | Legal | Signed DPA | Legal review complete, countersigned | +2% |
-| **5-6** | Execute DPA with OpenAI | Legal | Signed DPA | Legal review complete, countersigned | +3% |
-| **5-6** | Execute DPA with MapBox | Legal | Signed DPA | Legal review complete, countersigned | +2% |
-| **4-6** | Appoint Data Protection Officer | Legal/HR | DPO designation | Internal or external DPO named | +3% |
-| **5-8** | Build `/api/v2/usage` cost transparency endpoint | Engineering | Edge function | Licensees can query their usage | +4% |
-| **6-8** | Create white-label UI component library | Engineering | npm package | React components for licensee embedding | +3% |
-| **8-10** | Complete SOC 2 Type II evidence collection | Ops | Evidence package | All controls documented | +0% |
-| **10-12** | SOC 2 Type II audit completion | External | Audit report | Unqualified opinion | +2% |
+| **1-2** | Deploy GRC platform (Vanta/Drata) | Ops | Platform live | Automated evidence collection running | +3% |
+| **1-2** | Contract fractional DPO service | Legal | Service agreement | DPO available <24hr response | +2% |
+| **2-3** | Configure GitProtect.io backups | Engineering | Backup verification | Daily GitHub backups verified | +1% |
+| **3-4** | Execute DPA with Supabase | Legal (GRC-assisted) | Signed DPA | Template from GRC platform | +3% |
+| **3-4** | Execute DPA with Stripe | Legal (GRC-assisted) | Signed DPA | Dashboard-enabled DPA | +2% |
+| **5-6** | Build `/api/v2/usage` endpoint | Engineering | Edge function | Licensees can query usage | +4% |
+| **5-6** | Execute DPA with OpenAI | Legal (GRC-assisted) | Signed DPA | API terms addendum | +3% |
+| **5-6** | Execute DPA with MapBox | Legal (GRC-assisted) | Signed DPA | Email request fulfilled | +2% |
+| **6-8** | Create white-label UI component library | Engineering | npm package | React components published | +3% |
+| **8-12** | SOC 2 Type II evidence collection | Ops (GRC-automated) | Evidence package | Controls auto-documented | +2% |
+| **12-16** | SOC 2 Type II audit completion | External | Audit report | Unqualified opinion | +2% |
 
 **Phase 2 Total: 72% + 27% = 99%**
 
@@ -256,26 +286,54 @@ x-sla:
 **Action:** Email legal@mapbox.com
 **Data Categories:** Geolocation data, map rendering
 
-### Weeks 4-6: DPO Appointment
+### Weeks 1-2: GRC & DPO Infrastructure (Cost-Optimized)
 
-#### Task 2.6: Data Protection Officer
+#### Task 2.6: GRC Platform Deployment
 
-**Options:**
-1. **Internal DPO** - Designate existing employee (legal/compliance background)
-2. **External DPO** - Contract with DPO-as-a-Service provider
+**Recommended Platforms (Startup-Tier Pricing):**
+| Platform | Annual Cost | Key Features |
+|----------|-------------|--------------|
+| **Vanta** | $8K-12K | SOC 2 automation, DPA templates, continuous monitoring |
+| **Drata** | $10K-15K | SOC 2 + ISO 27001, vendor management, trust center |
+| **Sprinto** | $6K-10K | Budget option, SOC 2 focus, good for <50 employees |
 
-**Recommended:** External DPO for cost efficiency ($500-2,000/month)
+**Selected:** Vanta (best startup experience, fast auditor matching)
 
-**Providers:**
-- Dataguard
-- OneTrust DPO Services
-- DPEX Network
+**Automation Benefits:**
+- Evidence collection: 70% automated vs manual
+- Auditor time reduced: 40% fewer billable hours
+- DPA templates: Pre-negotiated vendor agreements
+- Continuous compliance: Real-time control monitoring
 
-**Responsibilities:**
+#### Task 2.7: Fractional DPO Service
+
+**DPO-as-a-Service Providers:**
+| Provider | Monthly Cost | Response SLA | GDPR Expertise |
+|----------|--------------|--------------|----------------|
+| **PrivacyTeam.io** | $150-300 | 24 hours | EU-certified DPOs |
+| **Privasee** | $200-400 | 12 hours | UK/EU focus |
+| **DPEX Network** | $300-500 | Same-day | Enterprise-grade |
+
+**Selected:** PrivacyTeam.io ($150-300/month = $1,800-3,600/year)
+
+**Service Scope (5 hrs/month):**
 - GDPR compliance oversight
-- SAR handling supervision
+- SAR handling supervision (template-based)
 - DPIA review and approval
-- Supervisory authority liaison
+- Supervisory authority liaison (as needed)
+- Quarterly compliance review calls
+
+#### Task 2.8: GitProtect.io Backup Configuration
+
+**Purpose:** SOC 2 Control CC7.4 (Data Backup)
+
+**Configuration:**
+- Daily incremental backups of all repositories
+- Weekly full backups retained 90 days
+- Encrypted storage (AES-256)
+- Restoration testing: Monthly automated verification
+
+**Cost:** $50-150/month ($600-1,800/year)
 
 ### Weeks 5-8: Usage Transparency API
 
@@ -394,11 +452,11 @@ ORDER BY date_bucket;
 
 ---
 
-## Combined Timeline View
+## Combined Timeline View (Extended to 24 Weeks)
 
 ```
-Week:  1    2    3    4    5    6    7    8    9    10   11   12
-       |----|----|----|----|----|----|----|----|----|----|----|----|
+Week:  1    2    3    4    5    6    7    8    9    10   11   12   ...  16   ...  20   ...  24
+       |----|----|----|----|----|----|----|----|----|----|----|----|    |----|    |----|    |----|
 
 PHASE 1 (78% → 99%):
 [==Response Headers==]
@@ -411,16 +469,40 @@ PHASE 1 (78% → 99%):
                [==Client Configs==]
                               ✓ PHASE 1 COMPLETE (99%)
 
-PHASE 2 (72% → 99%):
-[====SOC 2 Initiation====]
+PHASE 2 - INFRASTRUCTURE (GRC + DPO):
+[====GRC Platform Deploy====]
+[====Fractional DPO Contract====]
+     [==GitProtect Backup Config==]
+
+PHASE 2 - DPAs (GRC-Assisted):
           [====DPA Supabase/Stripe====]
                     [====DPA OpenAI/MapBox====]
-               [====DPO Appointment====]
+
+PHASE 2 - ENGINEERING:
                     [========Usage API========]
                          [======UI Components======]
-                                   [========SOC 2 Evidence========]
-                                             [==SOC 2 Audit==]
-                                                        ✓ PHASE 2 COMPLETE (99%)
+
+PHASE 2 - SOC 2 (GRC-Automated):
+                                   [============SOC 2 Evidence (Automated)============]
+                                                     [========SOC 2 Audit========]
+                                                                    ✓ PHASE 2 COMPLETE (99%)
+
+CLIENT ONBOARDING TIERS:
+[========TIER A: Plantum, Plant Parent========]     ← Revenue starts
+                    [========TIER B: LeafSnap, iNaturalist========]     ← Revenue compounds
+                                             [========TIER C: Flora, PlantNet========]     ← GDPR-ready
+                                                                    [========TIER D: PictureThis, PlantSnap========]
+                                                                                          ↑ SOC 2 report closes deals
+
+REVENUE vs COMPLIANCE TIMELINE:
+$$$  Tier A Revenue ─────────────────────────────────────────────────────────────────────────→
+          ↓ funds
+     [GRC+DPO $11K-16K]
+               $$$ Tier B Revenue ───────────────────────────────────────────────────────────→
+                         ↓ funds
+                    [SOC 2 Audit $10K-25K]
+                              $$$$$ Tier C+D Revenue ────────────────────────────────────────→
+                                                    ↑ BREAK-EVEN (Week 8)
 ```
 
 ---
@@ -439,15 +521,33 @@ PHASE 2 (72% → 99%):
 
 **Total Engineering:** ~94 hours (2.5 weeks FTE)
 
-### Legal/External
-| Task | Cost Estimate | Priority |
-|------|---------------|----------|
-| ~~Provisional patent~~ | ~~$3,000-5,000~~ | ✅ Complete (SoilSidekick Pro) |
-| SOC 2 Type II audit | $15,000-40,000 | P1 |
-| External DPO (annual) | $6,000-24,000 | P1 |
-| DPA review (4 vendors) | $2,000-4,000 | P1 |
+### Legal/External (Cost-Optimized with GRC Tooling)
 
-**Total Legal/External:** $23,000-68,000
+| Task | Traditional Cost | Optimized Cost | Savings | Priority |
+|------|-----------------|----------------|---------|----------|
+| ~~Provisional patent~~ | ~~$3,000-5,000~~ | $0 | 100% | ✅ Complete |
+| **GRC Platform (Vanta)** | N/A | $8,000-12,000/yr | Enables below ↓ | P0 |
+| **GitProtect.io** | N/A | $600-1,800/yr | SOC 2 backup control | P1 |
+| SOC 2 Type II audit | $15,000-40,000 | $10,000-25,000 | 33-38% | P1 |
+| External DPO (annual) | $6,000-24,000 | $1,800-3,600/yr | 70-85% | P1 |
+| DPA review (4 vendors) | $2,000-4,000 | $500-1,000 | 75% | P1 |
+
+**Traditional Total:** $23,000-68,000  
+**Optimized Total:** $20,900-43,400  
+**Net Savings:** $2,100-24,600 (9-36% reduction)
+
+**Note:** GRC platform cost ($8K-12K) is additive but enables audit cost reduction ($5K-15K) and DPA automation ($1.5K-3K), yielding net positive ROI in Year 1.
+
+### Revenue Offset Model
+
+| Phase | Target ARR | Clients | Compliance Cost Coverage |
+|-------|-----------|---------|--------------------------|
+| Tier A (Weeks 1-4) | $15K-30K | Plantum, Plant Parent | Covers GRC + DPO setup |
+| Tier B (Weeks 5-8) | $25K-50K | LeafSnap, iNaturalist | Covers SOC 2 audit |
+| Tier C (Weeks 9-16) | $40K-80K | Flora Incognita, PlantNet | Profit margin begins |
+| Tier D (Weeks 17-24) | $100K+ | PictureThis, PlantSnap | Full enterprise margin |
+
+**Break-even Point:** End of Tier B (Week 8) — compliance costs fully recovered
 
 ### Sales/Marketing
 | Task | Effort | Priority |
@@ -472,13 +572,36 @@ PHASE 2 (72% → 99%):
 - [ ] Integration case study published
 - [ ] 3 client-specific configurations ready
 
-### Phase 2 Completion Criteria (Week 12)
-- [ ] SOC 2 Type II audit report received (unqualified)
-- [ ] DPAs signed with all 4 vendors
-- [ ] DPO appointed and registered
+### Phase 2 Infrastructure Criteria (Week 4)
+- [ ] GRC platform (Vanta/Drata) deployed and collecting evidence
+- [ ] Fractional DPO service contracted (<24hr response SLA)
+- [ ] GitProtect.io daily backups verified
+
+### Tier A Client Onboarding (Week 4)
+- [ ] Plantum: Signed contract, API keys issued
+- [ ] Plant Parent: Signed contract, API keys issued
+- [ ] **Revenue Target:** $15K-30K ARR achieved
+
+### Tier B Client Onboarding (Week 8)
+- [ ] DPAs signed with Supabase + Stripe (via GRC templates)
+- [ ] LeafSnap: Signed contract, integration complete
+- [ ] iNaturalist: Signed contract, integration complete
+- [ ] **Revenue Target:** $25K-50K additional ARR
+- [ ] **Break-even:** Compliance costs recovered
+
+### Tier C Client Onboarding (Week 16)
+- [ ] DPAs signed with OpenAI + MapBox
+- [ ] SOC 2 evidence collection 80%+ complete
+- [ ] Flora Incognita: GDPR-compliant integration live
+- [ ] PlantNet: GDPR-compliant integration live
 - [ ] `/api/v2/usage` endpoint live
 - [ ] White-label component library published to npm
-- [ ] All enterprise clients can query their usage in real-time
+
+### Tier D Client Onboarding (Week 24)
+- [ ] SOC 2 Type II audit report received (unqualified)
+- [ ] PictureThis: Enterprise contract signed (SOC 2 required)
+- [ ] PlantSnap: Enterprise contract signed (SOC 2 required)
+- [ ] **Revenue Target:** $100K+ ARR from Tier D clients
 
 ---
 
@@ -486,10 +609,12 @@ PHASE 2 (72% → 99%):
 
 | Risk | Probability | Impact | Mitigation |
 |------|-------------|--------|------------|
-| SOC 2 audit delays | Medium | High | Start evidence collection Week 1 |
-| Patent prior art issues | Low | Medium | Comprehensive prior art search |
-| DPA negotiation delays | Medium | Medium | Use standard vendor DPAs where available |
+| SOC 2 audit delays | Medium | High | GRC automation reduces prep time by 40% |
+| ~~Patent prior art issues~~ | ~~Low~~ | ~~Medium~~ | ✅ Covered by existing SoilSidekick Pro patent |
+| DPA negotiation delays | Low | Medium | GRC platform provides pre-negotiated templates |
 | Engineering resource constraints | Medium | High | Prioritize P0 tasks, defer P2 if needed |
+| Tier A revenue shortfall | Medium | High | 2 backup clients identified (Blossom, Planta) |
+| GRC platform learning curve | Low | Low | Vanta includes onboarding support |
 
 ---
 
@@ -498,6 +623,21 @@ PHASE 2 (72% → 99%):
 **Weekly Check-ins:** Monday 10am
 **Stakeholders:** Engineering Lead, Legal, Sales, Product
 **Escalation Path:** CEO for budget/timeline decisions
+
+---
+
+## Cost-Benefit Summary
+
+| Approach | Year 1 Cost | Compliance Achieved | Revenue Offset |
+|----------|-------------|---------------------|----------------|
+| **Traditional** | $23K-68K | Week 12 | None (upfront) |
+| **GRC-Optimized + Phased Clients** | $21K-43K | Week 20 | $40K-80K by Week 8 |
+
+**Net Position at Week 8:**
+- Traditional: -$23K to -$68K (all cost, no revenue)
+- Optimized: +$19K to +$37K (revenue exceeds costs)
+
+**Recommendation:** GRC-optimized approach with tiered client onboarding is self-funding by Week 8.
 
 ---
 
