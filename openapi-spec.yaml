@@ -31,6 +31,23 @@ info:
     - `X-RateLimit-Remaining`: Remaining requests in window
     - `X-RateLimit-Reset`: Unix timestamp when limit resets
     
+    ## Response Time SLAs
+    All endpoints return response time headers for performance monitoring:
+    - `X-Response-Time`: Human-readable response time (e.g., "245ms")
+    - `X-Response-Time-Ms`: Response time in milliseconds
+    - `X-Response-Time-Target`: Target response time for this endpoint
+    - `X-Response-Time-Max`: Maximum acceptable response time
+    - `X-Response-Time-Status`: Performance status (`optimal`, `acceptable`, `exceeded`)
+    
+    ### Response Time Targets by Category
+    
+    | Category | Target | Maximum | Endpoints |
+    |----------|--------|---------|-----------|
+    | **Fast** | 200ms | 500ms | county-lookup, check-subscription |
+    | **Standard** | 500ms | 1,500ms | get-soil-data, territorial-water-quality |
+    | **Complex** | 2,000ms | 5,000ms | agricultural-intelligence, gpt5-chat, visual-crop-analysis |
+    | **Heavy** | 5,000ms | 15,000ms | live-agricultural-data, generate-vrt-prescription |
+    
   contact:
     name: SoilSidekick Support
     email: support@soilsidekickpro.com
@@ -109,6 +126,26 @@ paths:
               schema:
                 type: integer
               description: Unix timestamp when limit resets
+            X-Response-Time:
+              schema:
+                type: string
+              description: Human-readable response time (e.g., "245ms")
+              example: "245ms"
+            X-Response-Time-Ms:
+              schema:
+                type: integer
+              description: Response time in milliseconds
+              example: 245
+            X-Response-Time-Target:
+              schema:
+                type: string
+              description: Target response time for this endpoint
+              example: "500ms"
+            X-Response-Time-Status:
+              schema:
+                type: string
+                enum: [optimal, acceptable, exceeded]
+              description: Performance status relative to SLA targets
           content:
             application/json:
               schema:
@@ -1737,6 +1774,10 @@ components:
         X-RateLimit-Reset:
           schema:
             type: integer
+        X-Response-Time:
+          schema:
+            type: string
+          description: Response time even for rate-limited requests
       content:
         application/json:
           schema:
@@ -1748,6 +1789,11 @@ components:
 
     ServerError:
       description: Internal server error
+      headers:
+        X-Response-Time:
+          schema:
+            type: string
+          description: Response time for error responses
       content:
         application/json:
           schema:
