@@ -269,6 +269,7 @@ export function requestHandler<T>(config: RequestHandlerConfig<T>) {
       });
     }
   });
+}
 
 /**
  * Check rate limit using database-backed sliding window algorithm
