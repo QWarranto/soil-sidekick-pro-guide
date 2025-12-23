@@ -17,18 +17,18 @@
 
 ## Phase 1: Quick Wins Readiness (78% → 99%)
 
-### Target Clients: Plantum, Plant Parent, Flora Incognita
+### Target Clients: Plantum (#1), Plant Parent (#2), LeafSnap (#3), iNaturalist (#4)
 
 | Week | Action | Owner | Deliverable | Success Criteria | % Gain |
 |------|--------|-------|-------------|------------------|--------|
 | **1** | Add `X-Response-Time` header to all edge functions | Engineering | Code PR | Header visible in all API responses | +3% |
 | **1** | Document response time targets in OpenAPI spec | Engineering | `openapi-spec.yaml` update | SLA section in spec | +2% |
-| **1** | Create Flora Incognita GDPR pitch deck | Sales/Legal | PDF/slides | Privacy-first messaging, WebGPU architecture highlighted | +3% |
+| **1** | ✅ Create Plantum pitch deck | Sales | PDF/slides | Mid-tier positioning, quick ROI, Environmental Compatibility focus | +3% |
 | **1** | ✅ Patent protection confirmed | Legal | Documentation | Sustainability Scoring (Claims 8, 18, 19) covers Environmental Compatibility Score | +5% |
 | **2** | Create API sandbox environment | Engineering | `sandbox.leafengines.dev` | Working demo endpoint with test data | +4% |
 | **2** | Build Impact Simulator export for sales demos | Engineering | PDF/JSON export | Licensee-specific ROI projections exportable | +2% |
 | **3** | Document integration case study (internal demo) | Product | Markdown + video | <4 hour integration proof | +2% |
-| **4** | Complete Phase 1 client-specific API configurations | Engineering | Config files | Plantum, Plant Parent, Flora Incognita ready | +1% |
+| **4** | Complete Phase 1 client-specific API configurations | Engineering | Config files | Plantum, Plant Parent, LeafSnap, iNaturalist ready | +1% |
 
 **Phase 1 Total: 78% + 21% = 99%**
 
@@ -80,16 +80,16 @@ x-sla:
     enterprise: "500 req/min"
 ```
 
-#### Task 1.3: Flora Incognita Pitch Deck
+#### Task 1.3: Plantum Pitch Deck ✅
 **Content Outline:**
-1. Privacy Crisis in Plant ID (competitor cloud dependencies)
-2. LeafEngines Privacy-First Architecture (WebGPU, on-device AI)
-3. GDPR Compliance Documentation (ROPA, DPIA ready)
-4. Zero PII Transmission for Core Features
-5. Integration Timeline (<4 hours)
-6. ROI Projection (Impact Simulator demo)
+1. The Churn Crisis in Mid-Tier Plant Apps (5-15 ranking)
+2. LeafEngines Environmental Intelligence Layer (competitive differentiation)
+3. Quick Integration (<4 hours SDK setup)
+4. Immediate ROI: User engagement + retention features
+5. Starter Tier: Low-risk entry ($8,900/year)
+6. Impact Simulator demo with Plantum-specific projections
 
-**Deliverable:** `docs/sales/Flora_Incognita_Privacy_Pitch.pdf`
+**Deliverable:** `docs/sales/Plantum_Quick_Win_Pitch.md`
 
 ---
 
@@ -163,23 +163,29 @@ x-sla:
 
 ### Week 4: Client-Specific Readiness
 
-#### Task 4.1: Plantum Configuration
+#### Task 4.1: Plantum Configuration (Priority #1)
 - Starter tier API key template
 - Rate limit: 10 req/min
-- Features: Species ID, Environmental Compatibility
-- Upsell trigger: Usage approaching limit
+- Features: Species ID, Environmental Compatibility, Dynamic Care
+- Upsell trigger: Usage approaching limit → Professional tier
 
-#### Task 4.2: Plant Parent Configuration
-- Satellite Monitoring Pro tier template
+#### Task 4.2: Plant Parent Configuration (Priority #2)
+- Professional tier template
 - Rate limit: 100 req/min
 - Features: Full suite including satellite integration
 - "Death-Prevention Notification System" documentation
 
-#### Task 4.3: Flora Incognita Configuration
-- Privacy-first configuration (offline-capable endpoints)
-- GDPR DPA template prepared
-- EU data handling documentation
-- WebGPU integration guide
+#### Task 4.3: LeafSnap Configuration (Priority #3)
+- Academic/Research tier template
+- Rate limit: 50 req/min
+- Features: Species ID, Historical comparison
+- Research institution pricing model
+
+#### Task 4.4: iNaturalist Configuration (Priority #4)
+- Community tier template (revenue share model)
+- Rate limit: 100 req/min
+- Features: Species ID with community verification integration
+- Open data reciprocity agreement
 
 ---
 
@@ -461,7 +467,7 @@ Week:  1    2    3    4    5    6    7    8    9    10   11   12   ...  16   ...
 PHASE 1 (78% → 99%):
 [==Response Headers==]
 [==OpenAPI SLA==]
-[==Flora Pitch==]
+[==Plantum Pitch==] ✅
 [✓ Patent COMPLETE]
      [==Sandbox Env==]
      [==Impact Export==]
