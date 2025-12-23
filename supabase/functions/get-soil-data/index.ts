@@ -1,11 +1,14 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 import { rateLimiter, exponentialBackoff } from '../_shared/api-rate-limiter.ts';
 import { APICacheManager } from '../_shared/api-cache-manager.ts';
+import { withTimingHeaders, logResponseTime } from '../_shared/response-timing.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
+
+const ENDPOINT_NAME = 'get-soil-data';
 
 // Helper function to hash API key
 async function hashApiKey(apiKey: string): Promise<string> {
@@ -65,6 +68,8 @@ async function authenticateRequest(
 }
 
 Deno.serve(async (req) => {
+  const startTime = Date.now();
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -75,9 +80,10 @@ Deno.serve(async (req) => {
     
     // property_address is optional - if not provided, we do county-level analysis
     if (!county_fips || !county_name || !state_code) {
+      logResponseTime(ENDPOINT_NAME, startTime, false);
       return new Response(
         JSON.stringify({ error: 'Missing required parameters (county_fips, county_name, state_code)' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 400, headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, ENDPOINT_NAME) }
       );
     }
 
@@ -98,9 +104,10 @@ Deno.serve(async (req) => {
     const { user, error: authError, authMethod } = await authenticateRequest(supabase, authHeader);
     
     if (authError || !user) {
+      logResponseTime(ENDPOINT_NAME, startTime, false);
       return new Response(
         JSON.stringify({ error: authError || 'Invalid authorization' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 401, headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, ENDPOINT_NAME) }
       );
     }
 
@@ -133,9 +140,10 @@ Deno.serve(async (req) => {
 
         if (existingAnalysis) {
           console.log('Returning existing analysis for this property address');
+          logResponseTime(ENDPOINT_NAME, startTime, true);
           return new Response(
             JSON.stringify({ soilAnalysis: existingAnalysis }),
-            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            { headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, ENDPOINT_NAME) }
           );
         }
       }
@@ -194,15 +202,17 @@ Deno.serve(async (req) => {
 
     if (insertError) {
       console.error('Error storing analysis:', insertError);
+      logResponseTime(ENDPOINT_NAME, startTime, false);
       return new Response(
         JSON.stringify({ error: 'Failed to store analysis' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 500, headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, ENDPOINT_NAME) }
       );
     }
 
     // Get rate limiter status
     const rateLimitStatus = rateLimiter.getStatus('USDA_SDA');
 
+    logResponseTime(ENDPOINT_NAME, startTime, true);
     return new Response(
       JSON.stringify({ 
         soilAnalysis: newAnalysis,
@@ -215,14 +225,15 @@ Deno.serve(async (req) => {
           requests_this_hour: rateLimitStatus.requestsLastHour,
         }
       }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, ENDPOINT_NAME) }
     );
 
   } catch (error) {
     console.error('Error in get-soil-data function:', error);
+    logResponseTime(ENDPOINT_NAME, startTime, false);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 500, headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, ENDPOINT_NAME) }
     );
   }
 });

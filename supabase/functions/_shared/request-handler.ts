@@ -9,6 +9,7 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { logSafe, logError, sanitizeError } from './logging-utils.ts';
 import { logSecurityEvent, authenticateUser, getSecurityHeaders } from './security-utils.ts';
 import { rateLimiter, loadMonitor } from './api-rate-limiter.ts';
+import { withTimingHeaders, logResponseTime } from './response-timing.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
@@ -26,6 +27,7 @@ export interface RequestHandlerConfig<T = any> {
   };
   tierAccess?: 'starter' | 'professional' | 'custom';
   useServiceRole?: boolean;
+  endpointName?: string; // For response timing headers
   handler: (ctx: RequestContext<T>) => Promise<any>;
 }
 
@@ -203,9 +205,13 @@ export function requestHandler<T>(config: RequestHandlerConfig<T>) {
 
       const result = await config.handler(context);
 
-      // Log successful request
+      // Log successful request with timing
       const duration = Date.now() - startTime;
       logSafe('Request completed successfully', { duration_ms: duration });
+      
+      if (config.endpointName) {
+        logResponseTime(config.endpointName, startTime, true);
+      }
 
       await logSecurityEvent(supabaseClient, {
         event_type: 'successful_request',
@@ -216,16 +222,27 @@ export function requestHandler<T>(config: RequestHandlerConfig<T>) {
         },
       }, req);
 
+      // Build response headers with timing
+      const responseHeaders = withTimingHeaders(
+        { ...getSecurityHeaders(corsHeaders), 'Content-Type': 'application/json' },
+        startTime,
+        config.endpointName
+      );
+
       return new Response(JSON.stringify({
         success: true,
         ...result,
       }), {
-        headers: { ...getSecurityHeaders(corsHeaders), 'Content-Type': 'application/json' },
+        headers: responseHeaders,
       });
 
     } catch (error) {
       const duration = Date.now() - startTime;
       logError('Request failed', error);
+      
+      if (config.endpointName) {
+        logResponseTime(config.endpointName, startTime, false);
+      }
 
       await logSecurityEvent(supabaseClient, {
         event_type: 'function_error',
@@ -236,16 +253,22 @@ export function requestHandler<T>(config: RequestHandlerConfig<T>) {
         },
       }, req);
 
+      // Build error response headers with timing
+      const responseHeaders = withTimingHeaders(
+        { ...getSecurityHeaders(corsHeaders), 'Content-Type': 'application/json' },
+        startTime,
+        config.endpointName
+      );
+
       return new Response(JSON.stringify({
         success: false,
         error: sanitizeError(error),
       }), {
         status: 500,
-        headers: { ...getSecurityHeaders(corsHeaders), 'Content-Type': 'application/json' },
+        headers: responseHeaders,
       });
     }
   });
-}
 
 /**
  * Check rate limit using database-backed sliding window algorithm
