@@ -69,10 +69,11 @@ Three consumer-focused plant companies represent immediate partnership opportuni
 
 ### Investment
 
-- **Annual**: $2,400 (supports ~80,000 active customers)
-- **ROI**: 2,000:1 projected
+- **Starter Tier**: $5,520/year ($500/month) — 50,000 API calls/month
+- **Professional Tier**: $16,560/year ($1,500/month) — 250,000 API calls/month with satellite data
+- **ROI**: Projected based on customer scale
 
-*Detailed capability matrix provided during partnership evaluation.*
+*Detailed capability matrix and volume pricing provided during partnership evaluation.*
 
 ---
 
@@ -114,11 +115,13 @@ Three consumer-focused plant companies represent immediate partnership opportuni
 
 ### Investment
 
-- **Annual**: $12,000 (pre-purchase + post-purchase intelligence)
-- **Cost Savings**: $3.9M in avoided replacements
-- **ROI**: 490:1 projected
+- **Starter Tier**: $5,520/year ($500/month) — 50,000 API calls/month
+- **Professional Tier**: $16,560/year ($1,500/month) — includes satellite monitoring
+- **Enterprise**: Custom pricing for 2.6M+ customer scale
+- **Cost Savings**: Projected based on claim reduction
+- **ROI**: Calculated during Impact Simulator session
 
-*Scoring methodology and factor weighting disclosed under NDA.*
+*Scoring methodology and volume pricing disclosed under NDA.*
 
 ---
 
@@ -157,11 +160,11 @@ Three consumer-focused plant companies represent immediate partnership opportuni
 
 ### Investment
 
-- **Annual**: Custom ($25,000-$50,000)
-- **Retention Impact**: $2.94M retained ARR
-- **ROI**: 159:1 projected
+- **Professional Tier**: $16,560/year ($1,500/month) — satellite + advanced analytics
+- **Enterprise Tier**: Custom pricing for deep integration + white-label
+- **Retention Impact**: Projected during Impact Simulator session
 
-*Integration architecture provided during technical evaluation.*
+*Integration architecture and enterprise pricing provided during technical evaluation.*
 
 ---
 
