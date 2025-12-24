@@ -12,7 +12,7 @@ Plantum has achieved strong positioning in plant identification, but faces the e
 
 LeafEngines offers a **surgical solution**: integrate our Environmental Intelligence Layer to unlock premium features that drive retention—without R&D investment or infrastructure burden.
 
-**The Ask:** 12-month Starter Tier license at $8,900/year  
+**The Ask:** 12-month Starter Tier license at $5,520/year (or $500/month)  
 **The Offer:** Immediate access to differentiated capabilities
 
 ---
@@ -81,10 +81,10 @@ Top 5 apps enjoy 2.3x higher retention, 2.3x higher premium conversion, and 40% 
 
 | Component | Included |
 |-----------|----------|
-| License | $8,900/year |
-| API Calls | 100,000/month |
+| License | $5,520/year ($500/month) |
+| API Calls | 50,000/month |
 | Features | Compatibility, Care, Calendar, Alerts |
-| Support | Email (24hr response) |
+| Support | Email (48hr response) |
 
 ### Projected ROI
 
@@ -125,7 +125,7 @@ Top 5 apps enjoy 2.3x higher retention, 2.3x higher premium conversion, and 40% 
 
 | Concern | Our Commitment |
 |---------|----------------|
-| Price increases | 12-month lock included |
+| Price increases | Annual pricing lock available |
 | Reliability | 99.9% SLA |
 | Scale | Pro tier available for growth |
 | Security | SOC 2 Type II in progress |
