@@ -160,11 +160,12 @@ Three consumer-focused plant companies represent immediate partnership opportuni
 
 ### Investment
 
-- **Professional Tier**: $16,560/year ($1,500/month) — satellite + advanced analytics
-- **Enterprise Tier**: Custom pricing for deep integration + white-label
-- **Retention Impact**: Projected during Impact Simulator session
+- **Annual**: Custom ($25,000-$50,000)
+- **Includes**: Kelby AI integration, sensor fusion protocol, indoor-outdoor transition module
+- **Retention Impact**: $2.94M retained ARR projected
+- **ROI**: 159:1 projected
 
-*Integration architecture and enterprise pricing provided during technical evaluation.*
+*Integration architecture and custom service scope provided during technical evaluation.*
 
 ---
 
