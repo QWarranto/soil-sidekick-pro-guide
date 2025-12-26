@@ -50,7 +50,7 @@ export const soilDataSchema = z.object({
   county_fips: fipsCodeSchema,
   county_name: z.string().min(1).max(100).trim(),
   state_code: stateCodeSchema,
-  property_address: z.string().min(1).max(500).trim(),
+  property_address: z.string().min(1).max(500).trim().optional(),
   force_refresh: z.boolean().optional(),
 });
 
