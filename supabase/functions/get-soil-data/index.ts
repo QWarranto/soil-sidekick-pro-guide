@@ -2,6 +2,7 @@ import { createClient } from 'jsr:@supabase/supabase-js@2'
 import { rateLimiter, exponentialBackoff } from '../_shared/api-rate-limiter.ts';
 import { APICacheManager } from '../_shared/api-cache-manager.ts';
 import { withTimingHeaders, logResponseTime } from '../_shared/response-timing.ts';
+import { soilDataSchema, validateInput } from '../_shared/validation.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -76,16 +77,28 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { county_fips, county_name, state_code, property_address, force_refresh } = await req.json();
+    // Parse and validate input using Zod schema to prevent SQL injection
+    const rawBody = await req.json();
+    let validatedData;
     
-    // property_address is optional - if not provided, we do county-level analysis
-    if (!county_fips || !county_name || !state_code) {
+    try {
+      validatedData = validateInput(soilDataSchema, rawBody);
+    } catch (validationError) {
       logResponseTime(ENDPOINT_NAME, startTime, false);
       return new Response(
-        JSON.stringify({ error: 'Missing required parameters (county_fips, county_name, state_code)' }),
+        JSON.stringify({ error: validationError instanceof Error ? validationError.message : 'Invalid input parameters' }),
         { status: 400, headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, ENDPOINT_NAME) }
       );
     }
+    
+    // Extract validated and sanitized parameters
+    // soilDataSchema ensures:
+    // - county_fips: exactly 5 digits (^\d{5}$)
+    // - state_code: exactly 2 uppercase letters (^[A-Z]{2}$)
+    // - county_name: 1-100 characters, trimmed
+    // - property_address: 1-500 characters, trimmed
+    // This prevents SQL injection by constraining inputs to safe formats
+    const { county_fips, county_name, state_code, property_address, force_refresh } = validatedData;
 
     // Use county-level identifier if no specific address provided
     const analysisLocation = property_address || `${county_name}, ${state_code}`;
