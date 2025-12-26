@@ -370,6 +370,7 @@ export type Database = {
           is_active: boolean | null
           is_locked: boolean | null
           key_hash: string
+          key_hash_v2: string | null
           key_name: string
           last_access_ip: unknown
           last_failed_attempt: string | null
@@ -394,6 +395,7 @@ export type Database = {
           is_active?: boolean | null
           is_locked?: boolean | null
           key_hash: string
+          key_hash_v2?: string | null
           key_name: string
           last_access_ip?: unknown
           last_failed_attempt?: string | null
@@ -418,6 +420,7 @@ export type Database = {
           is_active?: boolean | null
           is_locked?: boolean | null
           key_hash?: string
+          key_hash_v2?: string | null
           key_name?: string
           last_access_ip?: unknown
           last_failed_attempt?: string | null
@@ -1836,6 +1839,7 @@ export type Database = {
           attempts: number
           created_at: string
           email: string
+          email_hash: string | null
           id: string
           ip_address: unknown
         }
@@ -1843,6 +1847,7 @@ export type Database = {
           attempts?: number
           created_at?: string
           email: string
+          email_hash?: string | null
           id?: string
           ip_address: unknown
         }
@@ -1850,6 +1855,7 @@ export type Database = {
           attempts?: number
           created_at?: string
           email?: string
+          email_hash?: string | null
           id?: string
           ip_address?: unknown
         }
@@ -1860,6 +1866,7 @@ export type Database = {
           access_count: number
           created_at: string
           email: string
+          email_hash: string | null
           id: string
           is_active: boolean
           last_access: string | null
@@ -1871,6 +1878,7 @@ export type Database = {
           access_count?: number
           created_at?: string
           email: string
+          email_hash?: string | null
           id?: string
           is_active?: boolean
           last_access?: string | null
@@ -1882,6 +1890,7 @@ export type Database = {
           access_count?: number
           created_at?: string
           email?: string
+          email_hash?: string | null
           id?: string
           is_active?: boolean
           last_access?: string | null
@@ -1968,6 +1977,7 @@ export type Database = {
       }
       user_feedback: {
         Row: {
+          client_ip: unknown
           created_at: string
           feature_used: string | null
           feedback_text: string | null
@@ -1980,6 +1990,7 @@ export type Database = {
           would_recommend: boolean | null
         }
         Insert: {
+          client_ip?: unknown
           created_at?: string
           feature_used?: string | null
           feedback_text?: string | null
@@ -1992,6 +2003,7 @@ export type Database = {
           would_recommend?: boolean | null
         }
         Update: {
+          client_ip?: unknown
           created_at?: string
           feature_used?: string | null
           feedback_text?: string | null
@@ -2414,6 +2426,7 @@ export type Database = {
         }
         Returns: Json
       }
+      hash_email: { Args: { email_to_hash: string }; Returns: string }
       increment_usage: {
         Args: {
           p_feature_name: string
