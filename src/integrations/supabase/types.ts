@@ -2249,6 +2249,10 @@ export type Database = {
         Args: { p_feature_name: string; p_user_id: string }
         Returns: boolean
       }
+      check_anonymous_feedback_rate_limit: {
+        Args: { client_ip_param: unknown }
+        Returns: boolean
+      }
       check_cost_alerts: {
         Args: never
         Returns: {
@@ -2284,6 +2288,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      check_trial_rate_limit_secure: {
+        Args: {
+          check_email: string
+          check_ip: unknown
+          max_attempts?: number
+          window_minutes?: number
+        }
+        Returns: boolean
+      }
       cleanup_rate_limit_tracking: { Args: never; Returns: undefined }
       create_trial_user: { Args: { trial_email: string }; Returns: string }
       decrypt_email_address: {
@@ -2298,12 +2311,14 @@ export type Database = {
         Args: { email_to_encrypt: string }
         Returns: string
       }
+      encrypt_email_v2: { Args: { email_to_encrypt: string }; Returns: string }
       encrypt_existing_sensitive_data: { Args: never; Returns: undefined }
       encrypt_sensitive_payment_data: {
         Args: { data_to_encrypt: string }
         Returns: string
       }
       generate_recurring_tasks: { Args: never; Returns: undefined }
+      generate_secure_session_token: { Args: never; Returns: string }
       generate_soc2_compliance_report: { Args: never; Returns: Json }
       get_cost_summary: {
         Args: {
@@ -2426,6 +2441,7 @@ export type Database = {
         }
         Returns: Json
       }
+      hash_api_key_secure: { Args: { api_key: string }; Returns: string }
       hash_email: { Args: { email_to_hash: string }; Returns: string }
       increment_usage: {
         Args: {
@@ -2439,6 +2455,10 @@ export type Database = {
       is_admin: { Args: { _user_id?: string }; Returns: boolean }
       is_service_role: { Args: never; Returns: boolean }
       is_trial_valid: { Args: { trial_email: string }; Returns: boolean }
+      is_trial_valid_by_hash: {
+        Args: { trial_email: string }
+        Returns: boolean
+      }
       migrate_account_security_emails: { Args: never; Returns: undefined }
       migrate_subscriber_data_to_encrypted: { Args: never; Returns: number }
       refresh_cost_summaries: { Args: never; Returns: undefined }
@@ -2554,6 +2574,7 @@ export type Database = {
         }[]
       }
       validate_service_operation: { Args: never; Returns: boolean }
+      validate_session_token: { Args: { token: string }; Returns: boolean }
       validate_subscription_service_operation: { Args: never; Returns: boolean }
     }
     Enums: {
