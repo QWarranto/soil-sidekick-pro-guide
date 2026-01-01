@@ -80,8 +80,9 @@ const App = () => (
           <OfflineSyncIndicator />
           <PWAInstallBanner />
       <Routes>
-        <Route path="/" element={<B2BLanding />} />
-        <Route path="/dashboard" element={<Index />} />
+        <Route path="/" element={<Index />} />
+        <Route path="/leafengines" element={<B2BLanding />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/developer-sandbox" element={<DeveloperSandbox />} />
         <Route path="/privacy-advantage" element={<PrivacyAdvantage />} />
