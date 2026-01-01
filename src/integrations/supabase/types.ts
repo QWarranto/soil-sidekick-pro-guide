@@ -2303,6 +2303,14 @@ export type Database = {
         Args: { encrypted_email: string }
         Returns: string
       }
+      decrypt_email_v3: {
+        Args: { encrypted_email: string; encryption_key: string }
+        Returns: string
+      }
+      decrypt_sensitive_data_v3: {
+        Args: { encrypted_data: string; encryption_key: string }
+        Returns: string
+      }
       decrypt_sensitive_payment_data: {
         Args: { encrypted_data: string }
         Returns: string
@@ -2312,7 +2320,15 @@ export type Database = {
         Returns: string
       }
       encrypt_email_v2: { Args: { email_to_encrypt: string }; Returns: string }
+      encrypt_email_v3: {
+        Args: { email_to_encrypt: string; encryption_key: string }
+        Returns: string
+      }
       encrypt_existing_sensitive_data: { Args: never; Returns: undefined }
+      encrypt_sensitive_data_v3: {
+        Args: { data_to_encrypt: string; encryption_key: string }
+        Returns: string
+      }
       encrypt_sensitive_payment_data: {
         Args: { data_to_encrypt: string }
         Returns: string
