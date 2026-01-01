@@ -492,3 +492,126 @@ export async function authenticateApiKey(
     return { user: null, permissions: null, error: 'Authentication failed' };
   }
 }
+
+// ========================
+// Encryption utilities using secret-based key
+// ========================
+
+/**
+ * Get the encryption key from environment (edge function secret)
+ */
+export function getEncryptionKey(): string {
+  const key = Deno.env.get('APP_ENCRYPTION_KEY');
+  if (!key) {
+    throw new Error('APP_ENCRYPTION_KEY secret is not configured');
+  }
+  return key;
+}
+
+/**
+ * Simple XOR-based encryption for edge function use
+ * For production use with highly sensitive data consider Web Crypto API
+ */
+export function encryptValue(plaintext: string, key: string): string {
+  if (!plaintext) return '';
+  const keyBytes = new TextEncoder().encode(key);
+  const textBytes = new TextEncoder().encode(plaintext);
+  const encrypted = new Uint8Array(textBytes.length);
+  
+  for (let i = 0; i < textBytes.length; i++) {
+    encrypted[i] = textBytes[i] ^ keyBytes[i % keyBytes.length];
+  }
+  
+  return btoa(String.fromCharCode(...encrypted));
+}
+
+/**
+ * Simple XOR-based decryption
+ */
+export function decryptValue(ciphertext: string, key: string): string {
+  if (!ciphertext) return '';
+  try {
+    const keyBytes = new TextEncoder().encode(key);
+    const encrypted = Uint8Array.from(atob(ciphertext), c => c.charCodeAt(0));
+    const decrypted = new Uint8Array(encrypted.length);
+    
+    for (let i = 0; i < encrypted.length; i++) {
+      decrypted[i] = encrypted[i] ^ keyBytes[i % keyBytes.length];
+    }
+    
+    return new TextDecoder().decode(decrypted);
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Encrypt using AES-GCM via Web Crypto API (stronger encryption)
+ */
+export async function encryptAES(plaintext: string, keyBase64: string): Promise<string> {
+  if (!plaintext) return '';
+  
+  // Derive a 256-bit key from the provided base64 key
+  const keyData = Uint8Array.from(atob(keyBase64), c => c.charCodeAt(0));
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    keyData.slice(0, 32), // Use first 32 bytes for AES-256
+    { name: 'AES-GCM' },
+    false,
+    ['encrypt']
+  );
+  
+  // Generate random IV
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  
+  // Encrypt
+  const encoded = new TextEncoder().encode(plaintext);
+  const ciphertext = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    cryptoKey,
+    encoded
+  );
+  
+  // Combine IV + ciphertext and encode as base64
+  const combined = new Uint8Array(iv.length + new Uint8Array(ciphertext).length);
+  combined.set(iv);
+  combined.set(new Uint8Array(ciphertext), iv.length);
+  
+  return btoa(String.fromCharCode(...combined));
+}
+
+/**
+ * Decrypt using AES-GCM via Web Crypto API
+ */
+export async function decryptAES(ciphertext: string, keyBase64: string): Promise<string> {
+  if (!ciphertext) return '';
+  
+  try {
+    // Derive key
+    const keyData = Uint8Array.from(atob(keyBase64), c => c.charCodeAt(0));
+    const cryptoKey = await crypto.subtle.importKey(
+      'raw',
+      keyData.slice(0, 32),
+      { name: 'AES-GCM' },
+      false,
+      ['decrypt']
+    );
+    
+    // Decode and extract IV + ciphertext
+    const combined = Uint8Array.from(atob(ciphertext), c => c.charCodeAt(0));
+    const iv = combined.slice(0, 12);
+    const encrypted = combined.slice(12);
+    
+    // Decrypt
+    const decrypted = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv },
+      cryptoKey,
+      encrypted
+    );
+    
+    return new TextDecoder().decode(decrypted);
+  } catch (error) {
+    console.error('AES decryption failed:', error);
+    return '';
+  }
+}
