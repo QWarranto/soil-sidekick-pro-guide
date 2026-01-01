@@ -15,7 +15,7 @@ export const LeafEnginesNav = () => {
   
   const menuItems = [
     {
-      to: "/",
+      to: "/leafengines",
       label: "LeafEngines Home",
       icon: Leaf,
       description: "Main LeafEngines page"
