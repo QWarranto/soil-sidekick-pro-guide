@@ -113,3 +113,6 @@ verify_jwt = true
 
 [functions.sandbox-demo]
 verify_jwt = false
+
+[functions.api-usage-dashboard]
+verify_jwt = false

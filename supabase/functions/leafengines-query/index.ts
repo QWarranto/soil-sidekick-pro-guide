@@ -2,6 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { authenticateApiKey, logSecurityEvent, createSecureResponse } from "../_shared/security-utils.ts";
+import { withTimingHeaders, logResponseTime } from "../_shared/response-timing.ts";
 
 // FIPS code validation
 const fipsCodeSchema = z.string().regex(/^\d{5}$/, "FIPS code must be exactly 5 digits");
@@ -260,17 +261,21 @@ Deno.serve(async (req) => {
       request_size_kb: Math.ceil(JSON.stringify(query).length / 1024)
     });
 
-    return createSecureResponse(
-      {
+    logResponseTime('leafengines-query', startTime, true);
+
+    return new Response(
+      JSON.stringify({
         success: true,
         data: compatibilityScore,
         usage: {
           credits_used: 1,
           response_time_ms: Date.now() - startTime
         }
-      },
-      200,
-      corsHeaders
+      }),
+      {
+        status: 200,
+        headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, 'leafengines-query')
+      }
     );
 
   } catch (error) {
