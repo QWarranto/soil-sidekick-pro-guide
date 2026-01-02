@@ -3,6 +3,7 @@ import { validateInput, agriculturalIntelligenceSchema } from '../_shared/valida
 import { trackOpenAICost, trackExternalAPICost } from '../_shared/cost-tracker.ts';
 import { logComplianceAudit, logExternalAPICall } from '../_shared/compliance-logger.ts';
 import { withFallback, safeExternalCall } from '../_shared/graceful-degradation.ts';
+import { withTimingHeaders, logResponseTime } from '../_shared/response-timing.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -106,8 +107,7 @@ Deno.serve(async (req) => {
       response_time_ms: Date.now() - responseStart,
     });
 
-    const duration = Date.now() - startTime;
-    console.log(`[AI Intelligence] Completed in ${duration}ms`);
+    logResponseTime('agricultural-intelligence', startTime, true);
 
     return new Response(JSON.stringify({
       success: true,
@@ -116,7 +116,7 @@ Deno.serve(async (req) => {
       confidence: intentAnalysis.confidence,
       data_sources: analyticsData.sources
     }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, 'agricultural-intelligence'),
     });
 
   } catch (error) {
