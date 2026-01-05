@@ -81,14 +81,80 @@ Deno.serve(async (req) => {
   }
 
   try {
-    console.log('Starting comprehensive county population from Census Bureau API...');
+    console.log('[populate-counties] Starting request processing...');
     
-    // Initialize Supabase client
+    // Initialize Supabase clients
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const censusApiKey = Deno.env.get('CENSUS_API_KEY');
     
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    // Create client with anon key for auth check
+    const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey);
+    
+    // Extract and verify JWT from Authorization header
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.log('[populate-counties] No authorization header provided');
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: 'Authentication required. Please sign in to use this administrative function.'
+        }),
+        { 
+          status: 401, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token);
+
+    if (authError || !user) {
+      console.log('[populate-counties] Authentication failed:', authError?.message);
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: 'Invalid or expired authentication token.'
+        }),
+        { 
+          status: 401, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    console.log(`[populate-counties] User authenticated: ${user.id}`);
+
+    // Create service role client for admin check and data operations
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Check if user has admin role
+    const { data: userRole, error: roleError } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    const isAdmin = userRole?.role === 'admin';
+    
+    if (!isAdmin) {
+      console.log(`[populate-counties] Access denied for user ${user.id} - not an admin`);
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: 'Admin access required. This administrative function is restricted to administrators only.'
+        }),
+        { 
+          status: 403, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    console.log(`[populate-counties] Admin access confirmed for user ${user.id}`);
+    console.log('[populate-counties] Starting comprehensive county population from Census Bureau API...');
 
     // Check if counties already exist
     const { count: existingCount } = await supabase
@@ -96,9 +162,10 @@ Deno.serve(async (req) => {
       .select('*', { count: 'exact', head: true });
 
     if (existingCount && existingCount > 100) {
-      console.log(`Counties already populated (${existingCount} records)`);
+      console.log(`[populate-counties] Counties already populated (${existingCount} records)`);
       return new Response(
         JSON.stringify({ 
+          success: true,
           message: `Counties already populated with ${existingCount} records`,
           inserted: 0,
           total: existingCount
@@ -112,18 +179,18 @@ Deno.serve(async (req) => {
       ? `https://api.census.gov/data/2019/acs/acs5?get=NAME&for=county:*&key=${censusApiKey}`
       : `https://api.census.gov/data/2019/acs/acs5?get=NAME&for=county:*`;
     
-    console.log('Fetching counties from Census Bureau ACS API...');
+    console.log('[populate-counties] Fetching counties from Census Bureau ACS API...');
     const response = await fetch(apiUrl);
     
     if (!response.ok) {
-      console.error(`Census API error: ${response.status} ${response.statusText}`);
+      console.error(`[populate-counties] Census API error: ${response.status} ${response.statusText}`);
       const errorText = await response.text();
-      console.error('Error response:', errorText);
+      console.error('[populate-counties] Error response:', errorText);
       throw new Error(`Census API error: ${response.status} ${response.statusText}`);
     }
 
     const rawData = await response.json();
-    console.log(`Received ${rawData.length} records from Census API`);
+    console.log(`[populate-counties] Received ${rawData.length} records from Census API`);
 
     // Skip header row and process data - ACS format: [NAME, state, county]
     const countyRecords = rawData.slice(1).map((row: string[]) => {
@@ -131,7 +198,7 @@ Deno.serve(async (req) => {
       const stateInfo = stateMapping[stateFips];
       
       if (!stateInfo) {
-        console.warn(`Unknown state FIPS: ${stateFips} for county ${countyName}`);
+        console.warn(`[populate-counties] Unknown state FIPS: ${stateFips} for county ${countyName}`);
         return null;
       }
 
@@ -158,7 +225,7 @@ Deno.serve(async (req) => {
       };
     }).filter(Boolean); // Remove null entries
 
-    console.log(`Processed ${countyRecords.length} valid county records`);
+    console.log(`[populate-counties] Processed ${countyRecords.length} valid county records`);
 
     // Check for existing counties to avoid duplicates
     const { data: existingCounties } = await supabase
@@ -168,11 +235,12 @@ Deno.serve(async (req) => {
     const existingFips = new Set(existingCounties?.map(c => c.fips_code) || []);
     const newCounties = countyRecords.filter(county => !existingFips.has(county.fips_code));
 
-    console.log(`Inserting ${newCounties.length} new counties...`);
+    console.log(`[populate-counties] Inserting ${newCounties.length} new counties...`);
 
     if (newCounties.length === 0) {
       return new Response(
         JSON.stringify({
+          success: true,
           message: 'All counties already exist in database',
           inserted: 0,
           total: existingCounties?.length || 0
@@ -187,24 +255,25 @@ Deno.serve(async (req) => {
 
     for (let i = 0; i < newCounties.length; i += batchSize) {
       const batch = newCounties.slice(i, i + batchSize);
-      console.log(`Inserting batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(newCounties.length / batchSize)}...`);
+      console.log(`[populate-counties] Inserting batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(newCounties.length / batchSize)}...`);
       
       const { error } = await supabase
         .from('counties')
         .insert(batch);
 
       if (error) {
-        console.error(`Batch insert error:`, error);
+        console.error(`[populate-counties] Batch insert error:`, error);
         throw error;
       }
 
       totalInserted += batch.length;
     }
 
-    console.log(`Successfully inserted ${totalInserted} counties`);
+    console.log(`[populate-counties] Successfully inserted ${totalInserted} counties`);
 
     return new Response(
       JSON.stringify({
+        success: true,
         message: `Successfully populated ${totalInserted} counties from Census Bureau API`,
         inserted: totalInserted,
         total: totalInserted + (existingCounties?.length || 0)
@@ -213,11 +282,12 @@ Deno.serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Error in populate-counties function:', error);
+    console.error('[populate-counties] Error in function:', error);
     return new Response(
       JSON.stringify({ 
+        success: false,
         error: 'Failed to populate counties from Census Bureau API',
-        details: error.message
+        // Don't expose internal error details to client
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
