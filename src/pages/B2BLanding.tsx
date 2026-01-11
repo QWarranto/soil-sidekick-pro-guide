@@ -5,6 +5,7 @@ import { ArrowRight, Shield, Zap, TrendingDown, Check, Code, Database, Satellite
 import { Link } from "react-router-dom";
 import { LeafEnginesNav } from "@/components/LeafEnginesNav";
 import { OptimizedImage } from "@/components/OptimizedImage";
+import { DeveloperBenefitsInfographic } from "@/components/DeveloperBenefitsInfographic";
 import gdprCertified from "@/assets/gdpr-certified.png";
 import leafEnginesHeroVideo from "@/assets/leafengines-hero.mp4";
 
@@ -398,6 +399,9 @@ const result = await analyzer(imageData);
           </div>
         </div>
       </section>
+
+      {/* Developer Benefits Infographic */}
+      <DeveloperBenefitsInfographic />
 
       {/* Pricing Preview */}
       <section className="py-16">
