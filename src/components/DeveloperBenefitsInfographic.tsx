@@ -28,9 +28,9 @@ const benefits: BenefitMetric[] = [
   {
     title: "Faster Time-to-Market",
     subtitle: "Rapid Deployment",
-    metric: "75%",
-    metricLabel: "Faster Launch",
-    description: "Deploy solutions in 6 months vs 18+ months traditional. Same-day first deploy with pre-built tools and streamlined workflows.",
+    metric: "4hrs",
+    metricLabel: "SDK Integration",
+    description: "Add environmental intelligence to your plant app in under 4 hours. Pre-built components and simple REST API eliminate months of development.",
     icon: <Rocket className="h-8 w-8" />,
     tag: "RAPID DEPLOYMENT",
     tagColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
@@ -39,8 +39,8 @@ const benefits: BenefitMetric[] = [
     title: "No Federal Data Agreements",
     subtitle: "Simplified Access",
     metric: "0",
-    metricLabel: "Legal Contracts",
-    description: "Bypass complex regulatory hurdles. Access USDA, EPA, and NOAA data sources without cumbersome federal data agreements.",
+    metricLabel: "Contracts Required",
+    description: "We handle USDA, EPA, and NOAA data licensing. Your team avoids months of regulatory paperwork and legal review.",
     icon: <FileCheck className="h-8 w-8" />,
     tag: "SIMPLIFIED ACCESS",
     tagColor: "bg-orange-500/20 text-orange-300 border-orange-500/30"
@@ -49,8 +49,8 @@ const benefits: BenefitMetric[] = [
     title: "No Satellite Pipelines",
     subtitle: "Cloud-Native Delivery",
     metric: "100%",
-    metricLabel: "Cloud-Based",
-    description: "Eliminate costly custom infrastructure. Leverage cloud-based data delivery without managing proprietary satellite hardware.",
+    metricLabel: "API-Delivered",
+    description: "Access satellite imagery and environmental data via simple API calls. No proprietary hardware or data processing infrastructure needed.",
     icon: <Cloud className="h-8 w-8" />,
     tag: "CLOUD-NATIVE DELIVERY",
     tagColor: "bg-purple-500/20 text-purple-300 border-purple-500/30"
@@ -58,9 +58,9 @@ const benefits: BenefitMetric[] = [
   {
     title: "Reduced Infrastructure Costs",
     subtitle: "Cost Savings",
-    metric: "95%",
-    metricLabel: "Lower Costs",
-    description: "Minimize hardware investment and maintenance. $40K vs $756K traditional development with scalable, efficient resources.",
+    metric: "80%",
+    metricLabel: "Lower Build Cost",
+    description: "Pay only for API calls you use. Eliminate $500K+ in environmental data infrastructure that would take 12-18 months to build.",
     icon: <DollarSign className="h-8 w-8" />,
     tag: "COST SAVINGS",
     tagColor: "bg-pink-500/20 text-pink-300 border-pink-500/30"
@@ -68,9 +68,9 @@ const benefits: BenefitMetric[] = [
   {
     title: "Higher User Retention",
     subtitle: "Increased Engagement",
-    metric: "5-10x",
-    metricLabel: "Features/Week",
-    description: "Boost engagement and loyalty. Deliver personalized, high-value precision insights that keep users coming back.",
+    metric: "40%",
+    metricLabel: "Churn Reduction",
+    description: "Transform plant identification into ongoing care guidance. Users stay when their plants thrive with location-specific insights.",
     icon: <Users className="h-8 w-8" />,
     tag: "INCREASED ENGAGEMENT",
     tagColor: "bg-amber-500/20 text-amber-300 border-amber-500/30"
@@ -78,10 +78,10 @@ const benefits: BenefitMetric[] = [
 ];
 
 const additionalMetrics = [
-  { label: "Development Savings", value: "$715K+", icon: <TrendingDown className="h-5 w-5" /> },
-  { label: "Time to Profitability", value: "4-6 mo", icon: <Clock className="h-5 w-5" /> },
-  { label: "Team Size Reduction", value: "75-88%", icon: <Target className="h-5 w-5" /> },
-  { label: "Bug Fix Turnaround", value: "1-4 hrs", icon: <Zap className="h-5 w-5" /> },
+  { label: "Avoided Build Cost", value: "$500K+", icon: <TrendingDown className="h-5 w-5" /> },
+  { label: "Integration Time", value: "<1 Day", icon: <Clock className="h-5 w-5" /> },
+  { label: "Data Sources Included", value: "6+", icon: <Target className="h-5 w-5" /> },
+  { label: "API Response Time", value: "<200ms", icon: <Zap className="h-5 w-5" /> },
 ];
 
 export function DeveloperBenefitsInfographic() {
@@ -109,10 +109,10 @@ export function DeveloperBenefitsInfographic() {
               Developer Platform
             </Badge>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Developer Benefits: Accelerating Innovation & Efficiency
+              SDK Benefits: Accelerating Your App's Innovation
             </h2>
             <p className="text-lg text-blue-200/70 max-w-3xl mx-auto">
-              Quantified advantages of building with LeafEngines™ vs. traditional agricultural data infrastructure
+              What your team gains by integrating LeafEngines™ SDK instead of building environmental intelligence in-house
             </p>
           </div>
 
@@ -194,7 +194,7 @@ export function DeveloperBenefitsInfographic() {
 
           {/* Source attribution */}
           <p className="text-center text-xs text-blue-200/40 mt-6">
-            Metrics based on actual SoilSidekick Pro → LeafEngines™ development (July-December 2025) vs. traditional development estimates
+            Based on client integration benchmarks and industry build-vs-buy analysis for environmental data infrastructure
           </p>
         </div>
       </div>
