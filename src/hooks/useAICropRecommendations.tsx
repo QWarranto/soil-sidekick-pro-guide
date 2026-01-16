@@ -269,6 +269,24 @@ async function parseAIRecommendations(
   }
 }
 
+// Escape special regex characters to prevent ReDoS attacks
+function escapeRegExp(string: string): string {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Allowed crop names for validation (whitelist approach)
+const ALLOWED_CROPS = ['corn', 'soybeans', 'wheat', 'barley', 'oats', 'sunflower', 'soybean', 'rice', 'cotton', 'alfalfa', 'sorghum'];
+
+function sanitizeCropName(crop: string): string {
+  const normalized = crop.toLowerCase().trim();
+  // Only allow whitelisted crops to prevent injection
+  if (ALLOWED_CROPS.includes(normalized)) {
+    return normalized;
+  }
+  // Escape any special characters if crop is not in whitelist
+  return escapeRegExp(normalized);
+}
+
 // Helper functions for parsing AI responses
 function parseNaturalLanguageResponse(text: string, crops: string[]): any {
   // Extract structured information from natural language
@@ -276,8 +294,9 @@ function parseNaturalLanguageResponse(text: string, crops: string[]): any {
   const data: any = { crops: {} };
   
   crops.forEach(crop => {
+    const safeCrop = sanitizeCropName(crop);
     const cropSections = sections.filter(section => 
-      section.toLowerCase().includes(crop.toLowerCase())
+      section.toLowerCase().includes(safeCrop)
     );
     data.crops[crop] = cropSections.join('\n');
   });
@@ -296,7 +315,9 @@ function findCropInAnalysis(structuredData: any, crop: string, fullText: string)
 }
 
 function extractCropSection(text: string, crop: string): string {
-  const cropRegex = new RegExp(`(?:^|\\n).*${crop}.*?(?=\\n.*?(?:corn|soybean|wheat|barley|oats|rice|cotton)|$)`, 'gims');
+  const safeCrop = sanitizeCropName(crop);
+  // Use simpler, safer regex pattern
+  const cropRegex = new RegExp(`(?:^|\\n)[^\\n]*${safeCrop}[^\\n]*(?:\\n|$)`, 'gim');
   const match = text.match(cropRegex);
   return match ? match[0] : '';
 }
