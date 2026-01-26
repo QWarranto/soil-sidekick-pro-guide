@@ -49,7 +49,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null);
   const [trialUser, setTrialUser] = useState<TrialUser | null>(null);
+  const [trialValidating, setTrialValidating] = useState(false);
   const { toast } = useToast();
+
+  // Server-side trial session validation - NEVER trust localStorage directly
+  const validateTrialSession = async (email: string, token: string) => {
+    if (trialValidating) return;
+    setTrialValidating(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('trial-auth', {
+        body: { email, action: 'verify_trial', sessionToken: token }
+      });
+
+      if (error || !data?.isValid) {
+        // Invalid or expired trial - clear local storage
+        localStorage.removeItem('trialSessionToken');
+        localStorage.removeItem('trialEmail');
+        setTrialUser(null);
+        
+        if (data?.expired) {
+          toast({
+            title: "Trial expired",
+            description: "Your trial period has ended. Please sign up for full access.",
+            variant: "destructive",
+          });
+        }
+        return;
+      }
+
+      // Server validated - safe to set trial user
+      if (data.trialUser) {
+        setTrialUser(data.trialUser);
+        // Update token if server issued a new one
+        if (data.sessionToken) {
+          localStorage.setItem('trialSessionToken', data.sessionToken);
+        }
+      }
+    } catch (error) {
+      console.error('Trial validation error:', error);
+      // On error, clear trial data for security
+      localStorage.removeItem('trialSessionToken');
+      localStorage.removeItem('trialEmail');
+      setTrialUser(null);
+    } finally {
+      setTrialValidating(false);
+    }
+  };
 
   const refreshSubscription = async () => {
     if (!session) return;
@@ -99,19 +145,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }, 0);
       }
       
-      // Check for trial user in localStorage
-      const savedTrialUser = localStorage.getItem('trialUser');
-      if (savedTrialUser && !session?.user) {
-        try {
-          const trialData = JSON.parse(savedTrialUser);
-          if (new Date(trialData.trial_end) > new Date()) {
-            setTrialUser(trialData);
-          } else {
-            localStorage.removeItem('trialUser');
-          }
-        } catch (error) {
-          localStorage.removeItem('trialUser');
-        }
+      // Validate trial session with server - NEVER trust localStorage data directly
+      const savedTrialToken = localStorage.getItem('trialSessionToken');
+      const savedTrialEmail = localStorage.getItem('trialEmail');
+      if (savedTrialToken && savedTrialEmail && !session?.user) {
+        validateTrialSession(savedTrialEmail, savedTrialToken);
       }
     });
 
@@ -241,9 +279,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { error };
       }
 
-      if (data?.success && data?.trialUser) {
+      if (data?.sessionToken && data?.trialUser) {
         setTrialUser(data.trialUser);
-        localStorage.setItem('trialUser', JSON.stringify(data.trialUser));
+        // Store only the secure session token - NOT the trial user data
+        localStorage.setItem('trialSessionToken', data.sessionToken);
+        localStorage.setItem('trialEmail', email);
         toast({
           title: "Trial access granted!",
           description: `You have 10-day trial access. Please check your email to verify your account for full access.`,
@@ -278,9 +318,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         variant: "destructive",
       });
     }
-    // Clear trial user data
+    // Clear trial user data - remove all trial-related localStorage
     setTrialUser(null);
-    localStorage.removeItem('trialUser');
+    localStorage.removeItem('trialSessionToken');
+    localStorage.removeItem('trialEmail');
   };
 
   const resetPassword = async (email: string) => {

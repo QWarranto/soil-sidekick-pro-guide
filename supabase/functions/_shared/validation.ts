@@ -137,6 +137,7 @@ export const trialAuthSchema = z.object({
     errorMap: () => ({ message: 'Action must be create_trial or verify_trial' })
   }),
   trialDuration: z.number().int().min(1).max(30).optional(), // Days, default 10
+  sessionToken: z.string().min(1).max(500).optional(), // Server-signed token for verification
 });
 
 // External auth validation schema - validates before auth

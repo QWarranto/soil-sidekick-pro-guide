@@ -76,17 +76,108 @@ export async function validateTrialAccess(
 }
 
 /**
- * Generates a secure trial session token
- * Store this in localStorage instead of trial data
+ * Generates a secure, server-signed trial session token
+ * This token is cryptographically signed and cannot be forged
  */
-export function generateTrialToken(email: string): string {
+export async function generateSecureTrialToken(
+  email: string,
+  trialEnd: string
+): Promise<string> {
   const timestamp = Date.now();
-  const randomBytes = crypto.getRandomValues(new Uint8Array(16));
-  const randomHex = Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
+  const expiresAt = new Date(trialEnd).getTime();
   
-  // Simple token format: email hash + timestamp + random
+  // Create payload with email hash (not raw email) + expiry + timestamp
   const encoder = new TextEncoder();
-  const data = encoder.encode(email + timestamp);
+  const emailHash = await crypto.subtle.digest(
+    'SHA-256',
+    encoder.encode(email.toLowerCase())
+  );
+  const emailHashHex = Array.from(new Uint8Array(emailHash))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
   
-  return `trial_${randomHex}_${timestamp}`;
+  // Create signature using server-side secret
+  const secret = Deno.env.get('TRIAL_TOKEN_SECRET') || Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+  const payload = `${emailHashHex}:${expiresAt}:${timestamp}`;
+  
+  const signatureData = await crypto.subtle.digest(
+    'SHA-256',
+    encoder.encode(payload + secret)
+  );
+  const signature = Array.from(new Uint8Array(signatureData))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('')
+    .substring(0, 32);
+  
+  // Token format: base64(emailHash:expiresAt:timestamp:signature)
+  const token = btoa(`${emailHashHex}:${expiresAt}:${timestamp}:${signature}`);
+  return `trial_${token}`;
+}
+
+/**
+ * Validates a server-signed trial session token
+ * Returns true only if token is valid and not expired
+ */
+export async function validateSecureTrialToken(
+  email: string,
+  token: string
+): Promise<{ isValid: boolean; expired: boolean }> {
+  try {
+    if (!token.startsWith('trial_')) {
+      return { isValid: false, expired: false };
+    }
+    
+    const encoded = token.substring(6); // Remove 'trial_' prefix
+    const decoded = atob(encoded);
+    const parts = decoded.split(':');
+    
+    if (parts.length !== 4) {
+      return { isValid: false, expired: false };
+    }
+    
+    const [tokenEmailHash, expiresAtStr, timestampStr, providedSignature] = parts;
+    const expiresAt = parseInt(expiresAtStr, 10);
+    const timestamp = parseInt(timestampStr, 10);
+    
+    // Check expiry
+    if (Date.now() > expiresAt) {
+      return { isValid: false, expired: true };
+    }
+    
+    // Verify email hash matches
+    const encoder = new TextEncoder();
+    const emailHash = await crypto.subtle.digest(
+      'SHA-256',
+      encoder.encode(email.toLowerCase())
+    );
+    const expectedEmailHash = Array.from(new Uint8Array(emailHash))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+    
+    if (tokenEmailHash !== expectedEmailHash) {
+      return { isValid: false, expired: false };
+    }
+    
+    // Verify signature
+    const secret = Deno.env.get('TRIAL_TOKEN_SECRET') || Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+    const payload = `${tokenEmailHash}:${expiresAtStr}:${timestampStr}`;
+    
+    const signatureData = await crypto.subtle.digest(
+      'SHA-256',
+      encoder.encode(payload + secret)
+    );
+    const expectedSignature = Array.from(new Uint8Array(signatureData))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('')
+      .substring(0, 32);
+    
+    if (providedSignature !== expectedSignature) {
+      return { isValid: false, expired: false };
+    }
+    
+    return { isValid: true, expired: false };
+  } catch (error) {
+    console.error('Token validation error:', error);
+    return { isValid: false, expired: false };
+  }
 }
