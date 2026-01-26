@@ -1,8 +1,9 @@
 /**
- * Trial Auth Function - Migrated to requestHandler
- * Updated: December 4, 2025 - Phase 2B.2 QC Migration
+ * Trial Auth Function - Server-Validated Session Tokens
+ * Updated: January 2026 - Security Hardening
  * 
  * Handles trial user creation and verification with:
+ * - Server-signed cryptographic session tokens
  * - Input validation via Zod schema
  * - Database-backed rate limiting (prevents trial abuse)
  * - Security event logging
@@ -11,7 +12,11 @@
 
 import { requestHandler } from '../_shared/request-handler.ts';
 import { trialAuthSchema } from '../_shared/validation.ts';
-import { validateTrialAccess, generateTrialToken } from '../_shared/trial-validation.ts';
+import { 
+  validateTrialAccess, 
+  generateSecureTrialToken, 
+  validateSecureTrialToken 
+} from '../_shared/trial-validation.ts';
 import { logSafe, logError } from '../_shared/logging-utils.ts';
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
@@ -39,6 +44,7 @@ requestHandler({
   
   handler: async (ctx) => {
     const { email, action, trialDuration } = ctx.validatedData;
+    const sessionToken = ctx.req?.headers?.get('x-trial-token') || ctx.validatedData.sessionToken;
     const supabase = getServiceClient();
     
     logSafe('Trial auth request', { email, action });
@@ -51,7 +57,6 @@ requestHandler({
         const { data: trialUser, error: createError } = await supabase
           .rpc('create_trial_user', { 
             trial_email: email,
-            // Pass custom duration if provided (default handled by RPC)
           });
         
         if (createError) {
@@ -70,8 +75,11 @@ requestHandler({
           throw new Error(validation.error || 'Trial validation failed');
         }
 
-        // Generate secure session token
-        const sessionToken = generateTrialToken(email);
+        // Generate server-signed secure session token
+        const secureToken = await generateSecureTrialToken(
+          email,
+          validation.trialUser?.trial_end || new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString()
+        );
 
         // Log successful trial creation for analytics
         await supabase.from('cost_tracking').insert({
@@ -84,15 +92,31 @@ requestHandler({
         }).catch(() => {}); // Non-blocking
 
         return {
-          sessionToken,
+          sessionToken: secureToken,
           trialEnd: validation.trialUser?.trial_end,
-          trialUser: validation.trialUser, // Backward compatibility
+          trialUser: validation.trialUser,
+          isValid: true,
           message: `Trial access granted for ${trialDuration || 10} days`,
         };
       }
 
       case 'verify_trial': {
         logSafe('Verifying trial user', { email });
+        
+        // First validate the session token if provided
+        if (sessionToken) {
+          const tokenValidation = await validateSecureTrialToken(email, sessionToken);
+          
+          if (!tokenValidation.isValid) {
+            return {
+              isValid: false,
+              expired: tokenValidation.expired,
+              message: tokenValidation.expired 
+                ? 'Trial session has expired' 
+                : 'Invalid session token',
+            };
+          }
+        }
         
         // Server-side validation - NEVER trust client data
         const validation = await validateTrialAccess(
@@ -102,22 +126,25 @@ requestHandler({
         );
 
         if (!validation.isValid) {
-          // Return structured error instead of throwing
           return {
-            success: false,
-            message: validation.error || 'Trial has expired or is not valid',
+            isValid: false,
             expired: true,
+            message: validation.error || 'Trial has expired or is not valid',
           };
         }
 
-        // Generate new session token
-        const sessionToken = generateTrialToken(email);
+        // Generate fresh session token
+        const newToken = await generateSecureTrialToken(
+          email,
+          validation.trialUser?.trial_end || ''
+        );
 
         return {
-          sessionToken,
+          isValid: true,
+          sessionToken: newToken,
           trialEnd: validation.trialUser?.trial_end,
           accessCount: validation.trialUser?.access_count,
-          trialUser: validation.trialUser, // Backward compatibility
+          trialUser: validation.trialUser,
           message: 'Trial access verified',
         };
       }
