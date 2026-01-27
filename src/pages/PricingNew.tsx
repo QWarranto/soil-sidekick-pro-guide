@@ -304,10 +304,9 @@ export default function PricingNew() {
           <div className="max-w-3xl mx-auto space-y-6">
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold mb-2">How do I request trial access?</h3>
+                <h3 className="font-semibold mb-2">How do I get API access?</h3>
                 <p className="text-muted-foreground">
-                  Request trial access to evaluate Pro features for your use case. 
-                  Our team will review your request and provide access to a tailored pilot program. After evaluation, you can continue with the Free plan or upgrade to Pro.
+                  Generate a free sandbox key instantly from your <Link to="/api-keys" className="text-primary hover:underline">API Key Management</Link> dashboard. For production use, request access to paid tiers and our team will review your application.
                 </p>
               </CardContent>
             </Card>

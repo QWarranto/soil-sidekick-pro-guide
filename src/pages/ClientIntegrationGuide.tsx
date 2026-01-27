@@ -668,16 +668,16 @@ const ClientIntegrationGuide = () => {
         {/* Bottom CTA */}
         <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
           <CardContent className="py-8 text-center">
-            <h3 className="text-2xl font-bold mb-4">Ready to Schedule Your Demo?</h3>
+            <h3 className="text-2xl font-bold mb-4">Ready to Get Started?</h3>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+              Generate a free sandbox API key instantly or request access to paid tiers for production use.
               Our integration team will work with you to ensure a smooth onboarding experience.
-              Contact us to schedule a personalized demo and receive your test API credentials.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild>
-                <a href="mailto:partners@soilsidekick.com?subject=LeafEngines%20API%20Demo%20Request">
-                  Schedule Demo
-                </a>
+                <Link to="/api-keys">
+                  Get Your API Key
+                </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link to="/developer-sandbox">
