@@ -359,6 +359,51 @@ export type Database = {
           },
         ]
       }
+      api_key_requests: {
+        Row: {
+          admin_notes: string | null
+          company_name: string | null
+          created_at: string
+          expected_volume: string | null
+          id: string
+          request_status: string
+          requested_tier: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          updated_at: string
+          use_case: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          company_name?: string | null
+          created_at?: string
+          expected_volume?: string | null
+          id?: string
+          request_status?: string
+          requested_tier?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          updated_at?: string
+          use_case?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          company_name?: string | null
+          created_at?: string
+          expected_volume?: string | null
+          id?: string
+          request_status?: string
+          requested_tier?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          updated_at?: string
+          use_case?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       api_keys: {
         Row: {
           access_count: number | null
