@@ -16,11 +16,12 @@ This document outlines the expectations, requirements, and process for implement
 - **Use Case Documentation**: Clear definition of intended API usage and features needed
 
 ### SoilSidekick Deliverables
-- API documentation access
-- SDK generation for client's preferred language(s)
+- API documentation access: https://soil-sidekick-pro-guide.lovable.app/leafengines-api
+- SDK generation for client's preferred language(s): `npm install @soilsidekick/sdk`
 - API key with appropriate tier permissions
-- Sandbox environment credentials
-- Technical support contact
+- Sandbox environment (no auth required): https://soil-sidekick-pro-guide.lovable.app/developer-sandbox
+- Sandbox API endpoint: `https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/sandbox-demo`
+- Technical support contact: support@soilsidekickpro.com
 
 ---
 

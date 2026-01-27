@@ -482,9 +482,10 @@ leafengines.on('response', (endpoint, responseTime) => {
 ## Resources
 
 - **SDK Documentation:** https://docs.leafengines.com/sdk
-- **API Reference:** https://api.leafengines.com/docs
-- **Support:** support@leafengines.com
-- **Developer Sandbox:** https://sandbox.leafengines.dev
+- **API Reference:** https://soil-sidekick-pro-guide.lovable.app/leafengines-api
+- **Support:** support@soilsidekickpro.com
+- **Developer Sandbox:** https://soil-sidekick-pro-guide.lovable.app/developer-sandbox
+- **Sandbox API Endpoint:** `https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/sandbox-demo`
 
 ---
 
