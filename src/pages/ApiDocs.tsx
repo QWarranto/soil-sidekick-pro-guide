@@ -44,7 +44,7 @@ export default function ApiDocs() {
             <Alert className="mb-6">
               <Lock className="h-4 w-4" />
               <AlertDescription>
-                All API requests require authentication. Contact sales to obtain your API key.
+                All API requests require authentication. <Link to="/api-keys" className="underline font-medium">Get your API key</Link> to start integrating.
               </AlertDescription>
             </Alert>
 
@@ -611,11 +611,11 @@ Content-Type: application/json`}
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="mb-4 text-3xl font-bold text-foreground">Ready to Get Started?</h2>
             <p className="mb-6 text-lg text-muted-foreground">
-              Contact our sales team to obtain API credentials and start integrating environmental intelligence into your app.
+              Generate a free sandbox API key instantly or request access to paid tiers for production use.
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button size="lg">
-                Contact Sales
+              <Button size="lg" asChild>
+                <Link to="/api-keys">Get Your API Key</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link to="/pricing">View Pricing Tiers</Link>

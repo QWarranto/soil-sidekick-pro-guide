@@ -302,7 +302,7 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
                 <div>
                   <h3 className="font-semibold mb-1">Get Your API Key</h3>
                   <p className="text-sm text-muted-foreground">
-                    Contact <a href="mailto:support@soilsidekickpro.com" className="text-primary hover:underline">support@soilsidekickpro.com</a> for partner access and API credentials.
+                    <Link to="/api-keys" className="text-primary hover:underline">Generate an instant sandbox key</Link> or request a paid tier for production access.
                   </p>
                 </div>
               </div>
@@ -445,7 +445,7 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
               <p className="text-sm font-semibold">Multi-Language SDKs Available</p>
               <p className="text-sm text-muted-foreground mt-1">
                 SDKs for Python, Go, Ruby, Java, and PHP available on request. 
-                Contact <a href="mailto:support@soilsidekickpro.com" className="text-primary hover:underline">support@soilsidekickpro.com</a>
+                <Link to="/api-keys" className="text-primary hover:underline">Get your API key</Link> to start integrating.
               </p>
             </div>
           </CardContent>
@@ -737,7 +737,7 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
             <div className="border-l-4 border-primary pl-4 py-2">
               <p className="text-sm font-semibold">Need Help Choosing?</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Contact <a href="mailto:support@soilsidekickpro.com" className="text-primary hover:underline">support@soilsidekickpro.com</a> to discuss your app's needs and find the right tier
+                <Link to="/api-keys" className="text-primary hover:underline">Request a paid tier</Link> and our team will help you find the right plan
               </p>
             </div>
           </CardContent>
@@ -752,12 +752,12 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
           <CardContent>
             <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <h3 className="font-semibold mb-2">Contact Sales</h3>
+                <h3 className="font-semibold mb-2">Get API Access</h3>
                 <p className="text-sm text-muted-foreground mb-2">
-                  Schedule a demo or discuss enterprise plans
+                  Generate sandbox keys instantly or request paid tiers
                 </p>
-                <Button variant="outline">
-                  <a href="mailto:support@soilsidekickpro.com">support@soilsidekickpro.com</a>
+                <Button variant="outline" asChild>
+                  <Link to="/api-keys">Manage API Keys</Link>
                 </Button>
               </div>
 
@@ -766,7 +766,7 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
                 <p className="text-sm text-muted-foreground mb-2">
                   Get help with integration and troubleshooting
                 </p>
-                <Button variant="outline">
+                <Button variant="outline" asChild>
                   <a href="mailto:support@leafengines.com">support@leafengines.com</a>
                 </Button>
               </div>

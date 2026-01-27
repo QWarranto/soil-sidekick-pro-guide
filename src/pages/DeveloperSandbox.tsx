@@ -293,10 +293,10 @@ export default function DeveloperSandbox() {
                   <div>
                     <h4 className="font-semibold text-foreground">Ready for Production?</h4>
                     <p className="text-sm text-muted-foreground">
-                      <Link to="/leafengines" className="text-primary hover:underline">
-                        Request pilot access
+                      <Link to="/api-keys" className="text-primary hover:underline">
+                        Get your API key
                       </Link>
-                      {" "}for full API keys.
+                      {" "}— instant sandbox or request paid tiers.
                     </p>
                   </div>
                 </div>

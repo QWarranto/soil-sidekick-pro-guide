@@ -801,9 +801,9 @@ export default function Pricing() {
 
             <div className="space-y-6">
               <Card className="p-6">
-                <h3 className="mb-2 font-semibold text-foreground">How do I request trial access?</h3>
+                <h3 className="mb-2 font-semibold text-foreground">How do I get API access?</h3>
                 <p className="text-sm text-muted-foreground">
-                  Request trial access to evaluate our API capabilities for your use case. Our team will review your request and provide access to a tailored pilot program with full feature access.
+                  Generate a free sandbox key instantly from your <Link to="/api-keys" className="text-primary hover:underline">API Key Management</Link> dashboard. For production use, request access to paid tiers and our team will review your application.
                 </p>
               </Card>
 
@@ -847,17 +847,17 @@ export default function Pricing() {
               Ready to Reduce Churn and Boost Revenue?
             </h2>
             <p className="mb-8 text-lg text-muted-foreground">
-              Request pilot access today to experience the full power of environmental intelligence.
+              Get started with a free sandbox key or request access to paid tiers for production use.
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button size="lg" asChild>
-                <Link to="/api-docs">
-                  Explore API Documentation
+                <Link to="/api-keys">
+                  Get Your API Key
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline">
-                Schedule a Demo
+              <Button size="lg" variant="outline" asChild>
+                <Link to="/api-docs">Explore API Docs</Link>
               </Button>
             </div>
           </div>
