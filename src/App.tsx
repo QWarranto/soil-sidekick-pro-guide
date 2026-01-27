@@ -53,6 +53,7 @@ import ClientIntegrationGuide from "./pages/ClientIntegrationGuide";
 import OfflinePlantID from "./pages/OfflinePlantID";
 import PlantIDComparison from "./pages/PlantIDComparison";
 import SDKChangelog from "./pages/SDKChangelog";
+import APIKeyManagement from "./pages/APIKeyManagement";
 
 const queryClient = new QueryClient();
 
@@ -123,6 +124,7 @@ const App = () => (
         <Route path="/offline-plant-id" element={<OfflinePlantID />} />
         <Route path="/plant-id-comparison" element={<PlantIDComparison />} />
         <Route path="/sdk-changelog" element={<SDKChangelog />} />
+        <Route path="/api-keys" element={<APIKeyManagement />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
