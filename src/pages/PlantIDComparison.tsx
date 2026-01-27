@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import AppHeader from "@/components/AppHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,13 +22,15 @@ import {
   XCircle, 
   Upload,
   MapPin,
-  ShieldAlert,
   BarChart3,
   ArrowRight,
   Calculator,
   ImageIcon,
   Download,
-  Loader2
+  Loader2,
+  FlaskConical,
+  ClipboardCheck,
+  LogIn
 } from "lucide-react";
 
 interface ComparisonResult {
@@ -55,8 +58,7 @@ interface ComparisonResult {
 export default function PlantIDComparison() {
   const { toast } = useToast();
   const navigate = useNavigate();
-  
-  console.log("PlantIDComparison component rendering");
+  const { user, loading: authLoading } = useAuth();
   
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [description, setDescription] = useState("");
@@ -68,6 +70,14 @@ export default function PlantIDComparison() {
   const [fullEnhanced, setFullEnhanced] = useState<any>(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [comparisonImage, setComparisonImage] = useState<string | null>(null);
+  const [surveySubmitted, setSurveySubmitted] = useState(false);
+  const [surveyRatings, setSurveyRatings] = useState({
+    accuracy: 0,
+    usefulness: 0,
+    switchLikelihood: 0,
+    overallExperience: 0,
+    feedback: ""
+  });
 
   const handleGetLocation = () => {
     if (navigator.geolocation) {
@@ -163,17 +173,84 @@ export default function PlantIDComparison() {
     link.click();
   };
 
+  // Require authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <AppHeader />
+        <div className="container mx-auto py-16 px-4 max-w-2xl text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <AppHeader />
+        <div className="container mx-auto py-16 px-4 max-w-2xl">
+          <Card className="text-center p-8">
+            <FlaskConical className="h-16 w-16 mx-auto mb-4 text-primary" />
+            <h1 className="text-2xl font-bold mb-2">Focus Group: Plant ID Comparison</h1>
+            <p className="text-muted-foreground mb-6">
+              Compare LeafEngines-enhanced plant identification against baseline AI. 
+              Sign in to participate in our research study.
+            </p>
+            <Button onClick={() => navigate("/auth")} size="lg" className="gap-2">
+              <LogIn className="h-5 w-5" />
+              Sign In to Participate
+            </Button>
+            <p className="text-sm text-muted-foreground mt-4">
+              Your feedback helps improve plant identification accuracy for everyone.
+            </p>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  const handleSurveySubmit = async () => {
+    try {
+      await supabase.from("user_feedback").insert({
+        user_id: user.id,
+        survey_type: "focus_group_plant_id",
+        rating: surveyRatings.overallExperience,
+        feedback_text: surveyRatings.feedback || null,
+        page_context: "/plant-id-comparison",
+        feature_used: "plant_id_comparison",
+        would_recommend: surveyRatings.switchLikelihood >= 7,
+        metadata: {
+          accuracy: surveyRatings.accuracy,
+          usefulness: surveyRatings.usefulness,
+          switchLikelihood: surveyRatings.switchLikelihood,
+          overallExperience: surveyRatings.overallExperience,
+          comparisonResults: result ? {
+            confidenceImprovement: result.comparison_metrics.confidence_improvement,
+            additionalDataPoints: result.comparison_metrics.additional_data_points,
+            matchAgreement: result.comparison_metrics.match_agreement,
+          } : null,
+        },
+      });
+      setSurveySubmitted(true);
+      toast({ title: "Thank you!", description: "Your feedback has been recorded." });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to submit feedback", variant: "destructive" });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
       <div className="container mx-auto py-8 px-4 max-w-6xl">
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-2">
-            <Badge variant="outline" className="text-amber-600 border-amber-600">
-              <ShieldAlert className="h-3 w-3 mr-1" />
-              Admin Only
+            <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
+              <FlaskConical className="h-3 w-3 mr-1" />
+              Focus Group Study
             </Badge>
-            <Badge variant="secondary">Internal Testing</Badge>
+            <Badge variant="secondary">Live Comparison</Badge>
           </div>
           <h1 className="text-3xl font-bold text-foreground">Plant ID Comparison</h1>
           <p className="text-muted-foreground mt-2">
@@ -548,6 +625,84 @@ export default function PlantIDComparison() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Focus Group Survey */}
+            <Separator className="my-8" />
+            <Card className="border-2 border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <ClipboardCheck className="h-5 w-5 text-primary" />
+                  Focus Group Feedback
+                </CardTitle>
+                <CardDescription>
+                  Help us improve by sharing your experience with the comparison
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {surveySubmitted ? (
+                  <div className="text-center py-8">
+                    <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold mb-2">Thank You!</h3>
+                    <p className="text-muted-foreground">
+                      Your feedback has been recorded. You can run more comparisons if you'd like.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {/* Rating Questions */}
+                    {[
+                      { key: "accuracy", label: "How accurate was the LeafEngines identification compared to baseline?" },
+                      { key: "usefulness", label: "How useful was the environmental context information?" },
+                      { key: "switchLikelihood", label: "How likely would you be to switch to an app using LeafEngines?" },
+                      { key: "overallExperience", label: "Overall experience with this comparison tool?" },
+                    ].map(({ key, label }) => (
+                      <div key={key} className="space-y-2">
+                        <Label>{label}</Label>
+                        <div className="flex gap-2">
+                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
+                            <Button
+                              key={rating}
+                              variant={surveyRatings[key as keyof typeof surveyRatings] === rating ? "default" : "outline"}
+                              size="sm"
+                              className="w-9 h-9 p-0"
+                              onClick={() => setSurveyRatings(prev => ({ ...prev, [key]: rating }))}
+                            >
+                              {rating}
+                            </Button>
+                          ))}
+                        </div>
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>Not at all</span>
+                          <span>Extremely</span>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Open Feedback */}
+                    <div className="space-y-2">
+                      <Label htmlFor="openFeedback">Additional Comments (optional)</Label>
+                      <Textarea
+                        id="openFeedback"
+                        placeholder="What features would make you more likely to use an app with LeafEngines? Any other thoughts?"
+                        value={surveyRatings.feedback}
+                        onChange={(e) => setSurveyRatings(prev => ({ ...prev, feedback: e.target.value }))}
+                        rows={3}
+                      />
+                    </div>
+
+                    <Button 
+                      onClick={handleSurveySubmit}
+                      disabled={!surveyRatings.accuracy || !surveyRatings.usefulness || !surveyRatings.switchLikelihood || !surveyRatings.overallExperience}
+                      className="w-full"
+                      size="lg"
+                    >
+                      <ClipboardCheck className="h-4 w-4 mr-2" />
+                      Submit Feedback
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </>
         )}
       </div>
