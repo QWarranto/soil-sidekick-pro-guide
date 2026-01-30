@@ -19,35 +19,75 @@ declare global {
   }
 }
 
+export type DeviceType = 'webgpu' | 'cpu';
+
+export interface LLMStatus {
+  initialized: boolean;
+  device: DeviceType | null;
+  model: string | null;
+  fallbackUsed: boolean;
+}
+
 export class LocalLLMService {
   private textGenerator: any = null;
   private isInitialized = false;
   private currentModel: string | null = null;
+  private currentDevice: DeviceType | null = null;
+  private fallbackUsed = false;
 
   async initialize(config: LocalLLMConfig): Promise<void> {
     if (this.isInitialized && this.currentModel === this.getModelName(config.model)) {
       return;
     }
 
+    const modelName = this.getModelName(config.model);
+    
+    // Try WebGPU first, then fallback to CPU
+    const webgpuSupported = await this.checkWebGPUSupport();
+    
+    if (webgpuSupported) {
+      try {
+        console.log(`Initializing local LLM with WebGPU: ${config.model}`);
+        this.textGenerator = await pipeline(
+          'text-generation',
+          modelName,
+          { 
+            device: 'webgpu',
+            dtype: 'fp16'
+          }
+        ) as any;
+
+        this.currentDevice = 'webgpu';
+        this.currentModel = modelName;
+        this.isInitialized = true;
+        this.fallbackUsed = false;
+        console.log('Local LLM initialized successfully with WebGPU');
+        return;
+      } catch (webgpuError) {
+        console.warn('WebGPU initialization failed, falling back to CPU:', webgpuError);
+      }
+    }
+
+    // Fallback to CPU
     try {
-      console.log(`Initializing local LLM: ${config.model}`);
-      
-      // Initialize the text generation pipeline with Gemma
+      console.log(`Initializing local LLM with CPU fallback: ${config.model}`);
       this.textGenerator = await pipeline(
         'text-generation',
-        this.getModelName(config.model),
+        modelName,
         { 
-          device: 'webgpu',
-          dtype: 'fp16'
+          device: 'cpu',
+          dtype: 'fp32' // CPU typically requires fp32
         }
       ) as any;
 
-      this.currentModel = this.getModelName(config.model);
+      this.currentDevice = 'cpu';
+      this.currentModel = modelName;
       this.isInitialized = true;
-      console.log('Local LLM initialized successfully');
-    } catch (error) {
-      console.error('Failed to initialize local LLM:', error);
-      throw new Error('Local LLM initialization failed. Please check your browser supports WebGPU.');
+      this.fallbackUsed = true;
+      console.log('Local LLM initialized successfully with CPU (fallback mode)');
+    } catch (cpuError) {
+      console.error('Failed to initialize local LLM on both WebGPU and CPU:', cpuError);
+      throw new Error('Local LLM initialization failed. Neither WebGPU nor CPU backends are available.');
     }
   }
 
@@ -242,6 +282,23 @@ Please provide an executive summary focusing on water safety, agricultural use s
 
   isAvailable(): boolean {
     return this.isInitialized && this.textGenerator !== null;
+  }
+
+  getStatus(): LLMStatus {
+    return {
+      initialized: this.isInitialized,
+      device: this.currentDevice,
+      model: this.currentModel,
+      fallbackUsed: this.fallbackUsed
+    };
+  }
+
+  getDeviceType(): DeviceType | null {
+    return this.currentDevice;
+  }
+
+  isFallbackMode(): boolean {
+    return this.fallbackUsed;
   }
 
   async checkWebGPUSupport(): Promise<boolean> {
