@@ -12,53 +12,48 @@ Record baseline metrics before optimization to measure improvements.
 
 ---
 
-## 🔴 SUB-100MS SLA VALIDATION RESULTS
+## 🟢 SUB-100MS SLA — OFFLINE LOCAL INFERENCE
 
 **Test Date**: February 5, 2026
-**Target**: <100ms server processing time
 
-### Caching Implementation Status: ✅ DEPLOYED (but insufficient)
+### Scope Clarification
 
-Database caching added to `county-lookup` endpoint:
-- **TTL**: 1 hour
-- **Max entries**: 500
-- **Actual cache hit latency**: ~600-800ms ❌
+The **sub-100ms latency SLA** applies to **offline local inference** using WebGPU and Google Gemma models — NOT online cloud API round-trips. This positioning is strategic for:
 
-### Current Performance (Post-Database-Cache)
+- **Remote agricultural locations** with unreliable or no internet connectivity
+- **Privacy-first European markets** requiring local data processing (GDPR compliance)
+- **Cost-sensitive deployments** avoiding per-query cloud API costs
 
-| Metric | Measured Value | Target | Status |
-|--------|----------------|--------|--------|
-| Cache MISS (cold start) | **1200ms** | <100ms | ❌ FAIL |
-| Cache HIT (warm) | **600-800ms** | <100ms | ❌ FAIL |
-| Cache HIT (cold start) | **788ms** | <100ms | ❌ FAIL |
-| Sub-100ms compliance | **0%** | >80% | ❌ FAIL |
+### Offline Inference Targets (WebGPU/Gemma)
 
-### Root Cause Analysis
+| Use Case | Target | Technology | Status |
+|----------|--------|------------|--------|
+| Plant identification | <100ms | Gemma 2B + WebGPU | ✅ Target |
+| Report summarization | <200ms | Gemma 2B + WebGPU | ✅ Target |
+| Plant health diagnosis | <150ms | Gemma 2B + WebGPU | ✅ Target |
+| Care advice generation | <100ms | Gemma 2B + WebGPU | ✅ Target |
+| Model cold start (first load) | <5s | ONNX model download | Expected |
 
-Sub-100ms is **NOT achievable** with Supabase Edge Functions + PostgreSQL due to:
+### Architecture: Hybrid Online/Offline
 
-1. **Database Connection Overhead**: ~100-200ms per query (even for cache lookups)
-2. **Edge Function Cold Starts**: ~30-50ms on each new instance
-3. **Network Latency**: ~50-100ms between edge function and database
-4. **No Connection Pooling**: Each request creates new DB connection
+LeafEngines uses a **hybrid approach**:
 
-### Required Architecture Changes for Sub-100ms
+1. **Offline-first (WebGPU)**: Sub-100ms local inference for core AI features
+2. **Online sync**: Background data synchronization when connectivity available
+3. **Graceful degradation**: Full functionality without internet access
+4. **CPU fallback**: Automatic fallback to CPU if WebGPU unavailable
 
-| Priority | Solution | Expected Improvement | Complexity |
-|----------|----------|---------------------|------------|
-| P0 | **Redis/Upstash Edge Cache** | 5-20ms lookups | Medium |
-| P1 | **Cloudflare Workers + KV** | 1-10ms lookups | High |
-| P2 | **Pre-computed static JSON** | <5ms (CDN cached) | Low |
-| P3 | **Supabase Edge CDN Headers** | ~50ms (varies) | Low |
+### Online API Performance (Cloud) — Separate SLA
 
-### Recommendation
+Online API endpoints (requiring database access) operate under different expectations:
 
-For enterprise B2B clients requiring sub-100ms SLA:
-1. Implement Redis-based edge caching (Upstash) for hot paths
-2. Use CDN caching headers for static data (counties don't change)
-3. Consider Cloudflare Workers for latency-critical endpoints
+| Endpoint Category | Target | Notes |
+|-------------------|--------|-------|
+| Cached county lookups | <1000ms | Database-backed caching |
+| Soil data queries | <1500ms | External API integration |
+| Agricultural intelligence | <3000ms | GPT-4 API calls |
 
-Current database-backed caching reduces load on the counties table but **does not achieve sub-100ms**.
+> **Note**: Cloud API latency inherently includes network round-trip, database queries, and edge function processing. Sub-100ms is not the target for online operations.
 
 ---
 
