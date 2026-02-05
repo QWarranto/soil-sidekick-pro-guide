@@ -1,7 +1,7 @@
 # Baseline Performance Metrics
 # LeafEngines™ B2B API Platform
 
-## Version: 2.1
+## Version: 2.2
 ## Date: February 2026
 
 Record baseline metrics before optimization to measure improvements.
@@ -12,43 +12,53 @@ Record baseline metrics before optimization to measure improvements.
 
 ---
 
-## 🟡 SUB-100MS SLA VALIDATION RESULTS
+## 🔴 SUB-100MS SLA VALIDATION RESULTS
 
 **Test Date**: February 5, 2026
 **Target**: <100ms server processing time
 
-### Caching Implementation Status: ✅ DEPLOYED
+### Caching Implementation Status: ✅ DEPLOYED (but insufficient)
 
-In-memory caching added to `county-lookup` endpoint:
-- **TTL**: 5 minutes
+Database caching added to `county-lookup` endpoint:
+- **TTL**: 1 hour
 - **Max entries**: 500
-- **Expected cache hit latency**: <10ms
+- **Actual cache hit latency**: ~600-800ms ❌
 
-### Previous Performance (Pre-Cache)
+### Current Performance (Post-Database-Cache)
 
 | Metric | Measured Value | Target | Status |
 |--------|----------------|--------|--------|
-| Server processing (avg) | **388ms** | <100ms | ❌ FAIL |
-| Server processing (min) | **342ms** | <100ms | ❌ FAIL |
+| Cache MISS (cold start) | **1200ms** | <100ms | ❌ FAIL |
+| Cache HIT (warm) | **600-800ms** | <100ms | ❌ FAIL |
+| Cache HIT (cold start) | **788ms** | <100ms | ❌ FAIL |
 | Sub-100ms compliance | **0%** | >80% | ❌ FAIL |
 
-### Expected Performance (Post-Cache)
+### Root Cause Analysis
 
-| Scenario | Expected Latency | Target | Status |
-|----------|------------------|--------|--------|
-| Cache HIT (warm) | <10ms | <100ms | ✅ PASS |
-| Cache MISS (warm) | ~350ms | <100ms | ❌ |
-| Cold start | ~400-500ms | N/A | First request |
+Sub-100ms is **NOT achievable** with Supabase Edge Functions + PostgreSQL due to:
 
-### Validation Commands
+1. **Database Connection Overhead**: ~100-200ms per query (even for cache lookups)
+2. **Edge Function Cold Starts**: ~30-50ms on each new instance
+3. **Network Latency**: ~50-100ms between edge function and database
+4. **No Connection Pooling**: Each request creates new DB connection
 
-```bash
-# Deno unit tests
-deno test supabase/functions/county-lookup/index.test.ts --allow-net --allow-env
+### Required Architecture Changes for Sub-100ms
 
-# K6 load test
-k6 run load-tests/scripts/test-sub-100ms-latency.js
-```
+| Priority | Solution | Expected Improvement | Complexity |
+|----------|----------|---------------------|------------|
+| P0 | **Redis/Upstash Edge Cache** | 5-20ms lookups | Medium |
+| P1 | **Cloudflare Workers + KV** | 1-10ms lookups | High |
+| P2 | **Pre-computed static JSON** | <5ms (CDN cached) | Low |
+| P3 | **Supabase Edge CDN Headers** | ~50ms (varies) | Low |
+
+### Recommendation
+
+For enterprise B2B clients requiring sub-100ms SLA:
+1. Implement Redis-based edge caching (Upstash) for hot paths
+2. Use CDN caching headers for static data (counties don't change)
+3. Consider Cloudflare Workers for latency-critical endpoints
+
+Current database-backed caching reduces load on the counties table but **does not achieve sub-100ms**.
 
 ---
 
