@@ -2,12 +2,17 @@
  * County Lookup Edge Function
  * Public endpoint with rate limiting for searching counties by name
  * 
- * Updated: December 6, 2025 - Added rate limiting via requestHandler pattern
+ * Updated: February 5, 2026 - Added database caching for sub-100ms latency
  */
 
-import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { requestHandler } from '../_shared/request-handler.ts';
+
+const CACHE_TTL_MS = 3600000; // 1 hour - counties don't change
+
+function buildCacheKey(term: string): string {
+  return `county_search:${term.toLowerCase().trim()}`;
+}
 
 const countySearchSchema = z.object({
   term: z.string().min(2).max(60).trim(),
@@ -28,8 +33,27 @@ requestHandler<CountySearchInput>({
     
     // Sanitization - remove potentially dangerous characters
     const cleanTerm = term.replace(/[,;'"<>]/g, '').trim();
+    const cacheKey = buildCacheKey(cleanTerm);
 
-    console.log('County lookup request:', { cleanTerm });
+    // Check database cache first (faster than full county search)
+    const { data: cachedData, error: cacheError } = await supabaseClient
+      .from('fips_data_cache')
+      .select('cached_data, access_count')
+      .eq('cache_key', cacheKey)
+      .eq('data_source', 'county_lookup')
+      .gt('expires_at', new Date().toISOString())
+      .maybeSingle();
+
+    if (cacheError) {
+      console.log('[Cache] Read error:', cacheError.message);
+    }
+
+    if (cachedData?.cached_data) {
+      console.log(`[Cache] HIT: "${cleanTerm}"`);
+      return { results: cachedData.cached_data, cached: true };
+    }
+
+    console.log('County lookup request (cache miss):', { cleanTerm });
 
     // Primary: search by county name
     const { data: countyData, error: countyError } = await supabaseClient
@@ -66,6 +90,27 @@ requestHandler<CountySearchInput>({
     // Cap to 10 items
     const results = allResults.slice(0, 10);
 
-    return { results };
+    // Cache the results in database
+    const { error: insertError } = await supabaseClient
+      .from('fips_data_cache')
+      .upsert({
+        cache_key: cacheKey,
+        data_source: 'county_lookup',
+        county_fips: 'search',
+        cached_data: results,
+        cache_level: 1,
+        expires_at: new Date(Date.now() + CACHE_TTL_MS).toISOString(),
+        access_count: 1,
+        last_accessed: new Date().toISOString(),
+        created_at: new Date().toISOString()
+      }, { onConflict: 'cache_key,data_source' });
+    
+    if (insertError) {
+      console.error('[Cache] SET failed:', insertError.message);
+    } else {
+      console.log(`[Cache] SET: "${cleanTerm}"`);
+    }
+
+    return { results, cached: false };
   },
 });
