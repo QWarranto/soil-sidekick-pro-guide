@@ -300,9 +300,9 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
               <div className="flex items-start gap-4">
                 <Badge className="mt-1">1</Badge>
                 <div>
-                  <h3 className="font-semibold mb-1">Get Your API Key</h3>
+                  <h3 className="font-semibold mb-1">Try the Interactive Sandbox</h3>
                   <p className="text-sm text-muted-foreground">
-                    <Link to="/api-keys" className="text-primary hover:underline">Generate an instant sandbox key</Link> or request a paid tier for production access.
+                    <Link to="/developer-sandbox" className="text-primary hover:underline font-medium">Test the API instantly</Link> — no API key required. Or <Link to="/api-keys" className="text-primary hover:underline">get a production key</Link> when you're ready to integrate.
                   </p>
                 </div>
               </div>
@@ -445,7 +445,7 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
               <p className="text-sm font-semibold">Multi-Language SDKs Available</p>
               <p className="text-sm text-muted-foreground mt-1">
                 SDKs for Python, Go, Ruby, Java, and PHP available on request. 
-                <Link to="/api-keys" className="text-primary hover:underline">Get your API key</Link> to start integrating.
+                <Link to="/developer-sandbox" className="text-primary hover:underline">Try the sandbox first</Link> (no auth needed), then <Link to="/api-keys" className="text-primary hover:underline">get your API key</Link> for production.
               </p>
             </div>
           </CardContent>
@@ -455,11 +455,31 @@ print(f"Compatibility Score: {result['data']['overall_score']}")`;
         <Card className="mb-12">
           <CardHeader>
             <CardTitle className="text-2xl">Authentication</CardTitle>
-            <CardDescription>Secure your API requests with API keys</CardDescription>
+            <CardDescription>When and how to authenticate API requests</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2 mb-4">
+              <div className="p-4 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">No Auth</Badge>
+                  <span className="font-semibold text-sm">Interactive Sandbox</span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  <Link to="/developer-sandbox" className="text-primary hover:underline">Try the sandbox</Link> — test API responses instantly without any authentication.
+                </p>
+              </div>
+              <div className="p-4 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100">Auth Required</Badge>
+                  <span className="font-semibold text-sm">Production API</span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  <Link to="/api-keys" className="text-primary hover:underline">Get an API key</Link> to integrate into your own applications.
+                </p>
+              </div>
+            </div>
             <p className="text-muted-foreground">
-              All requests must include your API key in the <code className="bg-muted px-2 py-1 rounded">x-api-key</code> header:
+              For production use, include your API key in the <code className="bg-muted px-2 py-1 rounded">x-api-key</code> header:
             </p>
             <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm">
               <code>x-api-key: your_api_key_here</code>
