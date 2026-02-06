@@ -21,11 +21,26 @@
 
 ## Step 1: Try Before You Integrate
 
-**No authentication required.** Start here to evaluate the API.
+**No authentication required.** Start here to evaluate the API using any of these no-code options:
 
-### Interactive Sandbox (Recommended)
+### Option A: Interactive Developer Sandbox (Recommended)
 - **URL:** [/developer-sandbox](/developer-sandbox)
-- **Direct API:** `POST https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/sandbox-demo`
+- Visual endpoint explorer with tier-based categorization
+- Request history with localStorage persistence
+- Response visualization with headers and timing
+- Copy-paste cURL commands
+
+### Option B: Swagger UI / OpenAPI
+- **URL:** [/swagger-ui](/swagger-ui)
+- Full interactive API documentation
+- Try endpoints directly in the browser
+- Automatic sandbox fallback for free-tier endpoints
+
+### Option C: Postman Collection
+- **Download:** [/postman/leafengines-collection.json](/postman/leafengines-collection.json)
+- Pre-configured requests for all endpoints
+- Environment variables for easy API key management
+- Organized by subscription tier
 
 ### Available Sandbox Endpoints
 
@@ -37,7 +52,7 @@
 | `beginner-guidance` | Beginner-friendly plant tips |
 | `get-soil-data` | County soil analysis data |
 
-### Example Request (No Auth)
+### Example cURL Request (No Auth)
 ```bash
 curl -X POST \
   "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/sandbox-demo?endpoint=leafengines-query" \
@@ -256,14 +271,19 @@ curl -X POST "https://.../functions/v1/leafengines-query" \
 
 ---
 
-## Support
+## Support & Resources
 
-- **Interactive Sandbox:** [/developer-sandbox](/developer-sandbox)
-- **API Documentation:** [/leafengines](/leafengines)
-- **API Keys:** [/api-keys](/api-keys)
-- **Contact:** partnerships@leafengines.com
+| Resource | URL | Description |
+|----------|-----|-------------|
+| **Interactive Sandbox** | [/developer-sandbox](/developer-sandbox) | Visual endpoint testing |
+| **Swagger UI** | [/swagger-ui](/swagger-ui) | Interactive API documentation |
+| **Postman Collection** | [/postman/leafengines-collection.json](/postman/leafengines-collection.json) | Downloadable API collection |
+| **API Overview** | [/leafengines](/leafengines) | B2B platform information |
+| **API Keys** | [/api-keys](/api-keys) | Key management dashboard |
+| **Quickstart Guide** | [SDK_QUICKSTART.md](./SDK_QUICKSTART.md) | 5-minute setup guide |
+| **Contact** | partnerships@leafengines.com | Partnership inquiries |
 
 ---
 
-*Document Version: 2.0*  
+*Document Version: 2.1*  
 *Accuracy Verified: February 6, 2026*

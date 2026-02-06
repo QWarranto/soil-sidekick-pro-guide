@@ -4,10 +4,28 @@
 
 ---
 
-## 1. Try It Now (No Setup Required)
+## 1. Try It Now (No Code Required)
 
-Test the API instantly in your terminal:
+### Option A: Interactive Sandbox (Recommended)
+Test endpoints visually with our enhanced developer sandbox:
+- **URL:** [/developer-sandbox](/developer-sandbox)
+- Endpoint explorer with tier-based categorization
+- Request history with localStorage persistence
+- Response visualization with headers and timing
 
+### Option B: Swagger UI
+Interactive API documentation with try-it-now functionality:
+- **URL:** [/swagger-ui](/swagger-ui)
+- Full OpenAPI specification
+- Automatic sandbox fallback for free-tier endpoints
+
+### Option C: Postman Collection
+Import our pre-configured collection for rapid testing:
+- **Download:** [/postman/leafengines-collection.json](/postman/leafengines-collection.json)
+- All endpoints pre-configured across tiers
+- Environment variables for API keys
+
+### Option D: cURL (Terminal)
 ```bash
 curl -X POST \
   "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/sandbox-demo?endpoint=leafengines-query" \
@@ -23,8 +41,6 @@ curl -X POST \
   "recommendations": ["Consider raised beds for better drainage"]
 }
 ```
-
-👉 **Interactive Sandbox:** [/developer-sandbox](/developer-sandbox)
 
 ---
 
@@ -162,11 +178,13 @@ curl -X POST "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/leafengines-
 ## Next Steps
 
 - 📖 [Full SDK Guide](./SDK_INTEGRATION_GUIDE.md)
-- 🧪 [Interactive Sandbox](/developer-sandbox)
+- 🧪 [Interactive Sandbox](/developer-sandbox) — Visual endpoint testing
+- 📚 [Swagger UI](/swagger-ui) — Interactive API documentation
+- 📦 [Postman Collection](/postman/leafengines-collection.json) — Import & test
 - 🔑 [Get API Keys](/api-keys)
 - 💬 **Support:** partnerships@leafengines.com
 
 ---
 
 *Total setup time: ~5 minutes*  
-*Time to first API call: ~30 seconds (sandbox)*
+*Time to first API call: ~10 seconds (no-code sandbox)*
