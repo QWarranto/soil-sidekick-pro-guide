@@ -54,6 +54,7 @@ import OfflinePlantID from "./pages/OfflinePlantID";
 import PlantIDComparison from "./pages/PlantIDComparison";
 import SDKChangelog from "./pages/SDKChangelog";
 import APIKeyManagement from "./pages/APIKeyManagement";
+import SwaggerUI from "./pages/SwaggerUI";
 
 const queryClient = new QueryClient();
 
@@ -125,6 +126,7 @@ const App = () => (
         <Route path="/plant-id-comparison" element={<PlantIDComparison />} />
         <Route path="/sdk-changelog" element={<SDKChangelog />} />
         <Route path="/api-keys" element={<APIKeyManagement />} />
+        <Route path="/swagger-ui" element={<SwaggerUI />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
