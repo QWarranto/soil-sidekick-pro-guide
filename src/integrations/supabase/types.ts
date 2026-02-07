@@ -1655,6 +1655,167 @@ export type Database = {
         }
         Relationships: []
       }
+      sensor_alerts: {
+        Row: {
+          acknowledged: boolean | null
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          alert_type: string
+          created_at: string | null
+          details: Json | null
+          device_id: string
+          id: string
+          message: string
+          severity: string
+          timestamp: string
+        }
+        Insert: {
+          acknowledged?: boolean | null
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type: string
+          created_at?: string | null
+          details?: Json | null
+          device_id: string
+          id?: string
+          message: string
+          severity: string
+          timestamp: string
+        }
+        Update: {
+          acknowledged?: boolean | null
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type?: string
+          created_at?: string | null
+          details?: Json | null
+          device_id?: string
+          id?: string
+          message?: string
+          severity?: string
+          timestamp?: string
+        }
+        Relationships: []
+      }
+      sensor_audit_log: {
+        Row: {
+          created_at: string | null
+          device_id: string
+          error_message: string | null
+          id: string
+          ingestion_id: string
+          processing_time_ms: number
+          readings_count: number | null
+          validation_status: string
+        }
+        Insert: {
+          created_at?: string | null
+          device_id: string
+          error_message?: string | null
+          id?: string
+          ingestion_id: string
+          processing_time_ms: number
+          readings_count?: number | null
+          validation_status: string
+        }
+        Update: {
+          created_at?: string | null
+          device_id?: string
+          error_message?: string | null
+          id?: string
+          ingestion_id?: string
+          processing_time_ms?: number
+          readings_count?: number | null
+          validation_status?: string
+        }
+        Relationships: []
+      }
+      sensor_devices: {
+        Row: {
+          battery_level: number | null
+          created_at: string | null
+          device_id: string
+          device_type: string
+          farm_id: string | null
+          firmware_version: string | null
+          id: string
+          last_seen_at: string | null
+          signal_strength: number | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          battery_level?: number | null
+          created_at?: string | null
+          device_id: string
+          device_type: string
+          farm_id?: string | null
+          firmware_version?: string | null
+          id?: string
+          last_seen_at?: string | null
+          signal_strength?: number | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          battery_level?: number | null
+          created_at?: string | null
+          device_id?: string
+          device_type?: string
+          farm_id?: string | null
+          firmware_version?: string | null
+          id?: string
+          last_seen_at?: string | null
+          signal_strength?: number | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sensor_devices_farm_id_fkey"
+            columns: ["farm_id"]
+            isOneToOne: false
+            referencedRelation: "fields"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sensor_readings: {
+        Row: {
+          confidence: number | null
+          device_id: string
+          id: string
+          metric: string
+          raw_data: Json | null
+          received_at: string | null
+          timestamp: string
+          unit: string
+          value: number
+        }
+        Insert: {
+          confidence?: number | null
+          device_id: string
+          id?: string
+          metric: string
+          raw_data?: Json | null
+          received_at?: string | null
+          timestamp: string
+          unit: string
+          value: number
+        }
+        Update: {
+          confidence?: number | null
+          device_id?: string
+          id?: string
+          metric?: string
+          raw_data?: Json | null
+          received_at?: string | null
+          timestamp?: string
+          unit?: string
+          value?: number
+        }
+        Relationships: []
+      }
       soc2_compliance_checks: {
         Row: {
           check_name: string
