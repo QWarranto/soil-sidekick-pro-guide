@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Zap, Shield, TrendingUp, Users, Sparkles, ArrowRight, AlertTriangle, Server, Brain, FileCheck, Radio, Clock, DollarSign, Building2 } from "lucide-react";
+import { Check, Zap, Shield, TrendingUp, Users, Sparkles, ArrowRight, AlertTriangle, Server, Brain, FileCheck, Radio, Clock, DollarSign, Building2, Cpu, Wifi, Factory, Satellite } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
@@ -789,6 +789,296 @@ export default function Pricing() {
                 </Button>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* OEM Embedded Licensing Section */}
+      <section className="border-t border-border bg-gradient-to-br from-cyan-500/5 via-background to-blue-500/5 py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-6xl">
+            <div className="mb-12 text-center">
+              <Badge className="mb-4" variant="secondary">
+                <Cpu className="mr-2 h-3 w-3" />
+                OEM Licensing
+              </Badge>
+              <h2 className="mb-4 text-3xl font-bold text-foreground">
+                Embedded OS Licensing for OEMs
+              </h2>
+              <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+                License LeafEngines™ intelligence for integration into agricultural equipment, sensors, and autonomous systems. Revenue aligned with your hardware deployment success.
+              </p>
+            </div>
+
+            <div className="grid gap-8 lg:grid-cols-2">
+              {/* Development License */}
+              <Card className="relative overflow-hidden border-2 border-cyan-500/20">
+                <div className="absolute right-0 top-0 h-32 w-32 -translate-y-8 translate-x-8 rounded-full bg-gradient-to-br from-cyan-500/20 to-transparent" />
+                <div className="p-8">
+                  <div className="mb-6 flex items-start justify-between">
+                    <div className="rounded-lg bg-cyan-500/10 p-4">
+                      <Factory className="h-8 w-8 text-cyan-600" />
+                    </div>
+                    <Badge className="bg-cyan-600">OEM Development</Badge>
+                  </div>
+                  
+                  <h3 className="mb-3 text-2xl font-bold text-foreground">
+                    Development License
+                  </h3>
+                  <p className="mb-6 text-muted-foreground">
+                    Full SDK access for integration development, testing, and certification. Includes dedicated engineering support during integration phase.
+                  </p>
+
+                  <div className="mb-6">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-4xl font-bold text-foreground">$24,900</span>
+                      <span className="text-muted-foreground">/year</span>
+                    </div>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Per product line / integration project
+                    </p>
+                  </div>
+
+                  <div className="mb-6 space-y-3">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-cyan-600" />
+                      <span>Complete Embedded SDK & firmware libraries</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-cyan-600" />
+                      <span>Development & staging environment access</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-cyan-600" />
+                      <span>Dedicated integration engineer (40 hrs/quarter)</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-cyan-600" />
+                      <span>Hardware compatibility certification</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-cyan-600" />
+                      <span>Pre-production testing & validation</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-cyan-600" />
+                      <span>ADAPT 1.0 & ISO 11783 compliance support</span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg bg-muted/50 p-4">
+                    <p className="text-sm font-medium text-foreground">Ideal for:</p>
+                    <p className="text-sm text-muted-foreground">
+                      John Deere, AGCO, CNH Industrial, Skyline Instruments, precision agriculture sensor manufacturers
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Runtime Royalty */}
+              <Card className="relative overflow-hidden border-2 border-blue-500/20">
+                <div className="absolute right-0 top-0 h-32 w-32 -translate-y-8 translate-x-8 rounded-full bg-gradient-to-br from-blue-500/20 to-transparent" />
+                <div className="p-8">
+                  <div className="mb-6 flex items-start justify-between">
+                    <div className="rounded-lg bg-blue-500/10 p-4">
+                      <Cpu className="h-8 w-8 text-blue-600" />
+                    </div>
+                    <Badge className="bg-blue-600">Per-Device</Badge>
+                  </div>
+                  
+                  <h3 className="mb-3 text-2xl font-bold text-foreground">
+                    Runtime Royalty
+                  </h3>
+                  <p className="mb-6 text-muted-foreground">
+                    Per-device licensing that scales with your deployment success. Revenue aligned with your hardware sales and active fleet.
+                  </p>
+
+                  <div className="mb-6">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-4xl font-bold text-foreground">$5 - $50</span>
+                      <span className="text-muted-foreground">/device/year</span>
+                    </div>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Based on device capability tier & intelligence features
+                    </p>
+                  </div>
+
+                  <div className="mb-6 space-y-3">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-blue-600" />
+                      <span>Active device fleet licensing</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-blue-600" />
+                      <span>Over-the-air model updates</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-blue-600" />
+                      <span>Device telemetry & analytics dashboard</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-blue-600" />
+                      <span>Volume discounts at 10K+ devices</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-blue-600" />
+                      <span>Co-branded support portal option</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-blue-600" />
+                      <span>Quarterly business reviews & roadmap input</span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg bg-muted/50 p-4">
+                    <p className="text-sm font-medium text-foreground">Pricing Tiers:</p>
+                    <div className="mt-2 space-y-1 text-sm text-muted-foreground">
+                      <p>• Basic sensors/displays: $5/device/year</p>
+                      <p>• Advanced controllers: $15/device/year</p>
+                      <p>• Full autonomy systems: $50/device/year</p>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Private 5G / Telecom Partnership Section */}
+      <section className="border-t border-border bg-gradient-to-br from-violet-500/5 via-background to-orange-500/5 py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-6xl">
+            <div className="mb-12 text-center">
+              <Badge className="mb-4" variant="secondary">
+                <Wifi className="mr-2 h-3 w-3" />
+                Telecom Partnerships
+              </Badge>
+              <h2 className="mb-4 text-3xl font-bold text-foreground">
+                Private 5G Value-Realization Layer
+              </h2>
+              <p className="mx-auto max-w-3xl text-lg text-muted-foreground">
+                Telecoms invest billions in Private 5G infrastructure. LeafEngines provides the "killer app" that justifies that investment for agricultural enterprises. We sell the reason the pipe is worth buying.
+              </p>
+            </div>
+
+            <div className="mb-12 grid gap-6 md:grid-cols-3">
+              <Card className="border-violet-500/20 p-6 text-center">
+                <div className="mx-auto mb-4 rounded-full bg-violet-500/10 p-4 w-fit">
+                  <Satellite className="h-8 w-8 text-violet-600" />
+                </div>
+                <h3 className="mb-2 text-lg font-bold text-foreground">Real-Time Edge Processing</h3>
+                <p className="text-sm text-muted-foreground">
+                  &lt;100ms latency for autonomous equipment synchronization leveraging mmWave/RF connectivity
+                </p>
+              </Card>
+
+              <Card className="border-orange-500/20 p-6 text-center">
+                <div className="mx-auto mb-4 rounded-full bg-orange-500/10 p-4 w-fit">
+                  <Factory className="h-8 w-8 text-orange-600" />
+                </div>
+                <h3 className="mb-2 text-lg font-bold text-foreground">Enterprise Sales Channel</h3>
+                <p className="text-sm text-muted-foreground">
+                  Bundle with Verizon, T-Mobile, AT&T enterprise sales—outsource go-to-market to global telecom teams
+                </p>
+              </Card>
+
+              <Card className="border-primary/20 p-6 text-center">
+                <div className="mx-auto mb-4 rounded-full bg-primary/10 p-4 w-fit">
+                  <TrendingUp className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="mb-2 text-lg font-bold text-foreground">Revenue-Share Model</h3>
+                <p className="text-sm text-muted-foreground">
+                  Lean internal organization with rapid scaling through telecom partner distribution networks
+                </p>
+              </Card>
+            </div>
+
+            <Card className="border-2 border-violet-500/20 p-8">
+              <div className="grid gap-8 lg:grid-cols-2">
+                <div>
+                  <Badge className="mb-4 bg-violet-600">Telecom Bundle</Badge>
+                  <h3 className="mb-4 text-2xl font-bold text-foreground">
+                    Private 5G Agricultural Intelligence Package
+                  </h3>
+                  <p className="mb-6 text-muted-foreground">
+                    Pre-integrated software layer for telecom enterprise sales teams. Enables autonomous equipment, real-time crop monitoring, and precision agriculture at scale.
+                  </p>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-violet-600" />
+                      <span>Native mmWave/RF sensor fusion integration</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-violet-600" />
+                      <span>Multi-protocol support (MQTT, WebSocket, REST)</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-violet-600" />
+                      <span>Edge-optimized AI for low-latency processing</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-violet-600" />
+                      <span>Worker safety monitoring & hazard detection</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-violet-600" />
+                      <span>Autonomous equipment coordination</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-violet-600" />
+                      <span>Co-branded enterprise solution</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col justify-between">
+                  <div className="rounded-lg bg-gradient-to-br from-violet-500/10 to-orange-500/10 p-6">
+                    <h4 className="mb-4 text-lg font-bold text-foreground">Partnership Models</h4>
+                    <div className="space-y-4">
+                      <div className="rounded-lg bg-background/50 p-4">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-foreground">Revenue Share</span>
+                          <span className="text-lg font-bold text-violet-600">15-25%</span>
+                        </div>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Of telecom's agricultural enterprise contract value
+                        </p>
+                      </div>
+                      <div className="rounded-lg bg-background/50 p-4">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-foreground">Per-Deployment</span>
+                          <span className="text-lg font-bold text-orange-600">$25K-$100K</span>
+                        </div>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Annual license per enterprise customer site
+                        </p>
+                      </div>
+                      <div className="rounded-lg bg-background/50 p-4">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-foreground">Platform Fee</span>
+                          <span className="text-lg font-bold text-primary">$500K+/yr</span>
+                        </div>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Enterprise platform license for large telecoms
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex flex-col gap-3">
+                    <Button size="lg" className="w-full bg-violet-600 hover:bg-violet-700">
+                      Telecom Partnership Inquiry
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                    <p className="text-center text-xs text-muted-foreground">
+                      For Verizon Business, T-Mobile for Business, AT&T Business sales teams
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Card>
           </div>
         </div>
       </section>
