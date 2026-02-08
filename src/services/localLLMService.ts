@@ -39,9 +39,17 @@ export class LocalLLMService {
   private configureBackendsOnce() {
     if (this.backendsConfigured) return;
     try {
-      // In many embedded/preview environments, crossOriginIsolated is false, which disables WASM threading.
+      // In embedded/preview environments, crossOriginIsolated is often false.
       // Force single-threaded WASM so ORT can still initialize.
       (env as any).backends.onnx.wasm.numThreads = 1;
+
+      // Point ORT to CDN-hosted WASM artifacts (too large to bundle into repo)
+      const ortWasmBase = 'https://unpkg.com/onnxruntime-web@1.22.0-dev.20250409-89f8206ba4/dist/';
+      (env as any).backends.onnx.wasm.wasmPaths = ortWasmBase;
+      // Some versions also look under env.wasm
+      if ((env as any).wasm) {
+        (env as any).wasm.wasmPaths = ortWasmBase;
+      }
     } catch {
       // no-op: env/backends may differ across transformers.js versions
     }
