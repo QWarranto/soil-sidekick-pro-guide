@@ -1,4 +1,4 @@
-import { pipeline } from '@huggingface/transformers';
+import { pipeline, env } from '@huggingface/transformers';
 
 export interface LocalLLMConfig {
   model: 'gemma-2b' | 'gemma-7b';
@@ -19,7 +19,7 @@ declare global {
   }
 }
 
-export type DeviceType = 'webgpu' | 'cpu';
+export type DeviceType = 'webgpu' | 'wasm';
 
 export interface LLMStatus {
   initialized: boolean;
@@ -34,6 +34,19 @@ export class LocalLLMService {
   private currentModel: string | null = null;
   private currentDevice: DeviceType | null = null;
   private fallbackUsed = false;
+  private backendsConfigured = false;
+
+  private configureBackendsOnce() {
+    if (this.backendsConfigured) return;
+    try {
+      // In many embedded/preview environments, crossOriginIsolated is false, which disables WASM threading.
+      // Force single-threaded WASM so ORT can still initialize.
+      (env as any).backends.onnx.wasm.numThreads = 1;
+    } catch {
+      // no-op: env/backends may differ across transformers.js versions
+    }
+    this.backendsConfigured = true;
+  }
 
   async initialize(config: LocalLLMConfig): Promise<void> {
     if (this.isInitialized && this.currentModel === this.getModelName(config.model)) {
@@ -41,8 +54,11 @@ export class LocalLLMService {
     }
 
     const modelName = this.getModelName(config.model);
+
+    // Configure ORT backends for embedded/browser environments
+    this.configureBackendsOnce();
     
-    // Try WebGPU first, then fallback to CPU
+    // Try WebGPU first, then fallback to WASM (CPU)
     const webgpuSupported = await this.checkWebGPUSupport();
     
     if (webgpuSupported) {
@@ -68,26 +84,29 @@ export class LocalLLMService {
       }
     }
 
-    // Fallback to CPU
+    // Fallback to WASM (CPU)
     try {
-      console.log(`Initializing local LLM with CPU fallback: ${config.model}`);
+      console.log(`Initializing local LLM with WASM (CPU) fallback: ${config.model}`);
       this.textGenerator = await pipeline(
         'text-generation',
         modelName,
         { 
-          device: 'cpu',
-          dtype: 'fp32' // CPU typically requires fp32
+          device: 'wasm',
+          dtype: 'fp32'
         }
       ) as any;
 
-      this.currentDevice = 'cpu';
+      this.currentDevice = 'wasm';
       this.currentModel = modelName;
       this.isInitialized = true;
       this.fallbackUsed = true;
-      console.log('Local LLM initialized successfully with CPU (fallback mode)');
-    } catch (cpuError) {
-      console.error('Failed to initialize local LLM on both WebGPU and CPU:', cpuError);
-      throw new Error('Local LLM initialization failed. Neither WebGPU nor CPU backends are available.');
+      console.log('Local LLM initialized successfully with WASM (CPU fallback mode)');
+    } catch (wasmError) {
+      console.error('Failed to initialize local LLM on both WebGPU and WASM:', wasmError);
+      const detail = wasmError instanceof Error ? wasmError.message : String(wasmError);
+      throw new Error(
+        `Local LLM initialization failed. Neither WebGPU nor WASM backends are available.\n\nDetails: ${detail}`
+      );
     }
   }
 

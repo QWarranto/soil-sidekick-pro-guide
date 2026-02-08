@@ -215,7 +215,7 @@ export default function WebGPUBenchmark() {
       const errorMessage = err instanceof Error ? err.message : 'Failed to initialize model';
       setError(errorMessage);
       // Suggest simulated mode
-      if (errorMessage.includes('Neither WebGPU nor CPU')) {
+      if (errorMessage.includes('Neither WebGPU nor WASM')) {
         setError(`${errorMessage}\n\nYour browser lacks required backends. Try "Simulated Mode" to test the benchmark UI, or use Chrome/Edge with WebGPU enabled.`);
       }
     } finally {
