@@ -55,6 +55,7 @@ import PlantIDComparison from "./pages/PlantIDComparison";
 import SDKChangelog from "./pages/SDKChangelog";
 import APIKeyManagement from "./pages/APIKeyManagement";
 import SwaggerUI from "./pages/SwaggerUI";
+import WebGPUBenchmark from "./pages/WebGPUBenchmark";
 
 const queryClient = new QueryClient();
 
@@ -127,6 +128,7 @@ const App = () => (
         <Route path="/sdk-changelog" element={<SDKChangelog />} />
         <Route path="/api-keys" element={<APIKeyManagement />} />
         <Route path="/swagger-ui" element={<SwaggerUI />} />
+        <Route path="/webgpu-benchmark" element={<WebGPUBenchmark />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
