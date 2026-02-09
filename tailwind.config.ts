@@ -14,10 +14,20 @@ export default {
 			center: true,
 			padding: '2rem',
 			screens: {
-				'2xl': '1400px'
+				'sm': '100%',
+				'md': '100%',
+				'lg': '984px',
+				'xl': '1160px',
+				'2xl': '1280px'
 			}
 		},
 		extend: {
+			fontFamily: {
+				'heading': ['Karla', 'sans-serif'],
+				'body': ['"Old Standard TT"', 'serif'],
+				'sans': ['Karla', 'sans-serif'],
+				'serif': ['"Old Standard TT"', 'serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -61,12 +71,36 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// SoilSidekick Pro brand colors
+				'ssk': {
+					'black': '#000000',
+					'white': '#FFFFFF',
+					'dark': '#1B1B1B',
+					'charcoal': '#161616',
+					'warm-gray': '#D3D5CF',
+					'light': '#F7F7F7',
+					'border': '#74786C',
+					'cream': '#E1E3DD',
+					'off-white': '#EFEFEF',
 				}
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				sm: 'calc(var(--radius) - 4px)',
+				'pill': '48px',
+			},
+			fontSize: {
+				'hero': ['42px', { lineHeight: '50.4px', fontWeight: '700' }],
+				'hero-lg': ['54px', { lineHeight: '64px', fontWeight: '700' }],
+				'section': ['19px', { lineHeight: '26.6px', fontWeight: '700' }],
+				'section-lg': ['28px', { lineHeight: '36px', fontWeight: '700' }],
+				'card-title': ['30px', { lineHeight: '37.5px', fontWeight: '400' }],
+			},
+			spacing: {
+				'section': '100px',
+				'section-mobile': '40px',
 			},
 			keyframes: {
 				'accordion-down': {

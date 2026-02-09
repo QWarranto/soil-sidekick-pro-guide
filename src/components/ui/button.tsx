@@ -5,30 +5,30 @@ import { hapticService } from "@/services/hapticService"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-smooth focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-heading font-bold ring-offset-background transition-smooth focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground border border-primary hover:bg-primary/90 hover:scale-105 shadow-md hover:shadow-lg",
+        default: "bg-primary text-primary-foreground rounded-pill hover:bg-primary/90 hover:scale-102",
         destructive:
-          "bg-destructive text-destructive-foreground border border-destructive hover:bg-destructive/90 hover:scale-105 shadow-md",
+          "bg-destructive text-destructive-foreground rounded-pill hover:bg-destructive/90 hover:scale-102",
         outline:
-          "border border-border bg-card text-foreground hover:bg-accent hover:text-accent-foreground hover:scale-105 hover:shadow-md",
-        "outline-glow": "border-2 border-primary bg-transparent text-primary hover:bg-primary/10 hover:shadow-glow hover:scale-105 transition-smooth",
+          "border border-border bg-background text-foreground rounded-pill hover:bg-accent hover:text-accent-foreground hover:scale-102",
+        "outline-glow": "border-2 border-primary bg-transparent text-primary rounded-pill hover:bg-primary/10 hover:scale-102 transition-smooth",
         secondary:
-          "bg-secondary text-secondary-foreground border border-secondary hover:bg-secondary/80 hover:scale-105 shadow-md",
-        ghost: "text-foreground hover:bg-accent hover:text-accent-foreground hover:scale-105",
+          "bg-secondary text-secondary-foreground rounded-pill hover:bg-secondary/80 hover:scale-102",
+        ghost: "text-foreground hover:bg-accent hover:text-accent-foreground rounded-md",
         link: "text-primary underline-offset-4 hover:underline",
-        hero: "bg-gradient-hero text-white border border-primary/30 hover:scale-105 shadow-xl hover:shadow-2xl",
-        glass: "glass-effect text-foreground border border-border hover:bg-white/20 hover:scale-105 shadow-md",
-        premium: "bg-gradient-primary text-white border border-primary/30 hover:scale-105 shadow-lg hover:shadow-xl",
+        hero: "bg-secondary text-secondary-foreground rounded-pill hover:bg-secondary/90 hover:scale-102 shadow-lg",
+        glass: "glass-effect text-foreground border border-border rounded-pill hover:bg-white/20 hover:scale-102",
+        premium: "bg-primary text-primary-foreground rounded-pill hover:bg-primary/90 hover:scale-102 shadow-md",
       },
       size: {
-        default: "h-11 px-4 py-2",
-        sm: "h-10 rounded-md px-3",
-        lg: "h-12 rounded-md px-8",
-        icon: "h-11 w-11",
-        xl: "h-14 rounded-lg px-12 text-lg",
+        default: "h-11 px-10 py-2",
+        sm: "h-10 px-6",
+        lg: "h-12 px-10",
+        icon: "h-11 w-11 rounded-full",
+        xl: "h-14 px-12 text-lg",
       },
     },
     defaultVariants: {
