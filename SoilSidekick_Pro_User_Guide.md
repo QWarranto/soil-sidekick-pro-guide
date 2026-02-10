@@ -135,6 +135,20 @@ Start with 20+ professionally crafted task templates covering every season and f
 - Task management API access
 - Multi-user farm management
 
+#### OEM Embedded Licensing - Equipment Manufacturers
+For equipment manufacturers (John Deere, AGCO, Skyline Robotics) integrating LeafEngines into agricultural hardware:
+- **Development License**: $24,900/year for full SDK & API access
+- **Runtime Royalty**: $5–$50/device/year based on intelligence tier
+- **Protocol Support**: CAN Bus, J1939, ISOBUS, ADAPT 1.0, ISO 11783
+- Contact sales@soilsidekickpro.com for OEM partnerships
+
+#### Private 5G Telecom Partnership
+For telecommunications providers deploying Private 5G agricultural infrastructure:
+- **Value-Realization Layer**: Software intelligence justifying 5G investment
+- **Revenue Share**: 15–25% model for telecom-bundled sales
+- **Edge Computing**: Sub-100ms latency for autonomous fleet coordination
+- Contact partnerships@soilsidekickpro.com for telecom inquiries
+
 ### Recurring Task Automation
 
 #### Never Forget Seasonal Tasks
@@ -847,6 +861,47 @@ Process the incoming data based on event type.
 - **EPA Data:** Updated monthly, regional variations possible
 - **Satellite Data:** 3-7 day refresh cycle, weather dependent
 - **Sensor Data:** Real-time where integrated, requires setup
+
+---
+
+## OEM & Equipment Integration
+
+### LeafEngines Embedded OS
+
+For equipment manufacturers integrating LeafEngines into agricultural hardware, the Embedded OS provides real-time soil intelligence, variable rate prescriptions, and autonomous fleet coordination directly on embedded platforms.
+
+#### Supported Hardware
+- **ARM Cortex-A72+**: Raspberry Pi CM4, custom ARM boards
+- **NVIDIA Jetson**: Nano, Xavier NX, AGX Orin
+- **NXP i.MX8**: Industrial-grade embedded processors
+
+#### Supported Protocols
+- **CAN Bus**: Standard vehicle communication
+- **J1939**: Heavy-duty vehicle diagnostics and control
+- **ISOBUS (ISO 11783)**: Universal tractor-implement communication
+- **ADAPT 1.0**: Farm management data exchange
+
+#### Getting Started with OEM Integration
+1. Contact sales@soilsidekickpro.com for Development License ($24,900/yr)
+2. Receive SDK access and integration engineering support
+3. Implement on target hardware using provided reference designs
+4. Validate with protocol compliance test suite
+5. Deploy with per-device Runtime Royalty ($5–$50/device/year)
+
+### Private 5G Integration
+
+LeafEngines acts as the "Value-Realization Layer" for Private 5G agricultural deployments, providing the software intelligence that justifies high-speed infrastructure investment.
+
+#### Architecture
+- Edge computing nodes at cell tower locations
+- Sub-100ms latency for real-time field intelligence
+- Native mmWave/RF integration for autonomous equipment
+- URLLC support for safety-critical operations
+
+#### Partnership Models
+- **Revenue Share**: 15–25% of agricultural service revenue
+- **Per-Deployment License**: $25,000–$100,000 per farm/facility
+- **Platform Fee**: $500,000+/year for full platform access
 
 ---
 
