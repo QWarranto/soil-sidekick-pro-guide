@@ -1,8 +1,8 @@
 # SoilSidekick Pro - Technical Architecture Documentation
 # LeafEngines™ B2B API Platform
 
-## Version: 2.0
-## Date: December 2025
+## Version: 2.1
+## Date: February 2026
 ## Owner: Engineering Team
 
 ---
@@ -36,15 +36,21 @@ SoilSidekick Pro is built on a modern, scalable architecture leveraging React/Ty
 ### 2.1 Technology Stack
 - **Framework**: React 18.3.1 with TypeScript
 - **Build System**: Vite for fast development and optimized builds
-- **Styling**: Tailwind CSS with shadcn/ui component library
+- **Styling**: Tailwind CSS with SoilSidekick Pro brand design system (Karla headings, Old Standard TT body, SSK color palette)
+- **Components**: Shadcn/ui component library with custom pill-shaped button variants
+- **State Management**: React hooks and context for local state
+- **Routing**: React Router for client-side navigation
 - **State Management**: React hooks and context for local state
 - **Routing**: React Router for client-side navigation
 
-### 2.2 Local AI Processing
-- **Models**: Google Gemma 2B/7B language models
+### 2.2 Local AI Processing & Hybrid Inference
+- **Models**: Google Gemma 2B/7B language models (ONNX format)
 - **Processing**: Hugging Face Transformers.js with WebGPU acceleration
 - **Privacy**: Complete offline processing for sensitive agricultural data
 - **Caching**: Persistent model storage for performance optimization
+- **Fallback Strategy**: WebGPU → WASM (degraded, 300-800ms) → Cloudflare Workers AI (cloud fallback)
+- **LLM Router**: 4-layer abstraction (Router → Backend → Model → Inference) with YAML-based model registry
+- **Performance SLA**: <100ms offline inference via WebGPU/native ONNX (hardware-accelerated only)
 
 ### 2.3 Security Implementation
 - **XSS Protection**: Content sanitization with DOMPurify
@@ -105,6 +111,7 @@ SoilSidekick Pro is built on a modern, scalable architecture leveraging React/Ty
 - `customer-portal`: Subscription management
 - `check-subscription`: Subscription validation
 - Future: Stripe metered billing for B2B API usage
+- Future: OEM runtime royalty metering per device
 
 ### 4.4 Error Handling & Resilience
 - **Automatic Retry Logic**: 3 retries with exponential backoff (1s, 2s, 4s)
@@ -162,6 +169,63 @@ LeafEngines Platform
 | Starter | 30 | 500 | 5,000 |
 | Pro | 100 | 2,000 | 25,000 |
 | Enterprise | 500 | 10,000 | 100,000 |
+| OEM Runtime | Per-device | Per-device | Per-device |
+
+### 5.3 OEM Embedded OS Architecture
+
+**LeafEngines Embedded OS** provides agricultural intelligence as an embedded software layer for equipment manufacturers.
+
+```
+OEM Equipment (John Deere, AGCO, Skyline)
+├── ARM Cortex-A72+ / NVIDIA Jetson / NXP i.MX8
+├── LeafEngines Embedded OS
+│   ├── ONNX Runtime (native inference <100ms)
+│   ├── Protocol Adapters
+│   │   ├── CAN Bus
+│   │   ├── J1939 (diagnostics & control)
+│   │   ├── ISOBUS / ISO 11783
+│   │   └── ADAPT 1.0
+│   ├── Edge AI Engine
+│   │   ├── Soil analysis
+│   │   ├── VRT prescriptions
+│   │   └── Crop recommendations
+│   └── Fleet Coordination Layer
+│       ├── Real-time positioning
+│       ├── Zone management
+│       └── Autonomous path planning
+└── Cloud Sync (when connected)
+    ├── Data upload & model updates
+    └── Telemetry & runtime metering
+```
+
+**Licensing Model**:
+- Development License: $24,900/year
+- Runtime Royalty: $5–$50/device/year (Basic → Autonomy tiers)
+
+### 5.4 Private 5G Telecom Integration Architecture
+
+**Value-Realization Layer** for Private 5G agricultural deployments.
+
+```
+Telecom Infrastructure (Verizon, T-Mobile, AT&T)
+├── Private 5G Base Stations (mmWave/Sub-6GHz)
+├── Edge Computing Nodes (at cell towers)
+│   ├── LeafEngines Edge Runtime
+│   │   ├── Sub-100ms inference
+│   │   ├── Fleet coordination
+│   │   └── Safety-critical alerts (URLLC)
+│   └── Data Aggregation & Analytics
+├── MQTT Broker (10,000+ msg/min)
+├── WebSocket Gateway (real-time streams)
+└── Cloud Platform
+    ├── Revenue Share Metering (15-25%)
+    └── White-label Dashboard
+```
+
+**Performance Targets**:
+- Edge inference: <100ms (safety-critical)
+- MQTT throughput: 10,000+ msg/min validated
+- URLLC reliability: 99.999% for autonomous operations
 
 ### 5.3 Caching Strategy
 ```
@@ -230,9 +294,13 @@ Level 4: National (7 days)
 
 ### 9.1 Performance Targets
 - **Page Load Time**: < 2 seconds for initial load
-- **API Response Time**: < 500ms for most endpoints
+- **API Response Time**: < 500ms for most endpoints (online: 1000-3000ms acceptable)
 - **Database Queries**: < 100ms for typical queries
 - **File Uploads**: Support for files up to 10MB
+- **Offline AI Inference**: < 100ms via WebGPU (hardware-accelerated)
+- **WASM Fallback**: 300-800ms (degraded mode, does not meet <100ms SLA)
+- **Edge Computing (5G)**: < 100ms for autonomous fleet coordination
+- **MQTT Throughput**: 10,000+ messages/min for IoT streams
 
 ### 9.2 Scalability Design
 - **Horizontal Scaling**: Edge functions scale automatically
@@ -261,6 +329,7 @@ Level 4: National (7 days)
 **Version History:**
 - v1.0 - Initial technical architecture documentation with SOC 2 Type 1 compliance (January 2025)
 - v2.0 - Added LeafEngines B2B platform, multi-language SDK, automatic retry logic, metered billing preparation (December 2025)
+- v2.1 - Added OEM Embedded OS architecture, Private 5G telecom integration, hybrid inference/LLM router, design system alignment, Skyline partnership architecture (February 2026)
 
 **Review Cycle:** 
 - Quarterly architecture review
