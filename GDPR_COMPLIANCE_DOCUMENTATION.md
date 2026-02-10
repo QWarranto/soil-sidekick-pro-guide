@@ -1,8 +1,8 @@
 # GDPR Compliance Documentation
 ## SoilSidekick Pro - Administrative & Statutory Requirements
 
-**Document Version:** 1.0  
-**Last Updated:** 2025-11-27  
+**Document Version:** 1.1  
+**Last Updated:** 2026-02-10  
 **Document Owner:** Data Protection Officer  
 **Review Frequency:** Quarterly
 
@@ -135,6 +135,9 @@ If main establishment is outside the EU but offering services to EU residents:
 | Location tracking | High | ☐ Required ☐ Completed | ____________ | ____________ |
 | AI crop recommendations | High | ☐ Required ☐ Completed | ____________ | ____________ |
 | Payment processing | High | ☐ Required ☐ Completed | ____________ | ____________ |
+| OEM device telemetry | High | ☐ Required ☐ Completed | ____________ | ____________ |
+| 5G edge coordination | Critical | ☐ Required ☐ Completed | ____________ | ____________ |
+| Autonomous fleet GPS data | Critical | ☐ Required ☐ Completed | ____________ | ____________ |
 
 ---
 
@@ -210,6 +213,8 @@ For each processing activity, identify lawful basis:
 | OpenAI | AI services | ☐ Signed | _________ | _________ |
 | MapBox | Mapping services | ☐ Signed | _________ | _________ |
 | AWS | Cloud infrastructure | ☐ Signed | _________ | _________ |
+| Verizon/T-Mobile/AT&T | Private 5G infrastructure | ☐ Signed | _________ | _________ |
+| OEM Licensees (John Deere, AGCO) | Embedded device data | ☐ Signed | _________ | _________ |
 
 **DPA Template:** See `GDPR_DPA_TEMPLATE.md`
 
@@ -331,6 +336,8 @@ For each processing activity, identify lawful basis:
 |-----------|---------|-----------|------------|---------------------------|
 | AWS | USA | SCCs | ☐ Signed | ☐ Completed |
 | OpenAI | USA | SCCs | ☐ Signed | ☐ Completed |
+| Telecom Partners (MEC) | USA/EU | SCCs/Adequacy | ☐ Signed | ☐ Completed |
+| OEM Licensees | Various | SCCs per licensee | ☐ Signed | ☐ Completed |
 
 **Transfer Impact Assessment (TIA):** Required for all non-adequacy transfers  
 **Location:** See `GDPR_TRANSFER_IMPACT_ASSESSMENT.md`
@@ -568,8 +575,67 @@ For each processing activity, identify lawful basis:
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2025-11-27 | System | Initial creation |
+| 1.1 | 2026-02-10 | System | Added OEM/5G DPIA requirements, telecom DPAs, OEM licensee data transfers |
 
 **Next Review Date:** _________________________
+
+---
+
+## 19. OEM & 5G Data Protection Addendum (February 2026)
+
+### 19.1 OEM Device Data Processing
+
+**Data Categories Collected from OEM Devices**:
+- Device telemetry (engine RPM, soil sensors, GPS coordinates)
+- Operator identification (device login, work sessions)
+- Field operation data (planting patterns, application rates)
+- Equipment diagnostics (fault codes, maintenance alerts)
+
+**Legal Basis**: Contract (Art 6(1)(b)) — OEM licensing agreement
+**Retention**: 7 years for compliance audit trail; raw telemetry purged after 90 days
+
+**Data Minimization**:
+- GPS coordinates rounded to field-level precision (not sub-meter) for analytics
+- Operator PII separated from telemetry data at ingestion
+- Device certificates contain no personal information
+
+### 19.2 5G Edge Computing Data Flows
+
+**URLLC Coordination Data**:
+- Vehicle positions (real-time, sub-second updates)
+- Path planning commands
+- Safety-critical stop/go signals
+
+**Data Protection Measures**:
+- All coordination data processed at MEC edge (no cloud backhaul for real-time data)
+- Position data not retained after coordination window (5-second TTL)
+- Fleet coordination logs anonymized within 24 hours
+- Edge nodes do not store personal data beyond active session
+
+### 19.3 OEM Licensee Data Sharing Agreement
+
+**Requirements for Each OEM Licensee**:
+- Signed DPA covering device telemetry processing
+- Data classification agreement (what constitutes PII in agricultural context)
+- Incident response coordination procedures
+- Sub-processor notification obligations
+- Annual compliance review and audit rights
+
+### 19.4 Change Management for OEM/5G Security
+
+**Change Categories (Extended)**:
+- **Safety-Critical Changes**: 5G coordination protocol updates, failsafe modifications → Requires dual sign-off (Engineering + Safety Officer)
+- **OEM Firmware Updates**: Edge runtime updates deployed to devices → Requires 48hr soak test + licensee notification
+- **Protocol Changes**: CAN Bus/J1939/ISOBUS configuration updates → Requires hardware-in-the-loop (HIL) validation
+
+**Change Approval Process (OEM/5G)**:
+1. **Change Request**: Detailed documentation including safety impact assessment
+2. **Safety Review**: Safety officer evaluation for autonomous operations impact
+3. **Security Review**: Security team assessment of protocol/authentication changes
+4. **HIL Testing**: Hardware-in-the-loop validation on test devices
+5. **Licensee Notification**: 14-day advance notice to affected OEM partners
+6. **Staged Rollout**: 10% → 25% → 50% → 100% device deployment
+7. **Post-Change Monitoring**: 72-hour enhanced monitoring window
 
 ---
 

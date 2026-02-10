@@ -3,8 +3,8 @@
 ## LeafEngines™ B2B API Platform Security
 
 > **Status**: ACTIVE - CONTINUOUSLY UPDATED  
-> **Version**: 2.0  
-> **Date**: December 2025  
+> **Version**: 2.1  
+> **Date**: February 2026  
 > **Priority**: BLOCKING - These guidelines prevent data breaches and privilege escalation
 
 ---
@@ -785,5 +785,139 @@ const invokeWithRetry = async (fn, maxRetries = 3, baseDelay = 1000) => {
 **Version History:**
 - v1.0 - Initial security corrections (November 2025)
 - v2.0 - Added error handling improvements, retry logic, LeafEngines B2B security (December 2025)
+- v2.1 - Added OEM device security, 5G edge computing controls, protocol authentication (February 2026)
+
+---
+
+## OEM & Embedded Device Security (February 2026)
+
+### Critical Flaw #8: OEM Device Authentication 🔴
+
+**Risk**: Unauthorized devices joining the fleet, sending malicious telemetry, or intercepting coordination commands.
+
+#### Device Registration Security
+
+```typescript
+// ✅ CORRECT: Mutual TLS + device certificate validation
+const validateOEMDevice = async (req: Request) => {
+  // 1. Validate OEM licensee API key
+  const apiKey = req.headers.get('x-api-key');
+  if (!apiKey?.startsWith('ak_oem_')) {
+    throw new Error('Invalid OEM API key format');
+  }
+  
+  // 2. Validate device certificate
+  const deviceCert = req.headers.get('x-device-certificate');
+  if (!deviceCert) {
+    throw new Error('Device certificate required for OEM registration');
+  }
+  
+  // 3. Verify certificate chain against licensee CA
+  const isValid = await verifyCertificateChain(deviceCert, licenseeCA);
+  if (!isValid) {
+    throw new Error('Device certificate validation failed');
+  }
+  
+  // 4. Generate short-lived device registration token (24hr)
+  const deviceToken = await generateSecureToken({
+    deviceId: validatedData.device_id,
+    licenseeId: validatedData.licensee_id,
+    expiresIn: '24h',
+    permissions: ['telemetry:write', 'coordination:read']
+  });
+  
+  return deviceToken;
+};
+```
+
+#### Protocol-Level Security
+
+| Protocol | Authentication | Encryption | Integrity |
+|----------|---------------|------------|-----------|
+| CAN Bus | Device certificate | AES-128 payload | CRC + HMAC |
+| J1939 | Source address validation | TLS 1.3 tunnel | PGN checksums |
+| ISOBUS | TC-CLIENT auth (ISO 11783-6) | TLS 1.3 | ISO-XML signature |
+| MQTT | Client certificate + username/password | TLS 1.3 | Message signing |
+
+### Critical Flaw #9: 5G Edge Computing Security 🔴
+
+**Risk**: Compromised edge nodes, URLLC latency manipulation, fleet coordination hijacking.
+
+#### Edge Node Security Controls
+
+```typescript
+// ✅ CORRECT: Edge node attestation before coordination commands
+const validateEdgeCoordination = async (req: Request) => {
+  // 1. Verify device registration token
+  const deviceToken = req.headers.get('x-device-token');
+  const claims = await verifyDeviceToken(deviceToken);
+  
+  // 2. Validate fleet membership
+  const isMember = await validateFleetMembership(
+    claims.deviceId, 
+    validatedData.fleet_id
+  );
+  if (!isMember) {
+    throw new Error('Device not authorized for this fleet');
+  }
+  
+  // 3. Validate position integrity (anti-spoofing)
+  const positionValid = await validateGNSSIntegrity(validatedData.position);
+  if (!positionValid) {
+    // Log security event and trigger safe-stop
+    await logSecurityEvent({
+      event_type: 'GNSS_SPOOFING_DETECTED',
+      device_id: claims.deviceId,
+      fleet_id: validatedData.fleet_id,
+      risk_score: 95
+    });
+    throw new Error('Position integrity check failed');
+  }
+  
+  // 4. Rate limit coordination requests (max 10/second per device)
+  await enforceDeviceRateLimit(claims.deviceId, 10, 1000);
+  
+  return claims;
+};
+```
+
+#### Safety-Critical Security Requirements
+
+- **URLLC Slice Isolation**: Coordination commands MUST traverse dedicated URLLC slice; eMBB traffic cannot interfere
+- **Failsafe on Auth Failure**: Any authentication failure triggers immediate vehicle safe-stop via CAN Bus failsafe channel
+- **Edge Node Attestation**: MEC nodes must pass remote attestation before serving coordination commands
+- **Coordination Signing**: All path planning responses signed with edge node private key; devices verify before executing
+- **Anti-Replay**: Coordination commands include monotonic sequence numbers; replayed commands rejected
+
+### OEM Security Checklist
+
+#### Device Authentication
+- [ ] OEM API keys use dedicated `ak_oem_*` prefix with enhanced validation
+- [ ] Device certificates issued per-device with licensee CA chain
+- [ ] Device registration tokens are short-lived (24hr) and scope-limited
+- [ ] Token refresh requires re-attestation
+- [ ] Revoked devices immediately blocked across all edge nodes
+
+#### Protocol Security
+- [ ] CAN Bus messages authenticated with HMAC
+- [ ] J1939 PGN whitelisting enforced per device type
+- [ ] ISOBUS task data signed and validated before execution
+- [ ] MQTT connections require mutual TLS with client certificates
+- [ ] All telemetry encrypted in transit and at rest
+
+#### 5G Edge Security
+- [ ] URLLC slice isolated from eMBB and mMTC traffic
+- [ ] Edge nodes pass remote attestation before serving
+- [ ] Coordination commands cryptographically signed
+- [ ] Anti-replay protection via sequence numbers
+- [ ] GNSS spoofing detection active on all fleet vehicles
+- [ ] Failsafe safe-stop triggers on any security violation
+
+#### Royalty & Licensing Security
+- [ ] Device heartbeats cryptographically authenticated
+- [ ] Royalty metering uses tamper-evident counters
+- [ ] License validation occurs on device boot and every 24 hours
+- [ ] Grace period (72hr) allows operation during connectivity loss
+- [ ] License expiration triggers graceful degradation, not hard stop
 
 **This document must be reviewed by the security team before proceeding with implementation.**

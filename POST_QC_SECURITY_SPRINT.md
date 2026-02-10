@@ -607,27 +607,93 @@ EXECUTE FUNCTION public.flag_visual_content();
 
 ---
 
-## Success Criteria
+## Phase 2: OEM & 5G Security Sprint (February 2026)
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| Error-level findings | 0 | Security scan |
-| Email hashing coverage | 100% | Database query |
-| Encryption v2 migration | 100% | Database query |
-| Service role audit logging | 100% | Audit log verification |
-| Functional regression | 0 | E2E test suite |
+### SEC-5.1: OEM Device Authentication Infrastructure
+
+**Priority**: 🔴 Error — Must be in place before any OEM device registration
+
+**Tasks**:
+- Implement mutual TLS device certificate validation
+- Create OEM API key prefix validation (`ak_oem_*`)
+- Build device registration token generation with 24hr expiry
+- Add device certificate revocation list (CRL) checking
+- Implement per-device permission scoping
+
+**Testing**:
+- Verify device registration requires valid licensee API key + device certificate
+- Confirm revoked certificates are immediately rejected
+- Test token expiry and refresh flow
+- Validate device cannot exceed scoped permissions
+
+### SEC-5.2: Protocol-Level Security Hardening
+
+**Priority**: 🟡 Warning — Required before production OEM deployments
+
+**Tasks**:
+- Implement CAN Bus message HMAC authentication
+- Configure J1939 PGN whitelisting per device type
+- Add ISOBUS ISO-XML task data signing
+- Enforce MQTT mutual TLS with client certificates
+- Deploy telemetry encryption at rest
+
+**Testing**:
+- Verify unsigned CAN Bus messages are rejected
+- Confirm only whitelisted PGNs accepted per device profile
+- Test ISOBUS task rejection with invalid signatures
+- Validate MQTT connections fail without valid client certificate
+
+### SEC-5.3: 5G Edge Coordination Security
+
+**Priority**: 🔴 Error — Safety-critical for autonomous fleet operations
+
+**Tasks**:
+- Implement URLLC slice isolation verification
+- Build edge node remote attestation
+- Add coordination command cryptographic signing
+- Deploy anti-replay protection (monotonic sequence numbers)
+- Implement GNSS spoofing detection
+- Configure failsafe safe-stop triggers on security violations
+
+**Testing**:
+- Verify coordination commands rejected from non-URLLC slices
+- Test edge node attestation failure triggers failover
+- Confirm replayed coordination commands are rejected
+- Validate GNSS spoofing detection triggers safe-stop
+- Load test: verify security overhead keeps latency <10ms
+
+### SEC-5.4: Royalty Metering Security
+
+**Priority**: 🟡 Warning — Required before licensee billing
+
+**Tasks**:
+- Implement tamper-evident device heartbeat counters
+- Add cryptographic authentication to heartbeat messages
+- Build license validation on device boot and 24hr intervals
+- Configure 72hr grace period for connectivity loss
+- Implement graceful degradation on license expiry (not hard stop)
+
+**Testing**:
+- Verify tampered heartbeat counters are detected and flagged
+- Test license validation on cold boot and scheduled intervals
+- Confirm graceful degradation mode activates on license expiry
+- Validate 72hr grace period operations during network partition
 
 ---
 
-## Rollback Procedures
+## Updated Success Criteria (February 2026)
 
-Each migration includes a rollback path:
-
-1. **Trial email hashing**: Keep plaintext column until January 2026, then drop
-2. **Rate limit hashing**: Dual-write period of 30 days
-3. **Subscriber validation**: Function versioning allows instant rollback
-4. **Encryption v2**: Both v1 and v2 decryption functions remain available
-5. **ADAPT credentials**: Nullable constraint can be removed
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Error-level findings (original) | 0 | Security scan |
+| Email hashing coverage | 100% | Database query |
+| Encryption v2→v3 migration | 100% | Database query |
+| Service role audit logging | 100% | Audit log verification |
+| OEM device auth coverage | 100% | Registration audit |
+| Protocol security enforcement | 100% | Protocol test suite |
+| 5G edge attestation | 100% | Attestation log |
+| Coordination command signing | 100% | Signature verification |
+| Functional regression | 0 | E2E test suite |
 
 ---
 
@@ -636,3 +702,5 @@ Each migration includes a rollback path:
 - QC completion on December 20, 2025
 - No active edge function deployments during migration windows
 - Database backup before each migration batch
+- OEM hardware test devices available for SEC-5.x tasks
+- Private 5G test infrastructure access for SEC-5.3
