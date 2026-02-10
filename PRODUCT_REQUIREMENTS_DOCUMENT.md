@@ -439,11 +439,38 @@ npm install @soilsidekick/sdk
 - Customer adoption rates
 - Pricing model validation
 
-### 15.3 Mitigation Strategies
-- Redundant data sources
-- Comprehensive testing protocols
-- Customer feedback loops
-- Agile development practices
+### 15.3 OEM & Telecom Risks
+| Risk | Severity | Likelihood | Impact | Mitigation |
+|------|----------|------------|--------|------------|
+| **mTLS Certificate Compromise** | Critical | Low | Full fleet impersonation | Hardware Security Module (HSM) key storage, 90-day rotation, Certificate Revocation List (CRL) with <1hr propagation |
+| **OTA Update Failure** | Critical | Medium | Bricked devices in field | Staged rollout (1% → 10% → 100%), automatic rollback on health check failure, dual-partition A/B boot |
+| **Royalty Metering Tampering** | High | Low | Revenue leakage | Tamper-evident heartbeat with cryptographic nonce, drift detection (>5% triggers audit), blockchain-anchored reconciliation |
+| **CAN Bus Injection Attack** | Critical | Low | Equipment damage/safety hazard | HMAC validation on all frames, PGN whitelisting, anomaly detection on message frequency |
+| **5G URLLC Latency Breach** | Critical | Medium | Autonomous coordination failure, safety risk | Automatic failover to LTE/Wi-Fi 6, p99 monitoring with <10ms threshold, edge node geographic redundancy |
+| **Edge Node Compromise** | Critical | Low | Data exfiltration, false commands | 24-hour attestation cycle, TPM-backed integrity measurement, network micro-segmentation |
+| **5G Slice Isolation Failure** | High | Low | Cross-tenant data leakage | Independent slice monitoring, automated quarantine on anomaly, annual penetration testing |
+| **Worker Safety Data Breach** | Critical | Low | GDPR Article 9 violation, regulatory penalty | 5-second TTL enforcement, edge-only processing, no persistent storage of biometric data |
+| **Telecom Partner Dependency** | High | Medium | Revenue channel disruption | Multi-carrier strategy (Verizon, T-Mobile, AT&T), carrier-agnostic API layer, contractual SLA guarantees |
+| **J1939/ISOBUS Protocol Incompatibility** | Medium | Medium | OEM integration delays | HIL testing lab, protocol conformance test suite, manufacturer-specific adapter layer |
+
+### 15.4 Risk Matrix Summary
+
+```
+                    Low Impact    Medium Impact    High Impact    Critical Impact
+High Likelihood                                                  
+Medium Likelihood                 J1939 Compat.    Telecom Dep.   OTA Failure, URLLC
+Low Likelihood                                     Slice Isol.    mTLS, CAN Bus, Edge Node
+                                                   Royalty Tamp.  Safety Data Breach
+```
+
+### 15.5 Mitigation Strategies
+- Redundant data sources and multi-carrier telecom partnerships
+- Comprehensive testing protocols including Hardware-in-the-Loop (HIL)
+- Customer feedback loops and OEM partner validation programs
+- Agile development practices with safety-critical change management
+- Dual sign-off (Engineering + Safety Officer) for autonomous system changes
+- Incident response procedures for OEM device and 5G edge scenarios
+- Regular tabletop exercises for safety-critical failure scenarios
 
 ---
 

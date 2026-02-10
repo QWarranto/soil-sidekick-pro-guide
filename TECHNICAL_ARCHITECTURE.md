@@ -315,12 +315,29 @@ Level 4: National (7 days)
 - **Code Repository**: Git-based version control with redundancy
 - **Configuration Backup**: Automated backup of system configurations
 - **Documentation**: Version-controlled documentation repository
+- **OEM Device Registry**: Replicated device state across availability zones
+- **5G Edge State**: Stateless edge nodes with centralized configuration recovery
 
 ### 10.2 Recovery Procedures
-- **RTO (Recovery Time Objective)**: 4 hours for full service restoration
-- **RPO (Recovery Point Objective)**: 1 hour maximum data loss
+- **RTO (Recovery Time Objective)**: 4 hours for full service restoration (cloud), 500ms for 5G failover
+- **RPO (Recovery Point Objective)**: 1 hour maximum data loss (cloud), 0 for safety-critical 5G data
 - **Failover Procedures**: Documented procedures for service failover
-- **Testing**: Regular disaster recovery testing and validation
+- **OEM Fleet Recovery**: Automatic device re-registration via mTLS, OTA rollback to last-known-good firmware
+- **5G Edge Recovery**: Geographic failover to nearest MEC node, automatic re-attestation cycle
+- **Testing**: Regular disaster recovery testing and validation including HIL simulations
+
+### 10.3 OEM & 5G Risk Assessment
+
+| Risk Category | Threat | Severity | Mitigation |
+|--------------|--------|----------|------------|
+| Device Security | mTLS certificate compromise | Critical | HSM storage, 90-day rotation, CRL propagation <1hr |
+| OTA Pipeline | Failed firmware update | Critical | A/B partition boot, staged rollout, automatic rollback |
+| Revenue Integrity | Royalty metering tampering | High | Tamper-evident heartbeat, >5% drift audit trigger |
+| Protocol Safety | CAN Bus injection | Critical | HMAC validation, PGN whitelist, frequency anomaly detection |
+| 5G Latency | URLLC breach (p99 >10ms) | Critical | LTE/Wi-Fi 6 failover, geographic edge redundancy |
+| Edge Security | Node compromise | Critical | 24hr attestation, TPM integrity, micro-segmentation |
+| Data Protection | Worker safety data breach | Critical | 5-second TTL, edge-only processing, no persistent biometrics |
+| Telecom | Partner dependency | High | Multi-carrier strategy, carrier-agnostic API layer |
 
 ---
 
