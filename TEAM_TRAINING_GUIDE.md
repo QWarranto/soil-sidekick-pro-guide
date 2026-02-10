@@ -434,3 +434,69 @@ requestHandler(
 - [Validation Schemas](VALIDATION_SCHEMAS.md)
 - [Operational Monitoring](OPERATIONAL_MONITORING.md)
 - [Supabase Dashboard](https://supabase.com/dashboard/project/wzgnxkoeqzvueypwzvyn)
+
+---
+
+## Session 4: OEM & 5G Operations Training (T4)
+**Duration:** 1 hour  
+**Added:** February 2026
+
+### 4.1 OEM Device Authentication
+
+OEM endpoints use mutual TLS (mTLS) instead of JWT tokens:
+
+```
+Standard API:   User → JWT Token → requestHandler → Business Logic
+OEM Device:     Device → mTLS Certificate + ak_oem_* Key → requestHandler → Telemetry Ingestion
+```
+
+**Key differences from standard endpoints:**
+- `requireAuth: false` (mTLS replaces JWT)
+- `requireApiKey: true` with `apiKeyPrefix: 'ak_oem_'`
+- No subscription check (contract-based licensing)
+- HMAC validation on CAN Bus frames
+- PGN whitelisting for J1939 protocol
+
+### 4.2 5G Safety-Critical Patterns
+
+Safety-critical 5G endpoints have stricter requirements:
+
+| Requirement | Standard Endpoint | 5G Safety-Critical |
+|-------------|-------------------|---------------------|
+| Latency target | <500ms | <10ms (URLLC p99) |
+| Rate limit | 100-500/hr | 10,000/min |
+| Deployment approval | Engineering lead | Dual sign-off (Eng + Safety) |
+| Testing | Unit + integration | HIL + 24hr soak test |
+| Data retention | Standard | 5-second TTL for coordination data |
+| Failover | Manual | Automatic (<500ms switchover) |
+
+### 4.3 Change Management for Safety-Critical Systems
+
+**⚠️ ALL changes to OEM/5G functions require:**
+
+1. **Risk Assessment**: Document potential impact on autonomous operations
+2. **HIL Testing**: Validate against hardware simulation before deployment
+3. **Dual Sign-off**: Engineering lead AND Safety Officer must approve
+4. **Staged Rollout**: 1% → 10% → 100% with health monitoring at each stage
+5. **Rollback Plan**: Verified automatic rollback procedure before deployment
+
+### 4.4 Incident Response for OEM/5G
+
+| Scenario | Response Time | Procedure |
+|----------|---------------|-----------|
+| mTLS certificate compromise | <1 hour | Revoke via CRL, re-issue, notify OEM partner |
+| CAN Bus injection detected | Immediate | Isolate device, HMAC audit, PGN log review |
+| URLLC latency breach | Automatic | Failover to LTE/Wi-Fi 6, alert on-call engineer |
+| OTA update failure | <30 min | Automatic A/B rollback, staged re-deployment |
+| Edge node compromise | <1 hour | Quarantine node, re-attest, forensic analysis |
+| Worker safety data exposure | Immediate | Invoke GDPR Art.33 procedure (72hr notification) |
+
+### 4.5 OEM/5G Monitoring Dashboards
+
+**Key metrics to watch:**
+- `oem_device_registry` — Fleet health, last heartbeat, firmware version
+- OTA deployment status — Success rate, rollback count, staged progress
+- Royalty metering — Heartbeat drift (alert if >5%), revenue reconciliation
+- URLLC latency — p50/p95/p99 per edge node
+- Network slice reliability — Target: 99.999% uptime
+- Safety incident log — Emergency stops, vital sign anomalies, geofence breaches

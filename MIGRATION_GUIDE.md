@@ -339,8 +339,68 @@ DELETE FROM cost_tracking WHERE created_at > '[migration_start_date]';
 
 ---
 
-## 8. References
+## 8. OEM & 5G Edge Function Patterns
+
+### 8.1 OEM Device Endpoint Pattern
+
+OEM endpoints use mutual TLS (mTLS) authentication instead of JWT and require `ak_oem_*` API key prefixes:
+
+```typescript
+requestHandler(
+  {
+    requireAuth: false,          // mTLS replaces JWT for device auth
+    requireApiKey: true,
+    apiKeyPrefix: 'ak_oem_',
+    rateLimit: { requests: 1000, windowMinutes: 60 },
+    requireSubscription: false,  // OEM licensing is contract-based
+  },
+  oemTelemetrySchema,
+  async (data, _user, supabase) => {
+    // Validate HMAC on CAN Bus frames
+    // Enforce PGN whitelist for J1939
+    // Track royalty metering heartbeat
+    return { success: true, data: result };
+  }
+)
+```
+
+### 8.2 5G Safety-Critical Endpoint Pattern
+
+Safety-critical 5G endpoints enforce strict latency budgets and dual sign-off for deployments:
+
+```typescript
+requestHandler(
+  {
+    requireAuth: true,
+    rateLimit: { requests: 10000, windowMinutes: 1 },  // High-throughput URLLC
+    latencyBudgetMs: 10,        // p99 target
+    safetyClassification: 'critical',
+  },
+  edgeCoordinateSchema,
+  async (data, user, supabase) => {
+    // Anti-replay: validate monotonic sequence number
+    // Execute coordination logic within latency budget
+    // Enforce 5-second TTL on coordination data
+    return { success: true, data: result };
+  }
+)
+```
+
+### 8.3 Change Management for OEM/5G Functions
+
+| Change Type | Approval Required | Testing Required |
+|-------------|-------------------|------------------|
+| Standard API endpoint | Engineering lead | Unit + integration tests |
+| OEM telemetry ingestion | Engineering lead + QA | HIL testing + field validation |
+| 5G safety-critical | Engineering + Safety Officer (dual sign-off) | HIL + 24hr soak test |
+| OTA firmware update pipeline | Engineering + Safety Officer + OEM partner | Staged rollout (1% → 10% → 100%) |
+
+---
+
+## 9. References
 
 - [VALIDATION_SCHEMAS.md](./VALIDATION_SCHEMAS.md) - Complete schema documentation
 - [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) - API reference
 - [QUALITY_CONTROL_CALENDAR_SCHEDULE.md](./QUALITY_CONTROL_CALENDAR_SCHEDULE.md) - Migration timeline
+- [SECURITY_CRITICAL_CORRECTIONS.md](./SECURITY_CRITICAL_CORRECTIONS.md) - OEM/5G security flaws and corrections
+- [POST_QC_SECURITY_SPRINT.md](./POST_QC_SECURITY_SPRINT.md) - OEM/5G security sprint tasks

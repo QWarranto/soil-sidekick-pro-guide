@@ -555,6 +555,13 @@ SoilSidekick Pro and LeafEngines represent an advanced agricultural intelligence
 | Metered billing gap | Stripe integration approved | 📋 Planned |
 | GIS interoperability (20% compliant) | Phase 1 B2B roadmap | 📋 Planned |
 | Sub-100ms latency requirement | Caching infrastructure exists | ✅ Achievable |
+| OEM mTLS certificate management | HSM key storage, 90-day rotation, CRL | 📋 Planned |
+| OTA firmware update failures | A/B boot partition, staged rollout, auto-rollback | 📋 Planned |
+| 5G URLLC latency breach (>10ms) | LTE/Wi-Fi 6 failover, geographic edge redundancy | 📋 Planned |
+| Royalty metering tampering | Tamper-evident heartbeat, drift detection >5% | 📋 Planned |
+| CAN Bus/J1939 protocol injection | HMAC validation, PGN whitelisting, HIL testing | 📋 Planned |
+| Worker safety data breach (GDPR Art.9) | 5-second TTL, edge-only processing, no persistent biometrics | 📋 Planned |
+| Telecom partner dependency | Multi-carrier strategy (Verizon, T-Mobile, AT&T) | 📋 Planned |
 
 ### 14.4 Go-Live Readiness
 
