@@ -1,8 +1,8 @@
 # Subject Access Request (SAR) Procedure
 ## GDPR Article 15 Compliance - SoilSidekick Pro
 
-**Document Version:** 1.0  
-**Last Updated:** 2025-11-27  
+**Document Version:** 2.1  
+**Last Updated:** 2026-02-10  
 **Procedure Owner:** Data Protection Officer  
 **Review Frequency:** Annual
 
@@ -532,8 +532,58 @@ This extension is permitted under Article 12(3) GDPR.
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2025-11-27 | System | Initial procedure |
+| 2.1 | 2026-02-10 | System | Added OEM/5G data search scope |
 
 **Next Review:** 2026-11-27
+
+---
+
+## 17. OEM & 5G Data Search Addendum
+
+When processing SARs for individuals whose data may exist in OEM or 5G systems, additionally search:
+
+### 17.1 OEM Device Systems
+
+| System | Data Types | Notes |
+|--------|-----------|-------|
+| `oem_device_registry` | Device IDs linked to operator | Only if operator identity is recorded |
+| `oem_heartbeats` | Timestamps, API call counts | Pseudonymized — link via device-operator mapping |
+| `ota_update_log` | Firmware update history per device | Relevant if operator-specific devices |
+| CAN Bus telemetry logs | Sensor readings, GPS (rounded) | GPS data is personal even when rounded |
+| J1939 engine diagnostics | Equipment operational data | Generally not personal unless operator-linked |
+| ISOBUS task logs | Task execution records | May contain operator assignment data |
+
+### 17.2 5G/MEC Edge Systems
+
+| System | Data Types | Notes |
+|--------|-----------|-------|
+| Vital signs data | Heart rate, temperature | **5-second TTL — ephemeral, not retained** |
+| Coordination data | GPS positions, path vectors | **5-second TTL — ephemeral, not retained** |
+| Safety incident logs | Incident details, worker ID | Retained 7 years — must search |
+| Geofence violation records | Location, timestamp, worker | Retained 2 years — must search |
+| Edge attestation records | Node security status | Generally not personal |
+
+**Important:** Inform the data subject that real-time ephemeral data (vital signs, coordination) is processed with a 5-second TTL and is never persisted, making it impossible to provide historical copies. Document this in the SAR response.
+
+### 17.3 Additional SAR SQL Queries
+
+```sql
+-- OEM device data linked to operator
+SELECT d.device_id, d.manufacturer, d.firmware_version, d.last_heartbeat_at
+FROM oem_device_registry d
+WHERE d.operator_user_id = '[USER_ID]';
+
+-- Safety incidents involving worker
+SELECT incident_id, incident_type, created_at, resolution_status
+FROM safety_incident_log
+WHERE worker_user_id = '[USER_ID]';
+
+-- Geofence violations
+SELECT violation_id, location, timestamp, violation_type
+FROM geofence_violations
+WHERE worker_user_id = '[USER_ID]'
+AND timestamp > NOW() - INTERVAL '2 years';
+```
 
 ---
 

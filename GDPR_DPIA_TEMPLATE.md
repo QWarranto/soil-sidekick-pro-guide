@@ -1,6 +1,8 @@
 # Data Protection Impact Assessment (DPIA) Template
 ## GDPR Article 35 - SoilSidekick Pro
 
+**Document Version:** 2.1  
+**Last Updated:** 2026-02-10  
 **DPIA Reference:** DPIA-[FEATURE/PROCESS]-YYYY-MM-DD  
 **Assessment Date:** [DATE]  
 **Assessor:** [NAME]  
@@ -559,6 +561,7 @@ For each risk, assess:
 |---------|------|--------|---------|-------------|
 | 0.1 | [Date] | [Name] | Initial draft | - |
 | 1.0 | [Date] | [Name] | Final version | [Name] |
+| 2.1 | 2026-02-10 | System | Added OEM/5G pre-filled assessment guidance | - |
 
 **Related Documents:**
 - `GDPR_COMPLIANCE_DOCUMENTATION.md`
@@ -569,6 +572,58 @@ For each risk, assess:
 **Accessibility:**
 - Stored: [LOCATION]
 - Available to: DPO, Management, Supervisory Authority (on request)
+
+---
+
+## Appendix A: Pre-Filled DPIA Guidance for OEM & 5G Processing
+
+### A.1 OEM Device Telemetry DPIA
+
+**When Required:** Before onboarding any new OEM partner or deploying to new device class.
+
+**Key Risks to Assess:**
+| Risk | Typical Level | Key Controls |
+|------|--------------|--------------|
+| GPS data re-identification | Medium | Field-level rounding, no raw coordinates stored |
+| mTLS certificate compromise | Medium | CRL enforcement, 24hr token TTL, certificate rotation |
+| Operator profiling via telemetry | Low-Medium | Data minimization, no behavioral analytics on telemetry |
+| Cross-border transfer (OEM partner) | Medium | Per-partner DPA, SCCs, Transfer Impact Assessment |
+| Royalty metering data as usage profiling | Low | Aggregated billing, no individual operator tracking |
+
+**Mandatory Controls:**
+- [ ] mTLS enforced for all device communications
+- [ ] GPS coordinates rounded to field-level precision
+- [ ] CAN Bus HMAC validation active
+- [ ] J1939 PGN whitelist configured
+- [ ] DPA signed with OEM partner
+- [ ] Data retention aligned with ROPA (Section 9)
+
+### A.2 Private 5G / MEC Safety Processing DPIA
+
+**When Required:** Before deploying to any new site with worker vital signs monitoring or autonomous equipment coordination.
+
+**DPIA is MANDATORY** — Processing of health data (vital signs) constitutes special category data under Article 9.
+
+**Key Risks to Assess:**
+| Risk | Typical Level | Key Controls |
+|------|--------------|--------------|
+| Worker vital signs as health data | High | 5s TTL, edge-only processing, explicit consent |
+| Real-time location tracking | High | 5s TTL, coordination purpose only, no retention |
+| Autonomous equipment safety failure | Critical | URLLC SLA, emergency stop <100ms, failover |
+| Edge node compromise exposing safety data | High | Hardware attestation, slice isolation, anti-replay |
+| Re-identification from movement patterns | Medium | Ephemeral data, no pattern storage |
+
+**Mandatory Controls:**
+- [ ] Worker explicit consent for vital signs monitoring (Article 9(2)(a))
+- [ ] 5-second TTL enforced and verified for all ephemeral data
+- [ ] URLLC slice isolation validated
+- [ ] Emergency stop protocol tested
+- [ ] Edge node attestation cycle configured (24hr)
+- [ ] Dual sign-off workflow active for safety-critical changes
+- [ ] Safety Officer designated and trained
+- [ ] Anti-replay (monotonic sequence) validated
+
+**Legal Basis for Vital Signs:** Explicit consent (Article 9(2)(a)) AND vital interests (Article 6(1)(d)) as secondary basis for emergency scenarios.
 
 ---
 

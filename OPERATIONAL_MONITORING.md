@@ -1,7 +1,7 @@
 # Operational Monitoring Guide
 
-**Last Updated:** December 19, 2025  
-**Version:** 1.0.0
+**Last Updated:** February 10, 2026  
+**Version:** 2.1.0
 
 ---
 
@@ -364,3 +364,170 @@ ORDER BY event_count DESC
 - **Edge Function Logs:** https://supabase.com/dashboard/project/wzgnxkoeqzvueypwzvyn/functions/{function_name}/logs
 - **SQL Editor:** https://supabase.com/dashboard/project/wzgnxkoeqzvueypwzvyn/sql/new
 - **Function Secrets:** https://supabase.com/dashboard/project/wzgnxkoeqzvueypwzvyn/settings/functions
+
+---
+
+## 6. OEM Device Fleet Monitoring
+
+### 6.1 Device Health Dashboard
+
+Monitor registered OEM devices across all deployment tiers:
+
+```sql
+SELECT 
+  device_id,
+  manufacturer,
+  firmware_version,
+  last_heartbeat_at,
+  royalty_tier,
+  CASE 
+    WHEN last_heartbeat_at < NOW() - INTERVAL '1 hour' THEN 'OFFLINE'
+    WHEN last_heartbeat_at < NOW() - INTERVAL '15 minutes' THEN 'DEGRADED'
+    ELSE 'HEALTHY'
+  END as device_status,
+  cumulative_api_calls,
+  certificate_expires_at
+FROM oem_device_registry
+ORDER BY last_heartbeat_at DESC
+```
+
+### 6.2 OEM Alert Thresholds
+
+| Alert Name | Condition | Severity | Action |
+|------------|-----------|----------|--------|
+| Device Offline | No heartbeat > 1 hour | Warning | Email OEM partner |
+| Fleet Offline | >10% devices offline | Critical | PagerDuty + OEM escalation |
+| Certificate Expiry | Certificate expires < 7 days | Warning | Auto-renewal trigger |
+| Certificate Expired | Certificate expired | Critical | Block device + notify OEM |
+| Royalty Metering Drift | Heartbeat count diverges >5% from API logs | Warning | Audit reconciliation |
+| Firmware Mismatch | Device running EOL firmware | Warning | OTA update push |
+| CAN Bus Anomaly | HMAC validation failures > 10/min | Critical | Isolate device + security alert |
+| Telemetry Flood | >1000 msg/min from single device | Warning | Rate limit + investigate |
+
+### 6.3 OTA Update Monitoring
+
+```sql
+SELECT 
+  ota_batch_id,
+  firmware_version_target,
+  COUNT(*) as total_devices,
+  COUNT(CASE WHEN update_status = 'completed' THEN 1 END) as completed,
+  COUNT(CASE WHEN update_status = 'failed' THEN 1 END) as failed,
+  COUNT(CASE WHEN update_status = 'rollback' THEN 1 END) as rolled_back,
+  AVG(update_duration_seconds) as avg_update_time
+FROM ota_update_log
+WHERE created_at >= NOW() - INTERVAL '24 hours'
+GROUP BY ota_batch_id, firmware_version_target
+ORDER BY created_at DESC
+```
+
+### 6.4 Royalty Metering Verification
+
+```sql
+-- Compare heartbeat-reported calls vs actual API logs
+WITH device_reported AS (
+  SELECT device_id, SUM(reported_api_calls) as reported
+  FROM oem_heartbeats
+  WHERE timestamp >= DATE_TRUNC('month', NOW())
+  GROUP BY device_id
+),
+actual_usage AS (
+  SELECT device_id, COUNT(*) as actual
+  FROM api_key_access_log
+  WHERE access_time >= DATE_TRUNC('month', NOW())
+    AND api_key_id IN (SELECT id FROM api_keys WHERE subscription_tier = 'oem')
+  GROUP BY device_id
+)
+SELECT 
+  d.device_id,
+  d.reported,
+  a.actual,
+  ABS(d.reported - a.actual)::float / NULLIF(a.actual, 0) * 100 as drift_percent
+FROM device_reported d
+JOIN actual_usage a ON d.device_id = a.device_id
+WHERE ABS(d.reported - a.actual)::float / NULLIF(a.actual, 0) * 100 > 5
+ORDER BY drift_percent DESC
+```
+
+---
+
+## 7. Private 5G / MEC Edge Monitoring
+
+### 7.1 Edge Node Health
+
+Monitor Multi-Access Edge Computing (MEC) nodes for URLLC compliance:
+
+```sql
+SELECT 
+  edge_node_id,
+  region,
+  network_slice,
+  active_connections,
+  avg_latency_ms,
+  p99_latency_ms,
+  CASE 
+    WHEN p99_latency_ms > 10 THEN 'SLA_BREACH'
+    WHEN p99_latency_ms > 7 THEN 'WARNING'
+    ELSE 'OPTIMAL'
+  END as latency_status,
+  uptime_percent,
+  last_attestation_at
+FROM edge_node_metrics
+WHERE timestamp >= NOW() - INTERVAL '5 minutes'
+ORDER BY p99_latency_ms DESC
+```
+
+### 7.2 5G/MEC Alert Thresholds
+
+| Alert Name | Condition | Severity | Action |
+|------------|-----------|----------|--------|
+| URLLC Latency Breach | p99 > 10ms | Critical | Failover + Safety Officer alert |
+| Edge Node Down | No metrics > 30s | Critical | Automatic failover + PagerDuty |
+| Network Slice Degraded | Reliability < 99.999% (5-min window) | Critical | Telecom partner escalation |
+| Attestation Expired | Node attestation > 24hrs old | Warning | Re-attestation trigger |
+| Sequence Gap | Monotonic sequence gap detected | Critical | Anti-replay investigation |
+| Coordination Timeout | Equipment sync response > 5s TTL | Warning | Graceful degradation mode |
+| Vital Signs Alert | Worker vital sign anomaly | Critical | Immediate safety protocol |
+
+### 7.3 Safety-Critical Metrics
+
+```sql
+-- Real-time safety monitoring for autonomous operations
+SELECT 
+  operation_id,
+  equipment_type,
+  coordination_latency_ms,
+  vital_signs_status,
+  geofence_compliance,
+  emergency_stop_available,
+  CASE 
+    WHEN coordination_latency_ms > 10 THEN 'HALT_REQUIRED'
+    WHEN vital_signs_status = 'anomaly' THEN 'HALT_REQUIRED'
+    WHEN geofence_compliance = false THEN 'HALT_REQUIRED'
+    ELSE 'OPERATIONAL'
+  END as safety_status
+FROM safety_critical_operations
+WHERE timestamp >= NOW() - INTERVAL '1 minute'
+  AND safety_status != 'OPERATIONAL'
+ORDER BY timestamp DESC
+```
+
+### 7.4 Incident Response: 5G Safety Events
+
+1. **URLLC Latency Breach:**
+   - Immediately trigger graceful degradation for all autonomous equipment
+   - Switch to local-only inference mode
+   - Notify Safety Officer within 60 seconds
+   - Log event in safety incident register
+
+2. **Equipment Coordination Failure:**
+   - Issue emergency stop to affected equipment
+   - Verify worker vital signs are nominal
+   - Engage manual override protocols
+   - Root cause analysis within 4 hours
+
+3. **Network Slice Failure:**
+   - Failover to backup slice or local mesh
+   - Reduce autonomous operations to minimum safe state
+   - Coordinate with telecom partner for restoration
+   - Post-incident review with dual sign-off (Engineering + Safety Officer)
