@@ -1,8 +1,8 @@
 # SoilSidekick Pro API Documentation
 # LeafEngines™ B2B API Platform
 
-## Version: 2.0
-## Date: December 2025
+## Version: 2.1
+## Date: February 2026
 ## Security: SOC 2 Type 1 Compliant
 
 ---
@@ -506,6 +506,7 @@ GET /usage-analytics
 | Starter | 30 | 500 | 5,000 | Email (48hr) |
 | Pro | 100 | 2,000 | 25,000 | Priority (24hr) |
 | Enterprise | 500 | 10,000 | 100,000 | 24/7 Dedicated |
+| OEM | 1,000 | 50,000 | 500,000 | Dedicated + On-Site |
 
 **Response Headers**:
 ```
@@ -636,7 +637,189 @@ External services are protected by **circuit breakers** to prevent cascade failu
 - User data isolation
 - Administrative function separation
 
-## 5. SDK and Integration
+## 5. OEM & Embedded Device APIs (February 2026)
+
+### 5.1 Device Registration
+```http
+POST /oem-device-register
+```
+
+**Description**: Register an OEM embedded device with the LeafEngines platform. Required for runtime royalty metering and OTA update management.
+
+**Authentication**: Requires OEM Development License API key (`x-api-key: ak_oem_*`).
+
+**Request Body**:
+```json
+{
+  "device_id": "jd-tractor-8r-00142",
+  "hardware_platform": "arm_cortex_a72",
+  "firmware_version": "2.1.0",
+  "licensee_id": "lic_deere_2026",
+  "capabilities": {
+    "gpu_available": false,
+    "protocols": ["can_bus", "j1939", "isobus"],
+    "storage_gb": 32
+  },
+  "location": {
+    "county_fips": "19153",
+    "state_code": "IA"
+  }
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "device": {
+    "device_id": "jd-tractor-8r-00142",
+    "registration_token": "drt_abc123",
+    "assigned_edge_node": "mec-iowa-central-01",
+    "mqtt_broker": "mqtt://edge-ia-01.leafengines.io:8883",
+    "ota_channel": "stable",
+    "royalty_tier": "standard"
+  },
+  "protocols_configured": {
+    "can_bus": { "baud_rate": 250000, "filters": ["0x18FEF100-0x18FEF1FF"] },
+    "j1939": { "source_address": 128, "pgn_whitelist": ["EEC1", "CCVS", "ET1"] },
+    "isobus": { "tc_client_enabled": true, "iso_xml_version": "4.3" }
+  }
+}
+```
+
+### 5.2 Telemetry Ingestion
+```http
+POST /oem-telemetry
+```
+
+**Description**: Ingest real-time sensor telemetry from OEM devices via CAN Bus / J1939 protocols. Supports batch ingestion up to 1000 readings per request.
+
+**Authentication**: Device registration token (`x-device-token: drt_*`).
+
+**Request Body**:
+```json
+{
+  "device_id": "jd-tractor-8r-00142",
+  "readings": [
+    {
+      "timestamp": "2026-02-10T14:30:00Z",
+      "protocol": "j1939",
+      "pgn": "EEC1",
+      "data": {
+        "engine_speed_rpm": 1800,
+        "engine_torque_pct": 72
+      }
+    },
+    {
+      "timestamp": "2026-02-10T14:30:00Z",
+      "protocol": "can_bus",
+      "arbitration_id": "0x18FEF128",
+      "data": {
+        "soil_moisture_pct": 34.2,
+        "soil_temperature_c": 18.5
+      }
+    }
+  ],
+  "batch_id": "batch_20260210_143000"
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "accepted": 2,
+  "rejected": 0,
+  "batch_id": "batch_20260210_143000",
+  "processing_latency_ms": 12
+}
+```
+
+### 5.3 5G Edge Coordination
+```http
+POST /edge-coordinate
+```
+
+**Description**: Real-time autonomous fleet coordination via Private 5G URLLC slice. Requires sub-10ms latency for safety-critical operations.
+
+**Authentication**: Device registration token with fleet coordination permission.
+
+**Request Body**:
+```json
+{
+  "fleet_id": "fleet-ia-central-042",
+  "device_id": "jd-tractor-8r-00142",
+  "coordination_type": "path_planning",
+  "position": {
+    "latitude": 41.8780,
+    "longitude": -93.0977,
+    "heading_deg": 270,
+    "speed_kph": 8.5
+  },
+  "nearby_vehicles": ["jd-tractor-8r-00143", "jd-sprayer-4940-007"],
+  "field_context": {
+    "operation": "planting",
+    "row_spacing_cm": 76,
+    "swath_width_m": 12
+  }
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "coordination": {
+    "recommended_path": [
+      { "lat": 41.8781, "lng": -93.0978, "speed_kph": 8.5 },
+      { "lat": 41.8782, "lng": -93.0979, "speed_kph": 8.0 }
+    ],
+    "collision_risk": "none",
+    "overlap_pct": 1.2,
+    "next_update_ms": 500
+  },
+  "latency_ms": 7,
+  "slice": "urllc"
+}
+```
+
+### 5.4 ISOBUS Task Controller
+```http
+POST /isobus-task
+```
+
+**Description**: Generate and manage ISO 11783 (ISOBUS) task controller commands for variable-rate application. Outputs ISO-XML v4.3 compliant task data.
+
+**Authentication**: OEM API key with ISOBUS permission.
+
+**Request Body**:
+```json
+{
+  "device_id": "jd-sprayer-4940-007",
+  "task_type": "variable_rate_application",
+  "prescription_map_id": "pm_uuid_123",
+  "field_id": "field_uuid_456",
+  "application_product": "28-0-0 UAN",
+  "output_format": "iso_xml_v43"
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "task": {
+    "task_id": "tsk_20260210_001",
+    "iso_xml": "<?xml version=\"1.0\"?><ISO11783_TaskData>...</ISO11783_TaskData>",
+    "zones": 12,
+    "total_area_ha": 64.8,
+    "product_total_kg": 4850,
+    "estimated_savings_pct": 18
+  }
+}
+```
+
+## 6. SDK and Integration
 
 ### 5.1 SDK Client Onboarding
 
@@ -713,6 +896,8 @@ print(f"pH: {soil.ph_level}")
 | Custom Model Fine-Tuning | $50K-100K/engagement | 8-12 weeks |
 | Compliance Package (GMP/FDA/ISA) | $75K-150K/year | 6-8 weeks |
 | Real-Time Event Streaming | $35K-75K/year | 4-6 weeks |
+| OEM Embedded Licensing | $24,900/year + runtime royalties | 8-12 weeks |
+| Private 5G Edge Computing | $500K+/year (partner platform fee) | 16-24 weeks |
 
 ## 6. Compliance & Governance
 
@@ -749,6 +934,8 @@ All API interactions maintain comprehensive audit trails including:
 **SDK Client Onboarding**: See [SDK_CLIENT_ONBOARDING_PLAN.md](./SDK_CLIENT_ONBOARDING_PLAN.md) for enterprise integration guide
 
 **Compliance Certifications**:
-- SOC 2 Type 1 Certified
+- SOC 2 Type 1 Certified (Type II targeted Q2 2026)
 - PCI DSS Compliant (Payment Processing)
 - GDPR Compliant (Data Privacy)
+- ISO 11783 (ISOBUS) Compatible
+- SAE J1939 Compatible
