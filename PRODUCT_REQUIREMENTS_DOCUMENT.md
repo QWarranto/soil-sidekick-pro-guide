@@ -188,13 +188,40 @@ To empower farmers and agricultural professionals with data-driven insights that
 - Dedicated support
 - Advanced analytics
 
+### 5.5 OEM Embedded Licensing
+**Target**: Equipment manufacturers (John Deere, AGCO, Skyline Robotics)
+
+- **Development License**: $24,900/year
+  - Full SDK & API access for hardware integration
+  - Technical support and integration engineering
+  - Pre-release access to new features
+  - Hardware-specific optimization support
+
+- **Runtime Royalty** (per active device/year):
+  - Basic Sensors: $5/device/year
+  - Smart Controllers: $15/device/year
+  - Full Intelligence: $35/device/year
+  - Autonomy Suite: $50/device/year
+
+- **Hardware Requirements**: ARM Cortex-A72+, NVIDIA Jetson, NXP i.MX8
+- **Protocol Support**: CAN Bus, J1939, ISOBUS, ADAPT 1.0, ISO 11783
+
+### 5.6 Private 5G Telecom Partnership
+**Target**: Telecommunications providers (Verizon, T-Mobile, AT&T)
+
+- **Revenue Share Model**: 15–25% of agricultural service revenue
+- **Per-Deployment License**: $25,000–$100,000 per farm/facility
+- **Platform Fee**: $500,000+/year for full platform access
+- **Value Proposition**: LeafEngines acts as the "Value-Realization Layer" for Private 5G, providing the software intelligence that justifies high-speed infrastructure investment for agricultural enterprises
+- **Edge Computing**: Sub-100ms latency for autonomous fleet coordination via mmWave/RF integration
+
 ## 6. Technical Architecture
 
 ### 6.1 Frontend Stack
 - React 18.3.1 with TypeScript
 - Vite build system
-- Tailwind CSS for styling
-- Shadcn/ui component library
+- Tailwind CSS with SoilSidekick Pro design system (Karla + Old Standard TT typography, brand palette)
+- Shadcn/ui component library with custom pill-shaped button variants
 - React Router for navigation
 
 ### 6.2 Backend Infrastructure
@@ -391,6 +418,13 @@ npm install @soilsidekick/sdk
 - Advanced analytics dashboard
 - Marketplace for agricultural services
 
+### 14.3 OEM & Telecom Expansion
+- OEM Embedded OS for agricultural equipment manufacturers
+- Private 5G Value-Realization Layer partnerships
+- Autonomous fleet coordination via edge computing
+- mmWave/RF native integration for real-time field intelligence
+- Telecom-bundled enterprise sales channel
+
 ## 15. Risk Assessment
 
 ### 15.1 Technical Risks
@@ -418,6 +452,7 @@ npm install @soilsidekick/sdk
 **Version History:**
 - v1.0 - Initial PRD creation (January 2025)
 - v2.0 - Added LeafEngines B2B platform, multi-language SDK, enterprise add-ons, service resilience (December 2025)
+- v2.1 - Added OEM Embedded Licensing, Private 5G Telecom Partnership tiers, design system alignment with SoilSidekick Pro marketing site (February 2026)
 
 **Stakeholders:**
 - Product Manager
