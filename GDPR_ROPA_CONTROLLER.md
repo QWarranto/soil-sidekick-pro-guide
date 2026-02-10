@@ -1,8 +1,8 @@
 # Records of Processing Activities (ROPA) - Data Controller
 ## SoilSidekick Pro
 
-**Document Version:** 1.0  
-**Last Updated:** 2025-11-27  
+**Document Version:** 2.1  
+**Last Updated:** 2026-02-10  
 **Data Controller:** SoilSidekick Pro  
 **DPO Contact:** [To be completed]
 
@@ -590,6 +590,7 @@ This ROPA must be reviewed and updated:
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2025-11-27 | System | Initial ROPA creation |
+| 2.1 | 2026-02-10 | System | Added OEM Device Telemetry and 5G/MEC Edge Processing activities |
 
 ### 9.4 Related Documents
 
@@ -597,6 +598,170 @@ This ROPA must be reviewed and updated:
 - `GDPR_ROPA_PROCESSOR.md`
 - `SECURITY_CRITICAL_CORRECTIONS.md`
 - `PRIVACY_POLICY.md`
+
+---
+
+## 9. OEM Device Telemetry Processing
+
+### 9.1 Basic Information
+
+**Processing Activity Name:** OEM Embedded Device Telemetry and Fleet Management
+
+### 9.2 Purposes of Processing
+
+- Device registration and lifecycle management
+- CAN Bus and J1939 telemetry ingestion
+- Equipment performance monitoring
+- Royalty metering and usage tracking
+- OTA firmware update delivery
+- ISOBUS task data generation
+
+### 9.3 Legal Basis
+
+- **Primary:** Contract (Article 6(1)(b)) — OEM licensing agreement
+- **Secondary:** Legitimate interests (Article 6(1)(f)) — Fleet security and safety monitoring
+
+### 9.4 Categories of Data Subjects
+
+- OEM partner technical contacts
+- Equipment operators (indirect — via device telemetry)
+- Field workers (safety monitoring data)
+
+### 9.5 Categories of Personal Data
+
+**Device Data (Pseudonymized):**
+- Device ID (UUID)
+- GPS coordinates (rounded to field-level precision per data minimization policy)
+- Firmware version and update history
+- mTLS certificate metadata (not private keys)
+
+**Operational Data:**
+- CAN Bus sensor readings (soil moisture, temperature, pressure)
+- J1939 engine diagnostics (RPM, fuel consumption — no operator PII)
+- ISOBUS task execution logs
+- Equipment runtime hours
+
+**Metering Data:**
+- API call counts per device
+- Royalty heartbeat timestamps
+- Subscription tier and usage quotas
+
+### 9.6 Categories of Recipients
+
+**Internal:**
+- Engineering team (fleet monitoring)
+- DevOps team (OTA updates)
+- Finance team (royalty reconciliation)
+
+**External Processors:**
+- Supabase (device registry, telemetry storage)
+- OEM Partners (aggregated fleet reports only — no raw PII)
+
+### 9.7 Transfers to Third Countries
+
+- **USA:** Supabase, AWS (SCCs)
+- **OEM Partner jurisdictions:** Per individual DPA with each OEM partner
+
+### 9.8 Retention Period
+
+- **Active devices:** Duration of OEM agreement
+- **Decommissioned devices:** 90 days then permanent deletion
+- **Telemetry data:** 12 months rolling window
+- **Royalty records:** 7 years (financial/legal compliance)
+
+### 9.9 Technical and Organizational Measures
+
+- Mutual TLS (mTLS) for all device communications
+- GPS coordinate rounding (data minimization)
+- CAN Bus HMAC message authentication
+- J1939 PGN whitelisting (only permitted parameter groups)
+- ISOBUS ISO-XML digital signatures
+- Short-lived device registration tokens (24hr TTL)
+- Certificate revocation list (CRL) enforcement
+- Tamper-evident royalty heartbeats
+
+---
+
+## 10. Private 5G / MEC Edge Processing
+
+### 10.1 Basic Information
+
+**Processing Activity Name:** Private 5G Multi-Access Edge Computing (MEC) for Safety-Critical Operations
+
+### 10.2 Purposes of Processing
+
+- Real-time autonomous equipment coordination
+- Worker vital signs monitoring
+- Canopy reflectivity and environmental analysis
+- Safety-critical alert generation
+- Geofence compliance enforcement
+
+### 10.3 Legal Basis
+
+- **Primary:** Contract (Article 6(1)(b)) — Service delivery under 5G partnership agreement
+- **Secondary:** Vital interests (Article 6(1)(d)) — Worker safety monitoring
+- **Tertiary:** Legitimate interests (Article 6(1)(f)) — Equipment safety and operational security
+
+### 10.4 Categories of Data Subjects
+
+- Field workers (vital signs data)
+- Equipment operators
+- Farm/site managers
+
+### 10.5 Categories of Personal Data
+
+**Safety Data (Real-time, ephemeral):**
+- Worker vital signs (heart rate, temperature — 5-second TTL)
+- Worker proximity to autonomous equipment
+- Personal protective equipment compliance status
+
+**Coordination Data (Ephemeral):**
+- Equipment GPS positions (5-second TTL)
+- Path planning coordinates
+- Speed and heading vectors
+- Emergency stop signals
+
+**Operational Data (Retained):**
+- Safety incident logs
+- Geofence violation records
+- Equipment coordination audit trail
+- Edge node attestation records
+
+### 10.6 Categories of Recipients
+
+**Internal:**
+- Safety Officer (real-time alerts)
+- Engineering team (system monitoring)
+- Incident response team
+
+**External Processors:**
+- Telecom partner (network infrastructure only — no application data)
+- Edge computing provider (MEC node hosting)
+
+### 10.7 Transfers to Third Countries
+
+- **Edge processing is local by design** — MEC nodes process data at the edge, minimizing cross-border transfers
+- Aggregated operational metrics may sync to central Supabase (USA — SCCs)
+
+### 10.8 Retention Period
+
+- **Real-time coordination data:** 5-second TTL (ephemeral, never persisted)
+- **Vital signs data:** 5-second TTL (ephemeral, never persisted)
+- **Safety incident logs:** 7 years (regulatory compliance)
+- **Geofence violation records:** 2 years
+- **Edge attestation records:** 1 year
+
+### 10.9 Technical and Organizational Measures
+
+- URLLC network slice isolation (dedicated safety channel)
+- 5-second TTL enforcement for all coordination/vital signs data
+- Edge node hardware attestation (24-hour cycle)
+- Anti-replay protection (monotonic sequence numbers)
+- Automatic failover to local inference on network degradation
+- Emergency stop protocol with <100ms execution
+- Dual sign-off requirement (Engineering + Safety Officer) for all safety-critical changes
+- Worker consent for vital signs monitoring
+- Data minimization — vital signs processed at edge, only anomaly alerts transmitted
 
 ---
 

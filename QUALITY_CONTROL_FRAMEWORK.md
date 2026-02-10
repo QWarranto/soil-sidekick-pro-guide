@@ -1,8 +1,8 @@
 # Quality Control Framework Implementation
 # LeafEngines™ B2B API Platform
 
-## Version: 2.0
-## Date: December 2025
+## Version: 2.1
+## Date: February 2026
 
 ## 🎯 Overview
 
@@ -511,6 +511,52 @@ await logExternalAPICall(supabase, {
 | Error rate | <1% | 0.8% |
 | Retry success rate | >70% | 75% |
 | Cache hit rate | >60% | 65% |
+
+### OEM Device Performance Targets
+
+| Metric | Target | Notes |
+|--------|--------|-------|
+| Device registration latency | <500ms | mTLS handshake + DB write |
+| Telemetry ingestion (CAN Bus) | <200ms | Per-message processing |
+| OTA update delivery | <30s | Firmware push to device |
+| Royalty heartbeat interval | 60s | Tamper-evident metering |
+| Certificate renewal | <5s | Automated pre-expiry renewal |
+| ISOBUS task generation | <1s | ISO-XML v4.3 output |
+
+### 5G/MEC Performance Targets
+
+| Metric | Target | Notes |
+|--------|--------|-------|
+| URLLC end-to-end latency | <10ms | Safety-critical SLA |
+| Edge coordination response | <5s TTL | Equipment synchronization |
+| Network slice reliability | 99.999% | Five-nines for autonomous ops |
+| Vital signs processing | <100ms | Worker safety monitoring |
+| Edge node attestation | Every 24hrs | Security compliance |
+| Failover switchover | <500ms | Automatic edge failover |
+
+---
+
+## 📋 OEM & 5G Quality Checklist
+
+### OEM Device Integration Testing
+- [ ] mTLS certificate validation working
+- [ ] CAN Bus HMAC verification passing
+- [ ] J1939 PGN whitelist enforced
+- [ ] ISOBUS ISO-XML signatures validated
+- [ ] Royalty heartbeat tamper detection active
+- [ ] OTA update rollback tested
+- [ ] Device registration rate limiting works
+- [ ] API key `ak_oem_*` prefix validation
+
+### 5G/MEC Safety Testing
+- [ ] URLLC latency SLA monitored and alerted
+- [ ] Emergency stop protocol tested
+- [ ] Graceful degradation on network failure
+- [ ] Anti-replay (monotonic sequence) validated
+- [ ] Edge node attestation verified
+- [ ] Vital signs anomaly detection working
+- [ ] Geofence compliance enforcement tested
+- [ ] Dual sign-off for safety-critical changes
 
 ---
 

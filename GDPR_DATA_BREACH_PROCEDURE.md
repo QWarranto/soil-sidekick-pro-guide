@@ -1,8 +1,8 @@
 # Data Breach Response Procedure
 ## GDPR Articles 33 & 34 Compliance - SoilSidekick Pro
 
-**Document Version:** 1.0  
-**Last Updated:** 2025-11-27  
+**Document Version:** 2.1  
+**Last Updated:** 2026-02-10  
 **Procedure Owner:** Data Protection Officer  
 **Review Frequency:** Annual
 
@@ -585,6 +585,9 @@ SoilSidekick Pro
 - Database exposure
 - Lost device
 - Insider threat
+- OEM device compromise (mTLS bypass)
+- 5G edge node breach (safety-critical)
+- Telemetry data exfiltration
 
 ---
 
@@ -775,9 +778,83 @@ SoilSidekick Pro
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2025-11-27 | System | Initial procedure |
+| 2.1 | 2026-02-10 | System | Added OEM device & 5G edge breach scenarios |
 
 **Next Review:** 2026-11-27  
 **Next Drill:** _________________________
+
+---
+
+## 19. OEM Device & 5G Edge Breach Scenarios
+
+### 19.1 Scenario: OEM Device mTLS Certificate Compromise
+
+**Initial Response:**
+1. Immediately add compromised certificate to Certificate Revocation List (CRL)
+2. Block all API access from affected device(s)
+3. Notify OEM partner within 1 hour
+4. Assess whether telemetry data was intercepted
+5. Review CAN Bus HMAC logs for anomalies
+
+**Notification:**
+- If telemetry contained location data: notify authority (GPS rounded but still personal)
+- If only sensor readings (soil moisture, temperature): assess as low risk
+- Notify OEM partner as data processor regardless
+
+**Additional Steps:**
+- Rotate all certificates in affected device fleet
+- Review mTLS configuration for weaknesses
+- Update certificate pinning if applicable
+- HIL re-test of protocol hardening
+
+### 19.2 Scenario: 5G Edge Node Compromise
+
+**Initial Response:**
+1. **SAFETY FIRST:** Immediately halt all autonomous equipment coordination
+2. Issue emergency stop to all connected equipment
+3. Verify worker vital signs monitoring is operational via backup channel
+4. Isolate compromised edge node
+5. Engage Safety Officer within 15 minutes
+
+**Notification:**
+- **Always notify authority** — vital signs and location data are high-sensitivity
+- Notify affected workers without undue delay
+- Notify telecom partner for network-level investigation
+- Dual sign-off required: Engineering + Safety Officer
+
+**Safety Protocol:**
+- Switch to local-only inference (no edge coordination)
+- Manual operation mode for all autonomous equipment
+- Physical safety perimeter checks
+- Do not restore edge operations until root cause identified and remediated
+
+### 19.3 Scenario: Royalty Metering Tampering
+
+**Initial Response:**
+1. Flag affected devices in registry
+2. Freeze billing reconciliation for affected OEM partner
+3. Preserve tamper-evident heartbeat logs
+4. Compare device-reported vs server-recorded API usage
+
+**Notification:**
+- Generally low privacy risk (metering data, not PII)
+- Document in breach register
+- May involve commercial/contractual breach rather than GDPR breach
+- Consult legal counsel for contractual implications
+
+### 19.4 Scenario: Telemetry Data Exfiltration via CAN Bus
+
+**Initial Response:**
+1. Identify source of HMAC validation failures
+2. Isolate affected equipment from network
+3. Assess what sensor data was exposed
+4. Check for J1939 PGN whitelist bypasses
+
+**Notification:**
+- If GPS data included (even rounded): notify authority
+- If operator presence detectable from telemetry patterns: high risk
+- If only environmental sensor data: assess as low risk
+- Notify OEM partner as processor
 
 ---
 

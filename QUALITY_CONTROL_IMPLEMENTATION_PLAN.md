@@ -335,6 +335,59 @@ Track during migration:
 
 ---
 
-**Last Updated:** 2025-12-01
+---
+
+## Phase 5: OEM & 5G Quality Assurance (Priority: HIGH)
+
+### Objective
+Extend quality control framework to cover OEM embedded device operations and Private 5G/MEC safety-critical systems.
+
+### 5.1 OEM Device Validation (Est: 6-8 hrs)
+
+**Tasks:**
+1. **Device Registration Validation** — mTLS certificate chain verification, `ak_oem_*` API key prefix enforcement
+2. **Telemetry Ingestion QC** — CAN Bus HMAC validation, J1939 PGN whitelisting, ISOBUS ISO-XML signature checks
+3. **Royalty Metering Integrity** — Tamper-evident heartbeat verification, drift detection (>5% triggers audit)
+4. **OTA Update Pipeline Testing** — Build → Sign → Stage → Validate → Deploy flow with automatic rollback on failure
+5. **Protocol Hardening** — Hardware-in-the-Loop (HIL) testing for CAN Bus, J1939, and ISOBUS protocols
+
+**Success Criteria:**
+- [ ] All device registrations validated via mTLS
+- [ ] CAN Bus HMAC rejection rate < 0.1%
+- [ ] Royalty metering drift < 2%
+- [ ] OTA rollback tested on 3+ device types
+- [ ] HIL test coverage > 50% for all protocols
+
+### 5.2 5G/MEC Safety Validation (Est: 8-10 hrs)
+
+**Tasks:**
+1. **URLLC Latency Validation** — Continuous monitoring with automatic failover at p99 > 10ms
+2. **Safety Protocol Testing** — Emergency stop, vital signs anomaly detection, geofence enforcement
+3. **Anti-Replay Validation** — Monotonic sequence number gap detection and response
+4. **Edge Node Attestation** — 24-hour attestation cycle with re-attestation on failure
+5. **Dual Sign-off Workflow** — Engineering + Safety Officer approval for all safety-critical changes
+
+**Success Criteria:**
+- [ ] URLLC p99 latency < 10ms sustained over 24hrs
+- [ ] Emergency stop executes within 100ms
+- [ ] Network slice reliability ≥ 99.999% (measured over 1 week)
+- [ ] All safety-critical changes have dual sign-off audit trail
+- [ ] Failover switchover completes within 500ms
+
+### 5.3 Compliance Integration
+
+**OEM Compliance:**
+- ISO 11783 (ISOBUS) conformance testing
+- SAE J1939 protocol compliance validation
+- ADAPT 1.0 data format verification
+
+**5G Safety Compliance:**
+- URLLC slice isolation verification
+- Edge data TTL enforcement (5-second coordination data)
+- Worker safety monitoring regulatory alignment
+
+---
+
+**Last Updated:** February 10, 2026
 **Owner:** Development Team
 **Status:** PLANNING - MARKETING BLOCKED UNTIL TECHNICAL FOUNDATION COMPLETE
