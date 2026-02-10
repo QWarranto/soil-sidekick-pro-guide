@@ -1,8 +1,8 @@
 # SoilSidekick Pro - Operational & Maintenance Documentation
 # LeafEngines™ B2B API Platform
 
-## Version: 2.0
-## Date: December 2025
+## Version: 2.1
+## Date: February 2026
 ## Security: SOC 2 Type 1 Compliant Operations
 
 ---
@@ -553,6 +553,180 @@ curl -s -o /dev/null -w "%{http_code}\n" \
   "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/county-lookup" \
   -X OPTIONS
 ```
+
+---
+
+## 12. OEM & Embedded Device Operations
+
+### 12.1 OEM Licensing Operations (February 2026)
+
+**License Management**:
+- **Development License**: $24,900/year — provision and renewal tracking
+- **Runtime Royalty**: $5–$50 per active device/year — metered usage collection
+- **Custom Enterprise**: $100,000+/year — dedicated infrastructure provisioning
+
+**Device Fleet Monitoring**:
+```bash
+# Daily OEM device health check
+#!/bin/bash
+
+echo "Checking OEM device fleet health..."
+
+# Monitor active device count by licensee
+psql -c "SELECT 
+  licensee_id,
+  COUNT(*) as active_devices,
+  COUNT(*) FILTER (WHERE last_heartbeat > NOW() - INTERVAL '1 hour') as healthy,
+  COUNT(*) FILTER (WHERE last_heartbeat < NOW() - INTERVAL '24 hours') as stale
+FROM oem_device_registry
+WHERE is_active = true
+GROUP BY licensee_id;"
+
+# Check protocol health
+psql -c "SELECT 
+  protocol_type,
+  COUNT(*) as total_messages,
+  AVG(latency_ms) as avg_latency_ms,
+  COUNT(*) FILTER (WHERE success = false) as failures
+FROM oem_protocol_log
+WHERE created_at > NOW() - INTERVAL '24 hours'
+GROUP BY protocol_type;"
+
+echo "OEM device health check completed."
+```
+
+**Supported Hardware Targets**:
+- **ARM Cortex-A72+**: Primary embedded processor (John Deere, AGCO)
+- **NVIDIA Jetson (Nano/Xavier NX)**: GPU-accelerated visual crop analysis
+- **NXP i.MX8**: Industrial-grade edge processing
+
+**Supported Protocols**:
+| Protocol | Standard | Use Case | Monitoring |
+|----------|----------|----------|------------|
+| CAN Bus | ISO 11898 | Sensor telemetry | Message rate, error frames |
+| J1939 | SAE J1939 | Heavy equipment diagnostics | PGN parsing accuracy |
+| ISOBUS | ISO 11783 | Task controller integration | ISO-XML compliance |
+| ADAPT 1.0 | AgGateway | Data exchange interoperability | Export success rate |
+
+### 12.2 OEM Deployment & Updates
+
+**OTA Update Pipeline**:
+1. **Build**: Cross-compile for target architecture (ARM64/NVIDIA)
+2. **Sign**: Cryptographic signing of firmware packages
+3. **Stage**: Deploy to staging device fleet (min 10 devices)
+4. **Validate**: 48-hour soak test with telemetry monitoring
+5. **Rollout**: Phased deployment (10% → 25% → 50% → 100%)
+6. **Monitor**: Enhanced monitoring for 72 hours post-deployment
+
+**Rollback Procedures**:
+- Automatic rollback if error rate exceeds 5% within 1 hour of deployment
+- Device-level rollback via CAN Bus command for safety-critical failures
+- Fleet-wide rollback triggered by operations team within 15 minutes
+
+### 12.3 Royalty Metering Operations
+
+**Metering Pipeline**:
+```typescript
+// Daily royalty calculation
+const royaltyTasks = [
+  collectDeviceHeartbeats(),      // Count active devices per licensee
+  calculateTierRoyalties(),       // $5-$50 per device based on tier
+  generateLicenseeInvoices(),     // Stripe metered billing integration
+  reconcileUsageReports()         // Cross-check device count vs billing
+];
+
+await Promise.all(royaltyTasks);
+```
+
+**Alert Thresholds**:
+- Device count discrepancy > 5% between heartbeat and billing records
+- Licensee approaching device cap (80% utilization)
+- Royalty payment overdue > 30 days
+
+---
+
+## 13. Private 5G Telecom Operations
+
+### 13.1 5G Edge Computing Operations (February 2026)
+
+**Architecture**:
+```
+Telecom Partner (Verizon/T-Mobile/AT&T)
+├── Private 5G Infrastructure
+│   ├── URLLC Slice (Safety-Critical: <10ms)
+│   ├── eMBB Slice (Visual Analysis: <100ms)
+│   └── mMTC Slice (Sensor Telemetry: 10K+ devices)
+│
+├── MEC (Multi-Access Edge Computing)
+│   ├── LeafEngines Edge Runtime
+│   ├── Local AI Inference (Gemma 2B)
+│   └── MQTT Broker (10,000+ msg/min)
+│
+└── Cloud Backhaul
+    ├── Central Analytics
+    ├── Model Updates
+    └── Fleet Coordination
+```
+
+**Performance SLAs**:
+| Metric | Target | Alert Threshold |
+|--------|--------|-----------------|
+| URLLC Latency | <10ms | >15ms |
+| eMBB Latency | <100ms | >150ms |
+| MQTT Throughput | 10,000+ msg/min | <8,000 msg/min |
+| Network Reliability | 99.999% | <99.99% |
+| Edge Uptime | 99.95% | <99.9% |
+
+### 13.2 Autonomous Fleet Coordination
+
+**Safety-Critical Monitoring**:
+```bash
+# Real-time autonomous fleet health
+#!/bin/bash
+
+echo "Monitoring autonomous fleet coordination..."
+
+# Check URLLC latency (must be <10ms for safety)
+psql -c "SELECT 
+  fleet_id,
+  AVG(coordination_latency_ms) as avg_latency,
+  MAX(coordination_latency_ms) as max_latency,
+  COUNT(*) FILTER (WHERE coordination_latency_ms > 10) as sla_violations
+FROM autonomous_coordination_log
+WHERE created_at > NOW() - INTERVAL '1 hour'
+GROUP BY fleet_id;"
+
+# Monitor MQTT message throughput
+psql -c "SELECT 
+  topic_prefix,
+  COUNT(*) as messages_per_minute,
+  AVG(delivery_latency_ms) as avg_delivery_ms
+FROM mqtt_message_log
+WHERE created_at > NOW() - INTERVAL '5 minutes'
+GROUP BY topic_prefix;"
+
+echo "Fleet coordination check completed."
+```
+
+**Emergency Procedures**:
+- **URLLC Failure**: Immediate autonomous vehicle halt command via failsafe CAN Bus
+- **Edge Node Failure**: Automatic failover to secondary MEC within 500ms
+- **Network Partition**: Vehicles enter autonomous safe-stop mode
+- **Escalation**: Telecom NOC notified within 30 seconds of safety-critical failure
+
+### 13.3 Telecom Partner Integration
+
+**Revenue Share Monitoring**:
+- Track API consumption per telecom partner deployment
+- Monthly revenue share calculation (15–25% of platform fees)
+- Platform fee tracking ($500K+/year per partner)
+- Quarterly reconciliation with partner billing systems
+
+**Partner Health Metrics**:
+- Edge node availability per partner site
+- Active autonomous fleet count
+- Data throughput and quality metrics
+- Support ticket volume and resolution time
 
 ---
 
