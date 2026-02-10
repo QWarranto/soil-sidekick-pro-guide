@@ -9,7 +9,10 @@ SoilSidekick Pro is an advanced agricultural intelligence platform that revoluti
 
 **SOC 2 Type 1 Compliance**: The platform maintains enterprise-grade security with SOC 2 Type 1 compliance, ensuring rigorous point-in-time security assessments of our controls and processes, comprehensive data protection, and secure handling of agricultural and payment data.
 
-**Latest Enhancements (December 2025)**: 
+**Latest Enhancements (February 2026)**:
+- **OEM Embedded Licensing**: $24,900/yr Development License + $5–$50/device/year Runtime Royalty for equipment manufacturers (John Deere, AGCO, Skyline Robotics)
+- **Private 5G Telecom Partnership**: Value-Realization Layer for agricultural Private 5G deployments with 15–25% revenue share model
+- **Design System Alignment**: Unified brand identity with SoilSidekick Pro marketing site (Karla headings, Old Standard TT body, brand color palette)
 - **Service Resilience**: Automatic retry logic with exponential backoff (1s, 2s, 4s) for AI services
 - **Security Hardening**: Generic error messages prevent information leakage; detailed errors logged server-side only
 - **Multi-Language SDK**: Auto-generated SDK across 6 languages (TypeScript, Python, Go, Ruby, Java, PHP) published to npm
@@ -584,7 +587,7 @@ const analysis = await client.agricultural.analyzeSoil({
 - **Frontend**: React 18.3.1 with TypeScript for type-safe agricultural data handling
 - **Backend**: Supabase edge functions with Deno runtime for serverless scalability
 - **Database**: PostgreSQL with Row-Level Security for granular data access control
-- **UI Framework**: Tailwind CSS with custom design system for agricultural data visualization
+- **UI Framework**: Tailwind CSS with SoilSidekick Pro brand design system (Karla + Old Standard TT typography, SSK color palette: Black #000000, Charcoal #161616, Cream #E1E3DD, Warm Gray #D3D5CF), pill-shaped button variants, sharp card corners
 
 ### 7.2 Data Standards & APIs
 
@@ -607,8 +610,47 @@ const analysis = await client.agricultural.analyzeSoil({
 - **Time-Series Usage Data**: Efficient storage and querying of usage patterns for analytics
 - **Row-Level Security**: Granular access control without performance degradation
 
+## 10. OEM & Telecom Distribution Architecture
+
+### 10.1 OEM Embedded OS Licensing
+
+**Innovation**: LeafEngines Embedded OS provides agricultural intelligence as an embedded software layer for equipment manufacturers.
+
+**Licensing Model**:
+- **Development License**: $24,900/year — full SDK & API access, integration engineering support, pre-release features
+- **Runtime Royalty** (per active device/year):
+  - Basic Sensors: $5/device — soil moisture, temperature monitoring
+  - Smart Controllers: $15/device — variable rate application, zone management
+  - Full Intelligence: $35/device — AI-powered recommendations, satellite integration
+  - Autonomy Suite: $50/device — autonomous fleet coordination, real-time edge processing
+
+**Hardware Targets**: ARM Cortex-A72+, NVIDIA Jetson Nano/Xavier, NXP i.MX8
+**Protocol Support**: CAN Bus, J1939, ISOBUS, ADAPT 1.0, ISO 11783
+
+**Key Patent Claims**:
+- **Edge-Optimized Agricultural AI**: Novel compression and optimization of Gemma models for embedded ARM/GPU platforms
+- **Protocol-Agnostic Equipment Integration**: Unified API layer abstracting CAN/J1939/ISOBUS communication protocols
+
+### 10.2 Private 5G Value-Realization Layer
+
+**Innovation**: LeafEngines positioned as the software intelligence layer that justifies Private 5G infrastructure investment for agricultural enterprises. Telecoms sell the "pipe"; LeafEngines provides the reason the pipe is worth buying.
+
+**Partnership Model**:
+- **Revenue Share**: 15–25% of agricultural service revenue generated through telecom channel
+- **Per-Deployment License**: $25,000–$100,000 per farm/facility deployment
+- **Platform Fee**: $500,000+/year for full platform access and white-label capabilities
+
+**Technical Architecture**:
+- Sub-100ms latency for autonomous fleet coordination via mmWave/RF integration
+- Edge computing nodes at cell tower locations for real-time field intelligence
+- Native integration with 5G URLLC (Ultra-Reliable Low-Latency Communication) for safety-critical autonomous operations
+
+**Key Patent Claims**:
+- **5G-Native Agricultural Edge Computing**: First system to leverage URLLC for real-time autonomous agricultural equipment coordination
+- **Telecom-Agricultural Value Bridge**: Novel architecture connecting telecom infrastructure revenue to measurable agricultural productivity gains
+
 ## Conclusion
 
 SoilSidekick Pro represents several novel approaches to agricultural data processing, environmental impact assessment, and user interface design that constitute significant innovations in the precision agriculture space. The system's combination of geographic intelligence, environmental awareness, and subscription-based data delivery creates multiple opportunities for intellectual property protection while providing substantial competitive advantages in the agricultural technology market.
 
-The technical innovations, particularly in areas of geographic data fusion, environmental impact assessment, and tiered data delivery, represent substantial advances over existing agricultural decision support systems and provide strong foundations for patent applications in the rapidly growing precision agriculture sector.
+The technical innovations, particularly in areas of geographic data fusion, environmental impact assessment, tiered data delivery, OEM embedded licensing, and Private 5G telecom partnerships, represent substantial advances over existing agricultural decision support systems and provide strong foundations for patent applications in the rapidly growing precision agriculture sector.
