@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import AppHeader from "@/components/AppHeader";
 import { OfflineSyncIndicator } from "@/components/OfflineSyncIndicator";
@@ -70,6 +70,11 @@ function ScrollToTop() {
   return null;
 }
 
+const isSandboxDomain = () => {
+  const hostname = window.location.hostname;
+  return hostname === 'sandbox.leafengines.com' || hostname === 'www.sandbox.leafengines.com';
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -83,7 +88,7 @@ const App = () => (
           <OfflineSyncIndicator />
           <PWAInstallBanner />
       <Routes>
-        <Route path="/" element={<Index />} />
+        <Route path="/" element={isSandboxDomain() ? <Navigate to="/developer-sandbox" replace /> : <Index />} />
         <Route path="/leafengines" element={<B2BLanding />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/auth" element={<Auth />} />
