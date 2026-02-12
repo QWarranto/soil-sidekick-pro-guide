@@ -1,13 +1,15 @@
 /**
- * Validate External Auth Function - Migrated to requestHandler
- * Updated: December 4, 2025 - Phase 2B.3 QC Migration
+ * Validate External Auth Function - Hardened with HMAC
+ * Updated: February 2026 - Security Sprint
  * 
  * Validates external authentication tokens from partner systems (e.g., SoilCertify.com)
  * with:
+ * - HMAC signature validation (replaces simple secret comparison)
+ * - Timestamp + nonce anti-replay protection
+ * - Email verification required (no auto-confirm)
  * - Input validation via Zod schema
  * - Rate limiting (prevents brute force attacks)
  * - Security event logging for auth attempts
- * - Partner token validation
  */
 
 import { requestHandler } from '../_shared/request-handler.ts';
@@ -16,22 +18,60 @@ import { logSafe, logError } from '../_shared/logging-utils.ts';
 import { logSecurityEvent } from '../_shared/security-utils.ts';
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
+// HMAC signature verification
+async function verifyHmacSignature(
+  secret: string,
+  message: string,
+  signature: string
+): Promise<boolean> {
+  try {
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+    const expectedSig = await crypto.subtle.sign('HMAC', key, encoder.encode(message));
+    const expectedHex = Array.from(new Uint8Array(expectedSig))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+    
+    // Constant-time comparison to prevent timing attacks
+    if (signature.length !== expectedHex.length) return false;
+    let result = 0;
+    for (let i = 0; i < signature.length; i++) {
+      result |= signature.charCodeAt(i) ^ expectedHex.charCodeAt(i);
+    }
+    return result === 0;
+  } catch {
+    return false;
+  }
+}
+
+// Used nonce tracking (in-memory, resets on cold start - acceptable for edge)
+const usedNonces = new Map<string, number>();
+const NONCE_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
+
+function cleanExpiredNonces() {
+  const now = Date.now();
+  for (const [nonce, timestamp] of usedNonces) {
+    if (now - timestamp > NONCE_EXPIRY_MS) {
+      usedNonces.delete(nonce);
+    }
+  }
+}
+
 requestHandler({
-  // No auth required - this endpoint validates tokens before establishing auth
   requireAuth: false,
-  
-  // Validation schema
   validationSchema: externalAuthSchema,
-  
-  // Rate limiting: 10 requests per minute per IP (strict for auth endpoint)
   rateLimit: {
     requests: 10,
-    windowMs: 60 * 1000, // 1 minute
+    windowMs: 60 * 1000,
   },
-  
-  // Use service role for user creation
   useServiceRole: true,
-  
+
   handler: async (ctx) => {
     const { token, email, provider, metadata } = ctx.validatedData;
     
@@ -44,7 +84,6 @@ requestHandler({
     if (!expectedSecret) {
       logError('External auth config', new Error(`Secret not configured for provider: ${provider}`));
       
-      // Log security event for missing config
       await logSecurityEvent(ctx.supabaseClient, {
         event_type: 'external_auth_config_error',
         severity: 'high',
@@ -54,33 +93,80 @@ requestHandler({
       throw new Error('External auth secret not configured');
     }
 
-    // Validate the token
-    // Support multiple validation patterns:
-    // 1. Direct secret match
-    // 2. Secret + email combination
-    // 3. HMAC signature (future enhancement)
-    const isValidToken = 
-      token === expectedSecret || 
-      token === `${expectedSecret}-${email}`;
+    // --- HMAC Signature Validation ---
+    // Token format: "hmac:<timestamp>:<nonce>:<signature>"
+    // Legacy format: plain secret string (still supported with deprecation warning)
+    let isValidToken = false;
+    let isLegacyToken = false;
+
+    if (token.startsWith('hmac:')) {
+      const parts = token.split(':');
+      if (parts.length !== 4) {
+        await logSecurityEvent(ctx.supabaseClient, {
+          event_type: 'external_auth_failure',
+          severity: 'medium',
+          details: { email, provider, reason: 'Malformed HMAC token' },
+        }, ctx.req);
+        return { success: false, error: 'Malformed authentication token' };
+      }
+
+      const [, timestampStr, nonce, signature] = parts;
+      const timestamp = parseInt(timestampStr, 10);
+
+      // Validate timestamp (5 minute window)
+      const tokenAge = Date.now() - timestamp;
+      if (isNaN(timestamp) || tokenAge > 5 * 60 * 1000 || tokenAge < -30000) {
+        await logSecurityEvent(ctx.supabaseClient, {
+          event_type: 'external_auth_failure',
+          severity: 'medium',
+          details: { email, provider, reason: 'Token expired or future-dated' },
+        }, ctx.req);
+        return { success: false, error: 'Token expired' };
+      }
+
+      // Anti-replay: check nonce
+      cleanExpiredNonces();
+      if (usedNonces.has(nonce)) {
+        await logSecurityEvent(ctx.supabaseClient, {
+          event_type: 'external_auth_failure',
+          severity: 'high',
+          details: { email, provider, reason: 'Nonce replay detected' },
+        }, ctx.req);
+        return { success: false, error: 'Token already used' };
+      }
+
+      // Verify HMAC signature
+      const message = `${email}:${timestampStr}:${nonce}`;
+      isValidToken = await verifyHmacSignature(expectedSecret, message, signature);
+
+      if (isValidToken) {
+        usedNonces.set(nonce, Date.now());
+      }
+    } else {
+      // Legacy validation (deprecated - log warning)
+      isValidToken = token === expectedSecret || token === `${expectedSecret}-${email}`;
+      isLegacyToken = isValidToken;
+
+      if (isLegacyToken) {
+        logSafe('DEPRECATION WARNING: Legacy token format used', { provider });
+        await logSecurityEvent(ctx.supabaseClient, {
+          event_type: 'external_auth_legacy_token',
+          severity: 'medium',
+          details: { email, provider, warning: 'Legacy plain-text token format. Migrate to HMAC.' },
+        }, ctx.req);
+      }
+    }
 
     if (!isValidToken) {
       logSafe('External auth token validation failed', { email, provider });
       
-      // Log security event for failed auth attempt
       await logSecurityEvent(ctx.supabaseClient, {
         event_type: 'external_auth_failure',
         severity: 'medium',
-        details: { 
-          email, 
-          provider,
-          reason: 'Invalid token',
-        },
+        details: { email, provider, reason: 'Invalid token' },
       }, ctx.req);
       
-      return {
-        success: false,
-        error: 'Invalid authentication token',
-      };
+      return { success: false, error: 'Invalid authentication token' };
     }
 
     // Token validated - create or get user
@@ -92,35 +178,59 @@ requestHandler({
     let userId: string | undefined;
 
     try {
-      // Attempt to create user
-      const { data: userData, error: userError } = await supabaseAdmin.auth.admin.createUser({
-        email: email,
-        email_confirm: true,
-        user_metadata: {
-          source: provider,
-          external_auth: true,
-          ...metadata,
-        },
-      });
-
-      if (userError && !userError.message.includes('already registered')) {
-        throw userError;
-      }
-
-      userId = userData?.user?.id;
-
-      if (!userId) {
-        // User already exists - get their ID
-        const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers();
-        
-        if (!listError && users) {
-          const existingUser = users.find(u => u.email === email);
-          userId = existingUser?.id;
+      // Check if user already exists first
+      const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers();
+      
+      if (!listError && users) {
+        const existingUser = users.find(u => u.email === email);
+        if (existingUser) {
+          // User exists - verify provider matches or is compatible
+          const existingSource = existingUser.user_metadata?.source;
+          if (existingSource && existingSource !== provider) {
+            await logSecurityEvent(ctx.supabaseClient, {
+              event_type: 'external_auth_provider_mismatch',
+              severity: 'high',
+              details: { email, provider, existing_provider: existingSource },
+            }, ctx.req);
+            return {
+              success: false,
+              error: 'Email already registered with a different provider',
+            };
+          }
+          userId = existingUser.id;
         }
       }
 
       if (!userId) {
-        throw new Error('Failed to create or retrieve user');
+        // Create new user - DO NOT auto-confirm email
+        const { data: userData, error: userError } = await supabaseAdmin.auth.admin.createUser({
+          email: email,
+          email_confirm: false, // Require email verification
+          user_metadata: {
+            source: provider,
+            external_auth: true,
+            pending_verification: true,
+            ...(metadata || {}),
+          },
+        });
+
+        if (userError) {
+          throw userError;
+        }
+
+        userId = userData?.user?.id;
+
+        if (!userId) {
+          throw new Error('Failed to create user');
+        }
+
+        // Send verification email
+        await supabaseAdmin.auth.resend({
+          type: 'signup',
+          email: email,
+        }).catch((err: Error) => {
+          logError('Failed to send verification email', err);
+        });
       }
 
       // Log successful external auth
@@ -128,10 +238,7 @@ requestHandler({
         event_type: 'external_auth_success',
         severity: 'low',
         user_id: userId,
-        details: { 
-          email, 
-          provider,
-        },
+        details: { email, provider, hmac: !isLegacyToken },
       }, ctx.req);
 
       // Track for analytics
@@ -142,14 +249,16 @@ requestHandler({
         usage_count: 1,
         cost_usd: 0,
         request_details: { provider, email_domain: email.split('@')[1] },
-      }).catch(() => {}); // Non-blocking
+      }).catch(() => {});
 
       logSafe('External auth validated successfully', { email, provider, userId });
 
       return {
         message: 'External authentication validated',
         userId,
-        sessionToken: token, // Client can use this for subsequent requests
+        emailVerified: !!(await supabaseAdmin.auth.admin.getUserById(userId))
+          .data?.user?.email_confirmed_at,
+        ...(isLegacyToken ? { warning: 'Legacy token format deprecated. Migrate to HMAC signatures.' } : {}),
       };
 
     } catch (error) {
@@ -158,11 +267,7 @@ requestHandler({
       await logSecurityEvent(ctx.supabaseClient, {
         event_type: 'external_auth_error',
         severity: 'high',
-        details: { 
-          email, 
-          provider,
-          error: error.message,
-        },
+        details: { email, provider, error: error.message },
       }, ctx.req);
       
       throw new Error('Failed to process external authentication');
