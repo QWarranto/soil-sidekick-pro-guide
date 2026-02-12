@@ -2073,9 +2073,12 @@ export type Database = {
           created_at: string
           email: string
           email_hash: string | null
+          first_trial_start: string | null
           id: string
           is_active: boolean
           last_access: string | null
+          last_renewal_at: string | null
+          renewal_count: number | null
           trial_end: string
           trial_start: string
           updated_at: string
@@ -2085,9 +2088,12 @@ export type Database = {
           created_at?: string
           email: string
           email_hash?: string | null
+          first_trial_start?: string | null
           id?: string
           is_active?: boolean
           last_access?: string | null
+          last_renewal_at?: string | null
+          renewal_count?: number | null
           trial_end?: string
           trial_start?: string
           updated_at?: string
@@ -2097,9 +2103,12 @@ export type Database = {
           created_at?: string
           email?: string
           email_hash?: string | null
+          first_trial_start?: string | null
           id?: string
           is_active?: boolean
           last_access?: string | null
+          last_renewal_at?: string | null
+          renewal_count?: number | null
           trial_end?: string
           trial_start?: string
           updated_at?: string
