@@ -18,6 +18,7 @@ import {
   Cloud,
   DollarSign,
   Settings,
+  Map,
   MapPin,
   CheckCircle,
   PlayCircle,
