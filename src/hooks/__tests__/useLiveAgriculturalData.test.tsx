@@ -3,15 +3,14 @@ import { renderHook, act } from "@testing-library/react";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-// Mock supabase before imports
-const mockSupabase = {
-  functions: {
-    invoke: vi.fn(),
-  },
-};
+const mockInvoke = vi.fn();
 
 vi.mock("@/integrations/supabase/client", () => ({
-  supabase: mockSupabase,
+  supabase: {
+    functions: {
+      invoke: (...args: unknown[]) => mockInvoke(...args),
+    },
+  },
 }));
 
 vi.mock("@/hooks/use-toast", () => ({
@@ -70,7 +69,7 @@ describe("useLiveAgriculturalData", () => {
       cache_status: "fresh",
     };
 
-    mockSupabase.functions.invoke.mockResolvedValueOnce({
+    mockInvoke.mockResolvedValueOnce({
       data: mockResponse,
       error: null,
     });
@@ -94,7 +93,7 @@ describe("useLiveAgriculturalData", () => {
   });
 
   it("should handle errors gracefully", async () => {
-    mockSupabase.functions.invoke.mockResolvedValueOnce({
+    mockInvoke.mockResolvedValueOnce({
       data: null,
       error: { message: "API rate limit exceeded" },
     });
@@ -117,7 +116,7 @@ describe("useLiveAgriculturalData", () => {
   });
 
   it("should use default county FIPS when none provided", async () => {
-    mockSupabase.functions.invoke.mockResolvedValueOnce({
+    mockInvoke.mockResolvedValueOnce({
       data: { weather: {}, soil: {}, sources: [] },
       error: null,
     });
@@ -130,7 +129,7 @@ describe("useLiveAgriculturalData", () => {
       await result.current.refreshData();
     });
 
-    expect(mockSupabase.functions.invoke).toHaveBeenCalledWith(
+    expect(mockInvoke).toHaveBeenCalledWith(
       "live-agricultural-data",
       expect.objectContaining({
         body: expect.objectContaining({
