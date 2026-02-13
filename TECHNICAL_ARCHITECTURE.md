@@ -98,6 +98,7 @@ SoilSidekick Pro is built on a modern, scalable architecture leveraging React/Ty
 - `seasonal-planning-assistant`: Crop planning optimization
 - `plant-id-comparison`: B2B plant identification comparison API
 - `leafengines-query`: Plant-environment compatibility analysis
+- `isobus-task`: ADAPT 1.0 → ISO-XML v4.3 converter (ISOBUS/ISO 11783 task data generation)
 
 ### 4.2 Infrastructure Functions
 - `api-key-management`: Secure API key operations with `x-api-key` authentication

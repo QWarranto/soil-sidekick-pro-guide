@@ -92,7 +92,7 @@ Modern precision agriculture demands **real-time, multi-modal sensing** that cur
 | **Data Ingestion** | REST API, WebSocket, MQTT batch endpoints |
 | **Latency** | <100ms (edge inference), <1000ms (cloud analytics) |
 | **Throughput** | 10,000+ sensor readings/minute per deployment |
-| **Standards** | ADAPT 1.0 compatible, ISO 11783 ready |
+| **Standards** | ADAPT 1.0 ✅, ISO 11783 (ISOBUS) ✅, ISO-XML v4.3 ✅ |
 | **Security** | SOC 2 Type I certified, GDPR compliant |
 
 ---

@@ -783,41 +783,86 @@ POST /edge-coordinate
 }
 ```
 
-### 5.4 ISOBUS Task Controller
+### 5.4 ISOBUS Task Controller ✅ DEPLOYED
+
+**Status:** ✅ Live — Supabase edge function `isobus-task`
+
+#### Convert ADAPT → ISO-XML
 ```http
-POST /isobus-task
+POST /functions/v1/isobus-task
+POST /functions/v1/isobus-task?format=json
 ```
 
-**Description**: Generate and manage ISO 11783 (ISOBUS) task controller commands for variable-rate application. Outputs ISO-XML v4.3 compliant task data.
+**Authentication**: JWT Bearer token required.
 
-**Authentication**: OEM API key with ISOBUS permission.
-
-**Request Body**:
+**Request Body (ADAPT 1.0 format)**:
 ```json
 {
-  "device_id": "jd-sprayer-4940-007",
-  "task_type": "variable_rate_application",
-  "prescription_map_id": "pm_uuid_123",
-  "field_id": "field_uuid_456",
-  "application_product": "28-0-0 UAN",
-  "output_format": "iso_xml_v43"
+  "grower": { "id": "GRW-1", "name": "Smith Farms" },
+  "farm": { "id": "FRM-1", "name": "Main Farm" },
+  "field": {
+    "id": "FLD-001",
+    "name": "North 40",
+    "area_acres": 40,
+    "boundary": {
+      "type": "Polygon",
+      "coordinates": [[[-89.5, 40.0], [-89.5, 40.01], [-89.49, 40.01], [-89.49, 40.0], [-89.5, 40.0]]]
+    }
+  },
+  "operation": {
+    "type": "fertilizer_application",
+    "description": "Spring nitrogen application",
+    "product": { "name": "UAN-32", "rate": 150, "rateUnit": "lbs/acre", "ddiKey": "NitrogenRate" },
+    "prescriptionZones": [
+      { "zoneId": "Z1", "rate": 120, "rateUnit": "lbs/acre" },
+      { "zoneId": "Z2", "rate": 180, "rateUnit": "lbs/acre" }
+    ]
+  },
+  "equipment": { "id": "EQ-1", "name": "Case IH Patriot 4440", "workingWidth_m": 27.4 }
 }
 ```
 
-**Response**:
+**Response (default)**: Raw ISO-XML v4.3 `TASKDATA.XML` (`Content-Type: application/xml`)
+
+**Response (`?format=json`)**:
 ```json
 {
   "success": true,
-  "task": {
-    "task_id": "tsk_20260210_001",
-    "iso_xml": "<?xml version=\"1.0\"?><ISO11783_TaskData>...</ISO11783_TaskData>",
-    "zones": 12,
-    "total_area_ha": 64.8,
-    "product_total_kg": 4850,
-    "estimated_savings_pct": 18
-  }
+  "standard": "ISO 11783",
+  "version": "4.3",
+  "format": "TASKDATA.XML",
+  "xml": "<?xml version=\"1.0\"?><ISO11783_TaskData VersionMajor=\"4\" VersionMinor=\"3\"...>",
+  "warnings": [],
+  "generatedAt": "2026-02-13T21:16:00.000Z",
+  "generatedBy": "SoilSidekick Pro"
 }
 ```
+
+**Supported Operation Types**: `fertilizer_application`, `seeding`, `spraying`, `harvest`, `tillage`, `custom`
+
+#### Validate Input
+```http
+POST /functions/v1/isobus-task/validate
+```
+Returns validation result with `errors[]` and `warnings[]` before conversion.
+
+#### DDI Mappings Reference
+```http
+GET /functions/v1/isobus-task/ddi-mappings
+```
+**Authentication**: Public (no auth required). Returns all 11 DDI code mappings (ApplicationRate, SeedRate, Yield, WorkingWidth, FuelConsumption, NitrogenRate, PhosphorusRate, PotassiumRate, SprayPressure, GroundSpeed, WorkState).
+
+**ISO-XML v4.3 Element Mapping:**
+
+| ADAPT Concept | ISO-XML Element |
+|---------------|----------------|
+| Grower | CUS (Customer) |
+| Farm | FRM |
+| Field | PFD + PLN (Partfield + Polygon) |
+| Operation | TSK + TLG (Task + Time Log) |
+| Product | PDT |
+| Equipment | DVC + DPD (Device + Property) |
+| Prescription Zones | GRD + TZN + PDV (Grid + Treatment Zone + Process Data) |
 
 ## 6. SDK and Integration
 

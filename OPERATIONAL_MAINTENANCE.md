@@ -605,8 +605,8 @@ echo "OEM device health check completed."
 |----------|----------|----------|------------|
 | CAN Bus | ISO 11898 | Sensor telemetry | Message rate, error frames |
 | J1939 | SAE J1939 | Heavy equipment diagnostics | PGN parsing accuracy |
-| ISOBUS | ISO 11783 | Task controller integration | ISO-XML compliance |
-| ADAPT 1.0 | AgGateway | Data exchange interoperability | Export success rate |
+| ISOBUS | ISO 11783 ✅ | Task controller integration | ISO-XML v4.3 compliance via `isobus-task` |
+| ADAPT 1.0 | AgGateway ✅ | Data exchange interoperability | Export success rate |
 
 ### 12.2 OEM Deployment & Updates
 
