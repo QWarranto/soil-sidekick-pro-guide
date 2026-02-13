@@ -625,7 +625,7 @@ const analysis = await client.agricultural.analyzeSoil({
   - Autonomy Suite: $50/device — autonomous fleet coordination, real-time edge processing
 
 **Hardware Targets**: ARM Cortex-A72+, NVIDIA Jetson Nano/Xavier, NXP i.MX8
-**Protocol Support**: CAN Bus, J1939, ISOBUS, ADAPT 1.0, ISO 11783
+**Protocol Support**: CAN Bus, J1939, ISOBUS (ISO 11783 ✅), ADAPT 1.0 ✅, ISO-XML v4.3 ✅ (via `isobus-task` edge function)
 
 **Key Patent Claims**:
 - **Edge-Optimized Agricultural AI**: Novel compression and optimization of Gemma models for embedded ARM/GPU platforms

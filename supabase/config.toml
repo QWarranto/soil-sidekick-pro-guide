@@ -116,3 +116,6 @@ verify_jwt = false
 
 [functions.api-usage-dashboard]
 verify_jwt = false
+
+[functions.isobus-task]
+verify_jwt = false
