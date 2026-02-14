@@ -88,19 +88,33 @@ npm install @soilsidekick/sdk
 
 ### Endpoint → SDK Method Mapping
 
-| REST Endpoint | SDK Method | Purpose |
-|---------------|-----------|---------|
-| `POST /get-soil-data` | `api.getSoilData()` | County-level SSURGO soil analysis |
-| `POST /agricultural-intelligence` | `api.getAgriculturalIntelligence()` | AI-powered agricultural Q&A (uses soil + satellite + weather data) |
-| `POST /environmental-impact-engine` | `api.getEnvironmentalImpact()` | Runoff risk & environmental assessment |
-| `POST /territorial-water-quality` | `api.getWaterQuality()` | EPA water quality data |
-| `POST /alpha-earth-environmental-enhancement` | `api.getSatelliteData()` | Satellite vegetation indices |
-| `POST /safe-identification` | `api.safeIdentify()` | Plant ID with toxic lookalike warnings |
-| `POST /dynamic-care` | `api.getDynamicCare()` | Hyper-localized care recommendations |
-| `POST /beginner-guidance` | `api.getBeginnerGuidance()` | Judgment-free plant help |
-| `POST /carbon-credit-calculator` | `api.calculateCarbonCredits()` | Carbon credit estimation |
-| `POST /isobus-task` | `api.convertToISOXML()` | ADAPT → ISO-XML v4.3 conversion |
-| `GET /isobus-task/ddi-mappings` | `api.getDDIMappings()` | DDI code reference (public) |
+> **Naming Convention**: SDK method names follow language-specific conventions. The table below shows **TypeScript (camelCase)** / **Python (snake_case)** variants. Go, Ruby, Java, and PHP SDKs follow their respective language conventions and are auto-generated from the same OpenAPI spec.
+
+| REST Endpoint | TypeScript SDK Method | Python SDK Method | Purpose |
+|---------------|----------------------|-------------------|---------|
+| `POST /get-soil-data` | `api.getSoilData()` | `api.get_soil_data()` | County-level SSURGO soil analysis |
+| `POST /agricultural-intelligence` | `api.getAgriculturalIntelligence()` | `api.get_agricultural_intelligence()` | AI-powered agricultural Q&A |
+| `POST /environmental-impact-engine` | `api.getEnvironmentalImpact()` | `api.get_environmental_impact()` | Runoff risk & environmental assessment |
+| `POST /territorial-water-quality` | `api.getWaterQuality()` | `api.get_water_quality()` | EPA water quality data |
+| `POST /territorial-water-analytics` | `api.getWaterAnalytics()` | `api.get_water_analytics()` | Regional water analytics |
+| `POST /alpha-earth-environmental-enhancement` | `api.getSatelliteData()` | `api.get_satellite_data()` | Satellite vegetation indices |
+| `POST /safe-identification` | `api.safeIdentify()` | `api.safe_identify()` | Plant ID with toxic lookalike warnings |
+| `POST /dynamic-care` | `api.getDynamicCare()` | `api.get_dynamic_care()` | Hyper-localized care recommendations |
+| `POST /beginner-guidance` | `api.getBeginnerGuidance()` | `api.get_beginner_guidance()` | Judgment-free plant help |
+| `POST /carbon-credit-calculator` | `api.calculateCarbonCredits()` | `api.calculate_carbon_credits()` | Carbon credit estimation |
+| `POST /generate-vrt-prescription` | `api.generateVrtPrescription()` | `api.generate_vrt_prescription()` | Variable rate technology prescription maps |
+| `POST /isobus-task` | `api.convertToISOXML()` | `api.convert_to_isoxml()` | ADAPT → ISO-XML v4.3 conversion |
+| `POST /isobus-task/validate` | `api.validateIsobusTask()` | `api.validate_isobus_task()` | Validate ISOBUS task data |
+| `GET /isobus-task/ddi-mappings` | `api.getDDIMappings()` | `api.get_ddi_mappings()` | DDI code reference (public) |
+| `POST /check-subscription` | `api.checkSubscription()` | `api.check_subscription()` | Verify subscription status & tier |
+| `POST /api-key-management` | `api.manageApiKey()` | `api.manage_api_key()` | Create, list, or revoke API keys |
+| `POST /leafengines-query` | `api.leafEnginesQuery()` | `api.leaf_engines_query()` | Plant-environment compatibility scoring |
+| `POST /seasonal-planning-assistant` | `api.getSeasonalPlanning()` | `api.get_seasonal_planning()` | AI seasonal planning |
+| `POST /smart-report-summary` | `api.getReportSummary()` | `api.get_report_summary()` | AI report summaries |
+| `POST /multi-parameter-planting-calendar` | `api.getPlantingCalendar()` | `api.get_planting_calendar()` | Climate/soil planting calendar |
+| `POST /live-agricultural-data` | `api.getLiveAgData()` | `api.get_live_ag_data()` | Real-time NOAA/USDA/EPA data |
+| `POST /visual-crop-analysis` | `api.analyzeCropImage()` | `api.analyze_crop_image()` | AI image analysis (Enterprise) |
+| `POST /gpt5-chat` | `api.gpt5Chat()` | `api.gpt5_chat()` | GPT-5 agricultural chat (Enterprise) |
 
 > **Note**: `/get-soil-data` and `/agricultural-intelligence` are **different endpoints** with different purposes:
 > - `/get-soil-data` returns structured SSURGO soil analysis (pH, organic matter, nutrients, drainage)
