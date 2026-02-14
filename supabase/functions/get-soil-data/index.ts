@@ -355,12 +355,16 @@ function parseSDAResponse(tableData: any[]) {
   // Generate recommendations
   const recommendations = generateRecommendations(avgPh, avgOm, nitrogen, phosphorus, potassium);
 
+  // Derive drainage class from soil texture and organic matter
+  const drainage = deriveDrainageClass(tableData);
+
   return {
     ph_level: avgPh,
     organic_matter: avgOm,
     nitrogen_level: nitrogen,
     phosphorus_level: phosphorus,
     potassium_level: potassium,
+    drainage,
     recommendations: recommendations.join(' '),
     soil_type: soilTypes.join(', '),
     analysis_method: 'USDA SSURGO - Soil Data Access',
@@ -404,12 +408,18 @@ function getRegionalEstimates(countyFips: string) {
 
   const recommendations = generateRecommendations(estimates.ph, estimates.om, nitrogen, phosphorus, potassium);
 
+  // Estimate drainage from soil type
+  const drainage = estimates.type === 'Desert' || estimates.type === 'Arid' ? 'excessive' 
+    : estimates.type === 'Coastal Plain' || estimates.type === 'Subtropical' ? 'moderate'
+    : estimates.om > 3.5 ? 'good' : 'moderate';
+
   return {
     ph_level: estimates.ph,
     organic_matter: estimates.om,
     nitrogen_level: nitrogen,
     phosphorus_level: phosphorus,
     potassium_level: potassium,
+    drainage,
     recommendations: recommendations.join(' '),
     soil_type: estimates.type,
     analysis_method: 'Regional SSURGO estimates',
@@ -447,7 +457,35 @@ function generateRecommendations(ph: number, organicMatter: number, nitrogen: st
   
   if (potassium === 'low') {
     recommendations.push('Potassium levels need improvement. Potash applications will enhance drought tolerance and disease resistance.');
+}
+
+/**
+ * Derive drainage class from SSURGO soil texture data.
+ * Uses clay/sand percentages and ksat (saturated hydraulic conductivity).
+ */
+function deriveDrainageClass(tableData: any[]): string {
+  // Use the dominant component (first row, highest comppct_r)
+  if (!tableData || tableData.length === 0) return 'moderate';
+
+  const row = tableData[0];
+  const clay = row[9] || 0;   // claytotal_r
+  const sand = row[11] || 0;  // sandtotal_r
+  const ksat = row[14] || 0;  // ksat_r (µm/sec)
+
+  // ksat-based classification (most reliable if available)
+  if (ksat > 0) {
+    if (ksat > 100) return 'excessive';
+    if (ksat > 10) return 'good';
+    if (ksat > 1) return 'moderate';
+    return 'poor';
   }
+
+  // Texture-based fallback
+  if (clay > 40) return 'poor';
+  if (clay > 25) return 'moderate';
+  if (sand > 70) return 'excessive';
+  return 'good';
+}
 
   if (recommendations.length === 1 && ph >= 6.0 && ph <= 7.5) {
     recommendations.push('Overall soil conditions are favorable for most landscaping and agricultural applications. Continue current management practices.');
