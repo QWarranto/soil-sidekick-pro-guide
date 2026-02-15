@@ -5,6 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CountyLookup } from '@/components/CountyLookup';
 import { useToast } from '@/hooks/use-toast';
+import { useDeadReckoning } from '@/hooks/useDeadReckoning';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { DeadReckoningBadge } from '@/components/DeadReckoningBadge';
 
 interface County {
   id: string;
@@ -23,6 +26,8 @@ export const LocationIndicator: React.FC<LocationIndicatorProps> = ({ onLocation
   const [showLookup, setShowLookup] = useState(false);
   const [isValidated, setIsValidated] = useState(false);
   const { toast } = useToast();
+  const { isOnline } = useNetworkStatus();
+  const deadReckoning = useDeadReckoning(!isOnline);
 
   useEffect(() => {
     // Load saved location from localStorage on mount
@@ -149,6 +154,7 @@ export const LocationIndicator: React.FC<LocationIndicatorProps> = ({ onLocation
                     FIPS: {selectedCounty.fips_code}
                   </Badge>
                 )}
+                <DeadReckoningBadge state={deadReckoning} />
               </div>
               <p className="text-sm text-muted-foreground">{locationStatus.description}</p>
               {selectedCounty && (
