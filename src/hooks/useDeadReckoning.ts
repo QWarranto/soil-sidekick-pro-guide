@@ -1,4 +1,26 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  offsetPosition,
+  createStepDetectorState,
+  processAccelerometerReading,
+  recordMagnitudeSample,
+  createSensorFusionState,
+  updatePrimaryHeading,
+  updateSecondaryHeading,
+  quaternionToHeading,
+  deviceOrientationToHeading,
+  createAdaptiveStrideState,
+  computeAdaptiveStride,
+  createUncertaintyState,
+  accumulateStepUncertainty,
+  resetUncertaintyFromGPS,
+} from '@/lib/dead-reckoning';
+import type {
+  StepDetectorState,
+  SensorFusionState,
+  AdaptiveStrideState,
+  UncertaintyState,
+} from '@/lib/dead-reckoning';
 
 export interface GeoPosition {
   latitude: number;
@@ -21,67 +43,21 @@ export interface DeadReckoningState {
   sensorsAvailable: boolean;
   /** Step count since DR started */
   stepCount: number;
-  /** Current heading in degrees (0 = north) */
+  /** Current fused heading in degrees (0 = north) */
   heading: number | null;
 }
 
-interface SensorReading {
-  x: number;
-  y: number;
-  z: number;
-  timestamp: number;
-}
-
-const STEP_LENGTH_METERS = 0.75; // average stride length
-const DRIFT_RATE_PER_STEP = 0.15; // ~15% drift per step (conservative)
-const EARTH_RADIUS_M = 6_371_000;
-const DEG_TO_RAD = Math.PI / 180;
-const RAD_TO_DEG = 180 / Math.PI;
-
 /**
- * Offset a lat/lng by a distance and bearing.
- * Uses Vincenty-style direct formula (spherical approximation).
+ * Dead Reckoning Hook
+ * 
+ * Provides continuous positioning by switching between GPS (online)
+ * and inertial dead reckoning (offline). Uses:
+ * - Complementary filter sensor fusion for heading
+ * - Adaptive stride estimation from accelerometer amplitude
+ * - Kalman-inspired uncertainty accumulation with GPS reset
+ * 
+ * Fallback chain: GPS → Sensor DR → Seeded Centroid
  */
-function offsetPosition(
-  lat: number,
-  lng: number,
-  distanceM: number,
-  bearingDeg: number
-): { latitude: number; longitude: number } {
-  const bearingRad = bearingDeg * DEG_TO_RAD;
-  const latRad = lat * DEG_TO_RAD;
-  const lngRad = lng * DEG_TO_RAD;
-  const angularDist = distanceM / EARTH_RADIUS_M;
-
-  const newLatRad = Math.asin(
-    Math.sin(latRad) * Math.cos(angularDist) +
-    Math.cos(latRad) * Math.sin(angularDist) * Math.cos(bearingRad)
-  );
-  const newLngRad =
-    lngRad +
-    Math.atan2(
-      Math.sin(bearingRad) * Math.sin(angularDist) * Math.cos(latRad),
-      Math.cos(angularDist) - Math.sin(latRad) * Math.sin(newLatRad)
-    );
-
-  return {
-    latitude: newLatRad * RAD_TO_DEG,
-    longitude: newLngRad * RAD_TO_DEG,
-  };
-}
-
-/**
- * Simple pedometer: detects a step when accelerometer magnitude
- * crosses a threshold on a rising edge.
- */
-function detectStep(
-  current: number,
-  previous: number,
-  threshold = 11.5
-): boolean {
-  return previous < threshold && current >= threshold;
-}
-
 export function useDeadReckoning(isOffline: boolean) {
   const [state, setState] = useState<DeadReckoningState>({
     position: null,
@@ -95,10 +71,6 @@ export function useDeadReckoning(isOffline: boolean) {
 
   const lastGPSFix = useRef<GeoPosition | null>(null);
   const currentPosition = useRef<{ lat: number; lng: number } | null>(null);
-  const prevAccelMag = useRef(0);
-  const stepCount = useRef(0);
-  const uncertainty = useRef(0);
-  const heading = useRef<number | null>(null);
   const gpsFixTime = useRef<number>(Date.now());
   const sensorsActive = useRef(false);
   const accelSensor = useRef<any>(null);
@@ -106,11 +78,16 @@ export function useDeadReckoning(isOffline: boolean) {
   const gpsWatchId = useRef<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // Formal sub-system states
+  const stepDetector = useRef<StepDetectorState>(createStepDetectorState());
+  const sensorFusion = useRef<SensorFusionState>(createSensorFusionState());
+  const strideEstimator = useRef<AdaptiveStrideState>(createAdaptiveStrideState());
+  const uncertaintyModel = useRef<UncertaintyState>(createUncertaintyState());
+
   // Acquire GPS position when online
   const acquireGPS = useCallback(() => {
     if (!navigator.geolocation) return;
 
-    // Clear existing watch
     if (gpsWatchId.current !== null) {
       navigator.geolocation.clearWatch(gpsWatchId.current);
     }
@@ -131,8 +108,11 @@ export function useDeadReckoning(isOffline: boolean) {
           lng: pos.coords.longitude,
         };
         gpsFixTime.current = Date.now();
-        stepCount.current = 0;
-        uncertainty.current = pos.coords.accuracy;
+
+        // Reset sub-systems on GPS correction
+        stepDetector.current = createStepDetectorState();
+        strideEstimator.current = createAdaptiveStrideState();
+        resetUncertaintyFromGPS(pos.coords.accuracy, uncertaintyModel.current);
 
         setState((prev) => ({
           ...prev,
@@ -155,21 +135,36 @@ export function useDeadReckoning(isOffline: boolean) {
     if (sensorsActive.current) return;
 
     try {
-      // Accelerometer for step detection
+      // Accelerometer for step detection + adaptive stride
       if ('Accelerometer' in window) {
         const accel = new (window as any).Accelerometer({ frequency: 20 });
         accel.addEventListener('reading', () => {
+          const now = Date.now();
+
+          // Feed magnitude to adaptive stride estimator
           const mag = Math.sqrt(accel.x ** 2 + accel.y ** 2 + accel.z ** 2);
+          recordMagnitudeSample(mag, strideEstimator.current);
 
-          if (detectStep(mag, prevAccelMag.current) && currentPosition.current && heading.current !== null) {
-            stepCount.current += 1;
-            uncertainty.current += STEP_LENGTH_METERS * DRIFT_RATE_PER_STEP;
+          // Step detection with debounce
+          const stepped = processAccelerometerReading(
+            accel.x, accel.y, accel.z,
+            now,
+            stepDetector.current
+          );
 
+          if (stepped && currentPosition.current && sensorFusion.current.fusedHeading !== null) {
+            // Compute adaptive stride for this step
+            const stride = computeAdaptiveStride(strideEstimator.current);
+
+            // Accumulate uncertainty
+            const radius = accumulateStepUncertainty(stride, uncertaintyModel.current);
+
+            // Displace position
             const newPos = offsetPosition(
               currentPosition.current.lat,
               currentPosition.current.lng,
-              STEP_LENGTH_METERS,
-              heading.current
+              stride,
+              sensorFusion.current.fusedHeading
             );
             currentPosition.current = { lat: newPos.latitude, lng: newPos.longitude };
 
@@ -178,50 +173,49 @@ export function useDeadReckoning(isOffline: boolean) {
               position: {
                 latitude: newPos.latitude,
                 longitude: newPos.longitude,
-                accuracy: uncertainty.current,
-                timestamp: Date.now(),
+                accuracy: radius,
+                timestamp: now,
                 source: 'dead-reckoning',
               },
               isEstimating: true,
-              uncertaintyRadius: uncertainty.current,
-              stepCount: stepCount.current,
+              uncertaintyRadius: radius,
+              stepCount: stepDetector.current.totalSteps,
             }));
           }
-
-          prevAccelMag.current = mag;
         });
         accel.start();
         accelSensor.current = accel;
       }
 
-      // AbsoluteOrientationSensor or magnetometer for heading
+      // AbsoluteOrientationSensor — primary heading (high-frequency)
       if ('AbsoluteOrientationSensor' in window) {
         const orient = new (window as any).AbsoluteOrientationSensor({ frequency: 10 });
         orient.addEventListener('reading', () => {
-          // Quaternion to euler heading
           const [qx, qy, qz, qw] = orient.quaternion;
-          const yaw = Math.atan2(
-            2 * (qw * qz + qx * qy),
-            1 - 2 * (qy * qy + qz * qz)
-          );
-          const headingDeg = ((yaw * RAD_TO_DEG) + 360) % 360;
-          heading.current = headingDeg;
-          setState((prev) => ({ ...prev, heading: headingDeg }));
+          const heading = quaternionToHeading(qx, qy, qz, qw);
+          const fused = updatePrimaryHeading(heading, Date.now(), sensorFusion.current);
+          if (fused !== null) {
+            setState((prev) => ({ ...prev, heading: fused }));
+          }
         });
         orient.start();
         orientSensor.current = orient;
       } else if ('DeviceOrientationEvent' in window) {
-        // Fallback: deviceorientation (compass heading)
+        // Fallback: deviceorientation as secondary heading source
         const handleOrientation = (e: DeviceOrientationEvent) => {
           if (e.alpha !== null) {
-            // alpha is compass heading on some devices
-            const h = (360 - e.alpha) % 360;
-            heading.current = h;
-            setState((prev) => ({ ...prev, heading: h }));
+            const heading = deviceOrientationToHeading(e.alpha);
+            updateSecondaryHeading(heading, sensorFusion.current);
+            // If no primary, use secondary directly
+            if (sensorFusion.current.primaryHeading === null) {
+              setState((prev) => ({ ...prev, heading }));
+            }
           }
         };
         window.addEventListener('deviceorientation', handleOrientation);
-        orientSensor.current = { stop: () => window.removeEventListener('deviceorientation', handleOrientation) };
+        orientSensor.current = {
+          stop: () => window.removeEventListener('deviceorientation', handleOrientation),
+        };
       }
 
       sensorsActive.current = true;
@@ -261,18 +255,18 @@ export function useDeadReckoning(isOffline: boolean) {
   // Switch between GPS and dead-reckoning based on connectivity
   useEffect(() => {
     if (isOffline) {
-      // Go offline: stop GPS watch, start sensors
       if (gpsWatchId.current !== null) {
         navigator.geolocation.clearWatch(gpsWatchId.current);
         gpsWatchId.current = null;
       }
       startSensors();
     } else {
-      // Back online: stop sensors, re-acquire GPS
       stopSensors();
       acquireGPS();
-      stepCount.current = 0;
-      uncertainty.current = 0;
+      // Reset sub-systems
+      stepDetector.current = createStepDetectorState();
+      sensorFusion.current = createSensorFusionState();
+      strideEstimator.current = createAdaptiveStrideState();
       setState((prev) => ({
         ...prev,
         isEstimating: false,
@@ -288,11 +282,11 @@ export function useDeadReckoning(isOffline: boolean) {
     };
   }, [isOffline, startSensors, stopSensors, acquireGPS]);
 
-  /** Manually seed a position (e.g. from county centroid) */
+  /** Manually seed a position (e.g. from county centroid) — Tier 3 fallback */
   const seedPosition = useCallback((lat: number, lng: number, accuracy = 5000) => {
     currentPosition.current = { lat, lng };
     gpsFixTime.current = Date.now();
-    uncertainty.current = accuracy;
+    resetUncertaintyFromGPS(accuracy, uncertaintyModel.current);
 
     const pos: GeoPosition = {
       latitude: lat,
