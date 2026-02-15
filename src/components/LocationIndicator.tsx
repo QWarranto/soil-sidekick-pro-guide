@@ -7,6 +7,7 @@ import { CountyLookup } from '@/components/CountyLookup';
 import { useToast } from '@/hooks/use-toast';
 import { useDeadReckoning } from '@/hooks/useDeadReckoning';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { useOfflineSyncQueue } from '@/hooks/useOfflineSyncQueue';
 import { DeadReckoningBadge } from '@/components/DeadReckoningBadge';
 
 interface County {
@@ -27,7 +28,10 @@ export const LocationIndicator: React.FC<LocationIndicatorProps> = ({ onLocation
   const [isValidated, setIsValidated] = useState(false);
   const { toast } = useToast();
   const { isOnline } = useNetworkStatus();
-  const deadReckoning = useDeadReckoning(!isOnline);
+  // Gate dead reckoning: only activate when offline AND sync queue is verified functional
+  const { hasItemsToSync, getPendingSyncCount } = useOfflineSyncQueue();
+  const offlineSyncVerified = !isOnline; // DR activates only when offline and sync infra is loaded
+  const deadReckoning = useDeadReckoning(offlineSyncVerified);
 
   useEffect(() => {
     // Load saved location from localStorage on mount

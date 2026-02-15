@@ -14,7 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { useOfflineStorage } from '@/hooks/useOfflineStorage';
-import { OfflineSyncService } from '@/services/offlineSync';
+import { useOfflineSyncQueue } from '@/hooks/useOfflineSyncQueue';
 
 interface Field {
   id: string;
@@ -54,40 +54,18 @@ export const FieldMap: React.FC<FieldMapProps> = ({ onFieldSelect }) => {
     markAsSynced,
     needsSync 
   } = useOfflineStorage<Field[]>('fields_cache');
-  const [pendingSyncCount, setPendingSyncCount] = useState(0);
-
-  // Check pending sync count
-  useEffect(() => {
-    const checkPending = async () => {
-      const count = await OfflineSyncService.getPendingSyncCount();
-      setPendingSyncCount(count);
-    };
-    checkPending();
-  }, [fields]);
+  const { addToQueue, getPendingSyncCount, syncNow, hasItemsToSync } = useOfflineSyncQueue();
+  const pendingSyncCount = getPendingSyncCount();
 
   // Auto-sync when coming back online
   useEffect(() => {
     if (isOnline && needsSync) {
-      syncOfflineData();
+      syncNow().then(() => {
+        markAsSynced();
+        loadFields();
+      });
     }
   }, [isOnline, needsSync]);
-
-  const syncOfflineData = async () => {
-    try {
-      const result = await OfflineSyncService.processSyncQueue();
-      if (result.success) {
-        toast.success(`Synced ${result.synced} item(s) successfully`);
-        await markAsSynced();
-        setPendingSyncCount(0);
-        loadFields();
-      } else {
-        toast.error(`Sync completed with ${result.failed} error(s)`);
-      }
-    } catch (error) {
-      console.error('Sync failed:', error);
-      toast.error('Failed to sync offline changes');
-    }
-  };
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -298,14 +276,13 @@ export const FieldMap: React.FC<FieldMapProps> = ({ onFieldSelect }) => {
           updated_at: new Date().toISOString()
         };
         
-        await OfflineSyncService.addToSyncQueue('fields', 'insert', fieldData);
+        await addToQueue('create', 'fields', fieldData);
         setFields(prev => [...prev, tempField]);
         addFieldToMap(tempField);
         
         // Update offline cache
         const updatedFields = [...fields, tempField];
         await saveOfflineData(updatedFields, false);
-        setPendingSyncCount(prev => prev + 1);
         
         toast.success('Field saved offline. Will sync when online.', { 
           icon: <CloudOff className="h-4 w-4" /> 
@@ -343,13 +320,12 @@ export const FieldMap: React.FC<FieldMapProps> = ({ onFieldSelect }) => {
         await saveOfflineData(updatedFields, true);
       } else {
         // Queue for deletion when online
-        await OfflineSyncService.addToSyncQueue('fields', 'delete', { id: fieldId });
+        await addToQueue('delete', 'fields', { id: fieldId });
         const updatedFields = fields.filter(f => f.id !== fieldId);
         setFields(updatedFields);
         
         // Update offline cache
         await saveOfflineData(updatedFields, false);
-        setPendingSyncCount(prev => prev + 1);
         
         toast.success('Field queued for deletion. Will sync when online.', {
           icon: <CloudOff className="h-4 w-4" />
@@ -421,7 +397,7 @@ export const FieldMap: React.FC<FieldMapProps> = ({ onFieldSelect }) => {
             <div className="flex gap-2">
               {pendingSyncCount > 0 && isOnline && (
                 <Button 
-                  onClick={syncOfflineData}
+                  onClick={syncNow}
                   variant="outline"
                   size="sm"
                   className="flex items-center gap-2"

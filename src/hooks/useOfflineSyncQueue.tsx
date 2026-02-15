@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Preferences } from '@capacitor/preferences';
 import { useToast } from '@/hooks/use-toast';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
-import { executeSyncOperation } from '@/services/offlineDataSync';
+import { executeSyncOperation, isSyncableTable } from '@/services/offlineDataSync';
+import type { SyncResult as DataSyncResult } from '@/services/offlineDataSync';
 
 export interface SyncQueueItem {
   id: string;
@@ -39,14 +40,7 @@ export const useOfflineSyncQueue = () => {
       const { value } = await Preferences.get({ key: SYNC_QUEUE_KEY });
       if (value) {
         const queueData: SyncQueueItem[] = JSON.parse(value);
-        // Sort by priority and timestamp
-        const sortedQueue = queueData.sort((a, b) => {
-          const priorityOrder = { high: 0, medium: 1, low: 2 };
-          if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
-            return priorityOrder[a.priority] - priorityOrder[b.priority];
-          }
-          return a.timestamp - b.timestamp;
-        });
+        const sortedQueue = sortByPriority(queueData);
         setQueue(sortedQueue);
       }
     } catch (error) {
@@ -67,13 +61,23 @@ export const useOfflineSyncQueue = () => {
     }
   }, []);
 
-  // Add item to sync queue
+  // Add item to sync queue with table validation
   const addToQueue = useCallback(async (
     type: 'create' | 'update' | 'delete',
     table: string,
     data: any,
     priority: 'high' | 'medium' | 'low' = 'medium'
   ) => {
+    if (!isSyncableTable(table)) {
+      console.error(`[OfflineSync] Table "${table}" is not registered for offline sync`);
+      toast({
+        title: "Sync error",
+        description: `Table "${table}" is not supported for offline sync`,
+        variant: "destructive"
+      });
+      return null;
+    }
+
     const newItem: SyncQueueItem = {
       id: `${table}_${type}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       type,
@@ -104,22 +108,18 @@ export const useOfflineSyncQueue = () => {
 
   // Sync a single item
   const syncItem = useCallback(async (item: SyncQueueItem): Promise<SyncResult> => {
-    try {
-      await executeSyncOperation({
-        table: item.table,
-        type: item.type,
-        data: item.data
-      });
+    const result: DataSyncResult = await executeSyncOperation({
+      table: item.table,
+      type: item.type,
+      data: item.data
+    });
 
+    if (result.success) {
       return { success: true, itemId: item.id };
-    } catch (error) {
-      console.error(`Error syncing item ${item.id}:`, error);
-      return {
-        success: false,
-        itemId: item.id,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
     }
+
+    console.error(`[OfflineSync] Failed to sync item ${item.id}:`, result.error);
+    return { success: false, itemId: item.id, error: result.error };
   }, []);
 
   // Process the sync queue
@@ -143,17 +143,11 @@ export const useOfflineSyncQueue = () => {
       results.push(result);
 
       if (!result.success) {
-        // Retry logic
         if (item.retryCount < item.maxRetries) {
-          failedItems.push({
-            ...item,
-            retryCount: item.retryCount + 1
-          });
-          
-          // Wait before retrying
+          failedItems.push({ ...item, retryCount: item.retryCount + 1 });
           await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
         } else {
-          console.error(`Max retries reached for item ${item.id}`);
+          console.error(`[OfflineSync] Max retries reached for item ${item.id}`);
           toast({
             title: "Sync failed",
             description: `Failed to sync ${item.type} on ${item.table}`,
@@ -163,7 +157,6 @@ export const useOfflineSyncQueue = () => {
       }
     }
 
-    // Update queue with only failed items that haven't exceeded max retries
     await saveQueue(failedItems);
 
     const successCount = results.filter(r => r.success).length;
@@ -192,9 +185,7 @@ export const useOfflineSyncQueue = () => {
   // Auto-sync when coming online
   useEffect(() => {
     if (isOnline && queue.length > 0 && !syncInProgressRef.current) {
-      console.log(`Auto-sync triggered: ${queue.length} items in queue`);
-      
-      // Small delay to ensure connection is stable
+      console.log(`[OfflineSync] Auto-sync triggered: ${queue.length} items in queue`);
       const timer = setTimeout(() => {
         toast({
           title: "Auto-sync started",
@@ -234,20 +225,21 @@ export const useOfflineSyncQueue = () => {
     });
   }, [saveQueue, toast]);
 
+  // Get pending sync count
+  const getPendingSyncCount = useCallback(() => queue.length, [queue]);
+
   // Get queue stats
-  const getQueueStats = useCallback(() => {
-    return {
-      total: queue.length,
-      high: queue.filter(item => item.priority === 'high').length,
-      medium: queue.filter(item => item.priority === 'medium').length,
-      low: queue.filter(item => item.priority === 'low').length,
-      byType: {
-        create: queue.filter(item => item.type === 'create').length,
-        update: queue.filter(item => item.type === 'update').length,
-        delete: queue.filter(item => item.type === 'delete').length,
-      }
-    };
-  }, [queue]);
+  const getQueueStats = useCallback(() => ({
+    total: queue.length,
+    high: queue.filter(item => item.priority === 'high').length,
+    medium: queue.filter(item => item.priority === 'medium').length,
+    low: queue.filter(item => item.priority === 'low').length,
+    byType: {
+      create: queue.filter(item => item.type === 'create').length,
+      update: queue.filter(item => item.type === 'update').length,
+      delete: queue.filter(item => item.type === 'delete').length,
+    }
+  }), [queue]);
 
   return {
     queue,
@@ -258,6 +250,18 @@ export const useOfflineSyncQueue = () => {
     removeFromQueue,
     syncNow,
     clearQueue,
+    getPendingSyncCount,
     hasItemsToSync: queue.length > 0
   };
 };
+
+/** Sort queue by priority then timestamp */
+function sortByPriority(items: SyncQueueItem[]): SyncQueueItem[] {
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
+  return [...items].sort((a, b) => {
+    if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    }
+    return a.timestamp - b.timestamp;
+  });
+}
