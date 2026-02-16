@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Calendar, Sprout, CloudRain, TrendingUp, Leaf, AlertCircle } from 'lucide-react';
+import { Calendar, Sprout, CloudRain, TrendingUp, Leaf, AlertCircle, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import DOMPurify from 'dompurify';
@@ -229,23 +229,30 @@ export const SeasonalPlanningAssistant: React.FC<SeasonalPlanningAssistantProps>
             </div>
           </div>
 
-          <Button 
-            onClick={generatePlan} 
-            disabled={isLoading || !location}
-            className="w-full"
-          >
-            {isLoading ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Generating Plan...
-              </>
-            ) : (
-              <>
-                <Sprout className="h-4 w-4 mr-2" />
-                Generate Seasonal Plan
-              </>
+          <div className="space-y-2">
+            <Button 
+              onClick={generatePlan} 
+              disabled={isLoading || !location}
+              className="w-full"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                'Generate Seasonal Plan'
+              )}
+            </Button>
+
+            {/* Location context helper */}
+            {!location && (
+              <p className="text-sm text-amber-600 flex items-center gap-1">
+                <AlertCircle className="h-4 w-4" />
+                Select a county first to enable planning
+              </p>
             )}
-          </Button>
+          </div>
         </CardContent>
       </Card>
 
