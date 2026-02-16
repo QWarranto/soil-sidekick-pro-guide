@@ -267,7 +267,15 @@ This visualization enables agricultural professionals to make informed decisions
 
 ---
 
-## ABSTRACT
+## REMARKS
+
+The claimed invention is patent-eligible under 35 U.S.C. § 101 because it is not directed to an abstract idea, but rather to an improvement in the functioning of a mobile device in a specific environment (GPS-denied agricultural fields).
+
+The claims do not merely calculate a position; they apply that calculation to control the specific operation of the device. Specifically, Claim 1 requires [rendering a specific UI state / inhibiting storage operations].
+
+As held in Thales Visionix Inc. v. United States, 850 F.3d 1343 (Fed. Cir. 2017), claims that use inertial sensors to determine orientation and position are patent-eligible when the sensors are used in a specific configuration to improve accuracy. Similarly here, the claimed invention uses inertial sensors to gate the operation of an offline storage queue, providing a specific technical solution to the problem of data integrity during network outages.
+
+---
 
 A system for continuous geographic positioning during GPS signal denial, comprising five interconnected modules implementing sync-gated dead reckoning. A step detection module identifies pedestrian steps via rising-edge accelerometer thresholding with temporal debounce. A complementary filter fuses high-frequency orientation sensor data with low-frequency magnetometer reference for stable heading estimation. An adaptive stride estimation module computes displacement per step from accelerometer peak amplitude. A Kalman-inspired uncertainty model tracks variance accumulation per step, resetting upon GPS recovery. A supervisory controller implements a three-tier fallback chain with activation gated on verification of offline data synchronization infrastructure, ensuring positional data persistence and recoverability.
 
