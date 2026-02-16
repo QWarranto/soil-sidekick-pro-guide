@@ -7,40 +7,61 @@
 
 export type ErrorCategory = 'transient' | 'auth' | 'validation' | 'fatal';
 
-export interface ClassifiedError {
+export interface ErrorResult {
   category: ErrorCategory;
   message: string;
   retryable: boolean;
-  originalError: unknown;
+  retryDelay?: number;
 }
 
 /**
  * Classify an error into a category with a user-friendly message.
- * Determines whether the error is retryable and what feedback to show.
+ * Uses HTTP status codes when available, falls back to message heuristics.
  */
-export function classifyError(error: unknown): ClassifiedError {
+export function classifyError(error: any): ErrorResult {
+  const status = error?.status ?? error?.statusCode;
   const raw = error instanceof Error ? error.message : String(error ?? 'Unknown error');
   const lower = raw.toLowerCase();
 
-  // Auth errors — not retryable, user must act
+  // Network timeouts, 503s, 429s = transient (auto-retry)
   if (
+    status === 503 || status === 502 || status === 504 || status === 429 ||
+    error?.code === 'timeout' ||
+    lower.includes('network') ||
+    lower.includes('timeout') ||
+    lower.includes('fetch') ||
+    lower.includes('econnrefused') ||
+    lower.includes('rate limit') ||
+    lower.includes('too many requests')
+  ) {
+    return {
+      category: 'transient',
+      message: 'Working on it… Retrying automatically',
+      retryable: true,
+      retryDelay: 2000,
+    };
+  }
+
+  // Auth errors — retryable once (session refresh)
+  if (
+    status === 401 ||
     lower.includes('no session') ||
     lower.includes('auth') ||
     lower.includes('unauthorized') ||
-    lower.includes('401') ||
     lower.includes('sign in') ||
     lower.includes('jwt')
   ) {
     return {
       category: 'auth',
-      message: 'Please sign in to continue.',
-      retryable: false,
-      originalError: error,
+      message: 'Re-authenticating…',
+      retryable: true,
+      retryDelay: 1000,
     };
   }
 
   // Validation errors — not retryable without user changes
   if (
+    status === 400 || status === 422 ||
     lower.includes('required') ||
     lower.includes('invalid') ||
     lower.includes('missing') ||
@@ -48,81 +69,60 @@ export function classifyError(error: unknown): ClassifiedError {
   ) {
     return {
       category: 'validation',
-      message: raw,
+      message: raw || 'Please check your inputs and try again.',
       retryable: false,
-      originalError: error,
     };
   }
 
-  // Transient / network errors — retryable
-  if (
-    lower.includes('network') ||
-    lower.includes('timeout') ||
-    lower.includes('fetch') ||
-    lower.includes('econnrefused') ||
-    lower.includes('503') ||
-    lower.includes('502') ||
-    lower.includes('504') ||
-    lower.includes('rate limit') ||
-    lower.includes('too many requests') ||
-    lower.includes('429')
-  ) {
-    return {
-      category: 'transient',
-      message: 'Temporary issue — retrying automatically.',
-      retryable: true,
-      originalError: error,
-    };
-  }
-
-  // Default to fatal — unknown errors are not retried
+  // Everything else = fatal
   return {
     category: 'fatal',
-    message: raw || 'Something went wrong. Please try again later.',
+    message: 'Something went wrong. Try refreshing.',
     retryable: false,
-    originalError: error,
   };
 }
 
 /**
  * Execute an async function with automatic retries for transient errors.
  * 
- * @param fn - The async function to execute
+ * @param operation - The async function to execute
  * @param maxRetries - Maximum number of retry attempts (default: 3)
- * @param onRetryStatus - Optional callback for retry status messages
+ * @param onStatusUpdate - Optional callback for retry status messages
  * @returns The result of the async function
  * @throws The last error if all retries are exhausted
  */
 export async function withSmartRetry<T>(
-  fn: () => Promise<T>,
+  operation: () => Promise<T>,
   maxRetries = 3,
-  onRetryStatus?: (message: string) => void
+  onStatusUpdate?: (status: string) => void
 ): Promise<T> {
-  let lastError: unknown;
+  let lastError: any;
 
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      return await fn();
-    } catch (err) {
-      lastError = err;
-      const classified = classifyError(err);
+      return await operation();
+    } catch (error) {
+      lastError = error;
+      const classified = classifyError(error);
 
-      // Only retry transient errors
-      if (!classified.retryable || attempt >= maxRetries) {
-        throw err;
+      // Don't retry if not retryable or on last attempt
+      if (!classified.retryable || attempt === maxRetries) {
+        throw error;
       }
 
-      // Exponential backoff: 1s, 2s, 4s
-      const delay = Math.min(1000 * Math.pow(2, attempt), 8000);
-      
-      onRetryStatus?.(
-        `Retrying (${attempt + 1}/${maxRetries})… next attempt in ${Math.round(delay / 1000)}s`
+      // Notify of retry attempt
+      onStatusUpdate?.(
+        `${classified.message} (Attempt ${attempt}/${maxRetries})`
       );
 
-      await new Promise((resolve) => setTimeout(resolve, delay));
+      // Wait before retry with exponential backoff
+      const delayMs = classified.retryDelay ?? Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+      await delay(delayMs);
     }
   }
 
-  // Should not reach here, but satisfy TS
   throw lastError;
 }
+
+/** Simple delay helper */
+export const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
