@@ -512,15 +512,15 @@ const Dashboard = () => {
                   <ListTodo className="h-4 w-4 mr-2" />
                   Manage Seasonal Tasks
                 </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start">
+                <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => navigate('/planting-calendar')}>
                   <Calendar className="h-4 w-4 mr-2" />
                   View Planting Calendar
                 </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start">
+                <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => navigate('/seasonal-planning')}>
                   <TrendingUp className="h-4 w-4 mr-2" />
                   Crop Rotation Planning
                 </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start">
+                <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => navigate('/soil-analysis')}>
                   <Leaf className="h-4 w-4 mr-2" />
                   Soil Improvement Plan
                 </Button>
