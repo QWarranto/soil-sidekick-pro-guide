@@ -231,7 +231,8 @@ This visualization enables agricultural professionals to make informed decisions
    (c) for each detected step, computing an adaptive stride length based on peak accelerometer magnitude during the step cycle;
    (d) displacing a current estimated position along the fused heading by the adaptive stride length using spherical geodesy;
    (e) accumulating positional uncertainty according to a variance propagation model σ²(n) = σ²(n-1) + (stride × driftRate)² + processNoise²; and
-   (f) upon acquisition of a GPS fix, resetting the positional uncertainty to the GPS-reported accuracy.
+   (f) upon acquisition of a GPS fix, resetting the positional uncertainty to the GPS-reported accuracy; and
+   (g) inhibiting a write operation to the offline data storage subsystem for any collected agricultural data when the accumulated positional uncertainty exceeds a pre-determined reliability threshold, thereby preventing corruption of the agricultural field survey database with unreliable geospatial metadata.
 
 **Claim 2.** A multi-tier adaptive positioning system for an offline-first agricultural intelligence platform, the system comprising:
    a first positioning tier utilizing GPS geolocation when the mobile device has network connectivity;
