@@ -125,23 +125,24 @@ export class CircuitBreaker {
 }
 
 // Global circuit breakers for external APIs
-export const circuitBreakers = {
+export const circuitBreakers: Record<string, CircuitBreaker> = {
   epa: new CircuitBreaker(5, 60000, 30000),
   usda: new CircuitBreaker(5, 60000, 30000),
   googleEarth: new CircuitBreaker(3, 120000, 60000),
   noaa: new CircuitBreaker(5, 60000, 30000),
   openai: new CircuitBreaker(3, 60000, 30000),
+  'lovable-ai': new CircuitBreaker(3, 60000, 30000),
 };
 
 /**
  * Safe external API call with circuit breaker
  */
 export async function safeExternalCall<T>(
-  provider: keyof typeof circuitBreakers,
+  provider: string,
   apiCall: () => Promise<T>,
   fallback?: () => Promise<T>
 ): Promise<T> {
-  const breaker = circuitBreakers[provider];
+  const breaker = circuitBreakers[provider] || new CircuitBreaker(3, 60000, 30000);
 
   try {
     return await breaker.execute(apiCall);
