@@ -120,11 +120,10 @@ const FertilizerFootprint = () => {
       });
 
       if (error) {
-        console.error('Error fetching soil data:', error);
+        console.warn('Soil data unavailable, using defaults:', error);
         toast({
-          title: "Error fetching soil data",
-          description: "Using default recommendations for your area.",
-          variant: "destructive",
+          title: "Using general recommendations",
+          description: `County-specific soil data isn't available yet. Showing regional defaults.`,
         });
         // Fall back to sample data
         setFertilizerData(sampleFertilizerData);
