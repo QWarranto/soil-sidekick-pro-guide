@@ -77,11 +77,10 @@ export default function AdaptIntegration() {
         setSoilAnalyses(analysesResult.data);
       }
     } catch (error) {
-      console.error('Error loading data:', error);
+      console.warn('Error loading integration data:', error);
       toast({
-        title: "Error",
-        description: "Failed to load integration data",
-        variant: "destructive"
+        title: "Data unavailable",
+        description: "Couldn't load integration data. Please try again.",
       });
     } finally {
       setLoading(false);

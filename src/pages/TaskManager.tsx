@@ -57,11 +57,10 @@ const TaskManager = () => {
       if (error) throw error;
       setTasks(data || []);
     } catch (error) {
-      console.error('Error fetching tasks:', error);
+      console.warn('Error fetching tasks:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to load tasks',
-        variant: 'destructive',
+        title: 'Tasks unavailable',
+        description: 'Couldn\'t load tasks right now. Please try again.',
       });
     } finally {
       setIsLoading(false);

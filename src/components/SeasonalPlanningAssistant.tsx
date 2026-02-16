@@ -67,7 +67,6 @@ export const SeasonalPlanningAssistant: React.FC<SeasonalPlanningAssistantProps>
       toast({
         title: "Location Required",
         description: "Please select a location first",
-        variant: "destructive",
       });
       return;
     }
@@ -76,7 +75,6 @@ export const SeasonalPlanningAssistant: React.FC<SeasonalPlanningAssistantProps>
       toast({
         title: "Missing Information",
         description: "Please select planning type and timeframe",
-        variant: "destructive",
       });
       return;
     }
@@ -122,9 +120,8 @@ export const SeasonalPlanningAssistant: React.FC<SeasonalPlanningAssistantProps>
       const errorMessage = err.message || 'Failed to generate planning recommendations';
       setError(errorMessage);
       toast({
-        title: "Planning Failed",
-        description: errorMessage,
-        variant: "destructive",
+        title: "Planning unavailable",
+        description: "Couldn't generate plan right now. Please try again.",
       });
     } finally {
       setIsLoading(false);

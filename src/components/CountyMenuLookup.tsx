@@ -78,11 +78,10 @@ export const CountyMenuLookup: React.FC<CountyMenuLookupProps> = ({
           });
         }
       } catch (error) {
-        console.error('Error loading states:', error);
+        console.warn('Could not load states:', error);
         toast({
-          title: "Error",
-          description: "Failed to load states. Please try again.",
-          variant: "destructive",
+          title: "Couldn't load states",
+          description: "Please check your connection and try again.",
         });
       } finally {
         setStatesLoading(false);
@@ -111,11 +110,10 @@ export const CountyMenuLookup: React.FC<CountyMenuLookupProps> = ({
         if (error) throw error;
         setCounties(data || []);
       } catch (error) {
-        console.error('Error loading counties:', error);
+        console.warn('Could not load counties:', error);
         toast({
-          title: "Error",
-          description: "Failed to load counties. Please try again.",
-          variant: "destructive",
+          title: "Couldn't load counties",
+          description: "Please check your connection and try again.",
         });
       } finally {
         setCountiesLoading(false);
@@ -167,11 +165,10 @@ export const CountyMenuLookup: React.FC<CountyMenuLookupProps> = ({
         });
       }
     } catch (error) {
-      console.error('Error searching soil data:', error);
+      console.warn('Soil data search failed:', error);
       toast({
-        title: "Search Error",
-        description: "Failed to search for soil data. Please try again.",
-        variant: "destructive",
+        title: "Search unavailable",
+        description: "Couldn't search soil data right now. Please try again.",
       });
     } finally {
       setLoading(false);
