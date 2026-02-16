@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Zap, Clock, TrendingUp } from 'lucide-react';
 import { useOneTimePurchase } from '@/hooks/useOneTimePurchase';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 interface QuickAccessSuggestionProps {
   feature: string;
@@ -22,14 +24,22 @@ export function QuickAccessSuggestion({
   const { 
     showOneTimePurchaseModal, 
     getFeatureConfig, 
-    shouldShowOneTimePurchase 
   } = useOneTimePurchase();
-
-  if (!shouldShowOneTimePurchase(feature)) {
-    return null;
-  }
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const config = getFeatureConfig(feature);
+
+  const handleClick = () => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+    const shown = showOneTimePurchaseModal(feature);
+    if (!shown) {
+      navigate('/pricing');
+    }
+  };
 
   return (
     <Card className={`border-primary/30 bg-gradient-to-br from-primary/5 to-transparent ${className}`}>
@@ -66,7 +76,7 @@ export function QuickAccessSuggestion({
         </div>
         
         <Button 
-          onClick={() => showOneTimePurchaseModal(feature)}
+          onClick={handleClick}
           className="w-full h-8 text-sm bg-primary hover:bg-primary/90"
         >
           <Zap className="h-3 w-3 mr-2" />
