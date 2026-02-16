@@ -107,11 +107,10 @@ const PlantingCalendar = () => {
       });
 
       if (error) {
-        console.error('Error fetching soil data:', error);
+        console.warn('Soil data unavailable for county, using defaults:', error);
         toast({
-          title: "Error fetching soil data",
-          description: "Using default recommendations for your area.",
-          variant: "destructive",
+          title: "Using general recommendations",
+          description: `County-specific soil data isn't available yet for ${county.county_name}. Showing regional defaults.`,
         });
         // Fall back to sample data
         setPlantingData(samplePlantingData);
