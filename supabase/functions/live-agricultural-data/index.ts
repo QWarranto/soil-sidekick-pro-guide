@@ -18,7 +18,7 @@ import { logSafe, logError } from '../_shared/logging-utils.ts';
 
 requestHandler({
   requireAuth: true,
-  requireSubscription: true,
+  requireSubscription: false,
   validationSchema: liveAgDataSchema,
   rateLimit: {
     requests: 100,
@@ -39,11 +39,11 @@ requestHandler({
         switch (dataType) {
           case 'weather':
             logSafe('Fetching NOAA weather data...');
-            liveData.weather = await withFallback(
-              () => fetchNOAAWeatherData(county_fips, state_code),
-              () => generateSimulatedWeatherData(state_code),
-              'NOAA Weather API'
-            );
+            liveData.weather = await withFallback({
+              primary: () => fetchNOAAWeatherData(county_fips, state_code),
+              fallback: () => generateSimulatedWeatherData(state_code),
+              retries: 1,
+            });
             if (liveData.weather.source === 'live') {
               dataSources.push('NOAA Weather API');
               await trackExternalAPICost(supabaseClient, {
@@ -57,11 +57,11 @@ requestHandler({
 
           case 'soil':
             logSafe('Fetching USDA soil data...');
-            liveData.soil = await withFallback(
-              () => fetchUSDAsoilData(county_fips, state_code),
-              () => generateSimulatedSoilData(county_fips, state_code),
-              'USDA Soil Survey API'
-            );
+            liveData.soil = await withFallback({
+              primary: () => fetchUSDAsoilData(county_fips, state_code),
+              fallback: () => generateSimulatedSoilData(county_fips, state_code),
+              retries: 1,
+            });
             if (liveData.soil.source === 'live') {
               dataSources.push('USDA Soil Survey API');
               await trackExternalAPICost(supabaseClient, {
@@ -75,11 +75,11 @@ requestHandler({
 
           case 'crop':
             logSafe('Fetching USDA crop data...');
-            liveData.crop = await withFallback(
-              () => fetchUSDAcropData(county_fips, state_code),
-              () => generateSimulatedCropData(county_fips, state_code),
-              'USDA NASS API'
-            );
+            liveData.crop = await withFallback({
+              primary: () => fetchUSDAcropData(county_fips, state_code),
+              fallback: () => generateSimulatedCropData(county_fips, state_code),
+              retries: 1,
+            });
             if (liveData.crop.source === 'live') {
               dataSources.push('USDA NASS API');
               await trackExternalAPICost(supabaseClient, {
@@ -93,11 +93,11 @@ requestHandler({
 
           case 'environmental':
             logSafe('Fetching EPA environmental data...');
-            liveData.environmental = await withFallback(
-              () => fetchEPAenvironmentalData(county_fips, state_code),
-              () => generateSimulatedEnvironmentalData(county_fips, state_code),
-              'EPA Environmental API'
-            );
+            liveData.environmental = await withFallback({
+              primary: () => fetchEPAenvironmentalData(county_fips, state_code),
+              fallback: () => generateSimulatedEnvironmentalData(county_fips, state_code),
+              retries: 1,
+            });
             if (liveData.environmental.source === 'live') {
               dataSources.push('EPA Environmental API');
               await trackExternalAPICost(supabaseClient, {
