@@ -25,6 +25,8 @@ The present invention extends the parent application's offline-first agricultura
 
 The system provides continuous geographic positioning during GPS signal loss—a common occurrence in remote agricultural environments—by fusing data from onboard inertial measurement unit (IMU) sensors to estimate device displacement and heading. Unlike conventional dead-reckoning systems that operate independently of application state, the disclosed system gates activation of inertial positioning on verification of the offline data synchronization infrastructure, ensuring that all positional estimates are persistable and recoverable.
 
+It is expressly noted that the variance propagation and stride estimation models disclosed herein are not merely mathematical abstractions or mental processes. Rather, they are specific algorithmic tools integrated into the mobile device's operating loop to achieve a technical effect: specifically, the transformation of the device's user interface to guide field behavior during signal loss, and the automated gating of the device's storage controller. By preventing the persistence of data when positional uncertainty is high (e.g., >500m), the invention improves the functioning of the offline-first database by reducing the storage of 'garbage' data that would otherwise require computationally expensive post-processing to clean.
+
 ---
 
 ## TECHNICAL FIELD
