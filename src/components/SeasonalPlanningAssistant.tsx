@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,14 @@ import { Calendar, Sprout, CloudRain, TrendingUp, Leaf, AlertCircle, Loader2 } f
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import DOMPurify from 'dompurify';
+import { withSmartRetry, classifyError } from '@/lib/error-handling';
+
+type PlanningState = 
+  | { status: 'idle' }
+  | { status: 'validating' }
+  | { status: 'loading'; stage: 'authenticating' | 'fetching' | 'generating' }
+  | { status: 'error'; error: string; retryable: boolean }
+  | { status: 'success'; plan: any };
 
 interface SeasonalPlanningAssistantProps {
   location?: {
@@ -29,10 +37,13 @@ export const SeasonalPlanningAssistant: React.FC<SeasonalPlanningAssistantProps>
   const [cropPreferences, setCropPreferences] = useState<string[]>([]);
   const [recommendations, setRecommendations] = useState<string>('');
   const [weatherData, setWeatherData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [modelUsed, setModelUsed] = useState<string>('');
-  const [error, setError] = useState<string>('');
+  const [planState, setPlanState] = useState<PlanningState>({ status: 'idle' });
   const { toast } = useToast();
+
+  // Derived convenience flags for the template
+  const isLoading = planState.status === 'loading';
+  const error = planState.status === 'error' ? planState.error : '';
 
   const planningTypes = [
     { value: 'crop_rotation', label: 'Crop Rotation Planning' },
@@ -62,72 +73,90 @@ export const SeasonalPlanningAssistant: React.FC<SeasonalPlanningAssistantProps>
     );
   };
 
+  // Reset error state when user changes inputs
+  useEffect(() => {
+    if (planState.status === 'error') {
+      setPlanState({ status: 'idle' });
+    }
+  }, [location, planningType, timeframe, cropPreferences]);
+
   const generatePlan = async () => {
+    // Validation state
+    setPlanState({ status: 'validating' });
+
     if (!location) {
-      toast({
-        title: "Location Required",
-        description: "Please select a location first",
-      });
+      setPlanState({ status: 'error', error: 'Please select a county first', retryable: false });
       return;
     }
 
     if (!planningType || !timeframe) {
-      toast({
-        title: "Missing Information",
-        description: "Please select planning type and timeframe",
-      });
+      setPlanState({ status: 'error', error: 'Please select planning type and timeframe', retryable: false });
       return;
     }
 
-    setIsLoading(true);
-    setError('');
-    
+    setPlanState({ status: 'loading', stage: 'authenticating' });
+
     try {
-      // Get the current session to ensure we have a valid token
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        throw new Error('Authentication required. Please sign in to use seasonal planning.');
-      }
+      const result = await withSmartRetry(
+        async () => {
+          setPlanState({ status: 'loading', stage: 'fetching' });
 
-      const response = await supabase.functions.invoke('seasonal-planning-assistant', {
-        body: {
-          location,
-          soilData,
-          planningType,
-          cropPreferences,
-          timeframe
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session) throw new Error('Authentication required. Please sign in to use seasonal planning.');
+
+          setPlanState({ status: 'loading', stage: 'generating' });
+
+          const response = await supabase.functions.invoke('seasonal-planning-assistant', {
+            body: {
+              location,
+              soilData,
+              planningType,
+              cropPreferences,
+              timeframe
+            }
+          });
+
+          if (response.error) {
+            console.warn('Edge function error:', response.error);
+            throw new Error(response.error.message || 'Failed to generate seasonal plan');
+          }
+
+          if (!response.data?.success) {
+            throw new Error(response.data?.error || 'Failed to generate plan');
+          }
+
+          return response.data;
+        },
+        3,
+        (statusMsg) => {
+          toast({ title: statusMsg, duration: 3000 });
         }
-      });
+      );
 
-      if (response.error) {
-        console.error('Edge function error:', response.error);
-        throw new Error(response.error.message || 'Failed to generate seasonal plan');
-      }
-
-      if (response.data?.success) {
-        setRecommendations(response.data.recommendations.content);
-        setWeatherData(response.data.weatherData);
-        setModelUsed(response.data.modelUsed);
-        toast({
-          title: "Planning Complete",
-          description: `Seasonal plan generated using ${response.data.modelUsed.toUpperCase()}`,
-        });
-      } else {
-        throw new Error(response.data?.error || 'Failed to generate plan');
-      }
-    } catch (err: any) {
-      const errorMessage = err.message || 'Failed to generate planning recommendations';
-      setError(errorMessage);
+      setRecommendations(result.recommendations.content);
+      setWeatherData(result.weatherData);
+      setModelUsed(result.modelUsed);
+      setPlanState({ status: 'success', plan: result });
       toast({
-        title: "Planning unavailable",
-        description: "Couldn't generate plan right now. Please try again.",
+        title: "Planning Complete",
+        description: `Seasonal plan generated using ${result.modelUsed.toUpperCase()}`,
       });
-    } finally {
-      setIsLoading(false);
+
+    } catch (err) {
+      const classified = classifyError(err);
+      setPlanState({
+        status: 'error',
+        error: classified.message,
+        retryable: classified.retryable
+      });
+
+      toast({
+        title: classified.category === 'auth' ? 'Sign in required' : 'Planning unavailable',
+        description: classified.message,
+        variant: classified.category === 'fatal' ? 'destructive' : 'default',
+      });
     }
   };
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -297,11 +326,13 @@ export const SeasonalPlanningAssistant: React.FC<SeasonalPlanningAssistantProps>
               <Skeleton className="h-4 w-3/4" />
               <Skeleton className="h-4 w-1/2" />
               <div className="flex items-center gap-2 mt-4">
-                <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse" />
-                <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse delay-75" />
-                <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse delay-150" />
+                <div className="h-2 w-2 bg-primary rounded-full animate-pulse" />
+                <div className="h-2 w-2 bg-primary rounded-full animate-pulse delay-75" />
+                <div className="h-2 w-2 bg-primary rounded-full animate-pulse delay-150" />
                 <span className="text-xs text-muted-foreground ml-2">
-                  AI analyzing seasonal factors...
+                  {planState.status === 'loading' && planState.stage === 'authenticating' && 'Authenticating…'}
+                  {planState.status === 'loading' && planState.stage === 'fetching' && 'Fetching data…'}
+                  {planState.status === 'loading' && planState.stage === 'generating' && 'AI analyzing seasonal factors…'}
                 </span>
               </div>
             </div>
@@ -314,16 +345,20 @@ export const SeasonalPlanningAssistant: React.FC<SeasonalPlanningAssistantProps>
         <Card className="border-destructive/20">
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-              <AlertCircle className="h-5 w-5 text-destructive" />
-              <div>
-                <p className="text-sm font-medium text-destructive">Planning Failed</p>
+              <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-destructive">Planning Issue</p>
                 <p className="text-xs text-muted-foreground">{error}</p>
               </div>
+              {planState.status === 'error' && planState.retryable && (
+                <Button variant="outline" size="sm" onClick={generatePlan}>
+                  Retry
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
       )}
-
       {/* Recommendations */}
       {recommendations && !isLoading && (
         <Card className="border-green-200">
