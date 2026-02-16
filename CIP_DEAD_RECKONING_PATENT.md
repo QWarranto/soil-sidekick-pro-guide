@@ -175,6 +175,8 @@ unreliable = false
 
 This ensures that positional uncertainty contracts to the GPS accuracy upon signal recovery, providing a natural "rubber-banding" correction that aligns the dead-reckoned trajectory with ground truth.
 
+It is expressly noted that the variance propagation and stride estimation models disclosed herein are not merely mathematical abstractions or mental processes. Rather, they are specific algorithmic tools integrated into the mobile device's operating loop to achieve a technical effect: specifically, the transformation of the device's user interface to guide field behavior during signal loss, and the automated gating of the device's storage controller. By preventing the persistence of data when positional uncertainty is high (e.g., >500m), the invention improves the functioning of the offline-first database by reducing the storage of 'garbage' data that would otherwise require computationally expensive post-processing to clean.
+
 ---
 
 ## MULTI-TIER ADAPTIVE POSITIONING FALLBACK CHAIN
