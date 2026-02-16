@@ -225,7 +225,7 @@ This visualization enables agricultural professionals to make informed decisions
 
 ### Independent Claims
 
-**Claim 1.** A computer-implemented method for estimating geographic position of a mobile device during GPS signal denial in agricultural field surveying, the method comprising:
+**Claim 1.** A computer-implemented method for estimating geographic position of a mobile device during GPS signal denial, the method comprising:
    (a) detecting pedestrian steps from tri-axial accelerometer readings using a rising-edge threshold detector with temporal debounce;
    (b) estimating a heading of the mobile device by fusing orientation data from a first sensor operating at a first frequency with orientation data from a second sensor operating at a second, lower frequency using a complementary filter with a weighting parameter α, wherein the fused heading is computed as heading_fused = heading_secondary + α × angularDifference(heading_primary, heading_secondary);
    (c) for each detected step, computing an adaptive stride length based on peak accelerometer magnitude during the step cycle;
@@ -239,7 +239,7 @@ This visualization enables agricultural professionals to make informed decisions
    a third positioning tier accepting a manually seeded geographic position with an associated uncertainty radius; and
    a supervisory controller that transitions between said tiers based on connectivity state, sensor availability, and infrastructure verification status.
 
-**Claim 3.** A method for gating activation of an inertial positioning subsystem in a mobile agricultural application, the method comprising:
+**Claim 3.** The system of Claim 2, further comprising a method for gating activation of the second positioning tier, the method comprising:
    detecting loss of network connectivity on the mobile device;
    verifying that an offline data storage subsystem is operational and capable of persisting positional measurements;
    verifying that a synchronization queue is available for eventual upload of persisted measurements;
@@ -266,7 +266,7 @@ This visualization enables agricultural professionals to make informed decisions
 
 ## ABSTRACT
 
-A system and method for continuous geographic positioning during GPS signal denial in agricultural field surveying applications. Five interconnected modules implement sync-gated dead reckoning with complementary sensor fusion, adaptive stride estimation, and Kalman-inspired uncertainty propagation. A step detection module identifies pedestrian steps from accelerometer data using rising-edge thresholding with temporal debounce. A sensor fusion module implements a complementary filter combining high-frequency orientation sensor data with low-frequency magnetometer reference to produce a stable heading estimate. An adaptive stride estimation module dynamically computes displacement per step based on accelerometer peak amplitude. A positional uncertainty model tracks variance accumulation per step and resets upon GPS recovery. A supervisory controller implements a three-tier fallback chain (GPS, sensor-based dead reckoning, seeded centroid) with activation gating conditioned on verification of offline data synchronization infrastructure, ensuring positional data persistence and recoverability.
+A system for continuous geographic positioning during GPS signal denial, comprising five interconnected modules implementing sync-gated dead reckoning. A step detection module identifies pedestrian steps via rising-edge accelerometer thresholding with temporal debounce. A complementary filter fuses high-frequency orientation sensor data with low-frequency magnetometer reference for stable heading estimation. An adaptive stride estimation module computes displacement per step from accelerometer peak amplitude. A Kalman-inspired uncertainty model tracks variance accumulation per step, resetting upon GPS recovery. A supervisory controller implements a three-tier fallback chain with activation gated on verification of offline data synchronization infrastructure, ensuring positional data persistence and recoverability.
 
 ---
 
