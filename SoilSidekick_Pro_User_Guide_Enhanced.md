@@ -1,14 +1,14 @@
 # SoilSidekick Pro User Guide
 
-## Version: 2.0 | December 2025
+## Version: 2.1 | February 2026
 
-## Master SoilSidekick Pro's agricultural intelligence platform with our comprehensive guides. From satellite data interpretation to environmental risk assessment, interactive data visualization, and Variable Rate Technology.
+## Master SoilSidekick Pro's agricultural intelligence platform with our comprehensive guides. From satellite data interpretation to environmental risk assessment, interactive data visualization, Variable Rate Technology, and AI-powered seasonal planning.
 
 ### SOC 2 Type 1 Compliance & Security
 SoilSidekick Pro maintains SOC 2 Type 1 compliance with enterprise-grade security standards. Your agricultural data is protected through comprehensive security controls including data encryption, access monitoring, and audit logging. Our security framework ensures your sensitive farm data remains private and secure.
 
-### Service Reliability
-SoilSidekick Pro includes automatic service resilience - if temporary service issues occur, the system will automatically retry with user-friendly status messages. You'll be notified during any retry attempts and can manually retry if automatic recovery is unsuccessful.
+### Service Reliability & Smart Error Handling
+SoilSidekick Pro includes a centralized error-handling system that classifies failures and responds intelligently. Transient errors (network timeouts, rate limits, temporary outages) trigger automatic retries with exponential backoff. Authentication errors prompt session refresh. Validation errors provide clear user guidance. This system operates across all edge function calls and async operations, ensuring a resilient experience. See [Service Resilience & Error Handling](#service-resilience--error-handling) for full details.
 
 ---
 
@@ -19,13 +19,14 @@ SoilSidekick Pro includes automatic service resilience - if temporary service is
 3. [Field Management & Soil Visualization](#field-management--soil-visualization)
 4. [Smart Task Management](#smart-task-management)
 5. [Soil Analysis Interpretation](#soil-analysis-interpretation)
-6. [Seasonal Task Management](#seasonal-task-management)
+6. [Seasonal Planning Assistant](#seasonal-planning-assistant)
 7. [Variable Rate Technology (VRT)](#variable-rate-technology-vrt)
 8. [AlphaEarth Satellite Intelligence](#alphaearth-satellite-intelligence)
-9. [Environmental Assessment](#environmental-assessment)
+9. [Environmental Assessment & Water Quality](#environmental-assessment--water-quality)
 10. [Local AI Processing](#local-ai-processing)
 11. [Subscription Tiers](#subscription-tiers)
-12. [Troubleshooting](#troubleshooting)
+12. [Service Resilience & Error Handling](#service-resilience--error-handling)
+13. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -280,37 +281,6 @@ Budget: Get lime quote, schedule application
 Follow-up: Retest pH next spring
 ```
 
-**Using the Complete Visualization:**
-
-**Step-by-Step Workflow:**
-1. Navigate to Field Mapping or Dashboard
-2. Locate your field card in the grid view
-3. Review quick metrics (pH, OM) on card face
-4. Click "View Soil Analysis" button to open modal
-5. Start at top: Review location information
-6. Check N-P-K bar chart: Identify deficiencies (red bars)
-7. Review pH gauge: Note if adjustment needed
-8. Check organic matter: Compare to target goals
-9. Scan nutrient badges: Quick status confirmation
-10. Read agronomist recommendations carefully
-11. Create tasks in Task Manager for recommended actions
-12. Export or print analysis for records
-13. Share with agronomist/crop consultant if needed
-
-**Export & Documentation:**
-- Modal includes print-friendly layout
-- All charts and data export-ready
-- Recommendations formatted for easy sharing
-- Perfect for farm record keeping
-- Use for loan applications or certifications
-
-**Best Practices:**
-- Review soil analysis at least annually
-- Compare with previous years using date stamps
-- Take action on "Low" nutrient levels promptly
-- Document all amendments in Task Manager
-- Retest soil 6-12 months after major amendments
-
 ---
 
 ## Smart Task Management
@@ -352,12 +322,6 @@ Filter tasks by their current state to focus on specific workflow stages:
   - Shows only tasks where selected crop is involved
   - Includes tasks with multiple crops if one matches
 
-**Crop Filter Benefits:**
-- Isolate crop-specific operations
-- Plan crop-specific resource allocation
-- Review individual crop performance
-- Simplify multi-crop rotation management
-
 #### Combined Filtering - The Power of Dual Filters
 
 **How It Works:**
@@ -384,127 +348,509 @@ Result: Active soybean tasks requiring attention today
 Use: Focus crew on specific crop operations
 ```
 
-**Example 3: Wheat Season Review**
-```
-Status: Completed
-Crop: Wheat
-Result: All finished wheat tasks from current season
-Use: Analyze what worked well, calculate costs
-```
-
-**Example 4: Multi-Crop Troubleshooting**
-```
-Status: Cancelled
-Crop: All Crops
-Result: All tasks not completed across all crops
-Use: Identify resource constraints or scheduling issues
-```
-
 #### Live Task Counter
 
 **Display Format:** "Showing X of Y tasks"
 - **X**: Number of tasks matching current filters
 - **Y**: Total number of tasks in system
 - Updates in real-time as filters change
-- Helps gauge filter effectiveness
-
-**Counter Insights:**
-- "Showing 5 of 47 tasks" → Very specific filter, narrow focus
-- "Showing 42 of 47 tasks" → Broad filter, most tasks visible
-- "Showing 0 of 47 tasks" → No matches, adjust filter criteria
 
 #### Clear Filters Button
 
-**Functionality:**
 - Appears only when one or more filters are active
 - Single click resets both Status and Crop filters to "All"
 - Returns to complete unfiltered task list
-- Convenient for quick exploration then reset
-
-**When to Use Clear Filters:**
-- After specific task lookup to return to overview
-- When filters become too restrictive (0 results)
-- To see full task landscape after focused work
-- Quick reset during planning sessions
-
-#### Filter Persistence
-
-**Session Behavior:**
-- Filters remain active as you navigate within Task Manager
-- Persist when switching between task views
-- Reset when you leave Task Manager and return
-- Provides continuity during active work session
-
-#### Task Filter Interface
-
-**Visual Design:**
-- **Filter Card**: Dedicated card at top of task list
-- **Two Dropdowns**: Side-by-side status and crop selectors
-- **Filter Icon**: Visual indicator for filter section
-- **Clear Button**: Positioned for easy access when filters active
-- **Task Counter**: Displayed below filter controls
-
-**Responsive Layout:**
-- Desktop: Side-by-side filters with clear button
-- Mobile: Stacked filters, full-width dropdowns
-- All screen sizes: Clear task counter visibility
-
-#### Advanced Filter Strategies
-
-**Weekly Planning Workflow:**
-```
-Monday: Status = Pending, Crop = All
-  → Review all upcoming tasks for the week
-
-Tuesday-Friday: Status = In Progress, Crop = (daily crop)
-  → Focus on active operations for specific crop
-
-Friday: Status = Completed, Crop = All
-  → Review week's accomplishments
-```
-
-**Crop Rotation Monitoring:**
-```
-Stage 1: Crop = Corn, Status = All
-  → Review complete corn task history
-
-Stage 2: Crop = Soybeans, Status = Pending
-  → Plan upcoming soybean operations
-
-Stage 3: Compare completion rates across crops
-  → Identify which crops need more attention
-```
-
-**Resource Allocation:**
-```
-Equipment Schedule:
-- Filter: In Progress, All Crops
-- Identify equipment conflicts
-- Adjust task timing
-
-Labor Planning:
-- Filter: Pending, specific crop
-- Estimate hours needed
-- Schedule crew assignments
-```
-
-#### Filter Performance Tips
-
-**Best Practices:**
-1. Start broad (All/All), then narrow down
-2. Use crop filter for daily operations focus
-3. Use status filter for workflow management
-4. Combine both for specific task lookup
-5. Clear filters between different planning sessions
-6. Export filtered views for reporting
-
-**Common Filter Patterns:**
-- **Morning routine**: Pending + Today's Crop
-- **Progress check**: In Progress + All Crops
-- **End of day**: Completed + Today's Crop
-- **Planning**: Pending + Next Crop in Rotation
-- **Review**: Completed + Specific Time Period
 
 ---
 
-## [Rest of original content continues with Soil Analysis Interpretation, etc.]
+## Soil Analysis Interpretation
+
+### Soil Analysis Results Page
+
+The `SoilAnalysisResults` component provides a full-page view of your soil data with professional reporting features.
+
+#### AI Executive Summary
+- **SmartReportSummary** auto-generates a plain-language overview of your soil data
+- Highlights key findings and recommended actions
+- Powered by GPT-5 for contextual agricultural insights
+
+#### pH Level Card
+- Large numeric display with badge indicator
+- **Acidic** (red, <6.0): May need lime application
+- **Optimal** (green, 6.0-7.5): Good for most crops
+- **Alkaline** (amber, >7.5): May need sulfur application
+- Progress bar showing position on 0-14 scale
+
+#### Nutrient Level Cards (N-P-K)
+- Three separate cards for Nitrogen, Phosphorus, Potassium
+- Each shows: level text, color-coded badge, progress bar
+- Progress values: Low = 25%, Medium = 60%, High = 90%
+
+#### Professional Report Value
+- Reports support loan applications and property valuations
+- References USDA 7 CFR 4279.244 and Farm Credit 12 CFR 614.4265
+- Essential environmental due diligence documentation
+
+### Property Soil Report
+
+The `PropertySoilAnalysis` component provides real estate and construction-oriented soil analysis:
+
+#### Foundation Risk Assessment
+- Evaluates soil for expansive clay and bearing capacity
+- Three risk levels: Low (green), Moderate (amber), High (red)
+- Based on pH and organic matter indicators
+- Recommends professional foundation inspection when warranted
+
+#### Septic System Feasibility
+- Assesses percolation and drainage potential
+- Three levels: Good, Moderate, Challenging
+- Considers pH range and organic matter content
+- Identifies when alternative system designs may be required
+
+#### Landscaping & Property Value Impact
+- Scores landscaping potential from soil quality
+- Estimates property value impact (+2-5% for excellent soil)
+- Lists specific benefits and limitations
+
+#### Professional Watermark
+- Property address displayed as report watermark
+- Prepared-by fields for professional name and entity
+- Anti-fraud notice restricting use to specified property
+
+---
+
+## Seasonal Planning Assistant
+
+### Overview
+
+The Seasonal Planning Assistant is an AI-powered tool that generates comprehensive crop rotation and seasonal strategies tailored to your location, soil conditions, and preferences. It uses GPT-5 with weather integration and implements a robust state machine for reliable operation.
+
+### Getting Started
+
+1. Navigate to Seasonal Planning from the Dashboard
+2. Select your county using the County Lookup tool
+3. Configure planning parameters
+4. Generate your AI-powered seasonal plan
+
+### Location Selection
+
+**County Lookup Integration:**
+- Type your county name to search
+- System uses FIPS code for precise data retrieval
+- Selected location provides context for weather, climate zone, and growing season data
+- Location must be selected before plan generation is enabled
+
+### Planning Parameters
+
+#### Planning Focus (Required)
+Choose one of five planning types:
+
+| Planning Type | Description |
+|---|---|
+| **Crop Rotation Planning** | Optimize multi-year crop sequences for soil health and yield |
+| **Seasonal Planting Calendar** | Month-by-month planting and harvest schedules |
+| **Soil Health Improvement** | Targeted strategies to build organic matter and fertility |
+| **Market-Optimized Planning** | Align planting with market demand and pricing cycles |
+| **Sustainable Practices** | Eco-friendly farming with reduced environmental impact |
+
+#### Planning Timeframe (Required)
+- **Next 12 Months**: Immediate seasonal planning
+- **3-Year Plan**: Medium-term rotation and improvement strategy
+- **5-Year Strategy**: Long-term soil health and productivity roadmap
+
+#### Crop Preferences (Optional)
+Select from 17 crop options via checkboxes:
+- **Row Crops**: Corn, Soybeans, Wheat, Oats, Barley
+- **Forage**: Alfalfa, Clover, Pasture Grasses
+- **Vegetables**: Tomatoes, Peppers, Lettuce, Carrots, Potatoes, Onions
+- **Other**: Cover Crops, Fruit Trees, Vegetable Gardens
+
+Multiple crops can be selected to inform the AI about your rotation goals.
+
+### State Machine Architecture
+
+The planning assistant uses a state machine to provide clear feedback at every step:
+
+```
+idle → validating → loading (authenticating → fetching → generating) → success
+                                                                      → error (retryable / non-retryable)
+```
+
+**States Explained:**
+
+| State | What You See | What's Happening |
+|---|---|---|
+| **idle** | Generate button enabled | Ready for input |
+| **validating** | Brief transition | Checking required fields |
+| **loading / authenticating** | "Authenticating…" | Verifying your session |
+| **loading / fetching** | "Fetching data…" | Preparing request to edge function |
+| **loading / generating** | "AI analyzing seasonal factors…" | GPT-5 generating your plan |
+| **success** | Plan displayed with model badge | Plan generated successfully |
+| **error** | Error card with message | Something went wrong (see below) |
+
+### Smart Retry & Error Handling
+
+The assistant uses the centralized `withSmartRetry` utility for automatic recovery:
+
+- **Transient errors** (503, 429, network timeouts): Automatically retried up to 3 times with exponential backoff. You'll see toast notifications like "Working on it… Retrying automatically (Attempt 1/3)"
+- **Auth errors** (401, expired session): Retried once after session refresh attempt
+- **Validation errors** (400, 422): Not retried — you'll see a clear message about what to fix
+- **Fatal errors**: Not retried — "Something went wrong. Try refreshing."
+
+When retries are exhausted, a **Retry button** appears in the error card for manual retry.
+
+**Auto-reset**: Changing any input (location, planning type, timeframe, or crop preferences) automatically clears the error state, so you can adjust and try again without manually dismissing errors.
+
+### Weather Context Display
+
+After successful plan generation, a Weather Context card appears showing:
+- **Current Season**: Based on location and date
+- **USDA Zone**: Hardiness zone for your area
+- **Growing Season**: Frost-free period length
+- **Annual Rainfall**: Expected precipitation
+
+### Generated Plan
+
+The AI-generated plan is displayed as formatted text with:
+- **Model badge** showing which AI model was used (e.g., GPT-5)
+- **Markdown rendering** with bold, italic, and header formatting
+- **Sanitized output** via DOMPurify for security
+- Content tailored to your location, soil data, selected crops, and timeframe
+
+---
+
+## Variable Rate Technology (VRT)
+
+### Overview
+
+Variable Rate Technology enables precision agriculture by creating AI-powered prescription maps that optimize input application rates across your fields. Typically saves up to 30% on inputs while maintaining or improving yield.
+
+### Creating a Prescription Map
+
+Navigate to the VRT page and use the "Create Prescription" tab:
+
+**Required Fields:**
+1. **Select Field**: Choose from your registered fields (shows name and acreage)
+2. **Base Application Rate**: Enter your standard rate (e.g., 150 lbs/acre)
+
+**Optional Configuration:**
+3. **Application Type**: Fertilizer (default), Seeding Rate, Irrigation/Water, or Pesticide
+4. **Crop Type**: Free-text entry (e.g., Corn, Soybeans, Wheat)
+5. **Rate Unit**: lbs/acre, seeds/acre, gallons/acre, or kg/hectare
+6. **Target Yield**: Optional yield goal (e.g., 180 bu/acre)
+
+### How VRT Works
+
+1. AI analyzes your field's soil variability and crop requirements
+2. Generates 3-5 management zones with optimized application rates
+3. Creates prescription maps compatible with GPS-enabled tractors
+4. Reduces input waste while maintaining or improving yield
+5. Export to ADAPT, Shapefile, or ISO-XML formats for equipment
+
+### My Prescription Maps
+
+The "My Prescription Maps" tab displays all generated maps with:
+- **Map Name**: Auto-generated descriptive name
+- **Status Badges**: Draft, Approved, Applied, or Archived
+- **Zone Count**: Number of management zones created
+- **Base Rate**: Your specified application rate
+- **Estimated Savings**: Percentage reduction in inputs
+- **AI Confidence Score**: How confident the model is in the prescription
+- **Management Zone Details**: Individual zone rates displayed in a grid
+
+### Exporting Maps
+
+Click the **Export** button on any prescription map to generate equipment-compatible files. Supported formats include ADAPT, Shapefile, and ISO-XML for direct import to GPS-enabled tractors and applicators.
+
+---
+
+## AlphaEarth Satellite Intelligence
+
+### Overview
+
+SoilSidekick Pro integrates with Google Earth Engine via the AlphaEarth platform to provide satellite-derived insights for your fields.
+
+### Key Metrics
+
+#### Vegetation Health (NDVI)
+- **NDVI Score**: Normalized Difference Vegetation Index (0 to 1)
+- **0.0-0.2**: Bare soil or very sparse vegetation
+- **0.2-0.4**: Moderate vegetation, early growth stage
+- **0.4-0.6**: Healthy vegetation, active growth
+- **0.6-0.8**: Dense, very healthy vegetation
+- **0.8-1.0**: Peak vegetation health
+
+#### Soil Moisture
+- Satellite-derived soil moisture estimates
+- Helps time irrigation decisions
+- Identifies wet/dry zones within fields
+
+#### Thermal Stress Indicators
+- Available on Professional and Enterprise tiers
+- Detects crop heat stress before visual symptoms appear
+- Enables proactive management interventions
+
+### Using Satellite Data
+
+1. Ensure your fields are registered with boundary coordinates
+2. Navigate to the satellite view from your field card
+3. Review NDVI, soil moisture, and thermal data layers
+4. Compare with ground-truth soil analysis results
+5. Use trends to validate management decisions
+
+---
+
+## Environmental Assessment & Water Quality
+
+### Water Quality Analysis (TapWaterCheck Pro)
+
+The Water Quality page provides comprehensive water testing data from EPA sources with territory-aware analysis.
+
+#### Getting Started
+1. Navigate to Water Quality from the Dashboard
+2. Select your county using the County Lookup tool
+3. System fetches water quality data via the territorial water quality edge function
+
+#### Water Quality Grade
+- **Letter grade** (A through F) displayed prominently
+- Color-coded: A (green), B (blue), C (yellow), D/F (red)
+- Shows utility name, PWSID, source type, and last tested date
+
+#### Contaminant Analysis
+- Lists all detected contaminants with current levels
+- Compares against EPA Maximum Contaminant Levels (MCL)
+- Visual progress bars show level relative to MCL
+- **Violation flags** highlight contaminants exceeding safety limits
+- Provides guidance: "Within EPA safety limits" or "Exceeds EPA safety limits - contact your water utility"
+
+#### AI Executive Summary
+- **SmartReportSummary** auto-generates a plain-language water quality overview
+- Highlights key concerns and recommended actions
+
+#### Regulatory Information
+- Territory type (state, territory, compact state)
+- Population served by the water system
+- System type classification
+- EPA Region assignment
+- Regulatory authority and oversight details
+
+#### Filter Recommendations
+- Based on detected contaminants, suggests appropriate water filters
+- **Carbon Block Filter**: Reduces chlorine taste and odor (95% reduction)
+- **Reverse Osmosis System**: Comprehensive filtration for lead (99%) and nitrates (95%)
+
+#### Professional PDF Export
+- Full water quality report with `WaterQualityPDFExport` component
+- Includes all contaminant data, grades, and regulatory information
+- Suitable for professional documentation and record keeping
+
+### Environmental Impact Scores
+- Runoff risk assessment for your county
+- Biodiversity impact evaluation
+- Carbon footprint scoring
+- Contamination risk level
+- Eco-friendly alternative suggestions
+
+---
+
+## Local AI Processing
+
+### Overview
+
+SoilSidekick Pro supports fully offline agricultural intelligence using Google Gemma models running locally on your device via WebGPU. This provides privacy-preserving AI analysis without requiring internet connectivity.
+
+### Requirements
+- **Browser**: Chrome, Edge, or other WebGPU-compatible browser
+- **RAM**: 4GB minimum (Gemma 2B) or 8GB (Gemma 7B)
+- **Storage**: ~1.6GB (Gemma 2B) or ~4.2GB (Gemma 7B) for cached model
+
+### Enabling Offline Mode
+
+1. Open the **Offline AI Mode** card in your settings
+2. Toggle the switch from "Online Mode" to "Offline Mode"
+3. If this is your first time, the model will download and cache locally
+4. Wait for initialization to complete — a "Ready" badge confirms the model is loaded
+
+### Model Selection
+
+| Model | Speed | Quality | RAM Required | Download Size |
+|---|---|---|---|---|
+| **Gemma 2B** | Faster | Good | 4GB | ~1.6GB |
+| **Gemma 7B** | Slower | Better | 8GB | ~4.2GB |
+
+### Response Length Options
+- **Short** (128 tokens): Quick answers, basic recommendations
+- **Medium** (256 tokens): Standard analysis and suggestions
+- **Long** (512 tokens): Detailed reports and comprehensive plans
+
+### Smart LLM Selection
+
+The system can automatically choose between local and cloud AI based on:
+- **Network availability**: Falls back to local when offline
+- **Privacy mode**: Forces local processing for sensitive data
+- **Battery saving**: Uses smaller models when battery is low
+- **Auto mode**: Dynamically selects the best option
+
+### Key Benefits
+- **Privacy**: No data leaves your device during AI processing
+- **Offline capability**: Works in remote farming areas without connectivity
+- **No cloud costs**: AI processing runs on your hardware
+- **GDPR compliance**: Zero PII transmission by architectural design
+
+---
+
+## Subscription Tiers
+
+### B2B Licensing Model
+
+SoilSidekick Pro offers three licensing tiers for plant ID apps and agricultural platforms:
+
+#### Environmental Intelligence Starter — $500/month
+- Environmental Compatibility Score API
+- EPA Water Quality Integration
+- Federal FIPS Location Intelligence
+- Privacy-Preserving WebGPU AI (on-device)
+- GDPR-compliant by design
+- 50,000 API calls/month
+- 1,000 req/min rate limit
+- Email support (48hr response)
+- Basic analytics dashboard
+
+#### Satellite Monitoring Pro — $1,500/month *(Most Popular)*
+- Everything in Starter
+- AlphaEarth Satellite Intelligence
+- Real-time NDVI & soil moisture data
+- Thermal stress indicators
+- Advanced on-device AI models
+- 250,000 API calls/month
+- 2,500 req/min rate limit
+- Priority support (24hr response)
+- Advanced analytics & reporting
+- Custom integration support
+- Quarterly business reviews
+
+#### White-Label Enterprise — Custom Pricing
+- Everything in Professional
+- Unlimited API calls
+- White-label branding options
+- Custom domain support
+- Dedicated account manager
+- 24/7 phone & Slack support
+- Custom SLA agreements
+- On-premise deployment options
+- Custom feature development
+
+### Annual Billing
+Switch to annual billing to save up to 8%:
+- Starter: $5,520/year (save $480)
+- Professional: $16,560/year (save $1,440)
+
+### European Market Advantage
+All tiers include GDPR-compliant on-device AI. European plant ID apps see **2.3x higher conversion** when highlighting on-device AI privacy.
+
+---
+
+## Service Resilience & Error Handling
+
+### Centralized Error-Handling Utility
+
+SoilSidekick Pro uses a centralized error-handling module (`src/lib/error-handling.ts`) across 8+ components and edge function calls to provide consistent, professional error recovery.
+
+### Error Classification
+
+All errors are automatically classified into four categories:
+
+| Category | HTTP Codes | Examples | Behavior |
+|---|---|---|---|
+| **Transient** | 502, 503, 504, 429 | Network timeout, rate limit, server overload | Auto-retry with exponential backoff |
+| **Auth** | 401 | Expired session, invalid JWT | Retry once after session refresh |
+| **Validation** | 400, 422 | Missing fields, invalid input | Not retried — user guidance shown |
+| **Fatal** | Other | Unknown server errors | Not retried — "Try refreshing" |
+
+### Smart Retry with Exponential Backoff
+
+When a transient error occurs, `withSmartRetry` automatically:
+
+1. Catches the error and classifies it
+2. Waits with exponential backoff (default: 2s for transient, 1s for auth)
+3. Retries the operation (up to 3 attempts by default)
+4. Shows non-destructive toast notifications with attempt progress
+5. Throws the final error only after all retries are exhausted
+
+**Backoff formula**: `delay = retryDelay ?? min(1000 × 2^(attempt-1), 5000ms)`
+
+### Message Heuristics
+
+Beyond HTTP status codes, the classifier also detects errors by message content:
+- **Transient signals**: "network", "timeout", "fetch", "econnrefused", "rate limit", "too many requests"
+- **Auth signals**: "no session", "auth", "unauthorized", "sign in", "jwt"
+- **Validation signals**: "required", "invalid", "missing", "validation"
+
+### Graceful Fallback Policy
+
+Non-critical data-fetching issues (e.g., missing soil or weather data for a region) trigger **informational notifications** instead of destructive error alerts. This preserves a professional interface by acknowledging when the system uses regional or simulated defaults rather than alarming the user.
+
+### Components Using This System
+
+The centralized error handling is integrated across:
+- Seasonal Planning Assistant (state machine + retry)
+- Soil Analysis data fetching
+- Water Quality edge function calls
+- VRT prescription map generation
+- County Lookup operations
+- Agricultural Chat (GPT-5 integration)
+- Cost Monitoring Dashboard
+- API Key Management
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+#### "Please select a county first"
+- The county lookup is required before generating plans or fetching data
+- Type your county name in the search field and select from results
+- Ensure the county is confirmed (shows in the "Selected Location" card)
+
+#### "Authentication required. Please sign in."
+- Your session has expired — sign in again from the Auth page
+- The system will auto-detect expired sessions and prompt re-authentication
+- If using trial mode, some features may require a full account
+
+#### Plan generation fails repeatedly
+- Check your internet connection — the edge function requires connectivity
+- The system will auto-retry transient errors up to 3 times
+- If the Retry button appears, click it to try again
+- Change any input field to auto-clear the error state and try fresh
+
+#### WebGPU Not Supported
+- Local AI mode requires a WebGPU-compatible browser
+- Use **Chrome 113+** or **Edge 113+** for best compatibility
+- Firefox and Safari have limited or no WebGPU support
+- Falls back to cloud AI when WebGPU is unavailable
+
+#### Slow model download
+- First-time Gemma model download can take several minutes
+- Gemma 2B is ~1.6GB, Gemma 7B is ~4.2GB
+- Once downloaded, the model is cached locally for instant future use
+- Ensure stable internet connection during initial download
+
+#### Water quality data unavailable
+- Some rural counties may have limited EPA water data
+- The system will show an informational message rather than an error
+- Try a neighboring county for reference data
+- Contact your local water utility for the most current testing results
+
+#### VRT prescription map generation fails
+- Ensure you have at least one registered field with boundary coordinates
+- Both field selection and base application rate are required
+- Check that your subscription tier supports VRT features
+
+### Getting Help
+
+- **Email Support**: Available on all tiers (48hr response for Starter)
+- **Priority Support**: 24hr response on Professional tier
+- **24/7 Support**: Phone & Slack on Enterprise tier
+- **FAQ Page**: Visit `/faq` for regulatory references and common questions
+- **API Documentation**: Visit `/leafengines-api` for developer resources
