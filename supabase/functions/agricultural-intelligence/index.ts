@@ -386,7 +386,7 @@ Please provide a helpful agricultural response based on the available data and y
         }
       ],
       temperature: useGPT5 ? 0.3 : 0.7,
-      max_tokens: useGPT5 ? 1500 : 1000,
+      max_tokens: useGPT5 ? 4096 : 2048,
     }),
   });
 
