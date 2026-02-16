@@ -52,11 +52,10 @@ export const TaskTemplateLibrary = ({ onAddTask }: TaskTemplateLibraryProps) => 
       if (error) throw error;
       setTemplates(data || []);
     } catch (error) {
-      console.error('Error fetching templates:', error);
+      console.warn('Error fetching templates:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to load task templates',
-        variant: 'destructive',
+        title: 'Templates unavailable',
+        description: 'Couldn\'t load task templates right now.',
       });
     } finally {
       setIsLoading(false);

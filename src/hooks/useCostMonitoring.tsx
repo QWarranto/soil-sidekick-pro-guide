@@ -133,11 +133,10 @@ export const useCostMonitoring = () => {
       if (error) throw error;
       setCostData(data.data || []);
     } catch (error) {
-      console.error('Error fetching user costs:', error);
+      console.warn('Error fetching cost data:', error);
       toast({
-        title: "Error",
-        description: "Failed to fetch cost data",
-        variant: "destructive"
+        title: "Cost data unavailable",
+        description: "Couldn't load cost data right now.",
       });
     } finally {
       setLoading(false);

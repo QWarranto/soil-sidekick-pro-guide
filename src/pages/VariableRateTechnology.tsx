@@ -69,11 +69,10 @@ export default function VariableRateTechnology() {
       if (fieldsResult.data) setFields(fieldsResult.data);
       if (mapsResult.data) setPrescriptionMaps(mapsResult.data as any);
     } catch (error) {
-      console.error('Error loading data:', error);
+      console.warn('Error loading VRT data:', error);
       toast({
-        title: "Error",
-        description: "Failed to load VRT data",
-        variant: "destructive"
+        title: "Data unavailable",
+        description: "Couldn't load VRT data. Please try again.",
       });
     } finally {
       setLoading(false);
