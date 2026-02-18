@@ -32,23 +32,30 @@ export const useLiveAgriculturalData = () => {
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
   const { toast } = useToast();
 
-  const refreshData = useCallback(async (countyFips?: string, forceLive: boolean = false) => {
+  const refreshData = useCallback(async (
+    countyFips?: string,
+    forceLive: boolean = false,
+    countyName?: string,
+    stateCode?: string,
+  ) => {
     try {
       setIsLoading(true);
       setError(null);
 
-      // Default to a sample county if none provided
-      const defaultCountyFips = countyFips || '17031'; // Cook County, IL
+      // Default to Cook County, IL if no county provided
+      const fips = countyFips || '17031';
+      const name = countyName || 'Cook County';
+      const state = stateCode || 'IL';
 
-      console.log('Fetching live agricultural data for county:', defaultCountyFips);
+      console.log('Fetching live agricultural data for county:', fips);
 
       const { data: result, error: supabaseError } = await supabase.functions.invoke(
         'live-agricultural-data',
         {
           body: {
-            county_fips: defaultCountyFips,
-            county_name: 'Cook County',
-            state_code: 'IL',
+            county_fips: fips,
+            county_name: name,
+            state_code: state,
             data_types: ['weather', 'soil', 'environmental'],
           }
         }
