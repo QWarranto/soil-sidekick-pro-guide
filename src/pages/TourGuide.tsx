@@ -338,7 +338,7 @@ const TourGuide = () => {
 
   const handleTryFeature = () => {
     if (step.route) {
-      navigate(step.route);
+      navigate(step.route, { state: { fromTour: true } });
     }
   };
 
