@@ -47,8 +47,9 @@ export const useLiveAgriculturalData = () => {
         {
           body: {
             county_fips: defaultCountyFips,
+            county_name: 'Cook County',
+            state_code: 'IL',
             data_types: ['weather', 'soil', 'environmental'],
-            force_live_update: forceLive
           }
         }
       );
