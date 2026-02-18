@@ -16,7 +16,7 @@ type PlanningState =
   | { status: 'idle' }
   | { status: 'validating' }
   | { status: 'loading'; stage: 'authenticating' | 'fetching' | 'generating' }
-  | { status: 'error'; error: string; retryable: boolean }
+  | { status: 'error'; error: string; retryable: boolean; actionHint?: string }
   | { status: 'success'; plan: any };
 
 interface SeasonalPlanningAssistantProps {
@@ -147,13 +147,15 @@ export const SeasonalPlanningAssistant: React.FC<SeasonalPlanningAssistantProps>
       setPlanState({
         status: 'error',
         error: classified.message,
-        retryable: classified.retryable
+        retryable: classified.retryable,
+        actionHint: classified.actionHint,
       });
 
       toast({
-        title: classified.category === 'auth' ? 'Sign in required' : 'Planning unavailable',
-        description: classified.message,
-        variant: classified.category === 'fatal' ? 'destructive' : 'default',
+        title: classified.category === 'auth' ? 'Sign-in required' : 'Plan generation failed',
+        description: classified.actionHint,
+        variant: 'destructive',
+        duration: 8000,
       });
     }
   };
@@ -344,14 +346,20 @@ export const SeasonalPlanningAssistant: React.FC<SeasonalPlanningAssistantProps>
       {error && (
         <Card className="border-destructive/20">
           <CardContent className="pt-6">
-            <div className="flex items-center gap-2 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-              <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-destructive">Planning Issue</p>
-                <p className="text-xs text-muted-foreground">{error}</p>
+            <div className="flex items-start gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+              <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+              <div className="flex-1 space-y-2">
+                <p className="text-sm font-semibold text-destructive">Plan Generation Failed</p>
+                <p className="text-sm text-foreground">{error}</p>
+                {planState.status === 'error' && planState.actionHint && (
+                  <div className="mt-2 p-3 bg-background border border-border rounded-md">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">What to do</p>
+                    <p className="text-sm text-foreground">{planState.actionHint}</p>
+                  </div>
+                )}
               </div>
               {planState.status === 'error' && planState.retryable && (
-                <Button variant="outline" size="sm" onClick={generatePlan}>
+                <Button variant="outline" size="sm" onClick={generatePlan} className="flex-shrink-0">
                   Retry
                 </Button>
               )}

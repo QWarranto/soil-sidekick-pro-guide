@@ -14,8 +14,16 @@ export interface ErrorResult {
   retryDelay?: number;
 }
 
+export interface ErrorResult {
+  category: ErrorCategory;
+  message: string;
+  actionHint: string;   // Short imperative instruction for the user
+  retryable: boolean;
+  retryDelay?: number;
+}
+
 /**
- * Classify an error into a category with a user-friendly message.
+ * Classify an error into a category with a user-friendly message AND an actionable hint.
  * Uses HTTP status codes when available, falls back to message heuristics.
  */
 export function classifyError(error: any): ErrorResult {
@@ -23,39 +31,74 @@ export function classifyError(error: any): ErrorResult {
   const raw = error instanceof Error ? error.message : String(error ?? 'Unknown error');
   const lower = raw.toLowerCase();
 
-  // Network timeouts, 503s, 429s = transient (auto-retry)
+  // Edge function non-2xx catch-all — most common user-facing failure
+  if (
+    lower.includes('non-2xx') ||
+    lower.includes('edge function') ||
+    status === 500
+  ) {
+    return {
+      category: 'transient',
+      message: 'The AI service returned an unexpected response.',
+      actionHint: 'Click "Retry" below. If the problem continues, sign out and sign back in, then try again.',
+      retryable: true,
+      retryDelay: 2000,
+    };
+  }
+
+  // Rate limit / server overload = transient (auto-retry)
   if (
     status === 503 || status === 502 || status === 504 || status === 429 ||
     error?.code === 'timeout' ||
-    lower.includes('network') ||
     lower.includes('timeout') ||
-    lower.includes('fetch') ||
     lower.includes('econnrefused') ||
     lower.includes('rate limit') ||
     lower.includes('too many requests')
   ) {
     return {
       category: 'transient',
-      message: 'Working on it… Retrying automatically',
+      message: 'The server is busy or temporarily unavailable.',
+      actionHint: 'Wait a moment, then click "Retry". No changes to your selections are needed.',
       retryable: true,
       retryDelay: 2000,
     };
   }
 
-  // Auth errors — retryable once (session refresh)
+  // Network failure
+  if (lower.includes('network') || lower.includes('fetch') || lower.includes('failed to fetch')) {
+    return {
+      category: 'transient',
+      message: 'Your internet connection may have dropped.',
+      actionHint: 'Check your connection, then click "Retry".',
+      retryable: true,
+      retryDelay: 1500,
+    };
+  }
+
+  // Auth errors
   if (
     status === 401 ||
     lower.includes('no session') ||
-    lower.includes('auth') ||
+    lower.includes('authentication required') ||
     lower.includes('unauthorized') ||
     lower.includes('sign in') ||
     lower.includes('jwt')
   ) {
     return {
       category: 'auth',
-      message: 'Re-authenticating…',
-      retryable: true,
-      retryDelay: 1000,
+      message: 'Your session has expired or you are not signed in.',
+      actionHint: 'Sign out using the menu at the top, then sign back in with Google and try again.',
+      retryable: false,
+    };
+  }
+
+  // Subscription / access denied
+  if (status === 403 || lower.includes('subscription') || lower.includes('upgrade')) {
+    return {
+      category: 'fatal',
+      message: 'This feature requires an active subscription.',
+      actionHint: 'Visit the Pricing page to upgrade your plan, then return here.',
+      retryable: false,
     };
   }
 
@@ -69,7 +112,8 @@ export function classifyError(error: any): ErrorResult {
   ) {
     return {
       category: 'validation',
-      message: raw || 'Please check your inputs and try again.',
+      message: raw || 'One or more fields are missing or invalid.',
+      actionHint: 'Make sure a county is selected and both Planning Focus and Timeframe are chosen, then try again.',
       retryable: false,
     };
   }
@@ -77,8 +121,9 @@ export function classifyError(error: any): ErrorResult {
   // Everything else = fatal
   return {
     category: 'fatal',
-    message: 'Something went wrong. Try refreshing.',
-    retryable: false,
+    message: 'An unexpected error occurred.',
+    actionHint: 'Refresh the page and try again. If the issue persists, sign out and sign back in.',
+    retryable: true,
   };
 }
 
