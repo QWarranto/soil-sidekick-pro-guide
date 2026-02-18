@@ -356,20 +356,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGoogle = async () => {
     try {
-      console.log('Starting Google OAuth with redirect:', `${window.location.origin}/`);
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth?provider=google`,
+          redirectTo: `${window.location.origin}/`,
+          skipBrowserRedirect: true,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
           }
         }
       });
-      
-      console.log('Google OAuth response:', { data, error });
-      
+
       if (error) {
         console.error('Google OAuth error:', error);
         toast({
@@ -377,9 +375,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           description: error.message,
           variant: "destructive",
         });
+        return { error };
       }
-      
-      return { error };
+
+      if (data?.url) {
+        // Open OAuth in a popup to bypass iframe/third-party cookie restrictions
+        const popup = window.open(
+          data.url,
+          'google-oauth',
+          'width=500,height=600,left=200,top=100'
+        );
+
+        if (!popup) {
+          // Popup was blocked — fall back to redirect
+          toast({
+            title: "Popup blocked",
+            description: "Please allow popups for this site, or use the published app URL to sign in.",
+            variant: "destructive",
+          });
+          // Fallback: open in new tab
+          window.open(data.url, '_blank');
+          return { error: null };
+        }
+
+        // Poll for popup completion
+        const checkClosed = setInterval(async () => {
+          if (popup.closed) {
+            clearInterval(checkClosed);
+            // Refresh session after popup closes
+            const { data: sessionData } = await supabase.auth.getSession();
+            if (sessionData?.session) {
+              setSession(sessionData.session);
+              setUser(sessionData.session.user);
+              window.location.href = '/';
+            }
+          }
+        }, 500);
+      }
+
+      return { error: null };
     } catch (error: any) {
       console.error('Google OAuth catch error:', error);
       toast({
