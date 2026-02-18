@@ -52,8 +52,24 @@ export const SoilAnalysisResults: React.FC<SoilAnalysisResultsProps> = ({
   const phosphorusInfo = getNutrientLevel(soilData.phosphorus_level);
   const potassiumInfo = getNutrientLevel(soilData.potassium_level);
 
+  const isFallback = soilData.analysis_data?._fallback || 
+    soilData.analysis_data?.confidence_level === 'estimated';
+
   return (
     <div className="space-y-6">
+      {/* Fallback data notice */}
+      {isFallback && (
+        <div className="flex items-start gap-3 rounded-lg border border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/20 px-4 py-3 text-sm">
+          <span className="mt-0.5">⚠️</span>
+          <div>
+            <span className="font-medium text-yellow-800 dark:text-yellow-200">Using regional soil estimates</span>
+            <p className="text-yellow-700 dark:text-yellow-300 mt-0.5">
+              Live USDA data is temporarily unavailable. Values shown are regional averages and may not reflect exact on-site conditions. Try again later for precise data.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* AI Executive Summary */}
       <SmartReportSummary 
         reportType="soil" 
