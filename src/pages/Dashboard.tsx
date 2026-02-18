@@ -41,7 +41,13 @@ import {
   Eye,
   Brain,
   Clock,
-  ListTodo
+  ListTodo,
+  FlaskConical,
+  Layers,
+  Droplet,
+  BarChart3,
+  Globe,
+  Sprout
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -491,6 +497,77 @@ const Dashboard = () => {
           {/* AI Crop Recommendations */}
           <LazyAICropRecommendations countyFips="17031" />
         </div>
+
+        {/* Advanced Features Panel */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Zap className="h-5 w-5 text-primary" />
+              Advanced Features
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">Access all precision agriculture tools</p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              <Button variant="outline" className="h-auto flex-col gap-2 p-4 justify-start items-start text-left" onClick={() => navigate('/variable-rate-technology')}>
+                <Layers className="h-5 w-5 text-primary" />
+                <div>
+                  <div className="font-medium text-sm">Variable Rate Tech</div>
+                  <div className="text-xs text-muted-foreground">AI prescription maps</div>
+                </div>
+              </Button>
+              <Button variant="outline" className="h-auto flex-col gap-2 p-4 justify-start items-start text-left" onClick={() => navigate('/soil-analysis')}>
+                <FlaskConical className="h-5 w-5 text-amber-600" />
+                <div>
+                  <div className="font-medium text-sm">Soil Analysis</div>
+                  <div className="text-xs text-muted-foreground">Deep soil health insights</div>
+                </div>
+              </Button>
+              <Button variant="outline" className="h-auto flex-col gap-2 p-4 justify-start items-start text-left" onClick={() => navigate('/water-quality')}>
+                <Droplet className="h-5 w-5 text-blue-500" />
+                <div>
+                  <div className="font-medium text-sm">Water Quality</div>
+                  <div className="text-xs text-muted-foreground">Territorial water analytics</div>
+                </div>
+              </Button>
+              <Button variant="outline" className="h-auto flex-col gap-2 p-4 justify-start items-start text-left" onClick={() => navigate('/field-mapping')}>
+                <MapPin className="h-5 w-5 text-green-600" />
+                <div>
+                  <div className="font-medium text-sm">Field Mapping</div>
+                  <div className="text-xs text-muted-foreground">GPS field boundaries</div>
+                </div>
+              </Button>
+              <Button variant="outline" className="h-auto flex-col gap-2 p-4 justify-start items-start text-left" onClick={() => navigate('/fertilizer-footprint')}>
+                <Sprout className="h-5 w-5 text-emerald-600" />
+                <div>
+                  <div className="font-medium text-sm">Fertilizer Footprint</div>
+                  <div className="text-xs text-muted-foreground">Environmental impact</div>
+                </div>
+              </Button>
+              <Button variant="outline" className="h-auto flex-col gap-2 p-4 justify-start items-start text-left" onClick={() => navigate('/property-report')}>
+                <BarChart3 className="h-5 w-5 text-purple-600" />
+                <div>
+                  <div className="font-medium text-sm">Property Report</div>
+                  <div className="text-xs text-muted-foreground">Full land analysis</div>
+                </div>
+              </Button>
+              <Button variant="outline" className="h-auto flex-col gap-2 p-4 justify-start items-start text-left" onClick={() => navigate('/planting-calendar')}>
+                <Calendar className="h-5 w-5 text-orange-500" />
+                <div>
+                  <div className="font-medium text-sm">Planting Calendar</div>
+                  <div className="text-xs text-muted-foreground">Multi-parameter scheduling</div>
+                </div>
+              </Button>
+              <Button variant="outline" className="h-auto flex-col gap-2 p-4 justify-start items-start text-left" onClick={() => navigate('/adapt-integration')}>
+                <Globe className="h-5 w-5 text-cyan-600" />
+                <div>
+                  <div className="font-medium text-sm">ADAPT Integration</div>
+                  <div className="text-xs text-muted-foreground">Farm data exchange</div>
+                </div>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Seasonal Planning Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
