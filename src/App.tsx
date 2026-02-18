@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import AppHeader from "@/components/AppHeader";
+import TourGuideReturnBanner from "@/components/TourGuideReturnBanner";
 import { OfflineSyncIndicator } from "@/components/OfflineSyncIndicator";
 import { NetworkStatusBanner } from "@/components/NetworkStatusBanner";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
@@ -87,6 +88,7 @@ const App = () => (
           <NetworkStatusBanner />
           <OfflineSyncIndicator />
           <PWAInstallBanner />
+          <TourGuideReturnBanner />
       <Routes>
         <Route path="/" element={isSandboxDomain() ? <Navigate to="/developer-sandbox" replace /> : <Index />} />
         <Route path="/leafengines" element={<B2BLanding />} />
