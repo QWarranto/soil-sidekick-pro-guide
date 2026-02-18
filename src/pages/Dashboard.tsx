@@ -55,6 +55,17 @@ const Dashboard = () => {
   const { data: liveData, isLoading: liveDataLoading, refreshData, getDataAge } = useLiveAgriculturalData();
   const { fields, isLoading: fieldsLoading } = useFields();
   const { tasks } = useTasks();
+  const [selectedCounty, setSelectedCounty] = React.useState<{
+    fips_code: string;
+    county_name: string;
+    state_name: string;
+    state_code: string;
+  } | null>(() => {
+    try {
+      const saved = localStorage.getItem('selectedCounty');
+      return saved ? JSON.parse(saved) : null;
+    } catch { return null; }
+  });
 
   // Initialize data on component mount
   useEffect(() => {
@@ -182,7 +193,7 @@ const Dashboard = () => {
 
       <div className="p-6 space-y-6">
         {/* Location Indicator */}
-        <LocationIndicator />
+        <LocationIndicator onLocationChange={setSelectedCounty} />
 
         {/* Dashboard Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
@@ -713,8 +724,8 @@ const Dashboard = () => {
         <div className="space-y-6">
           <AgriculturalChat 
             context={{
-              county_fips: "18097", // Example FIPS for demonstration
-              user_location: "Indiana, USA"
+              county_fips: selectedCounty?.fips_code,
+              user_location: selectedCounty ? `${selectedCounty.county_name}, ${selectedCounty.state_name}` : undefined
             }}
           />
         </div>
@@ -772,8 +783,8 @@ const Dashboard = () => {
               
               <AgriculturalChat 
                 context={{
-                  county_fips: "18097", // Example FIPS for demonstration
-                  user_location: "Indiana, USA"
+                  county_fips: selectedCounty?.fips_code,
+                  user_location: selectedCounty ? `${selectedCounty.county_name}, ${selectedCounty.state_name}` : undefined
                 }}
               />
             </div>
