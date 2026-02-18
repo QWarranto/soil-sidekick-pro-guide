@@ -176,7 +176,7 @@ Deno.serve(async (req) => {
       console.log('Fetching real SSURGO data from SDA API...');
       
       // Check rate limiter and wait if needed
-      await rateLimiter.checkRateLimit('USDA_SDA');
+      await rateLimiter.canMakeRequest('USDA_SDA');
       
       try {
         soilData = await fetchRealSoilData(county_fips, property_address, state_code);
