@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -35,11 +34,11 @@ interface PrescriptionMap {
 }
 
 export default function VariableRateTechnology() {
-  const { user, trialUser } = useAuth();
+  const { user, trialUser, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [fields, setFields] = useState<Field[]>([]);
   const [prescriptionMaps, setPrescriptionMaps] = useState<PrescriptionMap[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
 
   // Form state
@@ -59,7 +58,7 @@ export default function VariableRateTechnology() {
   }, [user]);
 
   const loadData = async () => {
-    setLoading(true);
+    setDataLoading(true);
     try {
       const [fieldsResult, mapsResult] = await Promise.all([
         supabase.from('fields').select('*').eq('user_id', user?.id).order('created_at', { ascending: false }),
@@ -75,7 +74,7 @@ export default function VariableRateTechnology() {
         description: "Couldn't load VRT data. Please try again.",
       });
     } finally {
-      setLoading(false);
+      setDataLoading(false);
     }
   };
 
@@ -148,6 +147,24 @@ export default function VariableRateTechnology() {
     } as const;
     return colors[status as keyof typeof colors] || 'secondary';
   };
+
+  // Wait for auth to fully resolve — prevents false "not logged in" flash
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-hero parallax-scroll">
+        <div className="container mx-auto p-6">
+          <Card>
+            <CardContent className="p-8 text-center">
+              <div className="animate-pulse space-y-4">
+                <div className="h-6 bg-muted rounded w-1/2 mx-auto" />
+                <div className="h-4 bg-muted rounded w-3/4 mx-auto" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   if (!user && !trialUser) {
     return (
