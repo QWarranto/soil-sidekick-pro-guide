@@ -149,9 +149,15 @@ const AgriculturalChat: React.FC<AgriculturalChatProps> = ({ context }) => {
           model: `${localLLMConfig.model}-local`
         };
       } else {
+        // Inject location into query so intent analysis always has context
+        const locationPrefix = context?.county_fips
+          ? `[Location context: FIPS ${context.county_fips}${context.user_location ? ` (${context.user_location})` : ''}] `
+          : '';
+        const enrichedQuery = locationPrefix + userMessage.content;
+
         // Use cloud LLM with automatic retry
         const data = await invokeWithRetry({
-          query: userMessage.content,
+          query: enrichedQuery,
           context: context,
           useGPT5: useGPT5
         });
