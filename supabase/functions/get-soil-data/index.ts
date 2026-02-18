@@ -185,27 +185,28 @@ Deno.serve(async (req) => {
       }
 
       if (!rateLimitAllowed) {
-        console.warn('[USDA_SDA] Rate limit or circuit breaker active - returning cached/fallback data');
-        return new Response(
-          JSON.stringify({ 
-            error: 'Service temporarily busy. Please try again in a moment.',
-            retryAfter: 120,
-            code: 'RATE_LIMITED'
-          }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '120' } }
-        );
-      }
-
-      try {
-        soilData = await fetchRealSoilData(county_fips, property_address, state_code);
-        rateLimiter.recordSuccess('USDA_SDA');
-        
-        // Cache the result
-        await cacheManager.set(cacheKey, soilData, county_fips, 'soil');
-      } catch (error) {
-        rateLimiter.recordFailure('USDA_SDA', error as Error);
-        console.error('Failed to fetch soil data:', error);
-        throw error;
+        console.warn('[USDA_SDA] Rate limit or circuit breaker active - using regional estimates as fallback');
+        soilData = getRegionalEstimates(county_fips);
+        soilData._fallback = true;
+        soilData.analysis_method = 'Regional Estimates (service busy, try again later for live data)';
+        soilData.confidence_level = 'estimated';
+      } else {
+        try {
+          soilData = await fetchRealSoilData(county_fips, property_address, state_code);
+          rateLimiter.recordSuccess('USDA_SDA');
+          
+          // Cache the result
+          await cacheManager.set(cacheKey, soilData, county_fips, 'soil');
+        } catch (fetchError) {
+          rateLimiter.recordFailure('USDA_SDA', fetchError as Error);
+          console.error('Failed to fetch live soil data from USDA SDA, falling back to regional estimates:', fetchError);
+          
+          // Graceful degradation: return regional estimates so the user always gets a result
+          soilData = getRegionalEstimates(county_fips);
+          soilData._fallback = true;
+          soilData.analysis_method = 'Regional Estimates (USDA SDA temporarily unavailable)';
+          soilData.confidence_level = 'estimated';
+        }
       }
     }
 
