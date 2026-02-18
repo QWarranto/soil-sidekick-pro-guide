@@ -314,21 +314,40 @@ async function fetchRealSoilData(countyFips: string, propertyAddress: string, st
 
     console.log('Executing SDA query:', sqlQuery);
 
+    // SDA API: send JSON body with FORMAT to get JSON back instead of XML (default)
     const response = await fetch(SDA_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
-      body: JSON.stringify({ query: sqlQuery }),
-      signal: AbortSignal.timeout(15000) // 15 second timeout
+      body: JSON.stringify({ query: sqlQuery, FORMAT: 'JSON+COLUMNNAME' }),
+      signal: AbortSignal.timeout(20000) // 20 second timeout
     });
 
     if (!response.ok) {
-      console.error('SDA API error:', response.status, response.statusText);
-      throw new Error(`SDA API returned ${response.status}`);
+      const text = await response.text();
+      console.error('SDA API error:', response.status, response.statusText, text.substring(0, 200));
+      throw new Error(`SDA API returned ${response.status}: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    // Check content type before parsing - SDA returns XML by default if FORMAT param is missing
+    const contentType = response.headers.get('content-type') || '';
+    const rawText = await response.text();
+    
+    if (!contentType.includes('json') && rawText.trim().startsWith('<')) {
+      console.error('SDA returned XML instead of JSON. Response snippet:', rawText.substring(0, 200));
+      throw new Error('SDA API returned XML instead of JSON. The USDA service may be temporarily unavailable.');
+    }
+
+    let data: any;
+    try {
+      data = JSON.parse(rawText);
+    } catch (parseError) {
+      console.error('Failed to parse SDA JSON response:', rawText.substring(0, 200));
+      throw new Error('SDA API returned unparseable response');
+    }
+    
     console.log('SDA API response:', JSON.stringify(data).substring(0, 500));
 
     // Parse the SDA response and calculate weighted averages
@@ -345,16 +364,19 @@ function parseSDAResponse(tableData: any[]) {
   console.log('Parsing', tableData.length, 'soil horizons from SDA');
   
   // Calculate weighted averages based on component percentages
+  // SDA JSON+COLUMNNAME format returns objects with named keys
   let totalWeight = 0;
   let weightedPh = 0;
   let weightedOm = 0;
   let soilTypes: string[] = [];
 
   for (const row of tableData) {
-    const weight = row[3] || 0; // component_percent
-    const ph = row[7] || 0;
-    const om = row[8] || 0;
-    const compname = row[2] || 'Unknown';
+    // Support both named-key objects (JSON+COLUMNNAME) and positional arrays (JSON)
+    const isObject = !Array.isArray(row);
+    const weight = isObject ? (row['component_percent'] || row[3] || 0) : (row[3] || 0);
+    const ph = isObject ? (row['ph'] || row[7] || 0) : (row[7] || 0);
+    const om = isObject ? (row['organic_matter'] || row[8] || 0) : (row[8] || 0);
+    const compname = isObject ? (row['compname'] || row[2] || 'Unknown') : (row[2] || 'Unknown');
 
     if (weight > 0) {
       totalWeight += weight;
