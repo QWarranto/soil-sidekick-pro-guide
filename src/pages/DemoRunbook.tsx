@@ -106,6 +106,16 @@ const initialWorkflows: WorkflowStep[] = [
   },
   {
     step: 8,
+    route: '/field-mapping',
+    title: 'Field Modal — View Soil Analysis',
+    checks: [
+      { id: 'field-modal-prereq', action: 'PREREQUISITE: Complete Step 5 (Add Field) and Step 6 (Run Soil Analysis for that field) first', verify: 'A soil analysis result exists for the field. Return to /field-mapping.', status: 'pending' },
+      { id: 'field-modal-button', action: 'Scroll to "Your Fields" list — find the field card for the field you ran soil analysis on', verify: 'The button now reads "View Soil Analysis" (not "Run Soil Analysis"). If it still shows "Run Soil Analysis", the soil analysis name did not match the field name — re-run soil analysis using the exact field name.', status: 'pending' },
+      { id: 'field-modal-open', action: 'Click "View Soil Analysis" on the field card', verify: 'Inline modal opens ON THIS PAGE (no navigation) — shows N-P-K bar chart, pH gauge, Organic Matter gauge, and Recommendations', status: 'pending' },
+    ],
+  },
+  {
+    step: 9,
     route: '/planting-calendar',
     title: 'Planting Calendar',
     checks: [
@@ -113,7 +123,7 @@ const initialWorkflows: WorkflowStep[] = [
     ],
   },
   {
-    step: 9,
+    step: 10,
     route: '/pricing',
     title: 'Pricing',
     checks: [
