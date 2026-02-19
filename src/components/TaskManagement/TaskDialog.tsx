@@ -50,6 +50,7 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task, template, fields 
     category: 'other',
     description: '',
     priority: 'medium',
+    status: 'pending',
     scheduled_date: undefined as Date | undefined,
     due_date: undefined as Date | undefined,
     estimated_duration_hours: '',
@@ -67,6 +68,7 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task, template, fields 
         category: task.category || 'other',
         description: task.description || '',
         priority: task.priority || 'medium',
+        status: task.status || 'pending',
         scheduled_date: task.scheduled_date ? new Date(task.scheduled_date) : undefined,
         due_date: task.due_date ? new Date(task.due_date) : undefined,
         estimated_duration_hours: task.estimated_duration_hours?.toString() || '',
@@ -82,6 +84,7 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task, template, fields 
         category: template.category || 'other',
         description: template.description || '',
         priority: template.priority || 'medium',
+        status: 'pending',
         scheduled_date: undefined,
         due_date: undefined,
         estimated_duration_hours: template.estimated_duration_hours?.toString() || '',
@@ -98,6 +101,7 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task, template, fields 
         category: 'other',
         description: '',
         priority: 'medium',
+        status: 'pending',
         scheduled_date: undefined,
         due_date: undefined,
         estimated_duration_hours: '',
@@ -185,6 +189,21 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task, template, fields 
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="status">Status</Label>
+            <Select value={formData.status} onValueChange={v => setFormData({ ...formData, status: v })}>
+              <SelectTrigger id="status">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+                <SelectItem value="cancelled">Cancelled</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid gap-2">
