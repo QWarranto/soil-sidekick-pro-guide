@@ -68,21 +68,19 @@ const initialWorkflows: WorkflowStep[] = [
   },
   {
     step: 4,
-    route: '/field-mapping',
-    title: 'Field Mapping',
+    route: '/task-manager',
+    title: 'Task Manager — Verify Task',
     checks: [
-      { id: 'field-load', action: 'Navigate to /field-mapping', verify: 'Map renders or loading indicator shown — no crash', status: 'pending' },
-      { id: 'field-add', action: 'Click "Add Field" or draw a boundary', verify: 'Dialog opens with form', status: 'pending' },
-      { id: 'field-save', action: 'Fill field name and Save', verify: 'Field saved — appears in field list', status: 'pending' },
+      { id: 'task-verify', action: 'After creating the task, confirm it appears in the "My Tasks" list', verify: 'Task "Investigate Low Vegetation Index — Field A" visible with High priority and Pending status', status: 'pending' },
     ],
   },
   {
     step: 5,
     route: '/field-mapping',
-    title: 'Field Mapping',
+    title: 'Field Mapping (via Dashboard)',
     checks: [
-      { id: 'field-load', action: 'Navigate to /field-mapping', verify: 'Map renders or loading indicator shown — no crash', status: 'pending' },
-      { id: 'field-add', action: 'Click "Add Field" button, enter field name, click "Use Current GPS Location" (or enter lat/lng manually)', verify: 'GPS fills in coordinates OR manual entry works. Field saves successfully.', status: 'pending' },
+      { id: 'field-dash-nav', action: 'Return to /dashboard and click "Field Mapping" in the quick-access panel or sidebar', verify: 'Navigates to /field-mapping — map renders or loading indicator shown, no crash', status: 'pending' },
+      { id: 'field-add', action: 'Click "Add Field" button, enter field name, click "Use Current GPS Location" (or enter lat/lng with hemisphere selectors)', verify: 'GPS fills in coordinates OR manual entry with N/S and E/W selectors works. Field saves successfully.', status: 'pending' },
       { id: 'field-list', action: 'Scroll below the map to the "Your Fields" list', verify: 'Newly saved field appears in the list with a "Run Soil Analysis" button', status: 'pending' },
       { id: 'field-soil-nav', action: 'Click "Run Soil Analysis" on the field card', verify: 'Navigates to /soil-analysis with field name and coordinates shown in a context banner at the top', status: 'pending' },
     ],
