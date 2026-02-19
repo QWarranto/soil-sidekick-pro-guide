@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LazyFieldMap } from '@/components/lazy/LazyFieldMap';
 import { useFields, Field } from '@/hooks/useFields';
-import { ArrowLeft, Map, Layers3 } from 'lucide-react';
+import { FieldsList } from '@/components/FieldsList';
+import { ArrowLeft, Map, Layers3, List } from 'lucide-react';
 
 export const FieldMapping = () => {
   const { user, trialUser } = useAuth();
@@ -96,41 +97,30 @@ export const FieldMapping = () => {
           onFieldSelect={(field) => setSelectedField(field as Field | null)}
         />
 
-        {/* Additional Features Info */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-          <Card>
+        {/* Fields List */}
+        {fields.length > 0 && (
+          <Card className="mt-6 card-elevated animate-fade-in">
             <CardHeader>
-              <CardTitle className="text-sm font-semibold">Boundary Drawing</CardTitle>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <List className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="text-base">Your Fields ({fields.length})</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-0.5">
+                    Select a field to view its soil analysis or map boundary
+                  </p>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Click and drag to draw precise field boundaries on satellite imagery
-              </p>
+              <FieldsList
+                fields={fields}
+                onFieldSelect={(field) => setSelectedField(field as Field | null)}
+              />
             </CardContent>
           </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold">Crop Management</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Track crop types, planting dates, and harvest schedules for each field
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold">Area Calculation</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Automatic acreage calculation for accurate field size measurements
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        )}
       </main>
     </div>
   );

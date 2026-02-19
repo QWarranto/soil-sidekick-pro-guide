@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Loader2, Plus } from "lucide-react";
-import { Geolocation } from '@capacitor/geolocation';
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -53,13 +52,18 @@ export function AddFieldDialog({ onFieldAdded }: AddFieldDialogProps) {
   const getCurrentLocation = async () => {
     setIsGettingLocation(true);
     try {
-      const coordinates = await Geolocation.getCurrentPosition({
-        enableHighAccuracy: true,
-        timeout: 10000,
+      if (!navigator.geolocation) {
+        throw new Error('Geolocation is not supported by your browser');
+      }
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+        });
       });
 
-      form.setValue("latitude", coordinates.coords.latitude);
-      form.setValue("longitude", coordinates.coords.longitude);
+      form.setValue("latitude", position.coords.latitude);
+      form.setValue("longitude", position.coords.longitude);
       
       toast.success("Location captured successfully!");
     } catch (error) {

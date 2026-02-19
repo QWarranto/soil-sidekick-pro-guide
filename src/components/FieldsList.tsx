@@ -20,7 +20,8 @@ import {
   ResponsiveContainer,
   Cell
 } from 'recharts';
-import { MapPin, Eye, Droplets, Leaf } from 'lucide-react';
+import { MapPin, Eye, Droplets, Leaf, FlaskConical } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface SoilAnalysis {
   id: string;
@@ -84,12 +85,34 @@ const CustomNutrientTooltip = ({ active, payload }: any) => {
 };
 
 export function FieldsList({ fields, onFieldSelect }: FieldsListProps) {
+  const navigate = useNavigate();
   const [selectedField, setSelectedField] = useState<Field | null>(null);
   const [showSoilModal, setShowSoilModal] = useState(false);
 
   const handleViewSoilAnalysis = (field: Field) => {
     setSelectedField(field);
     setShowSoilModal(true);
+  };
+
+  const handleRunSoilAnalysis = (field: Field) => {
+    // Extract lat/lng from boundary_coordinates if available
+    const coords = field.boundary_coordinates;
+    let lat: number | null = null;
+    let lng: number | null = null;
+    if (coords?.type === 'Polygon' && coords.coordinates?.[0]?.[0]) {
+      [lng, lat] = coords.coordinates[0][0];
+    } else if (coords?.type === 'Point' && coords.coordinates) {
+      [lng, lat] = coords.coordinates;
+    } else if (typeof coords?.latitude === 'number') {
+      lat = coords.latitude;
+      lng = coords.longitude;
+    }
+    const params = new URLSearchParams({ fieldName: field.name });
+    if (lat != null && lng != null) {
+      params.set('lat', String(lat));
+      params.set('lng', String(lng));
+    }
+    navigate(`/soil-analysis?${params.toString()}`);
   };
 
   const getSoilData = (field: Field) => {
@@ -160,8 +183,8 @@ export function FieldsList({ fields, onFieldSelect }: FieldsListProps) {
                 </div>
               )}
               
-              <div className="flex gap-2 pt-2">
-                {field.soilAnalysis && (
+              <div className="flex gap-2 pt-2 flex-wrap">
+                {field.soilAnalysis ? (
                   <Button
                     variant="outline"
                     size="sm"
@@ -170,6 +193,16 @@ export function FieldsList({ fields, onFieldSelect }: FieldsListProps) {
                   >
                     <Eye className="h-4 w-4 mr-1" />
                     View Soil Analysis
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleRunSoilAnalysis(field)}
+                    className="flex-1"
+                  >
+                    <FlaskConical className="h-4 w-4 mr-1" />
+                    Run Soil Analysis
                   </Button>
                 )}
                 {onFieldSelect && (

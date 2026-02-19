@@ -78,15 +78,27 @@ const initialWorkflows: WorkflowStep[] = [
   },
   {
     step: 5,
-    route: '/soil-analysis',
-    title: 'Soil Analysis',
+    route: '/field-mapping',
+    title: 'Field Mapping',
     checks: [
-      { id: 'soil-load', action: 'Navigate to /soil-analysis', verify: 'Page loads with county selector visible', status: 'pending' },
-      { id: 'soil-county', action: 'Select a county', verify: 'Soil data loads or appropriate message shown', status: 'pending' },
+      { id: 'field-load', action: 'Navigate to /field-mapping', verify: 'Map renders or loading indicator shown — no crash', status: 'pending' },
+      { id: 'field-add', action: 'Click "Add Field" button, enter field name, click "Use Current GPS Location" (or enter lat/lng manually)', verify: 'GPS fills in coordinates OR manual entry works. Field saves successfully.', status: 'pending' },
+      { id: 'field-list', action: 'Scroll below the map to the "Your Fields" list', verify: 'Newly saved field appears in the list with a "Run Soil Analysis" button', status: 'pending' },
+      { id: 'field-soil-nav', action: 'Click "Run Soil Analysis" on the field card', verify: 'Navigates to /soil-analysis with field name and coordinates shown in a context banner at the top', status: 'pending' },
     ],
   },
   {
     step: 6,
+    route: '/soil-analysis',
+    title: 'Soil Analysis (from Field)',
+    checks: [
+      { id: 'soil-context', action: 'Observe the top banner on /soil-analysis', verify: 'Banner shows field name and coordinates passed from Field Mapping', status: 'pending' },
+      { id: 'soil-county', action: 'Search for the county matching the field coordinates and select it', verify: 'Soil data loads and results appear below — no error toast', status: 'pending' },
+      { id: 'soil-back', action: 'Click "Back to Fields" in the banner', verify: 'Returns to /field-mapping field list', status: 'pending' },
+    ],
+  },
+  {
+    step: 7,
     route: '/water-quality',
     title: 'Water Quality',
     checks: [
@@ -95,7 +107,7 @@ const initialWorkflows: WorkflowStep[] = [
     ],
   },
   {
-    step: 7,
+    step: 8,
     route: '/planting-calendar',
     title: 'Planting Calendar',
     checks: [
@@ -103,7 +115,7 @@ const initialWorkflows: WorkflowStep[] = [
     ],
   },
   {
-    step: 8,
+    step: 9,
     route: '/pricing',
     title: 'Pricing',
     checks: [
