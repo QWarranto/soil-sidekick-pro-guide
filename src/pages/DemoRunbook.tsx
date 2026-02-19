@@ -87,21 +87,18 @@ const initialWorkflows: WorkflowStep[] = [
   },
   {
     step: 6,
-    route: '/soil-analysis',
-    title: 'Soil Analysis (from Field)',
+    route: '/dashboard',
+    title: 'Dashboard — Return to Field Mapping',
     checks: [
-      { id: 'soil-context', action: 'Observe the top banner on /soil-analysis', verify: 'Banner shows field name and coordinates passed from Field Mapping', status: 'pending' },
-      { id: 'soil-county', action: 'Search for the county matching the field coordinates and select it', verify: 'Soil data loads and results appear below — no error toast', status: 'pending' },
-      { id: 'soil-back', action: 'Click "Back to Fields" in the banner', verify: 'Returns to /field-mapping field list', status: 'pending' },
+      { id: 'dash-return', action: 'Return to /dashboard and click "Field Mapping" in the quick-access panel or sidebar', verify: 'Navigates to /field-mapping — map renders or loading indicator shown, no crash', status: 'pending' },
     ],
   },
   {
     step: 7,
-    route: '/water-quality',
-    title: 'Water Quality',
+    route: '/field-mapping',
+    title: 'Field Mapping — Select Field A',
     checks: [
-      { id: 'water-load', action: 'Navigate to /water-quality', verify: 'Page loads without crash', status: 'pending' },
-      { id: 'water-export', action: 'Click PDF Export if visible', verify: 'PDF generates or error is graceful', status: 'pending' },
+      { id: 'field-select', action: 'Scroll to "Your Fields" list and click "View Map" on Field A', verify: 'Map centers on the GPS boundary of Field A — boundary polygon highlights on the map', status: 'pending' },
     ],
   },
   {
@@ -109,9 +106,8 @@ const initialWorkflows: WorkflowStep[] = [
     route: '/field-mapping',
     title: 'Field Modal — View Soil Analysis',
     checks: [
-      { id: 'field-modal-prereq', action: 'PREREQUISITE: Complete Step 5 (Add Field) and Step 6 (Run Soil Analysis for that field) first', verify: 'A soil analysis result exists for the field. Return to /field-mapping.', status: 'pending' },
-      { id: 'field-modal-button', action: 'Scroll to "Your Fields" list — find the field card for the field you ran soil analysis on', verify: 'The button now reads "View Soil Analysis" (not "Run Soil Analysis"). If it still shows "Run Soil Analysis", the soil analysis name did not match the field name — re-run soil analysis using the exact field name.', status: 'pending' },
-      { id: 'field-modal-open', action: 'Click "View Soil Analysis" on the field card', verify: 'Inline modal opens ON THIS PAGE (no navigation) — shows N-P-K bar chart, pH gauge, Organic Matter gauge, and Recommendations', status: 'pending' },
+      { id: 'field-modal-prereq', action: 'PREREQUISITE: Soil Analysis must have been run for Field A first. The field card button changes from "Run Soil Analysis" → "View Soil Analysis" once data is linked.', verify: 'Field A card shows "View Soil Analysis" button', status: 'pending' },
+      { id: 'field-modal-open', action: 'Click "View Soil Analysis" on Field A', verify: 'Inline modal opens on this page (no navigation) — shows N-P-K bar chart, pH gauge, Organic Matter gauge, and agronomist recommendations correlated with the anomaly', status: 'pending' },
     ],
   },
   {
