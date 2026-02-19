@@ -33,6 +33,8 @@ interface AddFieldDialogProps {
 export function AddFieldDialog({ onFieldAdded }: AddFieldDialogProps) {
   const [open, setOpen] = useState(false);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [latHemisphere, setLatHemisphere] = useState<'N' | 'S'>('N');
+  const [lngHemisphere, setLngHemisphere] = useState<'E' | 'W'>('W');
 
   const form = useForm<FieldFormData>({
     resolver: zodResolver(fieldSchema),
@@ -62,8 +64,12 @@ export function AddFieldDialog({ onFieldAdded }: AddFieldDialogProps) {
         });
       });
 
-      form.setValue("latitude", position.coords.latitude);
-      form.setValue("longitude", position.coords.longitude);
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      setLatHemisphere(lat >= 0 ? 'N' : 'S');
+      setLngHemisphere(lng >= 0 ? 'E' : 'W');
+      form.setValue("latitude", Math.abs(lat));
+      form.setValue("longitude", Math.abs(lng));
       
       toast.success("Location captured successfully!");
     } catch (error) {
@@ -75,7 +81,12 @@ export function AddFieldDialog({ onFieldAdded }: AddFieldDialogProps) {
   };
 
   const onSubmit = (data: FieldFormData) => {
-    onFieldAdded(data);
+    const signedData = {
+      ...data,
+      latitude: latHemisphere === 'S' ? -Math.abs(data.latitude) : Math.abs(data.latitude),
+      longitude: lngHemisphere === 'W' ? -Math.abs(data.longitude) : Math.abs(data.longitude),
+    };
+    onFieldAdded(signedData);
     setOpen(false);
     form.reset();
     toast.success("Field added successfully!");
@@ -122,17 +133,28 @@ export function AddFieldDialog({ onFieldAdded }: AddFieldDialogProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Latitude</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        inputMode="decimal"
-                        step="any" 
-                        placeholder="e.g., 40.7128"
-                        autoComplete="off"
-                        {...field}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                      />
-                    </FormControl>
+                    <div className="flex gap-2">
+                      <Select value={latHemisphere} onValueChange={(v) => setLatHemisphere(v as 'N' | 'S')}>
+                        <SelectTrigger className="w-16 shrink-0">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="N">N</SelectItem>
+                          <SelectItem value="S">S</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          inputMode="decimal"
+                          step="any" 
+                          placeholder="e.g., 40.7128"
+                          autoComplete="off"
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                        />
+                      </FormControl>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -144,17 +166,28 @@ export function AddFieldDialog({ onFieldAdded }: AddFieldDialogProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Longitude</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number"
-                        inputMode="decimal" 
-                        step="any" 
-                        placeholder="e.g., -74.0060"
-                        autoComplete="off"
-                        {...field}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                      />
-                    </FormControl>
+                    <div className="flex gap-2">
+                      <Select value={lngHemisphere} onValueChange={(v) => setLngHemisphere(v as 'E' | 'W')}>
+                        <SelectTrigger className="w-16 shrink-0">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="E">E</SelectItem>
+                          <SelectItem value="W">W</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormControl>
+                        <Input 
+                          type="number"
+                          inputMode="decimal" 
+                          step="any" 
+                          placeholder="e.g., 74.0060"
+                          autoComplete="off"
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                        />
+                      </FormControl>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
