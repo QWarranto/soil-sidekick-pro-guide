@@ -1,11 +1,11 @@
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
-import { ArrowLeft, Leaf, Plus } from 'lucide-react';
+import { ArrowLeft, Leaf, Plus, MapPin } from 'lucide-react';
 import { CountyLookup } from '@/components/CountyLookup';
 import { CountyMenuLookup } from '@/components/CountyMenuLookup';
 import { SoilAnalysisResults } from '@/components/SoilAnalysisResults';
@@ -40,6 +40,19 @@ const SoilAnalysis = () => {
   const { user, trialUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+
+  // All state hooks must be before any early return
+  const [selectedCounty, setSelectedCounty] = useState<County | null>(null);
+  const [soilData, setSoilData] = useState<SoilData | null>(null);
+  const [soilDataList, setSoilDataList] = useState<SoilData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'search' | 'database'>('search');
+
+  // Read field context from URL params (passed from Field Mapping)
+  const fieldNameFromParam = searchParams.get('fieldName');
+  const latFromParam = searchParams.get('lat');
+  const lngFromParam = searchParams.get('lng');
 
   if (!user && !trialUser) {
     return (
@@ -47,7 +60,7 @@ const SoilAnalysis = () => {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="flex items-center justify-center gap-2">
-              <Leaf className="h-6 w-6 text-green-600" />
+              <Leaf className="h-6 w-6 text-primary" />
               Authentication Required
             </CardTitle>
             <CardDescription>
@@ -73,12 +86,6 @@ const SoilAnalysis = () => {
       </div>
     );
   }
-
-  const [selectedCounty, setSelectedCounty] = useState<County | null>(null);
-  const [soilData, setSoilData] = useState<SoilData | null>(null);
-  const [soilDataList, setSoilDataList] = useState<SoilData[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'search' | 'database'>('search');
 
   const handleBackHome = () => {
     navigate('/');
@@ -287,6 +294,38 @@ ${soilData.recommendations || 'No recommendations available'}
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-6 slide-in-up">
+
+          {/* Field Context Banner — shown when navigated from Field Mapping */}
+          {fieldNameFromParam && (
+            <Card className="border-primary/30 bg-primary/5">
+              <CardContent className="pt-4 pb-3">
+                <div className="flex items-center gap-3">
+                  <MapPin className="h-5 w-5 text-primary shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground">
+                      Running soil analysis for: <strong>{fieldNameFromParam}</strong>
+                    </p>
+                    {latFromParam && lngFromParam && (
+                      <p className="text-xs text-muted-foreground">
+                        Coordinates: {parseFloat(latFromParam).toFixed(5)}°, {parseFloat(lngFromParam).toFixed(5)}°
+                        {' — '}Search for the county that contains this location below.
+                      </p>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => navigate('/field-mapping')}
+                    className="shrink-0 text-xs"
+                  >
+                    <ArrowLeft className="h-3 w-3 mr-1" />
+                    Back to Fields
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* County Population Button */}
           <Card className="card-elevated">
             <CardHeader>
