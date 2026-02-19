@@ -24,6 +24,7 @@ interface TaskDialogProps {
 }
 
 const categories = [
+  'scouting',
   'soil_preparation',
   'planting',
   'fertilization',

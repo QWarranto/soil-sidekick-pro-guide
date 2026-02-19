@@ -270,7 +270,7 @@ const TaskManager = () => {
                     disabled={subscription?.tier === 'free' && tasks.length >= 10}
                   >
                     <Plus className="h-4 w-4 mr-2" />
-                    Create Custom Task
+                    New Task
                   </Button>
                 </div>
               </div>
