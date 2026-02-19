@@ -4,8 +4,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
-import { ArrowLeft, Leaf, Plus, MapPin } from 'lucide-react';
+import { ArrowLeft, Leaf, Plus, MapPin, AlertTriangle } from 'lucide-react';
 import { CountyLookup } from '@/components/CountyLookup';
 import { CountyMenuLookup } from '@/components/CountyMenuLookup';
 import { SoilAnalysisResults } from '@/components/SoilAnalysisResults';
@@ -48,6 +50,7 @@ const SoilAnalysis = () => {
   const [soilDataList, setSoilDataList] = useState<SoilData[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'search' | 'database'>('search');
+  const [applicationType, setApplicationType] = useState<string>('');
 
   // Read field context from URL params (passed from Field Mapping)
   const fieldNameFromParam = searchParams.get('fieldName');
@@ -371,6 +374,48 @@ ${soilData.recommendations || 'No recommendations available'}
                   Database Lookup
                 </Button>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Sample Form — Application Type (Workflow 2, Step 4) */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Soil Sample Form</CardTitle>
+              <CardDescription>Set the application type before running analysis</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="application-type">Application Type</Label>
+                <Select value={applicationType} onValueChange={setApplicationType}>
+                  <SelectTrigger id="application-type" className="w-full max-w-xs">
+                    <SelectValue placeholder="Select application type…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="chemical_application">Chemical Application</SelectItem>
+                    <SelectItem value="organic_amendment">Organic Amendment</SelectItem>
+                    <SelectItem value="fertilizer">Fertilizer</SelectItem>
+                    <SelectItem value="irrigation">Irrigation</SelectItem>
+                    <SelectItem value="soil_sampling">Soil Sampling Only</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Compliance alert triggered by Chemical Application selection */}
+              {applicationType === 'chemical_application' && (
+                <div className="flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/5 px-4 py-3">
+                  <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                  <div className="text-sm">
+                    <p className="font-semibold text-destructive">
+                      ⚠️ Compliance Warning: Chemical Application Selected
+                    </p>
+                    <p className="text-muted-foreground mt-0.5">
+                      You are in <strong>{selectedCounty?.county_name ?? 'this county'}, {selectedCounty?.state_code ?? 'your state'}</strong>.
+                      This county requires a <strong>50 ft buffer zone</strong> for chemical applications near water bodies.
+                      Buffer zone acknowledgement will be embedded in your exported report.
+                    </p>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
