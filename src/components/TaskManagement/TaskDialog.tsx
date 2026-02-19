@@ -126,7 +126,7 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task, template, fields 
       recurrence_pattern: finalRecurringPattern,
       estimated_duration_hours: formData.estimated_duration_hours ? parseFloat(formData.estimated_duration_hours) : null,
       crops_involved: formData.crops_involved ? formData.crops_involved.split(',').map(c => c.trim()) : null,
-      field_id: formData.field_id || null,
+      field_id: formData.field_id && formData.field_id !== 'none' ? formData.field_id : null,
     };
     onSave(taskData);
     onOpenChange(false);
@@ -260,7 +260,7 @@ export const TaskDialog = ({ open, onOpenChange, onSave, task, template, fields 
                   <SelectValue placeholder="Select field" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   {fields.map(field => (
                     <SelectItem key={field.id} value={field.id}>
                       {field.name}
