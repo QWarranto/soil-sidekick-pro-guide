@@ -2824,6 +2824,7 @@ export type Database = {
         | "soil_testing"
         | "record_keeping"
         | "other"
+        | "scouting"
       task_status:
         | "pending"
         | "in_progress"
@@ -2972,6 +2973,7 @@ export const Constants = {
         "soil_testing",
         "record_keeping",
         "other",
+        "scouting",
       ],
       task_status: [
         "pending",
