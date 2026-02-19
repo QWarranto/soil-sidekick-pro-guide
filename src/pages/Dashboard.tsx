@@ -24,7 +24,7 @@ import { useLiveAgriculturalData } from "@/hooks/useLiveAgriculturalData";
 import { useFields } from "@/hooks/useFields";
 import { useTasks } from "@/hooks/useTasks";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
+import {
   MapPin, 
   TrendingUp, 
   Droplets, 
@@ -47,7 +47,8 @@ import {
   Droplet,
   BarChart3,
   Globe,
-  Sprout
+  Sprout,
+  ClipboardList
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -230,6 +231,19 @@ const Dashboard = () => {
                 usageContext="Get historical weather and soil data for better planning"
                 className="md:col-span-1"
               />
+            </div>
+
+            {/* Demo Runbook quick-access */}
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/demo-runbook')}
+                className="gap-2 text-xs"
+              >
+                <ClipboardList className="h-4 w-4" />
+                Demo Runbook
+              </Button>
             </div>
 
             {/* Data Freshness Indicator */}
