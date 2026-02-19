@@ -137,7 +137,6 @@ const TaskManager = () => {
           .insert({
             ...taskData,
             user_id: user?.id || trialUser?.id,
-            status: 'pending',
             created_from_template_id: selectedTemplate?.id || null,
           });
 
