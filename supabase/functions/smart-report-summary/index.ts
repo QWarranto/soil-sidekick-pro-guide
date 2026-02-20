@@ -76,7 +76,7 @@ Current operations are compliant with EPA Clean Water Act Section 319 nonpoint s
 
 requestHandler<ReportSummaryRequest>({
   requireAuth: true,
-  requireSubscription: true,
+  requireSubscription: DEMO_MOCK_MODE ? false : true,
   validationSchema: reportSummarySchema,
   rateLimit: {
     requests: 100,  // 100 summaries per hour
