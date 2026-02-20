@@ -1,6 +1,5 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 import { rateLimiter, exponentialBackoff } from '../_shared/api-rate-limiter.ts';
-import { APICacheManager } from '../_shared/api-cache-manager.ts';
 import { withTimingHeaders, logResponseTime } from '../_shared/response-timing.ts';
 import { soilDataSchema, validateInput } from '../_shared/validation.ts';
 
@@ -109,9 +108,6 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Initialize cache manager
-    const cacheManager = new APICacheManager(supabaseUrl, supabaseKey);
-
     // Authenticate user (supports both JWT and API key)
     const authHeader = req.headers.get('authorization');
     const { user, error: authError, authMethod } = await authenticateRequest(supabase, authHeader);
@@ -134,12 +130,20 @@ Deno.serve(async (req) => {
 
     // Check if we already have analysis for this exact property address (unless force_refresh is true)
     if (!force_refresh) {
-      const cachedData = await cacheManager.get(cacheKey, county_fips, 'soil');
-      if (cachedData) {
+      // Use getOrFetch pattern: check DB cache via fips_data_cache table directly
+      const { data: cachedEntry } = await supabase
+        .from('fips_data_cache')
+        .select('cached_data, cache_level')
+        .eq('cache_key', cacheKey)
+        .eq('data_source', 'soil')
+        .gt('expires_at', new Date().toISOString())
+        .maybeSingle();
+
+      if (cachedEntry?.cached_data) {
         console.log('Returning cached soil data');
         fromCache = true;
-        cacheLevel = cachedData.cache_level;
-        soilData = cachedData.data;
+        cacheLevel = cachedEntry.cache_level;
+        soilData = cachedEntry.cached_data;
       } else {
         const { data: existingAnalysis } = await supabase
           .from('soil_analyses')
@@ -195,8 +199,19 @@ Deno.serve(async (req) => {
           soilData = await fetchRealSoilData(county_fips, property_address, state_code);
           rateLimiter.recordSuccess('USDA_SDA');
           
-          // Cache the result
-          await cacheManager.set(cacheKey, soilData, county_fips, 'soil');
+          // Cache the result in fips_data_cache
+          const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+          await supabase.from('fips_data_cache').upsert({
+            cache_key: cacheKey,
+            data_source: 'soil',
+            county_fips,
+            cached_data: soilData,
+            cache_level: 1,
+            expires_at: new Date(Date.now() + CACHE_TTL_MS).toISOString(),
+            access_count: 1,
+            last_accessed: new Date().toISOString(),
+            created_at: new Date().toISOString(),
+          }, { onConflict: 'cache_key,data_source' });
         } catch (fetchError) {
           rateLimiter.recordFailure('USDA_SDA', fetchError as Error);
           console.error('Failed to fetch live soil data from USDA SDA, falling back to regional estimates:', fetchError);
