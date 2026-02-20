@@ -1,6 +1,13 @@
 /**
  * Aggressive Caching Manager for External API Responses
  * Reduces load on EPA, USDA, and Google Earth Engine APIs
+ *
+ * Public API:
+ *   get(cacheKey, countyFips, provider)           → { data, cache_level } | null
+ *   set(cacheKey, data, countyFips, provider, ttl) → void
+ *   getOrFetch(options, fetcher)                   → { data, fromCache, cacheLevel }
+ *   invalidate(options)                            → void
+ *   getStats()                                     → { memorySize, databaseSize, hitRate }
  */
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
@@ -26,8 +33,91 @@ export class APICacheManager {
     this.startCleanup();
   }
 
+  // ---------------------------------------------------------------------------
+  // Simple positional get/set — for callers that manage their own cache keys
+  // ---------------------------------------------------------------------------
+
   /**
-   * Get cached data or execute fetcher
+   * Look up a cached value by plain key + provider.
+   * Returns { data, cache_level } on hit, null on miss.
+   */
+  async get(
+    cacheKey: string,
+    countyFips: string,
+    provider: string
+  ): Promise<{ data: any; cache_level: number } | null> {
+    const key = this.buildKey(provider, cacheKey, countyFips);
+
+    // 1. Memory cache first (fastest)
+    const mem = this.memoryCache.get(key);
+    if (mem && mem.expiresAt > Date.now()) {
+      console.log(`[Cache] Memory HIT: ${provider}/${cacheKey}`);
+      return { data: mem.data, cache_level: 0 };
+    }
+
+    // 2. Database cache
+    try {
+      const { data: row, error } = await this.supabase
+        .from('fips_data_cache')
+        .select('cached_data, cache_level')
+        .eq('cache_key', key)
+        .eq('data_source', provider)
+        .gt('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!error && row?.cached_data) {
+        console.log(`[Cache] DB HIT: ${provider}/${cacheKey}`);
+        this.setMemoryCache(key, row.cached_data, 3_600_000);
+        return { data: row.cached_data, cache_level: row.cache_level };
+      }
+    } catch (err) {
+      console.error('[Cache] get() DB error:', err);
+    }
+    return null;
+  }
+
+  /**
+   * Store a value by plain key + provider.
+   * Defaults to a 24-hour TTL.
+   */
+  async set(
+    cacheKey: string,
+    data: any,
+    countyFips: string,
+    provider: string,
+    ttlMs = 86_400_000
+  ): Promise<void> {
+    const key = this.buildKey(provider, cacheKey, countyFips);
+    this.setMemoryCache(key, data, ttlMs);
+    try {
+      await this.supabase.from('fips_data_cache').upsert(
+        {
+          cache_key: key,
+          data_source: provider,
+          county_fips: countyFips || 'global',
+          cached_data: data,
+          cache_level: 1,
+          expires_at: new Date(Date.now() + ttlMs).toISOString(),
+          access_count: 1,
+          last_accessed: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+        },
+        { onConflict: 'cache_key,data_source' }
+      );
+      console.log(`[Cache] SET: ${provider}/${cacheKey}`);
+    } catch (err) {
+      console.error('[Cache] set() DB error:', err);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Options-based getOrFetch — for callers that want automatic fetch + cache
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Get cached data or execute fetcher if not cached.
    */
   async getOrFetch<T>(
     options: CacheOptions,
@@ -43,17 +133,14 @@ export class APICacheManager {
         return { data: memCached.data, fromCache: true, cacheLevel: 'memory' };
       }
 
-      // Stale data - return if stale-while-revalidate enabled
+      // Stale data — return if stale-while-revalidate enabled
       if (options.staleWhileRevalidate && memCached.isStale) {
-        console.log(`[Cache] Memory STALE: ${options.provider}/${options.key} - serving stale, revalidating in background`);
-        
-        // Revalidate in background
+        console.log(`[Cache] Memory STALE: ${options.provider}/${options.key} — revalidating`);
         this.revalidateInBackground(options, fetcher, cacheKey);
-        
         return { data: memCached.data, fromCache: true, cacheLevel: 'memory-stale' };
       }
 
-      // Expired - remove from memory
+      // Expired — remove from memory
       this.memoryCache.delete(cacheKey);
     }
 
@@ -71,11 +158,8 @@ export class APICacheManager {
 
       if (dbCached && !error) {
         console.log(`[Cache] Database HIT: ${options.provider}/${options.key}`);
-        
-        // Store in memory for faster future access
         this.setMemoryCache(cacheKey, dbCached.cached_data, options.ttl);
-        
-        // Update access statistics
+
         await this.supabase
           .from('fips_data_cache')
           .update({
@@ -88,24 +172,18 @@ export class APICacheManager {
       }
     } catch (error) {
       console.error('[Cache] Database lookup error:', error);
-      // Continue to fetch fresh data
     }
 
-    // 3. Cache MISS - fetch fresh data
-    console.log(`[Cache] MISS: ${options.provider}/${options.key} - fetching fresh data`);
-    
+    // 3. Cache MISS — fetch fresh data
+    console.log(`[Cache] MISS: ${options.provider}/${options.key} — fetching`);
     try {
       const freshData = await fetcher();
-      
-      // Store in both caches
-      await this.set(options, freshData);
-      
+      await this.setWithOptions(options, freshData);
       return { data: freshData, fromCache: false, cacheLevel: 'none' };
     } catch (error) {
-      // If fetch fails, try to serve stale data as last resort
       const staleData = await this.getStaleData(cacheKey, options.provider);
       if (staleData) {
-        console.warn(`[Cache] Fetch failed, serving STALE data:`, error);
+        console.warn('[Cache] Fetch failed, serving STALE data:', error);
         return { data: staleData, fromCache: true, cacheLevel: 'database-stale' };
       }
       throw error;
@@ -113,55 +191,17 @@ export class APICacheManager {
   }
 
   /**
-   * Store data in cache
-   */
-  async set(options: CacheOptions, data: any): Promise<void> {
-    const cacheKey = this.generateCacheKey(options);
-    
-    // Store in memory cache
-    this.setMemoryCache(cacheKey, data, options.ttl);
-
-    // Store in database cache
-    try {
-      await this.supabase
-        .from('fips_data_cache')
-        .upsert({
-          cache_key: cacheKey,
-          data_source: options.provider,
-          county_fips: options.countyFips || 'global',
-          cached_data: data,
-          cache_level: 1,
-          expires_at: new Date(Date.now() + options.ttl).toISOString(),
-          access_count: 1,
-          last_accessed: new Date().toISOString(),
-          created_at: new Date().toISOString()
-        }, {
-          onConflict: 'cache_key,data_source'
-        });
-
-      console.log(`[Cache] Stored: ${options.provider}/${options.key}`);
-    } catch (error) {
-      console.error('[Cache] Failed to store in database:', error);
-    }
-  }
-
-  /**
-   * Invalidate cache entry
+   * Invalidate a cache entry (options-based).
    */
   async invalidate(options: CacheOptions): Promise<void> {
     const cacheKey = this.generateCacheKey(options);
-    
-    // Remove from memory
     this.memoryCache.delete(cacheKey);
-
-    // Remove from database
     try {
       await this.supabase
         .from('fips_data_cache')
         .delete()
         .eq('cache_key', cacheKey)
         .eq('data_source', options.provider);
-
       console.log(`[Cache] Invalidated: ${options.provider}/${options.key}`);
     } catch (error) {
       console.error('[Cache] Failed to invalidate:', error);
@@ -169,7 +209,7 @@ export class APICacheManager {
   }
 
   /**
-   * Get statistics for monitoring
+   * Get statistics for monitoring.
    */
   async getStats(): Promise<{
     memorySize: number;
@@ -187,37 +227,55 @@ export class APICacheManager {
     };
   }
 
-  /**
-   * Generate cache key
-   */
+  // ---------------------------------------------------------------------------
+  // Private helpers
+  // ---------------------------------------------------------------------------
+
+  /** Build the canonical cache key used by positional get/set. */
+  private buildKey(provider: string, cacheKey: string, countyFips: string): string {
+    return `${provider}:${cacheKey}:${countyFips || 'global'}`;
+  }
+
+  /** Build the cache key used by the options-based API. */
   private generateCacheKey(options: CacheOptions): string {
     return `${options.provider}:${options.key}:${options.countyFips || 'global'}`;
   }
 
-  /**
-   * Set memory cache with expiration
-   */
-  private setMemoryCache(key: string, data: any, ttl: number): void {
-    const expiresAt = Date.now() + ttl;
-    this.memoryCache.set(key, {
-      data,
-      expiresAt,
-      isStale: false,
-    });
-
-    // Mark as stale after 80% of TTL
-    const staleAt = Date.now() + (ttl * 0.8);
-    setTimeout(() => {
-      const entry = this.memoryCache.get(key);
-      if (entry) {
-        entry.isStale = true;
-      }
-    }, staleAt - Date.now());
+  /** Options-based upsert (used internally by getOrFetch). */
+  private async setWithOptions(options: CacheOptions, data: any): Promise<void> {
+    const cacheKey = this.generateCacheKey(options);
+    this.setMemoryCache(cacheKey, data, options.ttl);
+    try {
+      await this.supabase
+        .from('fips_data_cache')
+        .upsert({
+          cache_key: cacheKey,
+          data_source: options.provider,
+          county_fips: options.countyFips || 'global',
+          cached_data: data,
+          cache_level: 1,
+          expires_at: new Date(Date.now() + options.ttl).toISOString(),
+          access_count: 1,
+          last_accessed: new Date().toISOString(),
+          created_at: new Date().toISOString()
+        }, { onConflict: 'cache_key,data_source' });
+      console.log(`[Cache] Stored: ${options.provider}/${options.key}`);
+    } catch (error) {
+      console.error('[Cache] Failed to store in database:', error);
+    }
   }
 
-  /**
-   * Get stale data from database as fallback
-   */
+  private setMemoryCache(key: string, data: any, ttl: number): void {
+    const expiresAt = Date.now() + ttl;
+    this.memoryCache.set(key, { data, expiresAt, isStale: false });
+
+    // Mark as stale after 80% of TTL
+    setTimeout(() => {
+      const entry = this.memoryCache.get(key);
+      if (entry) entry.isStale = true;
+    }, ttl * 0.8);
+  }
+
   private async getStaleData(cacheKey: string, provider: string): Promise<any | null> {
     try {
       const { data, error } = await this.supabase
@@ -228,7 +286,6 @@ export class APICacheManager {
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
-
       return data?.cached_data || null;
     } catch (error) {
       console.error('[Cache] Failed to get stale data:', error);
@@ -236,9 +293,6 @@ export class APICacheManager {
     }
   }
 
-  /**
-   * Revalidate cache in background
-   */
   private async revalidateInBackground<T>(
     options: CacheOptions,
     fetcher: () => Promise<T>,
@@ -246,31 +300,26 @@ export class APICacheManager {
   ): Promise<void> {
     try {
       const freshData = await fetcher();
-      await this.set(options, freshData);
+      await this.setWithOptions(options, freshData);
       console.log(`[Cache] Background revalidation complete: ${options.provider}/${options.key}`);
     } catch (error) {
-      console.error(`[Cache] Background revalidation failed:`, error);
+      console.error('[Cache] Background revalidation failed:', error);
     }
   }
 
-  /**
-   * Periodic cleanup of expired memory cache
-   */
   private startCleanup(): void {
     setInterval(() => {
       const now = Date.now();
       let cleaned = 0;
-
       this.memoryCache.forEach((value, key) => {
         if (value.expiresAt < now) {
           this.memoryCache.delete(key);
           cleaned++;
         }
       });
-
       if (cleaned > 0) {
         console.log(`[Cache] Cleaned ${cleaned} expired entries from memory`);
       }
-    }, 60000); // Every minute
+    }, 60_000);
   }
 }
