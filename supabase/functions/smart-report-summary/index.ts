@@ -9,6 +9,71 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 type ReportSummaryRequest = z.infer<typeof reportSummarySchema>;
 
+const DEMO_MOCK_MODE = true; // Set to false to use live AI gateway
+
+const MOCK_SUMMARIES: Record<string, { content: string; modelUsed: string }> = {
+  soil: {
+    content: `**Executive Summary — Soil Analysis Report**
+
+**Overall Soil Health Assessment**
+The analyzed field presents moderate soil health with actionable improvement opportunities. pH levels are within the acceptable range for most row crops, though phosphorus availability may be limiting yield potential.
+
+**Key Findings**
+• Nitrogen levels at 45 lbs/ac are below the recommended 60–80 lbs/ac threshold for corn — supplemental application advised before planting
+• Organic matter at 3.2% is adequate but trending downward; cover cropping recommended in rotation
+• Potassium (180 lbs/ac) and pH (6.8) are within optimal ranges — no corrective action required
+
+**Priority Recommendations**
+• Apply 30–40 lbs/ac of supplemental nitrogen prior to planting window (April 15–May 1)
+• Introduce winter rye cover crop post-harvest to rebuild organic matter index
+• Re-test phosphorus levels in 60 days to confirm amendment uptake
+
+**Economic / Business Impact**
+Addressing the nitrogen deficiency is projected to recover 8–12 bu/ac yield loss, representing approximately $48–$72/ac at current commodity prices. Lenders should note the field is in compliance with county buffer zone requirements.`,
+    modelUsed: 'google/gemini-3-flash-preview (demo)'
+  },
+  water: {
+    content: `**Executive Summary — Water Quality Report**
+
+**Overall Water Safety Assessment**
+The municipal supply serving this property meets federal Safe Drinking Water Act standards for the majority of tested contaminants. However, two parameters require attention prior to agricultural use.
+
+**Key Contaminant Findings**
+• Nitrate detected at 8.2 mg/L — below the 10 mg/L MCL but elevated; monitor for upward trend
+• Total Coliform: 0 CFU/100mL ✓ Safe — no bacterial contamination detected
+• ⚠️ Atrazine at 3.1 ppb — approaching the 3 ppb MCL; flag for regulatory review
+
+**Health Considerations & Recommendations**
+• Nitrate levels are safe for adults but marginal for infant formula preparation — disclose to residential buyers
+• Atrazine proximity to MCL warrants a 90-day re-test; consider alternative irrigation sources during the window
+• Install point-of-use filtration (activated carbon) as a precautionary measure for potable use
+
+**Property / Lending Implications**
+The Atrazine reading must be disclosed in property transfer documentation per state law. Agricultural lenders should require a 90-day retest as a loan condition. Current water grade: B+.`,
+    modelUsed: 'google/gemini-3-flash-preview (demo)'
+  },
+  environmental: {
+    content: `**Executive Summary — Environmental Impact Assessment**
+
+**Overall Environmental Health Assessment**
+The subject property presents a low-to-moderate environmental risk profile suitable for continued agricultural operations with targeted mitigation measures in two areas.
+
+**Key Environmental Risks**
+• Runoff risk score of 6.8/10 indicates elevated phosphorus and sediment loading potential during spring melt events
+• Field boundary lies within 800m of a Class B waterway — buffer zone compliance is mandatory for chemical applications
+• Biodiversity impact rated Moderate due to monoculture rotation history; pollinator habitat is limited
+
+**Sustainability Recommendations**
+• Establish 50ft vegetative buffer along the eastern field boundary to intercept runoff before waterway entry
+• Introduce a 3-year crop rotation (corn → soy → small grain) to reduce monoculture pressure and improve biodiversity index
+• Consider precision application technology to reduce chemical inputs by 15–20% per growing season
+
+**Regulatory & Compliance Implications**
+Current operations are compliant with EPA Clean Water Act Section 319 nonpoint source provisions. Buffer zone establishment is recommended within 180 days to maintain compliance status ahead of the next state inspection cycle. Carbon footprint score of 4.1 tCO₂e/acre is eligible for carbon credit certification.`,
+    modelUsed: 'google/gemini-3-flash-preview (demo)'
+  }
+};
+
 requestHandler<ReportSummaryRequest>({
   requireAuth: true,
   requireSubscription: true,
@@ -19,6 +84,17 @@ requestHandler<ReportSummaryRequest>({
   },
   handler: async ({ supabaseClient, user, validatedData, startTime }) => {
     const { reportType, reportData } = validatedData;
+
+    // Demo mock mode — returns realistic pre-canned summaries
+    if (DEMO_MOCK_MODE) {
+      const mock = MOCK_SUMMARIES[reportType] ?? MOCK_SUMMARIES['soil'];
+      console.log(`[DEMO] Returning mock ${reportType} summary`);
+      return {
+        summary: { content: mock.content, modelUsed: mock.modelUsed },
+        modelUsed: mock.modelUsed,
+        demo_mode: true,
+      };
+    }
 
     // Use Lovable AI Gateway
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
