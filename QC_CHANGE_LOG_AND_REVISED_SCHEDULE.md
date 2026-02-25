@@ -313,7 +313,69 @@ The 8 unmigrated functions fall into three categories:
 
 ---
 
+---
+
+## 9. Deferred Technical Recommendations
+
+### REC-001: Local LLM Model Upgrade — Gemma 2B/7B → Phi-4-mini / Qwen 3 4B
+
+**Status:** 📋 Documented — Deferred until SDK QC sprint completes  
+**Date Identified:** February 25, 2026  
+**Target Implementation:** Post-SDK QC completion (estimated Q2 2026)  
+**Codebase Impact:** Low (config + UI only; no architectural changes)
+
+#### Background
+
+The current offline AI implementation uses Google Gemma 2B/7B models via `@huggingface/transformers` with WebGPU acceleration. Since initial integration (~Q3 2025), the small language model landscape has evolved significantly. A February 2026 assessment identified multiple models that outperform Gemma at equivalent or lower resource cost.
+
+#### Recommended Changes
+
+| Current | Proposed Replacement | Rationale |
+|---------|---------------------|-----------|
+| Gemma 2B (fast tier) | **Phi-4-mini (3.8B)** | +17 pts MMLU (50% → 67.3%), only +1.4GB VRAM. Best-in-class reasoning at this size. |
+| Gemma 7B (quality tier) | **Qwen 3 4B** | ~70% MMLU (vs Gemma 7B ~64%) at **half the VRAM** (~3GB vs ~6GB). Strong multilingual support for European expansion. |
+
+#### Benchmark Comparison (Feb 2026 Data)
+
+| Model | Params | MMLU | VRAM (Q4) | WebGPU/ONNX Ready | Notes |
+|-------|--------|------|-----------|-------------------|-------|
+| Gemma 2B (current) | 2B | ~50% | ~1.6GB | ✅ Proven | Battle-tested, stable |
+| Gemma 3 4B | 4B | 59.6% | ~3GB | ⚠️ Partial | Multimodal (image+text); Transformers.js support pending (#1334) |
+| **Phi-4-mini** | 3.8B | **67.3%** | ~3GB | ✅ ONNX available | Strongest reasoning at ≤4B |
+| **Qwen 3 4B** | 4B | **~70%** | ~3GB | ✅ ONNX available | Best benchmarks, multilingual |
+| Llama 3.2 3B | 3B | 63.4% | ~2GB | ✅ WebLLM | Meta ecosystem, tool-calling |
+| SmolLM2 1.7B | 1.7B | ~48% | ~900MB | ✅ Native | Ultra-lightweight fallback option |
+
+#### Files Affected (When Implemented)
+
+| File | Change |
+|------|--------|
+| `src/services/localLLMService.ts` | Add Phi-4-mini and Qwen 3 model configs; update ONNX model identifiers |
+| `src/components/LocalLLMToggle.tsx` | Update model selection dropdown labels and download size estimates |
+| `src/hooks/useSmartLLMSelection.ts` | No changes required (model-agnostic) |
+| `docs/BITNET_PHASE3_ENHANCEMENT.md` | Update "Current State" section; note reduced urgency for BitNet given Qwen 3/Phi-4 quantized CPU variants |
+| `openapi-spec.yaml` | Update offline model references if exposed via SDK |
+
+#### Additional Notes
+
+- **Gemma 3 multimodal** should be monitored — once Transformers.js support is finalized, it could enable offline visual crop analysis (high-value feature for plant ID licensees).
+- **Qwen 3's multilingual strength** directly supports the Phased European Rollout strategy.
+- **Phi-4-mini's reasoning capability** improves offline agricultural diagnostics accuracy — key differentiator vs competitors.
+- The existing `useSmartLLMSelection` auto-switching logic (online/offline/slow connection) requires **zero changes** for this upgrade.
+
+#### Decision Gate
+
+- [ ] SDK QC sprint completed (Sprints 2–4)
+- [ ] Phi-4-mini ONNX model validated in local test environment
+- [ ] Qwen 3 4B ONNX model validated in local test environment
+- [ ] Download size impact assessed for PWA users
+- [ ] Announcement prepared for SDK changelog / release notes
+- [ ] Technical Lead sign-off
+- [ ] Product Owner approval
+
+---
+
 **Document Owner:** Development Team  
-**Last Updated:** February 23, 2026 (Sprint 1 execution)  
+**Last Updated:** February 25, 2026 (REC-001 added)  
 **Review Cadence:** Weekly during Sprint 2–4, then monthly  
 **Next Review:** March 7, 2026 (Sprint 2 close)
