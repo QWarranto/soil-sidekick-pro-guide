@@ -348,9 +348,8 @@ describe('useCostMonitoring', () => {
 
       expect(mockToast).toHaveBeenCalledWith(
         expect.objectContaining({
-          title: 'Error',
-          description: 'Failed to fetch cost data',
-          variant: 'destructive',
+          title: 'Cost data unavailable',
+          description: "Couldn't load cost data right now.",
         })
       );
     });

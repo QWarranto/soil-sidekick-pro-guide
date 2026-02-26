@@ -1,7 +1,7 @@
 # Comprehensive Test Report
 ## LeafEngines™ B2B API Platform
-**Report Date:** February 10, 2026  
-**Version:** 2.3  
+**Report Date:** February 26, 2026 (Baseline Reset)  
+**Version:** 2.4  
 **Status:** Phase 2 Complete, Phase 3 In Progress
 
 ---
@@ -10,8 +10,8 @@
 
 | Category | Status | Score |
 |----------|--------|-------|
-| Frontend Unit Tests | ✅ Pass | 111/111 (100%) |
-| Edge Function Tests | ⚠️ Partial | 2/42 (5%) |
+| Frontend Unit Tests | ✅ Pass | 139/139 (100%) |
+| Edge Function Tests | ⚠️ Partial | 2/43 (4.7%) |
 | Estimated Line Coverage | ⚠️ Low | ~22% |
 | Critical Path Coverage | ✅ Good | 85% avg |
 | Sub-100ms SLA (Offline) | ✅ Achievable | Target defined |
@@ -37,7 +37,7 @@
 | `APIKeyManager.test.tsx` | 6 | ✅ Pass | B2B Components |
 | `CarbonCreditCalculator.test.tsx` | 17 | ✅ Pass | Business Logic |
 
-**Total: 111 tests passing**
+**Total: 139 tests passing** (baseline reset Feb 26, 2026)
 
 ### 1.2 Coverage by Category
 
@@ -172,7 +172,7 @@ LeafEngines uses a strategic hybrid approach:
 | Issue | Severity | Status |
 |-------|----------|--------|
 | `useLiveAgriculturalData.test.tsx` missing | Medium | ⚠️ Open |
-| React act() warnings in `useCostMonitoring` | Low | ⚠️ Open |
+| Toast copy mismatch in `useCostMonitoring` | Low | ✅ Fixed (Feb 26) |
 | Incomplete Supabase mock chain in `useSubscription` | Low | ⚠️ Open |
 
 ### 5.2 Untested High-Priority Edge Functions
@@ -337,6 +337,7 @@ load-tests/scripts/                # k6 load test scripts
 
 ---
 
-**Report Generated:** February 10, 2026  
-**Next Review:** February 17, 2026  
-**Owner:** Quality Assurance Team
+**Report Generated:** February 26, 2026 (Baseline Reset)  
+**Next Review:** March 5, 2026  
+**Owner:** Quality Assurance Team  
+**QA Report Reference:** `docs/QA_Coverage_and_Performance_Update_2026-02-26.pdf`

@@ -1,7 +1,7 @@
 # Test Coverage Report
 
-**Generated:** February 10, 2026  
-**Status:** Phase 2 Complete ✅
+**Generated:** February 26, 2026  
+**Status:** Phase 2 Complete ✅ | Baseline Reset
 
 ---
 
@@ -9,10 +9,11 @@
 
 | Metric | Value |
 |--------|-------|
-| **Frontend Test Files** | 12 |
-| **Frontend Tests Passing** | 111/111 (100%) |
+| **Frontend Test Files** | 14 |
+| **Frontend Tests Passing** | 139/139 (100%) |
 | **Edge Function Test Files** | 2 |
-| **Edge Functions Covered** | 2/42 (5%) |
+| **Edge Function Directories** | 43 (2 tested, 4.7%) |
+| **Page-Level Test Files** | 0/47 |
 | **Estimated Line Coverage** | ~22% |
 
 ---
@@ -120,8 +121,8 @@
 
 ## Known Issues
 
-1. **1 test file failing**: `src/hooks/__tests__/useLiveAgriculturalData.test.tsx` - needs investigation
-2. **React act() warnings**: `useCostMonitoring` tests need async state update wrapping
+1. **Test file missing**: `src/hooks/__tests__/useLiveAgriculturalData.test.tsx` - needs creation
+2. ~~**Toast copy mismatch**: `useCostMonitoring` test expected old error copy~~ ✅ Fixed Feb 26, 2026
 3. **Mock chaining error**: `useSubscription` tests have incomplete Supabase mock chain
 
 ---
