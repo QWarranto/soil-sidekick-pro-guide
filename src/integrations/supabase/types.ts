@@ -2728,6 +2728,8 @@ export type Database = {
         }
         Returns: string
       }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
       simple_email_mask: { Args: never; Returns: string }
       track_api_cost: {
         Args: {
