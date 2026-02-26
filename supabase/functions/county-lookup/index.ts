@@ -60,7 +60,7 @@ requestHandler<CountySearchInput>({
       .from('counties')
       .select('id, county_name, state_name, state_code, fips_code')
       .ilike('county_name', `%${cleanTerm}%`)
-      .limit(50);
+      .limit(10);
 
     if (countyError) {
       console.error('County name search error:', countyError);
@@ -75,7 +75,7 @@ requestHandler<CountySearchInput>({
         .from('counties')
         .select('id, county_name, state_name, state_code, fips_code')
         .ilike('state_name', `%${cleanTerm}%`)
-        .limit(50);
+        .limit(10);
 
       if (stateError) {
         console.error('State name search error:', stateError);
