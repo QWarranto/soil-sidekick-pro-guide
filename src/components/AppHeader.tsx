@@ -28,7 +28,7 @@ const AppHeader = () => {
           <div className="flex flex-col">
             <span className="text-xl font-bold text-secondary-foreground">SoilSidekick Pro</span>
             <span className="text-xs text-secondary-foreground/80 hidden sm:block">
-              Patent Pending/Provisional #63/861,944 & Patent Pending/Non-Provisional #19/320,727
+              Patent Pending Applications - #19/320,727 &amp; #19/544,827
             </span>
           </div>
         </div>
