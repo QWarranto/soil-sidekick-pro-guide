@@ -85,9 +85,14 @@ const Index = () => {
                   <CardDescription className="text-xl text-muted-foreground">
                     Advanced Agricultural Intelligence Platform
                   </CardDescription>
-                  <p className="text-sm text-muted-foreground pt-2">
+                <p className="text-sm text-muted-foreground pt-2">
                     Real-time satellite monitoring • Environmental impact analysis • AI-powered insights
                   </p>
+                  <div className="mt-4 inline-block rounded-md border border-primary/20 bg-primary/5 px-4 py-2">
+                    <p className="text-sm font-medium text-primary">
+                      Patent Pending Applications - #19/320,727 &amp; #19/544,827
+                    </p>
+                  </div>
                 </div>
               </CardHeader>
               
