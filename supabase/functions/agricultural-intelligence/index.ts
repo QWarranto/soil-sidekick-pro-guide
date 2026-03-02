@@ -13,7 +13,7 @@ const corsHeaders = {
 // ─── DEMO MOCK MODE ──────────────────────────────────────────────────────────
 // Set DEMO_MOCK_MODE=true to bypass the AI gateway entirely and return
 // realistic pre-canned responses. Flip back to false for production.
-const DEMO_MOCK_MODE = true;
+const DEMO_MOCK_MODE = false;
 
 const MOCK_RESPONSES: Record<string, { content: string; intent: string; confidence: number }> = {
   soil_analysis: {

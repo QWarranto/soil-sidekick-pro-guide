@@ -9,7 +9,7 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 type ReportSummaryRequest = z.infer<typeof reportSummarySchema>;
 
-const DEMO_MOCK_MODE = true; // Set to false to use live AI gateway
+const DEMO_MOCK_MODE = false; // Set to true for demo mode with pre-canned responses
 
 const MOCK_SUMMARIES: Record<string, { content: string; modelUsed: string }> = {
   soil: {
