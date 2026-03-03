@@ -2514,10 +2514,6 @@ export type Database = {
       }
       cleanup_rate_limit_tracking: { Args: never; Returns: undefined }
       create_trial_user: { Args: { trial_email: string }; Returns: string }
-      decrypt_email_address: {
-        Args: { encrypted_email: string }
-        Returns: string
-      }
       decrypt_email_v3: {
         Args: { encrypted_email: string; encryption_key: string }
         Returns: string
@@ -2526,20 +2522,10 @@ export type Database = {
         Args: { encrypted_data: string; encryption_key: string }
         Returns: string
       }
-      decrypt_sensitive_payment_data: {
-        Args: { encrypted_data: string }
-        Returns: string
-      }
-      encrypt_email_address: {
-        Args: { email_to_encrypt: string }
-        Returns: string
-      }
-      encrypt_email_v2: { Args: { email_to_encrypt: string }; Returns: string }
       encrypt_email_v3: {
         Args: { email_to_encrypt: string; encryption_key: string }
         Returns: string
       }
-      encrypt_existing_sensitive_data: { Args: never; Returns: undefined }
       encrypt_sensitive_data_v3: {
         Args: { data_to_encrypt: string; encryption_key: string }
         Returns: string
