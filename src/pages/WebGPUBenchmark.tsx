@@ -153,10 +153,10 @@ export default function WebGPUBenchmark() {
     };
 
     // Check WebGPU
-    if (navigator.gpu) {
+    if ((navigator as any).gpu) {
       caps.webgpu = true;
       try {
-        const adapter = await navigator.gpu.requestAdapter();
+        const adapter = await (navigator as any).gpu.requestAdapter();
         if (adapter) {
           caps.webgpuAdapter = true;
           const info = await (adapter as any).requestAdapterInfo?.();
