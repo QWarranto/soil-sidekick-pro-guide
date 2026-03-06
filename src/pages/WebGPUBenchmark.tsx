@@ -159,7 +159,7 @@ export default function WebGPUBenchmark() {
         const adapter = await navigator.gpu.requestAdapter();
         if (adapter) {
           caps.webgpuAdapter = true;
-          const info = await adapter.requestAdapterInfo?.();
+          const info = await (adapter as any).requestAdapterInfo?.();
           if (info) {
             caps.gpu = `${info.vendor || 'Unknown'} - ${info.architecture || info.device || 'Unknown'}`;
           }
