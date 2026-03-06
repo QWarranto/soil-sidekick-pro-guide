@@ -24,13 +24,7 @@ export interface SearchResult {
   similarity: number;
 }
 
-declare global {
-  interface Navigator {
-    gpu?: {
-      requestAdapter(): Promise<any>;
-    };
-  }
-}
+// WebGPU type augmentation handled via type assertion in usage
 
 export class EmbeddingService {
   private embedder: any = null;

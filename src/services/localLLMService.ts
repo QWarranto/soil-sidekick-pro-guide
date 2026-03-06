@@ -11,13 +11,7 @@ export interface ChatMessage {
   content: string;
 }
 
-declare global {
-  interface Navigator {
-    gpu?: {
-      requestAdapter(): Promise<any>;
-    };
-  }
-}
+// WebGPU type augmentation handled via type assertion in usage
 
 export type DeviceType = 'webgpu' | 'wasm';
 
