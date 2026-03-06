@@ -11,13 +11,7 @@ export interface ChatMessage {
   content: string;
 }
 
-declare global {
-  interface Navigator {
-    gpu?: {
-      requestAdapter(): Promise<any>;
-    };
-  }
-}
+// navigator.gpu accessed via type assertion: (navigator as any).gpu
 
 export type DeviceType = 'webgpu' | 'wasm';
 
@@ -329,12 +323,12 @@ Please provide an executive summary focusing on water safety, agricultural use s
   }
 
   async checkWebGPUSupport(): Promise<boolean> {
-    if (!navigator.gpu) {
+    if (!(navigator as any).gpu) {
       return false;
     }
 
     try {
-      const adapter = await navigator.gpu.requestAdapter();
+      const adapter = await (navigator as any).gpu.requestAdapter();
       return adapter !== null;
     } catch {
       return false;

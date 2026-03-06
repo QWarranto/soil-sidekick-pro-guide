@@ -721,7 +721,7 @@ export type Database = {
           old_values: Json | null
           operation: string
           record_id: string | null
-          retention_period: unknown
+          retention_period: string | null
           risk_level: string | null
           session_id: string | null
           table_name: string
@@ -739,7 +739,7 @@ export type Database = {
           old_values?: Json | null
           operation: string
           record_id?: string | null
-          retention_period?: unknown
+          retention_period?: string | null
           risk_level?: string | null
           session_id?: string | null
           table_name: string
@@ -757,7 +757,7 @@ export type Database = {
           old_values?: Json | null
           operation?: string
           record_id?: string | null
-          retention_period?: unknown
+          retention_period?: string | null
           risk_level?: string | null
           session_id?: string | null
           table_name?: string
