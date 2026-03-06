@@ -24,7 +24,7 @@ export interface SearchResult {
   similarity: number;
 }
 
-// WebGPU type augmentation handled via type assertion in usage
+// navigator.gpu accessed via type assertion: (navigator as any).gpu
 
 export class EmbeddingService {
   private embedder: any = null;

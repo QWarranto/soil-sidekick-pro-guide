@@ -11,7 +11,7 @@ export interface ChatMessage {
   content: string;
 }
 
-// WebGPU type augmentation handled via type assertion in usage
+// navigator.gpu accessed via type assertion: (navigator as any).gpu
 
 export type DeviceType = 'webgpu' | 'wasm';
 
