@@ -14,6 +14,7 @@ Step-by-step workflows for maximizing productivity with SoilSidekick Pro. Each w
 | 8 | [Sensor Integration & Live Monitoring](08_SENSOR_INTEGRATION.md) | `08_SENSOR_INTEGRATION.md` | 30 min |
 | 9 | [API & Equipment Integration](09_API_EQUIPMENT_INTEGRATION.md) | `09_API_EQUIPMENT_INTEGRATION.md` | 25 min |
 | 10 | [Full-Season Workflow: Planting to Harvest](10_FULL_SEASON_WORKFLOW.md) | `10_FULL_SEASON_WORKFLOW.md` | 30 min |
+| 11 | [Satellite Data: Traditional vs. SoilSidekick Pro](11_SATELLITE_DATA_COMPARISON.md) | `11_SATELLITE_DATA_COMPARISON.md` | 10 min |
 
 ## How to Use These Guides
 
