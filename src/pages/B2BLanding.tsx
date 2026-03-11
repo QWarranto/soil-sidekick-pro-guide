@@ -37,11 +37,8 @@ export default function B2BLanding() {
             <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground md:text-6xl">
               LeafEngines™ <span className="text-2xl md:text-3xl font-medium text-muted-foreground">by SoilSidekick Pro</span>
             </h1>
-            <p className="mb-4 text-xl text-muted-foreground md:text-2xl">
-              Environmental Intelligence API for Plant Apps
-            </p>
-            <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
-              Stop losing users when their identified plants die. Power your app with real-time environmental compatibility scores and turn identification into actionable plant care.
+            <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground md:text-xl">
+              LeafEngines™ from SoilSidekick Pro is the world's first offline environmental/geospatial intelligence layer that transforms raw environmental data into actionable, regulatory-grade truth — deployable anywhere, integrated everywhere.
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button size="lg" className="gap-2" asChild>
