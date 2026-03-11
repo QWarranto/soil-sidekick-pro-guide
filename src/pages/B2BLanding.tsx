@@ -329,7 +329,7 @@ const result = await analyzer(imageData);
                 </div>
                 <h3 className="mb-2 text-xl font-semibold text-foreground">Federal FIPS Location Intelligence</h3>
                 <p className="text-muted-foreground">
-                  Hyper-local soil composition, climate patterns, and growing conditions down to the county level.
+                  Hyper-local soil composition, climate patterns, and growing conditions 24x more precise than county level data with 10M precision.
                 </p>
               </Card>
             </div>
