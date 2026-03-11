@@ -93,7 +93,7 @@ export default function B2BLanding() {
                   Privacy-Preserving AI Processing
                 </h2>
                 <p className="mb-4 text-lg text-muted-foreground">
-                  The only plant intelligence platform with <strong className="text-foreground">on-device WebGPU AI</strong> that keeps user data private while delivering real-time environmental analysis powered by federal data authority.
+                  The intelligence platform with <strong className="text-foreground">on-device WebGPU AI</strong> that keeps user data private while delivering real-time environmental analysis powered by federal data authority.
                 </p>
                 <p className="mb-6 text-lg font-semibold text-foreground">
                   Trusted by America's leading agricultural technology companies — privacy-first, audit-ready, and built on USDA/EPA standards.
