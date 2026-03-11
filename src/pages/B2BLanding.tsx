@@ -60,18 +60,18 @@ export default function B2BLanding() {
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-4xl">
             <div className="flex items-start gap-6">
-              <div className="rounded-full bg-destructive/10 p-3">
-                <TrendingDown className="h-6 w-6 text-destructive" />
+              <div className="rounded-full bg-primary/10 p-3">
+                <TrendingDown className="h-6 w-6 text-primary" />
               </div>
               <div>
                 <h2 className="mb-4 text-3xl font-bold text-foreground">
-                  Your Users Don't Just Want to Know <em>What</em> — They Need to Know <em>How</em>
+                  LeafEngines™: The "Survival Layer" for Autonomous Hardware
                 </h2>
                 <p className="mb-4 text-lg text-muted-foreground">
-                  Plant identification apps solve the "What is this plant?" question brilliantly. But users delete apps when their identified plants die 3 months later.
+                  LeafEngines is not another cloud application. It is an embedded, patent-protected SDK that functions as a "survival layer" for autonomous systems, ensuring they continue to operate safely and effectively when disconnected.
                 </p>
                 <p className="text-lg font-semibold text-foreground">
-                  The missing piece? Real-time environmental intelligence that answers: "Will this plant thrive HERE?"
+                  Our core value proposition is a physics-based solution to a physics-based problem: &lt;10ms offline inference.
                 </p>
               </div>
             </div>
