@@ -58,6 +58,7 @@ import APIKeyManagement from "./pages/APIKeyManagement";
 import SwaggerUI from "./pages/SwaggerUI";
 import WebGPUBenchmark from "./pages/WebGPUBenchmark";
 import DemoRunbook from "./pages/DemoRunbook";
+import DV005Demo from "./pages/DV005Demo";
 
 const queryClient = new QueryClient();
 
