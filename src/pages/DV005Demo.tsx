@@ -17,7 +17,9 @@ import {
   resetUncertaintyFromGPS,
   DEFAULT_UNCERTAINTY_CONFIG,
 } from '@/lib/dead-reckoning/uncertainty-model';
-import { MapPin, Radio, AlertTriangle, Shield, Crosshair, Waves, BarChart3, Play } from 'lucide-react';
+import { Shield, Crosshair, Waves, BarChart3, Download, FileVideo } from 'lucide-react';
+import { downloadStandaloneHTML } from '@/utils/dv005HtmlExport';
+import dv005Video from '@/assets/dv005-demo-circulation.mp4';
 
 // ─── TYPES ───────────────────────────────────────────────
 interface GridPoint {
