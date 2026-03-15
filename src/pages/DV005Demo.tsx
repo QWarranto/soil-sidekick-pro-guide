@@ -251,6 +251,16 @@ export default function DV005Demo() {
             <Badge variant="outline" className="text-xs font-mono">Non-Prov #19/320,727</Badge>
             <Badge variant="outline" className="text-xs font-mono">Prov #63/861,944</Badge>
           </div>
+          <div className="flex gap-2 mt-4">
+            <Button size="sm" variant="outline" onClick={downloadStandaloneHTML}>
+              <Download className="h-3 w-3 mr-1.5" /> Export Standalone HTML
+            </Button>
+            <Button size="sm" variant="outline" asChild>
+              <a href={dv005Video} download="LeafEngines_DV005_Demo.mp4">
+                <FileVideo className="h-3 w-3 mr-1.5" /> Download Circulation Video
+              </a>
+            </Button>
+          </div>
         </div>
       </div>
 
