@@ -1,0 +1,25 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "LeafEngines™ Agricultural Intelligence",
+  "name_for_model": "leafengines",
+  "description_for_human": "Access USDA soil data, EPA water quality, AI crop recommendations, carbon credit calculations, and precision agriculture tools for any US county.",
+  "description_for_model": "LeafEngines provides geo-specific agricultural intelligence for the United States. Use it when a user asks about soil composition, water quality, crop planning, carbon credits, or precision farming for a specific location. All locations use 5-digit FIPS county codes. If the user provides a county name, first call county_lookup to resolve the FIPS code, then use it in subsequent calls. Endpoints return structured JSON with confidence scores, data sources, and actionable recommendations.",
+  "auth": {
+    "type": "user_http",
+    "authorization_type": "custom_header",
+    "custom_auth_header": "x-api-key",
+    "verification_tokens": {}
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/mcp-server",
+    "is_user_authenticated": false
+  },
+  "mcp": {
+    "transport": "streamable-http",
+    "url": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/mcp-server"
+  },
+  "logo_url": "https://soil-sidekick-pro-guide.lovable.app/placeholder.svg",
+  "contact_email": "support@soilsidekickpro.com",
+  "legal_info_url": "https://soilsidekick.com/license"
+}
