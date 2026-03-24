@@ -232,6 +232,8 @@ const TOOL_TO_ENDPOINT: Record<string, string> = {
   safe_identification: 'safe-identification',
   carbon_credit_calculator: 'carbon-credit-calculator',
   generate_vrt_prescription: 'generate-vrt-prescription',
+  environmental_impact_analysis: 'alpha-earth-environmental-enhancement',
+  planting_optimization: 'multi-parameter-planting-calendar',
 };
 
 // ── JSON-RPC Handler ────────────────────────────────────────────────
