@@ -152,6 +152,73 @@ const TOOLS = [
       },
       required: ['county_fips', 'application_type']
     }
+  },
+  {
+    name: 'environmental_impact_analysis',
+    description: 'Proprietary multi-source environmental impact assessment combining USDA soil data, EPA water quality, NOAA climate data, and Google AlphaEarth satellite embeddings (64-dim Geo Foundation Model vectors at 10m resolution). Returns patent-pending Environmental Compatibility Scores including runoff risk, contamination risk, biodiversity impact, carbon footprint, and satellite-derived vegetation health. This cross-modal fusion produces intelligence unavailable from any single public data source.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        analysis_id: {
+          type: 'string',
+          format: 'uuid',
+          description: 'UUID for this analysis session'
+        },
+        county_fips: {
+          type: 'string',
+          pattern: '^[0-9]{5}$',
+          description: '5-digit US county FIPS code'
+        },
+        lat: {
+          type: 'number',
+          minimum: -90,
+          maximum: 90,
+          description: 'Latitude of the analysis point'
+        },
+        lng: {
+          type: 'number',
+          minimum: -180,
+          maximum: 180,
+          description: 'Longitude of the analysis point'
+        },
+        soil_data: {
+          type: 'object',
+          description: 'Soil composition data (drainage_class, slope_percentage, organic_matter_percentage, permeability)'
+        },
+        water_body_data: {
+          type: 'object',
+          description: 'Optional water body proximity data (proximity_km)'
+        }
+      },
+      required: ['county_fips', 'lat', 'lng', 'soil_data']
+    }
+  },
+  {
+    name: 'planting_optimization',
+    description: 'AI-powered multi-parameter planting calendar that fuses soil composition, historical climate patterns, frost date models, and crop-specific phenology to generate optimal planting windows, yield predictions, sustainability scores, and risk assessments. Returns proprietary timing recommendations unavailable from standard agricultural extension data.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        county_fips: {
+          type: 'string',
+          pattern: '^[0-9]{5}$',
+          description: '5-digit US county FIPS code'
+        },
+        crop_type: {
+          type: 'string',
+          description: 'Crop to optimize planting for (e.g., "corn", "soybeans", "wheat")'
+        },
+        field_size_acres: {
+          type: 'number',
+          description: 'Field size in acres for yield estimation'
+        },
+        planting_year: {
+          type: 'integer',
+          description: 'Target planting year'
+        }
+      },
+      required: ['county_fips', 'crop_type']
+    }
   }
 ];
 
@@ -165,6 +232,8 @@ const TOOL_TO_ENDPOINT: Record<string, string> = {
   safe_identification: 'safe-identification',
   carbon_credit_calculator: 'carbon-credit-calculator',
   generate_vrt_prescription: 'generate-vrt-prescription',
+  environmental_impact_analysis: 'alpha-earth-environmental-enhancement',
+  planting_optimization: 'multi-parameter-planting-calendar',
 };
 
 // ── JSON-RPC Handler ────────────────────────────────────────────────
