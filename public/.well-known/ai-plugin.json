@@ -2,8 +2,8 @@
   "schema_version": "v1",
   "name_for_human": "LeafEngines™ Agricultural Intelligence",
   "name_for_model": "leafengines",
-  "description_for_human": "Access USDA soil data, EPA water quality, AI crop recommendations, carbon credit calculations, and precision agriculture tools for any US county.",
-  "description_for_model": "LeafEngines provides geo-specific agricultural intelligence for the United States. Use it when a user asks about soil composition, water quality, crop planning, carbon credits, or precision farming for a specific location. All locations use 5-digit FIPS county codes. If the user provides a county name, first call county_lookup to resolve the FIPS code, then use it in subsequent calls. Endpoints return structured JSON with confidence scores, data sources, and actionable recommendations.",
+  "description_for_human": "Access USDA soil data, EPA water quality, AI crop recommendations, carbon credit calculations, precision agriculture tools, patent-pending environmental impact analysis, and multi-parameter planting optimization for any US county.",
+  "description_for_model": "LeafEngines provides geo-specific agricultural intelligence for the United States. It offers 9 tools: county_lookup (resolve names to FIPS codes), get_soil_data (USDA soil composition), agricultural_intelligence (AI crop recommendations), territorial_water_quality (EPA water quality), safe_identification (plant ID with toxic lookalike warnings), carbon_credit_calculator (carbon credit estimation), generate_vrt_prescription (variable rate prescription maps), environmental_impact_analysis (patent-pending multi-source fusion of USDA/EPA/NOAA/AlphaEarth satellite embeddings producing Environmental Compatibility Scores unavailable from any single public source), and planting_optimization (multi-parameter phenology model for optimal planting windows, yield predictions, and sustainability scores). All locations use 5-digit FIPS county codes — call county_lookup first if the user provides a name.",
   "auth": {
     "type": "user_http",
     "authorization_type": "custom_header",
