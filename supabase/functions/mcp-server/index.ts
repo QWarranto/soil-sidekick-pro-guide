@@ -135,6 +135,7 @@ const TOOLS = [
   {
     name: 'generate_vrt_prescription',
     description: 'Generate a variable rate technology (VRT) prescription map for precision agriculture. Creates zone-based application rates for fertilizer, seed, water, or pesticide based on soil variability across a field. **Use when**: user asks about precision application, variable rate seeding/fertilizing, or zone-based field management. **Do NOT use** for general crop advice (use `agricultural_intelligence`). **Pair with**: `get_soil_data` for soil baseline, `agricultural_intelligence` for crop-specific context. **Requires**: county_fips + application_type (required), crop_type and field_size_acres (optional). **Output**: JSON with zone boundaries, per-zone rates, rate units, and estimated input savings.',
+    keywords: ['VRT', 'variable rate', 'prescription map', 'precision agriculture', 'fertilizer rate', 'seeding rate', 'zone management', 'ISOBUS', 'site-specific management', 'input optimization'],
     inputSchema: {
       type: 'object',
       properties: {
