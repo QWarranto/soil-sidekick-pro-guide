@@ -92,6 +92,7 @@ const TOOLS = [
   {
     name: 'safe_identification',
     description: 'Identify a plant and flag toxic lookalikes with environmental context. Returns safety warnings, confidence scores, and habitat information. **Use when**: user asks to identify a plant, check if something is edible, or needs foraging safety information. **Do NOT use** for crop planning (use `agricultural_intelligence`). **Requires**: plant_name (required), location (optional for regional context). **Output**: JSON with identification, toxicity warnings, lookalike species, and confidence scores.',
+    keywords: ['plant identification', 'plant ID', 'toxic plants', 'edible plants', 'foraging', 'poisonous', 'lookalike species', 'botany', 'plant safety', 'mushroom identification', 'wild plants'],
     inputSchema: {
       type: 'object',
       properties: {
