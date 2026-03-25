@@ -19,6 +19,7 @@ const TOOLS = [
   {
     name: 'county_lookup',
     description: 'Search for US counties by name, state, or FIPS code. Returns matching counties with FIPS codes, state names, and state codes. **Use when**: the user provides a place name, state, or partial location instead of a 5-digit FIPS code. Most other tools require a FIPS code, so call this first to resolve it. **Do NOT use** if you already have a valid 5-digit FIPS code. **Output**: JSON array of matches with `fips_code`, `county_name`, `state_name`, `state_code`.',
+    keywords: ['county', 'FIPS', 'location', 'geocode', 'state', 'US geography', 'place name', 'county search', 'FIPS lookup', 'geolocation'],
     inputSchema: {
       type: 'object',
       properties: {
