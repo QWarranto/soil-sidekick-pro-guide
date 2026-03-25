@@ -76,6 +76,7 @@ const TOOLS = [
   {
     name: 'territorial_water_quality',
     description: 'Retrieve EPA water quality data for a US county. Returns contamination risk levels, water body proximity analysis, and parameter readings (nitrates, phosphorus, turbidity, etc.). **Use when**: user asks about water contamination, irrigation safety, drinking water risk, or environmental compliance for a location. **Do NOT use** for soil data (use `get_soil_data`) or broad environmental assessments (use `environmental_impact_analysis`). **Pair with**: `environmental_impact_analysis` for a complete environmental picture. **Requires**: 5-digit FIPS code. **Output**: JSON with risk categories, parameter readings, and regulatory context.',
+    keywords: ['water quality', 'EPA', 'contamination', 'nitrates', 'phosphorus', 'turbidity', 'irrigation', 'drinking water', 'runoff', 'water testing', 'environmental compliance', 'Clean Water Act'],
     inputSchema: {
       type: 'object',
       properties: {
