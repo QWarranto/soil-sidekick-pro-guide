@@ -204,6 +204,7 @@ const TOOLS = [
   {
     name: 'planting_optimization',
     description: 'AI-powered multi-parameter planting calendar that fuses soil composition, historical climate patterns, frost date models, and crop-specific phenology to generate optimal planting windows, yield predictions, sustainability scores, and risk assessments. Returns proprietary timing recommendations unavailable from standard agricultural extension data. **Use when**: user asks when to plant, optimal planting dates, growing season timing, or yield forecasts for a specific crop and location. **Do NOT use** for general crop advice without timing focus (use `agricultural_intelligence`) or soil-only queries (use `get_soil_data`). **Pair with**: `get_soil_data` for soil context, `carbon_credit_calculator` for sustainability ROI. **Requires**: county_fips + crop_type (required), field_size_acres and planting_year (optional). **Output**: JSON with optimal_window (start/end dates), yield_prediction (bushels/acre), sustainability_score (0-100), risk_factors array, and alternative crop suggestions.',
+    keywords: ['planting calendar', 'planting date', 'frost date', 'growing season', 'phenology', 'yield forecast', 'crop timing', 'GDD', 'growing degree days', 'season planning', 'climate adaptation'],
     inputSchema: {
       type: 'object',
       properties: {
