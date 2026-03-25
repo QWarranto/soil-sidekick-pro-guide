@@ -52,6 +52,7 @@ const TOOLS = [
   {
     name: 'agricultural_intelligence',
     description: 'AI-powered agricultural analysis combining soil data, climate factors, and crop science. Provides planting recommendations, yield predictions, risk assessments, and sustainability scores. **Use when**: user asks what to plant, expected yields, farming risks, or crop suitability for a location. **Do NOT use** for raw soil composition (use `get_soil_data`) or water quality (use `territorial_water_quality`). **Pair with**: `get_soil_data` for underlying soil details, `generate_vrt_prescription` for application rates. **Requires**: county_fips (required), crop_type and question (optional). **Output**: JSON with recommendations, confidence scores, and data sources.',
+    keywords: ['agriculture', 'crop recommendation', 'yield prediction', 'farming', 'agronomy', 'crop science', 'planting advice', 'risk assessment', 'sustainability', 'precision agriculture', 'AI farming'],
     inputSchema: {
       type: 'object',
       properties: {
