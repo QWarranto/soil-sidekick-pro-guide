@@ -273,6 +273,18 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null): Promise<un
       serverInfo: {
         name: 'leafengines-mcp',
         version: '1.0.0',
+        description: 'Agricultural intelligence API fusing USDA, EPA, NOAA, and satellite data for soil analysis, crop planning, water quality, carbon credits, and environmental impact assessments across all US counties.',
+        keywords: [
+          'agriculture', 'soil', 'USDA', 'EPA', 'NOAA', 'water quality', 'carbon credits',
+          'precision agriculture', 'VRT', 'crop recommendation', 'yield prediction',
+          'environmental impact', 'satellite', 'AlphaEarth', 'FIPS', 'county',
+          'plant identification', 'sustainability', 'agronomy', 'GIS', 'remote sensing',
+          'planting calendar', 'phenology', 'ESG', 'land evaluation', 'MCP'
+        ],
+        categories: ['agriculture', 'environmental', 'geospatial', 'sustainability', 'data-analysis'],
+        provider: 'LeafEngines™ by Soil Sidekick Pro',
+        homepage: 'https://soilsidekick.com',
+        documentation: 'https://soil-sidekick-pro-guide.lovable.app/api-docs',
       },
     });
   }
