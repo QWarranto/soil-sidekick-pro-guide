@@ -17,23 +17,8 @@ const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
 
 const TOOLS = [
   {
-    name: 'get_soil_data',
-    description: 'Retrieve comprehensive USDA soil analysis for a US county by FIPS code. Returns pH, nutrients (N-P-K), organic matter, drainage class, and texture. Use when an agent needs soil composition data for agricultural planning, environmental assessment, or land evaluation.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        county_fips: {
-          type: 'string',
-          pattern: '^[0-9]{5}$',
-          description: '5-digit US county FIPS code (e.g., "13121" for Fulton County, GA)'
-        }
-      },
-      required: ['county_fips']
-    }
-  },
-  {
     name: 'county_lookup',
-    description: 'Search for US counties by name, state, or FIPS code. Returns matching counties with FIPS codes, state names, and state codes. Use when an agent needs to resolve a location name to a FIPS code before calling other endpoints.',
+    description: 'Search for US counties by name, state, or FIPS code. Returns matching counties with FIPS codes, state names, and state codes. **Use when**: the user provides a place name, state, or partial location instead of a 5-digit FIPS code. Most other tools require a FIPS code, so call this first to resolve it. **Do NOT use** if you already have a valid 5-digit FIPS code. **Output**: JSON array of matches with `fips_code`, `county_name`, `state_name`, `state_code`.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -48,8 +33,23 @@ const TOOLS = [
     }
   },
   {
+    name: 'get_soil_data',
+    description: 'Retrieve USDA soil composition for a US county. Returns pH, N-P-K nutrients, organic matter %, drainage class, and texture. **Use when**: user asks about soil quality, land suitability, nutrient levels, or soil type for a specific location. **Do NOT use** for crop recommendations (use `agricultural_intelligence`) or environmental assessments (use `environmental_impact_analysis`). **Requires**: 5-digit FIPS code — call `county_lookup` first if you only have a place name. **Output**: JSON with numeric soil properties suitable for cross-county comparison.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        county_fips: {
+          type: 'string',
+          pattern: '^[0-9]{5}$',
+          description: '5-digit US county FIPS code (e.g., "13121" for Fulton County, GA)'
+        }
+      },
+      required: ['county_fips']
+    }
+  },
+  {
     name: 'agricultural_intelligence',
-    description: 'AI-powered agricultural analysis combining soil data, climate factors, and crop science. Provides planting recommendations, yield predictions, risk assessments, and sustainability scores for a given county and crop type.',
+    description: 'AI-powered agricultural analysis combining soil data, climate factors, and crop science. Provides planting recommendations, yield predictions, risk assessments, and sustainability scores. **Use when**: user asks what to plant, expected yields, farming risks, or crop suitability for a location. **Do NOT use** for raw soil composition (use `get_soil_data`) or water quality (use `territorial_water_quality`). **Pair with**: `get_soil_data` for underlying soil details, `generate_vrt_prescription` for application rates. **Requires**: county_fips (required), crop_type and question (optional). **Output**: JSON with recommendations, confidence scores, and data sources.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -72,7 +72,7 @@ const TOOLS = [
   },
   {
     name: 'territorial_water_quality',
-    description: 'Retrieve EPA water quality data for a US county. Returns contamination risk, water body proximity analysis, and parameter readings. Use for environmental impact assessments and regulatory compliance checks.',
+    description: 'Retrieve EPA water quality data for a US county. Returns contamination risk levels, water body proximity analysis, and parameter readings (nitrates, phosphorus, turbidity, etc.). **Use when**: user asks about water contamination, irrigation safety, drinking water risk, or environmental compliance for a location. **Do NOT use** for soil data (use `get_soil_data`) or broad environmental assessments (use `environmental_impact_analysis`). **Pair with**: `environmental_impact_analysis` for a complete environmental picture. **Requires**: 5-digit FIPS code. **Output**: JSON with risk categories, parameter readings, and regulatory context.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -87,7 +87,7 @@ const TOOLS = [
   },
   {
     name: 'safe_identification',
-    description: 'Identify a plant and flag toxic lookalikes with environmental context. Returns safety warnings, confidence scores, and habitat information. Critical for foraging safety and field identification workflows.',
+    description: 'Identify a plant and flag toxic lookalikes with environmental context. Returns safety warnings, confidence scores, and habitat information. **Use when**: user asks to identify a plant, check if something is edible, or needs foraging safety information. **Do NOT use** for crop planning (use `agricultural_intelligence`). **Requires**: plant_name (required), location (optional for regional context). **Output**: JSON with identification, toxicity warnings, lookalike species, and confidence scores.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -105,7 +105,7 @@ const TOOLS = [
   },
   {
     name: 'carbon_credit_calculator',
-    description: 'Calculate carbon credit potential for agricultural land based on field size, soil organic matter, and farming practices. Returns estimated credits, monetary value, and verification requirements.',
+    description: 'Calculate carbon credit potential for agricultural land based on field size, soil organic matter, and farming practices. Returns estimated credits (tonnes CO₂e), monetary value ($USD), verification timeline, and registry requirements. **Use when**: user asks about carbon credits, carbon offset revenue, sustainability incentives, or conservation practice ROI. **Do NOT use** for general environmental assessment (use `environmental_impact_analysis`). **Pair with**: `get_soil_data` to obtain current organic matter %. **Requires**: field_size_acres (required), soil_organic_matter and practice_type (optional). **Output**: JSON with credit estimates, dollar values, and verification steps.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -128,7 +128,7 @@ const TOOLS = [
   },
   {
     name: 'generate_vrt_prescription',
-    description: 'Generate a variable rate technology (VRT) prescription map for precision agriculture. Creates zone-based application rates for fertilizer, seed, water, or pesticide based on soil variability across a field.',
+    description: 'Generate a variable rate technology (VRT) prescription map for precision agriculture. Creates zone-based application rates for fertilizer, seed, water, or pesticide based on soil variability across a field. **Use when**: user asks about precision application, variable rate seeding/fertilizing, or zone-based field management. **Do NOT use** for general crop advice (use `agricultural_intelligence`). **Pair with**: `get_soil_data` for soil baseline, `agricultural_intelligence` for crop-specific context. **Requires**: county_fips + application_type (required), crop_type and field_size_acres (optional). **Output**: JSON with zone boundaries, per-zone rates, rate units, and estimated input savings.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -155,7 +155,7 @@ const TOOLS = [
   },
   {
     name: 'environmental_impact_analysis',
-    description: 'Proprietary multi-source environmental impact assessment combining USDA soil data, EPA water quality, NOAA climate data, and Google AlphaEarth satellite embeddings (64-dim Geo Foundation Model vectors at 10m resolution). Returns patent-pending Environmental Compatibility Scores including runoff risk, contamination risk, biodiversity impact, carbon footprint, and satellite-derived vegetation health. This cross-modal fusion produces intelligence unavailable from any single public data source.',
+    description: 'Patent-pending multi-source environmental impact assessment. Fuses USDA soil data, EPA water quality, NOAA climate data, and Google AlphaEarth satellite embeddings (64-dim Geo Foundation Model vectors at 10m resolution) into Environmental Compatibility Scores unavailable from any single public data source. Returns: runoff_risk (0-100), contamination_risk (low/med/high), biodiversity_impact, carbon_footprint_score, and satellite-derived vegetation health. **Use when**: user needs environmental due diligence, land purchase evaluation, regulatory pre-screening, or comprehensive site assessment. **Do NOT use** for soil-only queries (use `get_soil_data`) or water-only queries (use `territorial_water_quality`). **Pair with**: `get_soil_data` for raw soil inputs, `territorial_water_quality` for water-specific detail, `carbon_credit_calculator` for monetization. **Requires**: county_fips + lat + lng + soil_data (required). **Output**: JSON with composite scores, risk categories, satellite health indices, and eco-friendly alternatives.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -195,7 +195,7 @@ const TOOLS = [
   },
   {
     name: 'planting_optimization',
-    description: 'AI-powered multi-parameter planting calendar that fuses soil composition, historical climate patterns, frost date models, and crop-specific phenology to generate optimal planting windows, yield predictions, sustainability scores, and risk assessments. Returns proprietary timing recommendations unavailable from standard agricultural extension data.',
+    description: 'AI-powered multi-parameter planting calendar that fuses soil composition, historical climate patterns, frost date models, and crop-specific phenology to generate optimal planting windows, yield predictions, sustainability scores, and risk assessments. Returns proprietary timing recommendations unavailable from standard agricultural extension data. **Use when**: user asks when to plant, optimal planting dates, growing season timing, or yield forecasts for a specific crop and location. **Do NOT use** for general crop advice without timing focus (use `agricultural_intelligence`) or soil-only queries (use `get_soil_data`). **Pair with**: `get_soil_data` for soil context, `carbon_credit_calculator` for sustainability ROI. **Requires**: county_fips + crop_type (required), field_size_acres and planting_year (optional). **Output**: JSON with optimal_window (start/end dates), yield_prediction (bushels/acre), sustainability_score (0-100), risk_factors array, and alternative crop suggestions.',
     inputSchema: {
       type: 'object',
       properties: {
