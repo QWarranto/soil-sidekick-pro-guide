@@ -36,6 +36,7 @@ const TOOLS = [
   {
     name: 'get_soil_data',
     description: 'Retrieve USDA soil composition for a US county. Returns pH, N-P-K nutrients, organic matter %, drainage class, and texture. **Use when**: user asks about soil quality, land suitability, nutrient levels, or soil type for a specific location. **Do NOT use** for crop recommendations (use `agricultural_intelligence`) or environmental assessments (use `environmental_impact_analysis`). **Requires**: 5-digit FIPS code — call `county_lookup` first if you only have a place name. **Output**: JSON with numeric soil properties suitable for cross-county comparison.',
+    keywords: ['soil', 'USDA', 'pH', 'nitrogen', 'phosphorus', 'potassium', 'NPK', 'organic matter', 'drainage', 'texture', 'soil test', 'land suitability', 'soil health', 'nutrient analysis'],
     inputSchema: {
       type: 'object',
       properties: {
