@@ -111,6 +111,7 @@ const TOOLS = [
   {
     name: 'carbon_credit_calculator',
     description: 'Calculate carbon credit potential for agricultural land based on field size, soil organic matter, and farming practices. Returns estimated credits (tonnes CO₂e), monetary value ($USD), verification timeline, and registry requirements. **Use when**: user asks about carbon credits, carbon offset revenue, sustainability incentives, or conservation practice ROI. **Do NOT use** for general environmental assessment (use `environmental_impact_analysis`). **Pair with**: `get_soil_data` to obtain current organic matter %. **Requires**: field_size_acres (required), soil_organic_matter and practice_type (optional). **Output**: JSON with credit estimates, dollar values, and verification steps.',
+    keywords: ['carbon credits', 'carbon offset', 'CO2', 'greenhouse gas', 'sustainability', 'cover cropping', 'no-till', 'agroforestry', 'carbon sequestration', 'Verra', 'Gold Standard', 'climate finance', 'ESG'],
     inputSchema: {
       type: 'object',
       properties: {
