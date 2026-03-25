@@ -163,6 +163,7 @@ const TOOLS = [
   {
     name: 'environmental_impact_analysis',
     description: 'Patent-pending multi-source environmental impact assessment. Fuses USDA soil data, EPA water quality, NOAA climate data, and Google AlphaEarth satellite embeddings (64-dim Geo Foundation Model vectors at 10m resolution) into Environmental Compatibility Scores unavailable from any single public data source. Returns: runoff_risk (0-100), contamination_risk (low/med/high), biodiversity_impact, carbon_footprint_score, and satellite-derived vegetation health. **Use when**: user needs environmental due diligence, land purchase evaluation, regulatory pre-screening, or comprehensive site assessment. **Do NOT use** for soil-only queries (use `get_soil_data`) or water-only queries (use `territorial_water_quality`). **Pair with**: `get_soil_data` for raw soil inputs, `territorial_water_quality` for water-specific detail, `carbon_credit_calculator` for monetization. **Requires**: county_fips + lat + lng + soil_data (required). **Output**: JSON with composite scores, risk categories, satellite health indices, and eco-friendly alternatives.',
+    keywords: ['environmental impact', 'EIA', 'due diligence', 'satellite', 'AlphaEarth', 'NDVI', 'runoff risk', 'biodiversity', 'contamination', 'land evaluation', 'site assessment', 'NEPA', 'sensor fusion', 'remote sensing', 'GIS'],
     inputSchema: {
       type: 'object',
       properties: {
