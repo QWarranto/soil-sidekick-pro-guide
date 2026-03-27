@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { localLLMService, LocalLLMConfig } from '@/services/localLLMService';
 
 /**
@@ -11,17 +11,17 @@ import { localLLMService, LocalLLMConfig } from '@/services/localLLMService';
  *   - Gemma 2B: ~2-4 GB KV cache, only viable local option on mobile
  *   - Gemma 7B: ~8-16 GB KV cache, desktop-only
  *   - Local mode only competitive for simple queries
+ *   - Slow connection threshold: 2000ms (conservative — local quality too low to prefer)
+ *   - WASM fallback: "degraded mode" (300-800ms), blocks non-WebGPU browsers
  * 
  * After TurboQuant:
  *   - Gemma 2B: ~0.5-0.7 GB KV cache, runs on any device
  *   - Gemma 7B: ~1.3-2.7 GB KV cache, now viable on 4GB+ mobile devices
  *   - Local mode competitive with cloud for most agricultural queries
+ *   - Slow connection threshold: 1000ms (more aggressive — local quality now sufficient)
+ *   - WASM + TurboQuant: viable tier (~sub-200ms), no longer blocks browsers
  *   - Context windows 4-6x larger — full-season history fits in single pass
- * 
- * When TurboQuant lands in onnxruntime-web or @huggingface/transformers:
- *   - Update model selection to prefer 7B over 2B on capable devices
- *   - Raise the 'slow_connection' threshold — local is now good enough for complex tasks
- *   - Lower battery-mode penalty — 3-bit KV cache uses less memory bandwidth
+ *   - KV cache reuse saves 40-60% compute on follow-up messages
  * 
  * For BitNet Phase 3 (native, Q3-Q4 2026):
  *   - 1-bit weights (BitNet) + 3-bit KV cache (TurboQuant) = maximum compression
@@ -46,10 +46,6 @@ export function useSmartLLMSelection(initialConfig?: LocalLLMConfig) {
     isOnline: navigator.onLine,
     connectionSpeed: 'unknown',
     localLLMReady: false,
-    // TurboQuant: Will be set to true once onnxruntime-web or
-    // @huggingface/transformers ships 3-bit KV cache quantization support.
-    // When true, local model thresholds shift: 7B becomes mobile-viable,
-    // context windows expand 4-6x, and local mode competes with cloud.
     turboQuantAvailable: false
   });
 
@@ -57,11 +53,42 @@ export function useSmartLLMSelection(initialConfig?: LocalLLMConfig) {
     initialConfig || {
       model: 'gemma-2b',
       maxTokens: 256,
-      temperature: 0.7
+      temperature: 0.7,
+      kvCacheMode: 'none',
+      reuseKVCache: false
     }
   );
 
   const [manualOverride, setManualOverride] = useState<boolean | null>(null);
+
+  // Detect TurboQuant on mount and update config accordingly
+  useEffect(() => {
+    const tqAvailable = localLLMService.detectTurboQuantSupport();
+    setState(prev => ({ ...prev, turboQuantAvailable: tqAvailable }));
+
+    if (tqAvailable) {
+      // After TurboQuant: auto-enable 3-bit KV cache and KV reuse
+      setLocalLLMConfig(prev => ({
+        ...prev,
+        kvCacheMode: '3bit',
+        reuseKVCache: true
+      }));
+    }
+  }, []);
+
+  const evaluateOptimalChoice = useCallback(() => {
+    if (manualOverride !== null) return;
+
+    // Before TurboQuant: slow_connection threshold was 2000ms (conservative)
+    // After TurboQuant: local quality is high enough to prefer at 1000ms
+    if (!state.isOnline && state.localLLMReady) {
+      setState(prev => ({ ...prev, useLocalLLM: true, reason: 'offline' }));
+    } else if (state.isOnline && state.connectionSpeed === 'slow' && state.localLLMReady) {
+      setState(prev => ({ ...prev, useLocalLLM: true, reason: 'slow_connection' }));
+    } else if (state.isOnline && state.connectionSpeed === 'fast') {
+      setState(prev => ({ ...prev, useLocalLLM: false, reason: 'auto_fallback' }));
+    }
+  }, [manualOverride, state.isOnline, state.connectionSpeed, state.localLLMReady]);
 
   // Monitor connection status
   useEffect(() => {
@@ -86,13 +113,14 @@ export function useSmartLLMSelection(initialConfig?: LocalLLMConfig) {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
+  }, [evaluateOptimalChoice]);
 
   // Monitor local LLM readiness
   useEffect(() => {
     const checkLocalLLMStatus = () => {
       const ready = localLLMService.isAvailable();
-      setState(prev => ({ ...prev, localLLMReady: ready }));
+      const tqAvailable = localLLMService.detectTurboQuantSupport();
+      setState(prev => ({ ...prev, localLLMReady: ready, turboQuantAvailable: tqAvailable }));
       
       if (ready && !navigator.onLine) {
         setState(prev => ({ 
@@ -104,7 +132,7 @@ export function useSmartLLMSelection(initialConfig?: LocalLLMConfig) {
     };
 
     const interval = setInterval(checkLocalLLMStatus, 2000);
-    checkLocalLLMStatus(); // Initial check
+    checkLocalLLMStatus();
 
     return () => clearInterval(interval);
   }, []);
@@ -120,7 +148,10 @@ export function useSmartLLMSelection(initialConfig?: LocalLLMConfig) {
         const endTime = Date.now();
         const latency = endTime - startTime;
 
-        const speed = latency > 2000 ? 'slow' : 'fast';
+        // Before TurboQuant: threshold was 2000ms (local quality too low to prefer)
+        // After TurboQuant: threshold lowered to 1000ms (local quality now sufficient)
+        const slowThreshold = state.turboQuantAvailable ? 1000 : 2000;
+        const speed = latency > slowThreshold ? 'slow' : 'fast';
         setState(prev => ({ ...prev, connectionSpeed: speed }));
         
         if (speed === 'slow' && state.localLLMReady && manualOverride === null) {
@@ -136,23 +167,10 @@ export function useSmartLLMSelection(initialConfig?: LocalLLMConfig) {
     };
 
     measureConnectionSpeed();
-    const interval = setInterval(measureConnectionSpeed, 30000); // Check every 30s
+    const interval = setInterval(measureConnectionSpeed, 30000);
 
     return () => clearInterval(interval);
-  }, [state.isOnline, state.localLLMReady, manualOverride]);
-
-  const evaluateOptimalChoice = () => {
-    if (manualOverride !== null) return; // User has made manual choice
-
-    // Auto-switch logic
-    if (!state.isOnline && state.localLLMReady) {
-      setState(prev => ({ ...prev, useLocalLLM: true, reason: 'offline' }));
-    } else if (state.isOnline && state.connectionSpeed === 'slow' && state.localLLMReady) {
-      setState(prev => ({ ...prev, useLocalLLM: true, reason: 'slow_connection' }));
-    } else if (state.isOnline && state.connectionSpeed === 'fast') {
-      setState(prev => ({ ...prev, useLocalLLM: false, reason: 'auto_fallback' }));
-    }
-  };
+  }, [state.isOnline, state.localLLMReady, state.turboQuantAvailable, manualOverride]);
 
   const setManualMode = (useLocal: boolean) => {
     setManualOverride(useLocal);
@@ -181,6 +199,8 @@ export function useSmartLLMSelection(initialConfig?: LocalLLMConfig) {
 
   const enableBatterySavingMode = () => {
     if (state.localLLMReady) {
+      // After TurboQuant: battery saving is even more effective because
+      // 3-bit KV cache uses less memory bandwidth = less power
       setState(prev => ({ 
         ...prev, 
         useLocalLLM: true, 
@@ -191,19 +211,20 @@ export function useSmartLLMSelection(initialConfig?: LocalLLMConfig) {
   };
 
   const getStatusMessage = () => {
+    const tqSuffix = state.turboQuantAvailable ? ' (TurboQuant active)' : '';
     switch (state.reason) {
       case 'offline':
-        return 'Using offline mode - no internet connection';
+        return `Using offline mode - no internet connection${tqSuffix}`;
       case 'slow_connection':
-        return 'Using local mode - slow internet detected';
+        return `Using local mode - slow internet detected${tqSuffix}`;
       case 'privacy_mode':
-        return 'Privacy mode - data stays on your device';
+        return `Privacy mode - data stays on your device${tqSuffix}`;
       case 'battery_saving':
-        return 'Battery saving mode - reduced network usage';
+        return `Battery saving mode - reduced network usage${tqSuffix}`;
       case 'auto_fallback':
         return 'Auto-selected cloud mode for best performance';
       case 'manual':
-        return state.useLocalLLM ? 'Manual offline mode' : 'Manual cloud mode';
+        return state.useLocalLLM ? `Manual offline mode${tqSuffix}` : 'Manual cloud mode';
       default:
         return '';
     }
