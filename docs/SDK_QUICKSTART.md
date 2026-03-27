@@ -64,15 +64,21 @@ import { LeafEnginesSDK } from '@leafengines/sdk';
 const sdk = new LeafEnginesSDK({
   apiKey: 'your_api_key',        // Get at /api-keys
   enablePrivacyMode: true,       // On-device AI (GDPR-ready)
-  enableOfflineCache: true       // Works without internet
+  enableOfflineCache: true,      // Works without internet
+  turboQuant: {                  // TurboQuant KV cache optimization (Pro+)
+    enabled: true,               // Auto-detects device support
+    kvCacheMode: '3bit',         // 6x memory reduction, zero accuracy loss
+    reuseKVCache: true,          // 40-60% faster follow-up queries
+  },
 });
 
 await sdk.initialize();
 ```
 
 **What happens:**
-- Downloads Gemma 2B model (~500MB, cached after first load)
-- Detects WebGPU → falls back to CPU if unavailable
+- Downloads Gemma 2B/7B model (cached after first load)
+- Detects WebGPU → falls back to WASM + TurboQuant if unavailable
+- With TurboQuant: Gemma 7B viable on 4GB+ devices (~1.3GB KV cache)
 - Ready for offline inference in <5 seconds
 
 ---
@@ -171,7 +177,36 @@ curl -X POST "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/leafengines-
 | `401 Unauthorized` | Check `x-api-key` header |
 | `429 Too Many Requests` | Upgrade tier or wait |
 | Slow first load | Normal — model caching (~5s) |
-| No WebGPU | Falls back to CPU automatically |
+| No WebGPU | Falls back to WASM + TurboQuant automatically |
+| TurboQuant not activating | Requires Pro tier or higher |
+
+---
+
+## TurboQuant (Pro+)
+
+TurboQuant compresses KV caches from 16-bit to 3-bit with zero accuracy loss, enabling Gemma 7B on mobile devices.
+
+```typescript
+// Check device capabilities
+const caps = await sdk.turboQuant.getCapabilities({
+  device_memory_gb: 4,
+  has_webgpu: true,
+  platform: 'mobile'
+});
+// Returns: { recommended_model: "gemma-7b-tq", max_context_tokens: 16384, ... }
+
+// Pass TQ headers on API requests for optimized inference
+const result = await sdk.query({
+  plant: 'Tomato',
+  location: { county: 'Miami-Dade', state: 'FL' },
+}, {
+  headers: {
+    'x-tq-context-mode': '16384',
+    'x-tq-kv-cache-hint': 'reuse',
+    'x-tq-model-tier': 'gemma-7b-tq',
+  }
+});
+```
 
 ---
 

@@ -257,7 +257,11 @@ curl -X POST "https://.../functions/v1/leafengines-query" \
 - **Primary Accelerator:** WebGPU
 - **Fallback:** CPU (automatic if WebGPU unavailable)
 - **Cold Start:** < 5 seconds (model download + initialization)
-- **Inference Latency:** < 100ms (warm, on-device)
+### On-Device Inference (with TurboQuant)
+- **Gemma 2B (TQ):** KV cache ~0.5 GB, context up to 8K tokens
+- **Gemma 7B (TQ):** KV cache ~1.3 GB, context up to 24K tokens
+- **Inference Latency:** < 100ms (warm, WebGPU) / < 200ms (warm, WASM+TQ)
+- **KV Cache Reuse:** 40-60% compute savings on follow-up queries
 
 ### API Performance
 - **Cloud Endpoints:** < 1000-3000ms (varies by data source)
@@ -268,6 +272,81 @@ curl -X POST "https://.../functions/v1/leafengines-query" \
 - **Equipment:** ADAPT 1.0, ISO 11783
 - **Security:** SOC 2 Type I certified
 - **Privacy:** GDPR-ready architecture
+
+---
+
+## TurboQuant Integration (Pro+ Tier)
+
+TurboQuant (TQ) compresses KV caches from 16-bit to 3-bit with zero accuracy loss, fundamentally changing what's possible with on-device inference.
+
+### Key Benefits
+| Metric | Before TQ | After TQ |
+|--------|-----------|----------|
+| Gemma 7B KV cache | 8-16 GB | 1.3-2.7 GB |
+| Mobile viability | 2B only | 7B on 4GB+ devices |
+| Context window | ~5 messages | ~30 messages |
+| WASM performance | Degraded fallback | Viable high-perf tier |
+
+### Configuration
+
+```typescript
+const sdk = new LeafEnginesSDK({
+  apiKey: 'ak_your_key',
+  turboQuant: {
+    enabled: true,          // Auto-detects hardware support
+    kvCacheMode: '3bit',    // '3bit' | 'none'
+    reuseKVCache: true,     // Persist KV state across queries
+  },
+});
+```
+
+### TQ Headers for API Requests
+
+When calling LeafEngines API endpoints, pass these optional headers to signal TQ preferences:
+
+| Header | Values | Description |
+|--------|--------|-------------|
+| `x-tq-context-mode` | `4096`, `8192`, `16384`, `24576` | Extended context window size |
+| `x-tq-kv-cache-hint` | `none`, `reuse`, `persist` | KV cache management strategy |
+| `x-tq-model-tier` | `auto`, `gemma-2b`, `gemma-7b`, `gemma-7b-tq` | Preferred model |
+
+### Device Capability Endpoint
+
+```bash
+curl -X POST \
+  "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/turbo-quant-capabilities" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: ak_your_key" \
+  -d '{"device_memory_gb": 4, "has_webgpu": true, "platform": "mobile"}'
+```
+
+**Response:**
+```json
+{
+  "supported": true,
+  "recommended_model": "gemma-7b-tq",
+  "max_context_tokens": 16384,
+  "estimated_kv_cache_gb": 1.3,
+  "kv_compression_ratio": "5.3x",
+  "estimated_latency_ms": { "first_token": 180, "per_token": 12 },
+  "runtime_tier": "webgpu"
+}
+```
+
+### SDK React Component
+
+```tsx
+import { TurboQuantStatus } from '@leafengines/react-components';
+
+<TurboQuantStatus
+  active={true}
+  runtimeTier="webgpu"
+  model="gemma-7b-tq"
+  kvCacheGB={1.3}
+  maxContextTokens={16384}
+  isOnline={false}
+/>
+```
 
 ---
 
@@ -285,5 +364,5 @@ curl -X POST "https://.../functions/v1/leafengines-query" \
 
 ---
 
-*Document Version: 2.1*  
-*Accuracy Verified: February 6, 2026*
+*Document Version: 2.2*  
+*Accuracy Verified: March 27, 2026*

@@ -3,6 +3,7 @@ import { requestHandler } from '../_shared/request-handler.ts';
 import { validateInput, environmentalImpactSchema } from '../_shared/validation.ts';
 import { trackExternalAPICost } from '../_shared/cost-tracker.ts';
 import { safeExternalCall } from '../_shared/graceful-degradation.ts';
+import { parseTQHeaders, hasTQHeaders } from '../_shared/turbo-quant.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
