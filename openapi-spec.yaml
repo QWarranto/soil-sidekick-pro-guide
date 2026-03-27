@@ -863,6 +863,10 @@ paths:
         - Accounts for plant growth stage (seedling identification challenges)
       operationId: safeIdentification
       x-tier-required: starter
+      parameters:
+        - $ref: '#/components/parameters/TQContextMode'
+        - $ref: '#/components/parameters/TQKVCacheHint'
+        - $ref: '#/components/parameters/TQModelTier'
       requestBody:
         required: true
         content:
@@ -932,6 +936,10 @@ paths:
         - Provides actionable guidance, not rigid schedules
       operationId: dynamicCare
       x-tier-required: starter
+      parameters:
+        - $ref: '#/components/parameters/TQContextMode'
+        - $ref: '#/components/parameters/TQKVCacheHint'
+        - $ref: '#/components/parameters/TQModelTier'
       requestBody:
         required: true
         content:
@@ -1015,6 +1023,10 @@ paths:
         - Offers practical "what do I do right now" guidance
       operationId: beginnerGuidance
       x-tier-required: starter
+      parameters:
+        - $ref: '#/components/parameters/TQContextMode'
+        - $ref: '#/components/parameters/TQKVCacheHint'
+        - $ref: '#/components/parameters/TQModelTier'
       requestBody:
         required: true
         content:
@@ -1071,6 +1083,10 @@ paths:
       description: AI-powered visual crop analysis for pest detection, health assessment, and disease screening
       operationId: visualCropAnalysis
       x-tier-required: enterprise
+      parameters:
+        - $ref: '#/components/parameters/TQContextMode'
+        - $ref: '#/components/parameters/TQKVCacheHint'
+        - $ref: '#/components/parameters/TQModelTier'
       requestBody:
         required: true
         content:
