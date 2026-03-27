@@ -11,6 +11,7 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { trackOpenAICost } from '../_shared/cost-tracker.ts';
 import { logSafe, logError } from '../_shared/logging-utils.ts';
 import { withFallback } from '../_shared/graceful-degradation.ts';
+import { parseTQHeaders, hasTQHeaders } from '../_shared/turbo-quant.ts';
 
 // Validation schema for safe identification
 const safeIdentificationSchema = z.object({

@@ -5,6 +5,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { requestHandler } from '../_shared/request-handler.ts';
 import { seasonalPlanningSchema } from '../_shared/validation.ts';
+import { parseTQHeaders, hasTQHeaders } from '../_shared/turbo-quant.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 type SeasonalPlanningRequest = z.infer<typeof seasonalPlanningSchema>;
@@ -17,7 +18,7 @@ requestHandler<SeasonalPlanningRequest>({
     requests: 50,  // 50 plans per hour
     windowMs: 60 * 60 * 1000,
   },
-  handler: async ({ supabaseClient, user, validatedData, startTime }) => {
+  handler: async ({ supabaseClient, user, validatedData, startTime, req }) => {
     const { location, soilData, planningType, cropPreferences, timeframe } = validatedData;
 
     // Try GPT-5 first, fall back to GPT-4o

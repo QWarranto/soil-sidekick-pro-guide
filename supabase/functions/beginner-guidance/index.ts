@@ -10,6 +10,7 @@ import { requestHandler } from '../_shared/request-handler.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { trackOpenAICost } from '../_shared/cost-tracker.ts';
 import { logSafe, logError } from '../_shared/logging-utils.ts';
+import { parseTQHeaders, hasTQHeaders } from '../_shared/turbo-quant.ts';
 
 // Validation schema
 const beginnerGuidanceSchema = z.object({

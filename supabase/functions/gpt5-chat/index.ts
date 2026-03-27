@@ -5,6 +5,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { requestHandler } from '../_shared/request-handler.ts';
 import { gpt5ChatSchema } from '../_shared/validation.ts';
+import { parseTQHeaders, hasTQHeaders } from '../_shared/turbo-quant.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 type ChatRequest = z.infer<typeof gpt5ChatSchema>;
@@ -17,7 +18,7 @@ requestHandler<ChatRequest>({
     requests: 500,  // Professional tier: 500/hour
     windowMs: 60 * 60 * 1000,
   },
-  handler: async ({ supabaseClient, user, validatedData, startTime }) => {
+  handler: async ({ supabaseClient, user, validatedData, startTime, req }) => {
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
@@ -145,10 +146,22 @@ requestHandler<ChatRequest>({
       cost_usd: costUsd.toFixed(6),
     });
 
+    // Include TurboQuant metadata if client sent TQ headers
+    const tqParams = parseTQHeaders(req);
+    const tqActive = hasTQHeaders(req);
+
     return {
       ...data,
       model_used: modelUsed,
       note: fallbackNote,
+      ...(tqActive && {
+        turbo_quant: {
+          active: true,
+          context_mode: tqParams.contextMode,
+          kv_cache_hint: tqParams.kvCacheHint,
+          model_tier: tqParams.modelTier,
+        },
+      }),
     };
   },
 });

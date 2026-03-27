@@ -3,6 +3,7 @@ import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { authenticateApiKey, logSecurityEvent, createSecureResponse } from "../_shared/security-utils.ts";
 import { withTimingHeaders, logResponseTime } from "../_shared/response-timing.ts";
+import { parseTQHeaders, hasTQHeaders } from '../_shared/turbo-quant.ts';
 
 // FIPS code validation
 const fipsCodeSchema = z.string().regex(/^\d{5}$/, "FIPS code must be exactly 5 digits");

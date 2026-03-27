@@ -5,6 +5,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { requestHandler } from '../_shared/request-handler.ts';
 import { reportSummarySchema } from '../_shared/validation.ts';
+import { parseTQHeaders, hasTQHeaders } from '../_shared/turbo-quant.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 type ReportSummaryRequest = z.infer<typeof reportSummarySchema>;
@@ -82,7 +83,7 @@ requestHandler<ReportSummaryRequest>({
     requests: 100,  // 100 summaries per hour
     windowMs: 60 * 60 * 1000,
   },
-  handler: async ({ supabaseClient, user, validatedData, startTime }) => {
+  handler: async ({ supabaseClient, user, validatedData, startTime, req }) => {
     const { reportType, reportData } = validatedData;
 
     // Demo mock mode — returns realistic pre-canned summaries
@@ -118,9 +119,20 @@ requestHandler<ReportSummaryRequest>({
       },
     });
 
+    const tqParams = parseTQHeaders(req);
+    const tqActive = hasTQHeaders(req);
+
     return { 
       summary,
-      modelUsed: summary.modelUsed 
+      modelUsed: summary.modelUsed,
+      ...(tqActive && {
+        turbo_quant: {
+          active: true,
+          context_mode: tqParams.contextMode,
+          kv_cache_hint: tqParams.kvCacheHint,
+          model_tier: tqParams.modelTier,
+        },
+      }),
     };
   },
 });
