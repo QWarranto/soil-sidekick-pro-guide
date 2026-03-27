@@ -47,7 +47,9 @@ const AgriculturalChat: React.FC<AgriculturalChatProps> = ({ context }) => {
   const [localLLMConfig, setLocalLLMConfig] = useState<LocalLLMConfig>({
     model: 'gemma-2b',
     maxTokens: 256,
-    temperature: 0.7
+    temperature: 0.7,
+    kvCacheMode: 'none',
+    reuseKVCache: false
   });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -119,13 +121,17 @@ const AgriculturalChat: React.FC<AgriculturalChatProps> = ({ context }) => {
       let assistantMessage: Message;
 
       if (useLocalLLM) {
-        // Use local LLM (no retry needed - runs locally)
+        // Determine context window based on model and TurboQuant status
+        // Before TurboQuant: 5 messages (hard limit to avoid OOM)
+        // After TurboQuant: 20-30 messages (4-6x context expansion)
+        const maxContextMessages = localLLMService.getRecommendedContextMessages(localLLMConfig.model);
+
         const conversationHistory: ChatMessage[] = [
           {
             role: 'system',
             content: 'You are an agricultural AI assistant specializing in soil analysis, environmental assessments, planting recommendations, and farming advice. Provide helpful, accurate information about agricultural operations. Keep responses concise and practical.'
           },
-          ...messages.slice(-5).map(msg => ({
+          ...messages.slice(-maxContextMessages).map(msg => ({
             role: msg.type === 'user' ? 'user' as const : 'assistant' as const,
             content: msg.content
           })),
@@ -140,13 +146,16 @@ const AgriculturalChat: React.FC<AgriculturalChatProps> = ({ context }) => {
           localLLMConfig
         );
 
+        const status = localLLMService.getStatus();
+        const modelLabel = `${localLLMConfig.model}-local${status.turboQuantActive ? '-tq' : ''}`;
+
         assistantMessage = {
           id: (Date.now() + 1).toString(),
           type: 'assistant',
           content: response,
           timestamp: new Date(),
           enhanced: false,
-          model: `${localLLMConfig.model}-local`
+          model: modelLabel
         };
       } else {
         // Inject location into query so intent analysis always has context
@@ -296,7 +305,9 @@ const AgriculturalChat: React.FC<AgriculturalChatProps> = ({ context }) => {
         
         {useLocalLLM && (
           <p className="text-xs text-muted-foreground">
-            Running offline with local {localLLMConfig.model} model for private agricultural consultations
+            Running offline with local {localLLMConfig.model} model
+            {localLLMConfig.kvCacheMode === '3bit' && ' • TurboQuant 3-bit KV cache active'}
+            {' • '}{localLLMService.getRecommendedContextMessages(localLLMConfig.model)}-message context window
           </p>
         )}
       </CardHeader>
