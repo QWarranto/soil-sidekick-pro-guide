@@ -103,12 +103,23 @@ Deno.serve(async (req) => {
     const duration = Date.now() - startTime;
     console.log(`[Visual Analysis] Completed in ${duration}ms`);
 
+    const tqParams = parseTQHeaders(req);
+    const tqActive = hasTQHeaders(req);
+
     return new Response(
       JSON.stringify({
         success: true,
         analysis: analysisResult,
         analysis_id: stored_analysis?.id,
         timestamp: new Date().toISOString(),
+        ...(tqActive && {
+          turbo_quant: {
+            active: true,
+            context_mode: tqParams.contextMode,
+            kv_cache_hint: tqParams.kvCacheHint,
+            model_tier: tqParams.modelTier,
+          },
+        }),
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

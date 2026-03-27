@@ -264,6 +264,9 @@ Deno.serve(async (req) => {
 
     logResponseTime('leafengines-query', startTime, true);
 
+    const tqParams = parseTQHeaders(req);
+    const tqActive = hasTQHeaders(req);
+
     return new Response(
       JSON.stringify({
         success: true,
@@ -271,7 +274,15 @@ Deno.serve(async (req) => {
         usage: {
           credits_used: 1,
           response_time_ms: Date.now() - startTime
-        }
+        },
+        ...(tqActive && {
+          turbo_quant: {
+            active: true,
+            context_mode: tqParams.contextMode,
+            kv_cache_hint: tqParams.kvCacheHint,
+            model_tier: tqParams.modelTier,
+          },
+        }),
       }),
       {
         status: 200,

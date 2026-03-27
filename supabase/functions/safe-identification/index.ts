@@ -100,7 +100,7 @@ requestHandler({
     requests: 50,
     windowMs: 60 * 60 * 1000, // 1 hour
   },
-  handler: async ({ supabaseClient, user, validatedData }) => {
+  handler: async ({ supabaseClient, user, validatedData, req }) => {
     const { image, location, use_case, growth_stage_hint, additional_context } = validatedData;
     const startTime = Date.now();
 
@@ -170,6 +170,9 @@ requestHandler({
       toxic_alert: toxicLookalikeAlert.triggered,
     });
 
+    const tqParams = parseTQHeaders(req);
+    const tqActive = hasTQHeaders(req);
+
     return {
       primary_identification: identificationResult.primary_identification,
       toxic_lookalike_alert: toxicLookalikeAlert,
@@ -187,6 +190,14 @@ requestHandler({
         model_version: 'safe-id-v2.0',
         environmental_data_freshness: environmentalContext.freshness,
       },
+      ...(tqActive && {
+        turbo_quant: {
+          active: true,
+          context_mode: tqParams.contextMode,
+          kv_cache_hint: tqParams.kvCacheHint,
+          model_tier: tqParams.modelTier,
+        },
+      }),
     };
   },
 });

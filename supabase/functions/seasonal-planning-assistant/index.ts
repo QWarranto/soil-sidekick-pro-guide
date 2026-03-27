@@ -61,10 +61,21 @@ requestHandler<SeasonalPlanningRequest>({
       },
     });
 
+    const tqParams = parseTQHeaders(req);
+    const tqActive = hasTQHeaders(req);
+
     return { 
       recommendations,
       weatherData: weatherData.summary,
-      modelUsed
+      modelUsed,
+      ...(tqActive && {
+        turbo_quant: {
+          active: true,
+          context_mode: tqParams.contextMode,
+          kv_cache_hint: tqParams.kvCacheHint,
+          model_tier: tqParams.modelTier,
+        },
+      }),
     };
   },
 });
