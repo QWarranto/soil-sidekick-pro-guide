@@ -53,6 +53,7 @@ export const SDK_TIER_LIMITS: Record<SDKTier, TierLimits> = {
       'satellite_data',
       'ai_recommendations',
       'vrt_maps',
+      'turbo_quant',
     ],
   },
   enterprise: {

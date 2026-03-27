@@ -4,10 +4,11 @@ import { trackOpenAICost, trackExternalAPICost } from '../_shared/cost-tracker.t
 import { logComplianceAudit, logExternalAPICall } from '../_shared/compliance-logger.ts';
 import { withFallback, safeExternalCall } from '../_shared/graceful-degradation.ts';
 import { withTimingHeaders, logResponseTime } from '../_shared/response-timing.ts';
+import { parseTQHeaders, hasTQHeaders } from '../_shared/turbo-quant.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version, x-tq-context-mode, x-tq-kv-cache-hint, x-tq-model-tier',
 };
 
 // ─── DEMO MOCK MODE ──────────────────────────────────────────────────────────
@@ -252,12 +253,23 @@ Deno.serve(async (req) => {
 
     logResponseTime('agricultural-intelligence', startTime, true);
 
+    // Parse TurboQuant headers for response metadata
+    const tqParams = parseTQHeaders(req);
+    const tqActive = hasTQHeaders(req);
+
     return new Response(JSON.stringify({
       success: true,
       response: response.content,
       intent: intentAnalysis.intent,
       confidence: intentAnalysis.confidence,
-      data_sources: analyticsData.sources
+      data_sources: analyticsData.sources,
+      ...(tqActive && {
+        turbo_quant: {
+          context_mode: tqParams.contextMode,
+          kv_cache_hint: tqParams.kvCacheHint,
+          model_tier: tqParams.modelTier,
+        },
+      }),
     }), {
       headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, 'agricultural-intelligence'),
     });
