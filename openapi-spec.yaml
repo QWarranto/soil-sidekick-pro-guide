@@ -336,6 +336,10 @@ paths:
       description: Multi-parameter planting calendar with climate and soil factors
       operationId: getPlantingCalendar
       x-tier-required: starter
+      parameters:
+        - $ref: '#/components/parameters/TQContextMode'
+        - $ref: '#/components/parameters/TQKVCacheHint'
+        - $ref: '#/components/parameters/TQModelTier'
       requestBody:
         required: true
         content:
@@ -422,6 +426,10 @@ paths:
       description: Assess environmental impact including runoff risk, contamination, and eco-friendly alternatives
       operationId: calculateEnvironmentalImpact
       x-tier-required: starter
+      parameters:
+        - $ref: '#/components/parameters/TQContextMode'
+        - $ref: '#/components/parameters/TQKVCacheHint'
+        - $ref: '#/components/parameters/TQModelTier'
       requestBody:
         required: true
         content:
@@ -533,6 +541,10 @@ paths:
       description: Agricultural intelligence with AI recommendations
       operationId: getAgriculturalIntelligence
       x-tier-required: pro
+      parameters:
+        - $ref: '#/components/parameters/TQContextMode'
+        - $ref: '#/components/parameters/TQKVCacheHint'
+        - $ref: '#/components/parameters/TQModelTier'
       requestBody:
         required: true
         content:
@@ -571,6 +583,10 @@ paths:
       description: AI-powered seasonal planning with weather integration
       operationId: getSeasonalPlanningAssistant
       x-tier-required: pro
+      parameters:
+        - $ref: '#/components/parameters/TQContextMode'
+        - $ref: '#/components/parameters/TQKVCacheHint'
+        - $ref: '#/components/parameters/TQModelTier'
       requestBody:
         required: true
         content:
@@ -625,6 +641,10 @@ paths:
       description: Generate AI-powered summaries for soil or water quality reports
       operationId: generateSmartReportSummary
       x-tier-required: pro
+      parameters:
+        - $ref: '#/components/parameters/TQContextMode'
+        - $ref: '#/components/parameters/TQKVCacheHint'
+        - $ref: '#/components/parameters/TQModelTier'
       requestBody:
         required: true
         content:
@@ -755,6 +775,10 @@ paths:
       x-tier-required: pro
       security:
         - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TQContextMode'
+        - $ref: '#/components/parameters/TQKVCacheHint'
+        - $ref: '#/components/parameters/TQModelTier'
       requestBody:
         required: true
         content:
