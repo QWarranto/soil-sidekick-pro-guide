@@ -5,10 +5,11 @@ import { validateInput } from '../_shared/validation.ts';
 import { trackOpenAICost } from '../_shared/cost-tracker.ts';
 import { logComplianceAudit, logExternalAPICall } from '../_shared/compliance-logger.ts';
 import { safeExternalCall } from '../_shared/graceful-degradation.ts';
+import { parseTQHeaders, hasTQHeaders } from '../_shared/turbo-quant.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-tq-context-mode, x-tq-kv-cache-hint, x-tq-model-tier',
 };
 
 const analysisSchema = z.object({
@@ -102,12 +103,23 @@ Deno.serve(async (req) => {
     const duration = Date.now() - startTime;
     console.log(`[Visual Analysis] Completed in ${duration}ms`);
 
+    const tqParams = parseTQHeaders(req);
+    const tqActive = hasTQHeaders(req);
+
     return new Response(
       JSON.stringify({
         success: true,
         analysis: analysisResult,
         analysis_id: stored_analysis?.id,
         timestamp: new Date().toISOString(),
+        ...(tqActive && {
+          turbo_quant: {
+            active: true,
+            context_mode: tqParams.contextMode,
+            kv_cache_hint: tqParams.kvCacheHint,
+            model_tier: tqParams.modelTier,
+          },
+        }),
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

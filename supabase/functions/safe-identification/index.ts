@@ -11,6 +11,7 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { trackOpenAICost } from '../_shared/cost-tracker.ts';
 import { logSafe, logError } from '../_shared/logging-utils.ts';
 import { withFallback } from '../_shared/graceful-degradation.ts';
+import { parseTQHeaders, hasTQHeaders } from '../_shared/turbo-quant.ts';
 
 // Validation schema for safe identification
 const safeIdentificationSchema = z.object({
@@ -99,7 +100,7 @@ requestHandler({
     requests: 50,
     windowMs: 60 * 60 * 1000, // 1 hour
   },
-  handler: async ({ supabaseClient, user, validatedData }) => {
+  handler: async ({ supabaseClient, user, validatedData, req }) => {
     const { image, location, use_case, growth_stage_hint, additional_context } = validatedData;
     const startTime = Date.now();
 
@@ -169,6 +170,9 @@ requestHandler({
       toxic_alert: toxicLookalikeAlert.triggered,
     });
 
+    const tqParams = parseTQHeaders(req);
+    const tqActive = hasTQHeaders(req);
+
     return {
       primary_identification: identificationResult.primary_identification,
       toxic_lookalike_alert: toxicLookalikeAlert,
@@ -186,6 +190,14 @@ requestHandler({
         model_version: 'safe-id-v2.0',
         environmental_data_freshness: environmentalContext.freshness,
       },
+      ...(tqActive && {
+        turbo_quant: {
+          active: true,
+          context_mode: tqParams.contextMode,
+          kv_cache_hint: tqParams.kvCacheHint,
+          model_tier: tqParams.modelTier,
+        },
+      }),
     };
   },
 });

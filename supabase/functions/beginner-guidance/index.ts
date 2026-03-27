@@ -10,6 +10,7 @@ import { requestHandler } from '../_shared/request-handler.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { trackOpenAICost } from '../_shared/cost-tracker.ts';
 import { logSafe, logError } from '../_shared/logging-utils.ts';
+import { parseTQHeaders, hasTQHeaders } from '../_shared/turbo-quant.ts';
 
 // Validation schema
 const beginnerGuidanceSchema = z.object({
@@ -73,7 +74,7 @@ requestHandler({
     requests: 100,
     windowMs: 60 * 60 * 1000, // 1 hour
   },
-  handler: async ({ supabaseClient, user, validatedData }) => {
+  handler: async ({ supabaseClient, user, validatedData, req }) => {
     const { 
       plant_identification, location, user_expertise, 
       intent, question, conversation_history 
@@ -125,6 +126,9 @@ requestHandler({
 
     logSafe('Beginner guidance complete', { duration_ms: Date.now() - startTime });
 
+    const tqParams = parseTQHeaders(req);
+    const tqActive = hasTQHeaders(req);
+
     return {
       friendly_name: transformedResponse.friendly_name,
       one_sentence_summary: transformedResponse.one_sentence_summary,
@@ -140,6 +144,14 @@ requestHandler({
       follow_up_prompts: followUpPrompts,
       encouragement,
       tone_metadata: toneMetadata,
+      ...(tqActive && {
+        turbo_quant: {
+          active: true,
+          context_mode: tqParams.contextMode,
+          kv_cache_hint: tqParams.kvCacheHint,
+          model_tier: tqParams.modelTier,
+        },
+      }),
     };
   },
 });

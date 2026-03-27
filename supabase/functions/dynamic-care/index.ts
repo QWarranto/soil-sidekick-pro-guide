@@ -11,6 +11,7 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { trackExternalAPICost } from '../_shared/cost-tracker.ts';
 import { logSafe, logError } from '../_shared/logging-utils.ts';
 import { withFallback } from '../_shared/graceful-degradation.ts';
+import { parseTQHeaders, hasTQHeaders } from '../_shared/turbo-quant.ts';
 
 // Validation schema
 const dynamicCareSchema = z.object({
@@ -85,7 +86,7 @@ requestHandler({
     requests: 100,
     windowMs: 60 * 60 * 1000, // 1 hour
   },
-  handler: async ({ supabaseClient, user, validatedData }) => {
+  handler: async ({ supabaseClient, user, validatedData, req }) => {
     const { 
       plant_species, location, environment, container_details, 
       soil_type, last_watered, last_fertilized, problems_observed 
@@ -146,6 +147,9 @@ requestHandler({
 
     logSafe('Dynamic care generation complete', { duration_ms: Date.now() - startTime });
 
+    const tqParams = parseTQHeaders(req);
+    const tqActive = hasTQHeaders(req);
+
     return {
       plant_name: plantProfile.common_name,
       scientific_name: plant_species,
@@ -162,6 +166,14 @@ requestHandler({
         soil_data_source: soilData.source,
         processing_time_ms: Date.now() - startTime,
       },
+      ...(tqActive && {
+        turbo_quant: {
+          active: true,
+          context_mode: tqParams.contextMode,
+          kv_cache_hint: tqParams.kvCacheHint,
+          model_tier: tqParams.modelTier,
+        },
+      }),
     };
   },
 });
