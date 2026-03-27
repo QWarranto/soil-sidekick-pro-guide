@@ -15,7 +15,9 @@
     "plant identification", "toxic plants", "foraging safety",
     "planting calendar", "phenology", "frost date", "growing degree days",
     "cover cropping", "no-till", "agroforestry", "regenerative agriculture",
-    "MCP", "Model Context Protocol", "AI agent", "tool calling"
+    "MCP", "Model Context Protocol", "AI agent", "tool calling",
+    "TurboQuant", "KV cache", "3-bit quantization", "offline AI", "edge inference",
+    "context window", "memory optimization"
   ],
   "categories": [
     "agriculture",
