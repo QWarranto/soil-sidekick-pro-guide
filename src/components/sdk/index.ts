@@ -27,3 +27,6 @@ export type { SeasonalCalendarProps, PlantingWindow } from './SeasonalCalendar';
 
 export { SatelliteHealth } from './SatelliteHealth';
 export type { SatelliteHealthProps } from './SatelliteHealth';
+
+export { TurboQuantStatus } from './TurboQuantStatus';
+export type { TurboQuantStatusProps } from './TurboQuantStatus';

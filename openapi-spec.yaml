@@ -86,8 +86,57 @@ tags:
     description: LeafEngines plant compatibility API
   - name: Consumer Plant Care
     description: Consumer-focused plant identification, care, and guidance APIs designed to solve common pain points in plant ID apps
+  - name: TurboQuant
+    description: TurboQuant KV cache optimization and device capability endpoints
 
 paths:
+  /turbo-quant-capabilities:
+    post:
+      tags:
+        - TurboQuant
+      summary: Query TurboQuant device capabilities
+      description: |
+        Returns hardware-specific model recommendations and estimated performance
+        based on detected device capabilities. Use this to determine the optimal
+        local inference configuration for the end-user's device.
+        
+        **Tier requirement:** Pro or Enterprise
+      operationId: turboQuantCapabilities
+      x-tier-required: pro
+      parameters:
+        - $ref: '#/components/parameters/TQContextMode'
+        - $ref: '#/components/parameters/TQKVCacheHint'
+        - $ref: '#/components/parameters/TQModelTier'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                device_memory_gb:
+                  type: number
+                  description: Device RAM in GB
+                  example: 4
+                has_webgpu:
+                  type: boolean
+                  description: Whether WebGPU is available
+                  example: true
+                platform:
+                  type: string
+                  enum: [mobile, tablet, desktop, server]
+                  example: mobile
+      responses:
+        '200':
+          description: TurboQuant capability assessment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TurboQuantCapabilities'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
   /get-soil-data:
     post:
       tags:
@@ -1802,3 +1851,83 @@ components:
             error: "Internal server error"
             message: "An unexpected error occurred"
             code: "INTERNAL_ERROR"
+
+  parameters:
+    TQContextMode:
+      name: x-tq-context-mode
+      in: header
+      required: false
+      schema:
+        type: integer
+        enum: [4096, 8192, 16384, 24576]
+        default: 4096
+      description: |
+        TurboQuant extended context window size (tokens).
+        With 3-bit KV cache, context windows up to 24K tokens are feasible
+        within the same memory budget as standard 4K.
+
+    TQKVCacheHint:
+      name: x-tq-kv-cache-hint
+      in: header
+      required: false
+      schema:
+        type: string
+        enum: [none, reuse, persist]
+        default: none
+      description: |
+        KV cache management hint.
+        - `none`: No caching (default)
+        - `reuse`: Reuse KV cache from previous request in same session (40-60% compute savings)
+        - `persist`: Persist cache to disk for cross-session reuse
+
+    TQModelTier:
+      name: x-tq-model-tier
+      in: header
+      required: false
+      schema:
+        type: string
+        enum: [auto, gemma-2b, gemma-7b, gemma-7b-tq]
+        default: auto
+      description: |
+        Preferred model tier for inference.
+        - `auto`: Server selects optimal model based on device capabilities
+        - `gemma-2b`: Lightweight model (~0.5GB KV with TQ)
+        - `gemma-7b`: Full model, standard KV cache
+        - `gemma-7b-tq`: Full model with TurboQuant 3-bit KV cache (~1.3GB)
+
+  schemas:
+    TurboQuantCapabilities:
+      type: object
+      properties:
+        supported:
+          type: boolean
+          description: Whether TurboQuant is supported on this device
+        recommended_model:
+          type: string
+          enum: [gemma-2b, gemma-7b, gemma-7b-tq]
+          description: Recommended model for the device
+        max_context_tokens:
+          type: integer
+          description: Maximum context window feasible on this device
+          example: 24576
+        estimated_kv_cache_gb:
+          type: number
+          description: Estimated KV cache size in GB
+          example: 1.3
+        kv_compression_ratio:
+          type: string
+          description: Compression ratio vs 16-bit baseline
+          example: "5.3x"
+        estimated_latency_ms:
+          type: object
+          properties:
+            first_token:
+              type: integer
+              example: 180
+            per_token:
+              type: integer
+              example: 12
+        runtime_tier:
+          type: string
+          enum: [webgpu, wasm_tq, wasm_standard, cloud_fallback]
+          description: Detected or recommended runtime
