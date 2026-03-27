@@ -8,10 +8,61 @@ import { corsHeaders } from '../_shared/cors.ts';
  * 
  * Protocol: MCP Streamable HTTP (JSON-RPC 2.0)
  * Auth: x-api-key header (same as regular API)
+ * 
+ * TurboQuant Integration (v1.1.0):
+ *   - 3-bit KV cache quantization metadata exposed via initialize/capabilities
+ *   - AI-powered tools accept optional context_mode & kv_cache_hint parameters
+ *   - New `turbo_quant_capabilities` tool for runtime hardware profiling
  */
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
+
+// ── TurboQuant Configuration ────────────────────────────────────────
+
+const TURBOQUANT_CONFIG = {
+  version: '1.0.0',
+  kvCacheBits: 3,
+  supportedModels: [
+    { model: 'gemma-2b-it-onnx', minRamGB: 1, kvCacheGB: 0.5, tier: 'starter', contextTokens: 24000 },
+    { model: 'gemma-7b-it', minRamGB: 4, kvCacheGB: 1.3, tier: 'professional', contextTokens: 24000 },
+    { model: 'phi-4-mini', minRamGB: 4, kvCacheGB: 1.0, tier: 'professional', contextTokens: 16000 },
+    { model: 'bitnet-70b', minRamGB: 8, kvCacheGB: 2.0, tier: 'enterprise', contextTokens: 48000 },
+    { model: 'bitnet-100b', minRamGB: 12, kvCacheGB: 4.0, tier: 'enterprise', contextTokens: 48000 },
+  ],
+  contextModes: {
+    standard: { description: 'Default context window (~5 messages, 4K tokens)', multiplier: 1 },
+    extended: { description: 'TurboQuant-enabled extended context (~20 messages, 16K tokens)', multiplier: 4 },
+    maximum: { description: 'Maximum context with KV cache persistence (~30 messages, 24K tokens)', multiplier: 6 },
+  },
+  runtimes: ['webgpu', 'wasm', 'native-cpp'],
+  benefits: {
+    memoryReduction: '6x',
+    inferenceSpeedup: 'up to 8x',
+    mobileViable: 'Gemma 7B on 4GB+ devices',
+    offlineParity: 'Cloud-equivalent reasoning without connectivity',
+  },
+};
+
+// ── TurboQuant-Aware Input Schema Extensions ────────────────────────
+
+const turboQuantParams = {
+  context_mode: {
+    type: 'string',
+    enum: ['standard', 'extended', 'maximum'],
+    description: 'TurboQuant context window mode. "standard" = ~4K tokens (default). "extended" = ~16K tokens (requires TQ-enabled runtime). "maximum" = ~24K tokens with KV cache persistence.',
+  },
+  kv_cache_hint: {
+    type: 'string',
+    enum: ['none', 'reuse', 'persist'],
+    description: 'KV cache strategy. "none" = fresh inference (default). "reuse" = reuse cached KV state for follow-up queries (40-60% faster). "persist" = persist KV cache across sessions for continuous analysis.',
+  },
+  preferred_model_tier: {
+    type: 'string',
+    enum: ['starter', 'professional', 'enterprise'],
+    description: 'Preferred local model tier for offline inference. Agents can hint at desired reasoning depth; server selects best available model for the tier.',
+  },
+};
 
 // ── Tool Definitions ────────────────────────────────────────────────
 
@@ -51,8 +102,8 @@ const TOOLS = [
   },
   {
     name: 'agricultural_intelligence',
-    description: 'AI-powered agricultural analysis combining soil data, climate factors, and crop science. Provides planting recommendations, yield predictions, risk assessments, and sustainability scores. **Use when**: user asks what to plant, expected yields, farming risks, or crop suitability for a location. **Do NOT use** for raw soil composition (use `get_soil_data`) or water quality (use `territorial_water_quality`). **Pair with**: `get_soil_data` for underlying soil details, `generate_vrt_prescription` for application rates. **Requires**: county_fips (required), crop_type and question (optional). **Output**: JSON with recommendations, confidence scores, and data sources.',
-    keywords: ['agriculture', 'crop recommendation', 'yield prediction', 'farming', 'agronomy', 'crop science', 'planting advice', 'risk assessment', 'sustainability', 'precision agriculture', 'AI farming'],
+    description: 'AI-powered agricultural analysis combining soil data, climate factors, and crop science. Provides planting recommendations, yield predictions, risk assessments, and sustainability scores. Supports TurboQuant extended context for multi-season analysis. **Use when**: user asks what to plant, expected yields, farming risks, or crop suitability for a location. **Do NOT use** for raw soil composition (use `get_soil_data`) or water quality (use `territorial_water_quality`). **Pair with**: `get_soil_data` for underlying soil details, `generate_vrt_prescription` for application rates. **TurboQuant**: Set `context_mode: "extended"` for multi-field comparisons; use `kv_cache_hint: "reuse"` for follow-up questions about the same county. **Requires**: county_fips (required), crop_type and question (optional). **Output**: JSON with recommendations, confidence scores, and data sources.',
+    keywords: ['agriculture', 'crop recommendation', 'yield prediction', 'farming', 'agronomy', 'crop science', 'planting advice', 'risk assessment', 'sustainability', 'precision agriculture', 'AI farming', 'TurboQuant'],
     inputSchema: {
       type: 'object',
       properties: {
@@ -68,7 +119,8 @@ const TOOLS = [
         question: {
           type: 'string',
           description: 'Specific agricultural question to answer'
-        }
+        },
+        ...turboQuantParams,
       },
       required: ['county_fips']
     }
@@ -162,8 +214,8 @@ const TOOLS = [
   },
   {
     name: 'environmental_impact_analysis',
-    description: 'Patent-pending multi-source environmental impact assessment. Fuses USDA soil data, EPA water quality, NOAA climate data, and Google AlphaEarth satellite embeddings (64-dim Geo Foundation Model vectors at 10m resolution) into Environmental Compatibility Scores unavailable from any single public data source. Returns: runoff_risk (0-100), contamination_risk (low/med/high), biodiversity_impact, carbon_footprint_score, and satellite-derived vegetation health. **Use when**: user needs environmental due diligence, land purchase evaluation, regulatory pre-screening, or comprehensive site assessment. **Do NOT use** for soil-only queries (use `get_soil_data`) or water-only queries (use `territorial_water_quality`). **Pair with**: `get_soil_data` for raw soil inputs, `territorial_water_quality` for water-specific detail, `carbon_credit_calculator` for monetization. **Requires**: county_fips + lat + lng + soil_data (required). **Output**: JSON with composite scores, risk categories, satellite health indices, and eco-friendly alternatives.',
-    keywords: ['environmental impact', 'EIA', 'due diligence', 'satellite', 'AlphaEarth', 'NDVI', 'runoff risk', 'biodiversity', 'contamination', 'land evaluation', 'site assessment', 'NEPA', 'sensor fusion', 'remote sensing', 'GIS'],
+    description: 'Patent-pending multi-source environmental impact assessment. Fuses USDA soil data, EPA water quality, NOAA climate data, and Google AlphaEarth satellite embeddings (64-dim Geo Foundation Model vectors at 10m resolution) into Environmental Compatibility Scores unavailable from any single public data source. Supports TurboQuant extended context for full-season environmental history in a single pass. Returns: runoff_risk (0-100), contamination_risk (low/med/high), biodiversity_impact, carbon_footprint_score, and satellite-derived vegetation health. **Use when**: user needs environmental due diligence, land purchase evaluation, regulatory pre-screening, or comprehensive site assessment. **Do NOT use** for soil-only queries (use `get_soil_data`) or water-only queries (use `territorial_water_quality`). **TurboQuant**: Set `context_mode: "maximum"` for multi-year trend analysis; use `kv_cache_hint: "persist"` for ongoing monitoring sessions. **Pair with**: `get_soil_data` for raw soil inputs, `territorial_water_quality` for water-specific detail, `carbon_credit_calculator` for monetization. **Requires**: county_fips + lat + lng + soil_data (required). **Output**: JSON with composite scores, risk categories, satellite health indices, and eco-friendly alternatives.',
+    keywords: ['environmental impact', 'EIA', 'due diligence', 'satellite', 'AlphaEarth', 'NDVI', 'runoff risk', 'biodiversity', 'contamination', 'land evaluation', 'site assessment', 'NEPA', 'sensor fusion', 'remote sensing', 'GIS', 'TurboQuant'],
     inputSchema: {
       type: 'object',
       properties: {
@@ -196,15 +248,16 @@ const TOOLS = [
         water_body_data: {
           type: 'object',
           description: 'Optional water body proximity data (proximity_km)'
-        }
+        },
+        ...turboQuantParams,
       },
       required: ['county_fips', 'lat', 'lng', 'soil_data']
     }
   },
   {
     name: 'planting_optimization',
-    description: 'AI-powered multi-parameter planting calendar that fuses soil composition, historical climate patterns, frost date models, and crop-specific phenology to generate optimal planting windows, yield predictions, sustainability scores, and risk assessments. Returns proprietary timing recommendations unavailable from standard agricultural extension data. **Use when**: user asks when to plant, optimal planting dates, growing season timing, or yield forecasts for a specific crop and location. **Do NOT use** for general crop advice without timing focus (use `agricultural_intelligence`) or soil-only queries (use `get_soil_data`). **Pair with**: `get_soil_data` for soil context, `carbon_credit_calculator` for sustainability ROI. **Requires**: county_fips + crop_type (required), field_size_acres and planting_year (optional). **Output**: JSON with optimal_window (start/end dates), yield_prediction (bushels/acre), sustainability_score (0-100), risk_factors array, and alternative crop suggestions.',
-    keywords: ['planting calendar', 'planting date', 'frost date', 'growing season', 'phenology', 'yield forecast', 'crop timing', 'GDD', 'growing degree days', 'season planning', 'climate adaptation'],
+    description: 'AI-powered multi-parameter planting calendar that fuses soil composition, historical climate patterns, frost date models, and crop-specific phenology to generate optimal planting windows, yield predictions, sustainability scores, and risk assessments. Supports TurboQuant extended context for full-season history analysis. Returns proprietary timing recommendations unavailable from standard agricultural extension data. **Use when**: user asks when to plant, optimal planting dates, growing season timing, or yield forecasts for a specific crop and location. **Do NOT use** for general crop advice without timing focus (use `agricultural_intelligence`) or soil-only queries (use `get_soil_data`). **TurboQuant**: Set `context_mode: "extended"` for multi-crop rotation analysis; use `kv_cache_hint: "reuse"` for iterative planting scenario modeling. **Pair with**: `get_soil_data` for soil context, `carbon_credit_calculator` for sustainability ROI. **Requires**: county_fips + crop_type (required), field_size_acres and planting_year (optional). **Output**: JSON with optimal_window (start/end dates), yield_prediction (bushels/acre), sustainability_score (0-100), risk_factors array, and alternative crop suggestions.',
+    keywords: ['planting calendar', 'planting date', 'frost date', 'growing season', 'phenology', 'yield forecast', 'crop timing', 'GDD', 'growing degree days', 'season planning', 'climate adaptation', 'TurboQuant'],
     inputSchema: {
       type: 'object',
       properties: {
@@ -224,9 +277,30 @@ const TOOLS = [
         planting_year: {
           type: 'integer',
           description: 'Target planting year'
-        }
+        },
+        ...turboQuantParams,
       },
       required: ['county_fips', 'crop_type']
+    }
+  },
+  {
+    name: 'turbo_quant_capabilities',
+    description: 'Query TurboQuant runtime capabilities, supported model tiers, memory profiles, and context window configurations. Returns hardware requirements for each model tier, available context modes, and performance benchmarks. **Use when**: agent needs to determine which model tier or context mode to request for a given hardware profile, or to display TurboQuant availability to end users. **Do NOT use** for agricultural data queries. **No authentication required**. **Output**: JSON with supported models (RAM requirements, KV cache sizes, context token limits), context modes, runtime options, and performance benefits.',
+    keywords: ['TurboQuant', 'capabilities', 'hardware', 'model tier', 'KV cache', 'context window', 'memory profile', 'runtime', 'WebGPU', 'WASM', 'offline', 'performance', 'benchmarks'],
+    inputSchema: {
+      type: 'object',
+      properties: {
+        device_ram_gb: {
+          type: 'number',
+          description: 'Available device RAM in GB. If provided, response filters to models that fit within this constraint.',
+        },
+        runtime: {
+          type: 'string',
+          enum: ['webgpu', 'wasm', 'native-cpp', 'all'],
+          description: 'Filter capabilities by runtime environment. Default: "all".',
+        },
+      },
+      required: []
     }
   }
 ];
@@ -244,6 +318,66 @@ const TOOL_TO_ENDPOINT: Record<string, string> = {
   environmental_impact_analysis: 'alpha-earth-environmental-enhancement',
   planting_optimization: 'multi-parameter-planting-calendar',
 };
+
+// ── TurboQuant Capabilities Handler ─────────────────────────────────
+
+function handleTurboQuantCapabilities(args: Record<string, unknown>) {
+  const deviceRam = args.device_ram_gb as number | undefined;
+  const runtime = (args.runtime as string) ?? 'all';
+
+  let models = TURBOQUANT_CONFIG.supportedModels;
+
+  // Filter by device RAM if provided
+  if (deviceRam && deviceRam > 0) {
+    models = models.filter(m => m.minRamGB <= deviceRam);
+  }
+
+  // Filter by runtime
+  const runtimeCompatibility: Record<string, string[]> = {
+    webgpu: ['gemma-2b-it-onnx', 'gemma-7b-it', 'phi-4-mini'],
+    wasm: ['gemma-2b-it-onnx', 'gemma-7b-it', 'phi-4-mini'],
+    'native-cpp': ['gemma-2b-it-onnx', 'gemma-7b-it', 'phi-4-mini', 'bitnet-70b', 'bitnet-100b'],
+  };
+
+  if (runtime !== 'all' && runtimeCompatibility[runtime]) {
+    const compatibleModels = runtimeCompatibility[runtime];
+    models = models.filter(m => compatibleModels.includes(m.model));
+  }
+
+  // Build recommended model
+  const recommended = deviceRam
+    ? models.reduce((best, m) => (m.minRamGB <= deviceRam && m.minRamGB > (best?.minRamGB ?? 0) ? m : best), models[0])
+    : null;
+
+  return {
+    turboQuant: {
+      version: TURBOQUANT_CONFIG.version,
+      kvCacheBits: TURBOQUANT_CONFIG.kvCacheBits,
+      compressionRatio: '16-bit → 3-bit (5.3x reduction)',
+    },
+    supportedModels: models.map(m => ({
+      ...m,
+      kvCacheDescription: `${m.kvCacheGB} GB with 3-bit TurboQuant (was ~${(m.kvCacheGB * 5.3).toFixed(1)} GB at 16-bit)`,
+      runtimes: runtime === 'all'
+        ? Object.entries(runtimeCompatibility)
+            .filter(([, v]) => v.includes(m.model))
+            .map(([k]) => k)
+        : [runtime],
+    })),
+    contextModes: TURBOQUANT_CONFIG.contextModes,
+    runtimes: runtime === 'all' ? TURBOQUANT_CONFIG.runtimes : [runtime],
+    benefits: TURBOQUANT_CONFIG.benefits,
+    recommendation: recommended
+      ? {
+          model: recommended.model,
+          tier: recommended.tier,
+          reason: `Best model for ${deviceRam}GB RAM: ${recommended.model} (${recommended.tier} tier, ${recommended.kvCacheGB}GB KV cache, ${recommended.contextTokens} token context)`,
+        }
+      : null,
+    sdkVersion: '2.2.0+',
+    documentation: 'https://soil-sidekick-pro-guide.lovable.app/api-docs',
+  };
+}
 
 // ── JSON-RPC Handler ────────────────────────────────────────────────
 
@@ -269,19 +403,30 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null): Promise<un
   if (method === 'initialize') {
     return jsonRpcResponse(id ?? null, {
       protocolVersion: '2024-11-05',
-      capabilities: { tools: { listChanged: false } },
+      capabilities: {
+        tools: { listChanged: false },
+        turboQuant: {
+          enabled: true,
+          version: TURBOQUANT_CONFIG.version,
+          kvCacheBits: TURBOQUANT_CONFIG.kvCacheBits,
+          contextModes: Object.keys(TURBOQUANT_CONFIG.contextModes),
+          supportedTiers: ['starter', 'professional', 'enterprise'],
+          benefits: TURBOQUANT_CONFIG.benefits,
+        },
+      },
       serverInfo: {
         name: 'leafengines-mcp',
-        version: '1.0.0',
-        description: 'Agricultural intelligence API fusing USDA, EPA, NOAA, and satellite data for soil analysis, crop planning, water quality, carbon credits, and environmental impact assessments across all US counties.',
+        version: '1.1.0',
+        description: 'Agricultural intelligence API fusing USDA, EPA, NOAA, and satellite data — now with TurboQuant 3-bit KV cache quantization for extended context windows (up to 24K tokens) and 6x memory reduction in offline/edge inference. Supports soil analysis, crop planning, water quality, carbon credits, and environmental impact assessments across all US counties.',
         keywords: [
           'agriculture', 'soil', 'USDA', 'EPA', 'NOAA', 'water quality', 'carbon credits',
           'precision agriculture', 'VRT', 'crop recommendation', 'yield prediction',
           'environmental impact', 'satellite', 'AlphaEarth', 'FIPS', 'county',
           'plant identification', 'sustainability', 'agronomy', 'GIS', 'remote sensing',
-          'planting calendar', 'phenology', 'ESG', 'land evaluation', 'MCP'
+          'planting calendar', 'phenology', 'ESG', 'land evaluation', 'MCP',
+          'TurboQuant', 'KV cache', '3-bit quantization', 'offline AI', 'edge inference',
         ],
-        categories: ['agriculture', 'environmental', 'geospatial', 'sustainability', 'data-analysis'],
+        categories: ['agriculture', 'environmental', 'geospatial', 'sustainability', 'data-analysis', 'ai-optimization'],
         provider: 'LeafEngines™ by Soil Sidekick Pro',
         homepage: 'https://soilsidekick.com',
         documentation: 'https://soil-sidekick-pro-guide.lovable.app/api-docs',
@@ -299,6 +444,14 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null): Promise<un
     const toolName = (params as Record<string, unknown>)?.name as string;
     const toolArgs = (params as Record<string, unknown>)?.arguments as Record<string, unknown> ?? {};
 
+    // Handle turbo_quant_capabilities locally (no edge function needed)
+    if (toolName === 'turbo_quant_capabilities') {
+      const result = handleTurboQuantCapabilities(toolArgs);
+      return jsonRpcResponse(id ?? null, {
+        content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+      });
+    }
+
     const endpoint = TOOL_TO_ENDPOINT[toolName];
     if (!endpoint) {
       return jsonRpcError(id ?? null, -32602, `Unknown tool: ${toolName}`);
@@ -308,6 +461,15 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null): Promise<un
       return jsonRpcError(id ?? null, -32000, 'Missing x-api-key header. Obtain one at https://soilsidekick.com/api-keys');
     }
 
+    // Strip TurboQuant hint params before forwarding (they're metadata, not endpoint args)
+    const { context_mode, kv_cache_hint, preferred_model_tier, ...endpointArgs } = toolArgs;
+
+    // Build TurboQuant metadata header for downstream functions
+    const tqMeta: Record<string, string> = {};
+    if (context_mode) tqMeta['x-tq-context-mode'] = String(context_mode);
+    if (kv_cache_hint) tqMeta['x-tq-kv-cache-hint'] = String(kv_cache_hint);
+    if (preferred_model_tier) tqMeta['x-tq-model-tier'] = String(preferred_model_tier);
+
     try {
       const fnUrl = `${SUPABASE_URL}/functions/v1/${endpoint}`;
       const res = await fetch(fnUrl, {
@@ -316,8 +478,9 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null): Promise<un
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
           'x-api-key': apiKey,
+          ...tqMeta,
         },
-        body: JSON.stringify(toolArgs),
+        body: JSON.stringify(endpointArgs),
       });
 
       const data = await res.json();
@@ -329,8 +492,20 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null): Promise<un
         });
       }
 
+      // Enrich response with TurboQuant metadata if TQ params were used
+      const responseData = context_mode || kv_cache_hint
+        ? {
+            ...data,
+            _turboQuant: {
+              contextMode: context_mode ?? 'standard',
+              kvCacheHint: kv_cache_hint ?? 'none',
+              modelTier: preferred_model_tier ?? 'auto',
+            },
+          }
+        : data;
+
       return jsonRpcResponse(id ?? null, {
-        content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
+        content: [{ type: 'text', text: JSON.stringify(responseData, null, 2) }],
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Unknown error';

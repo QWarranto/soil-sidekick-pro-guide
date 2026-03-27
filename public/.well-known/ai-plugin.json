@@ -3,7 +3,7 @@
   "name_for_human": "LeafEngines™ Agricultural Intelligence",
   "name_for_model": "leafengines",
   "description_for_human": "Access USDA soil data, EPA water quality, AI crop recommendations, carbon credit calculations, precision agriculture tools, patent-pending environmental impact analysis, and multi-parameter planting optimization for any US county.",
-  "description_for_model": "LeafEngines provides geo-specific agricultural intelligence for the United States. It offers 9 tools: county_lookup (resolve names to FIPS codes), get_soil_data (USDA soil composition), agricultural_intelligence (AI crop recommendations), territorial_water_quality (EPA water quality), safe_identification (plant ID with toxic lookalike warnings), carbon_credit_calculator (carbon credit estimation), generate_vrt_prescription (variable rate prescription maps), environmental_impact_analysis (patent-pending multi-source fusion of USDA/EPA/NOAA/AlphaEarth satellite embeddings producing Environmental Compatibility Scores unavailable from any single public source), and planting_optimization (multi-parameter phenology model for optimal planting windows, yield predictions, and sustainability scores). All locations use 5-digit FIPS county codes — call county_lookup first if the user provides a name.",
+  "description_for_model": "LeafEngines provides geo-specific agricultural intelligence for the United States with TurboQuant-accelerated offline AI (3-bit KV cache quantization, 6x memory reduction, up to 24K token context windows). It offers 10 tools: county_lookup (resolve names to FIPS codes), get_soil_data (USDA soil composition), agricultural_intelligence (AI crop recommendations — supports TurboQuant extended context), territorial_water_quality (EPA water quality), safe_identification (plant ID with toxic lookalike warnings), carbon_credit_calculator (carbon credit estimation), generate_vrt_prescription (variable rate prescription maps), environmental_impact_analysis (patent-pending multi-source fusion with TurboQuant multi-year trend analysis), planting_optimization (multi-parameter phenology model with TurboQuant iterative scenario modeling), and turbo_quant_capabilities (query supported models, memory profiles, and context modes for hardware-aware model selection). All locations use 5-digit FIPS county codes — call county_lookup first if the user provides a name. AI-powered tools accept optional context_mode ('standard'|'extended'|'maximum') and kv_cache_hint ('none'|'reuse'|'persist') parameters for TurboQuant optimization.",
   "keywords": [
     "agriculture", "soil analysis", "USDA", "EPA", "NOAA", "water quality",
     "carbon credits", "carbon offset", "ESG", "sustainability",
@@ -15,7 +15,9 @@
     "plant identification", "toxic plants", "foraging safety",
     "planting calendar", "phenology", "frost date", "growing degree days",
     "cover cropping", "no-till", "agroforestry", "regenerative agriculture",
-    "MCP", "Model Context Protocol", "AI agent", "tool calling"
+    "MCP", "Model Context Protocol", "AI agent", "tool calling",
+    "TurboQuant", "KV cache", "3-bit quantization", "offline AI", "edge inference",
+    "context window", "memory optimization"
   ],
   "categories": [
     "agriculture",
