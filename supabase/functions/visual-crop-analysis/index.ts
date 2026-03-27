@@ -5,10 +5,11 @@ import { validateInput } from '../_shared/validation.ts';
 import { trackOpenAICost } from '../_shared/cost-tracker.ts';
 import { logComplianceAudit, logExternalAPICall } from '../_shared/compliance-logger.ts';
 import { safeExternalCall } from '../_shared/graceful-degradation.ts';
+import { parseTQHeaders, hasTQHeaders } from '../_shared/turbo-quant.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-tq-context-mode, x-tq-kv-cache-hint, x-tq-model-tier',
 };
 
 const analysisSchema = z.object({
