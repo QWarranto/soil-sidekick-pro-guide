@@ -1,12 +1,42 @@
 import { useState, useEffect } from 'react';
 import { localLLMService, LocalLLMConfig } from '@/services/localLLMService';
 
+/**
+ * TurboQuant Impact Notes (March 2026)
+ * 
+ * Google's TurboQuant compresses KV caches from 16-bit to 3-bit with zero accuracy loss.
+ * This changes the local vs cloud calculus significantly:
+ * 
+ * Before TurboQuant:
+ *   - Gemma 2B: ~2-4 GB KV cache, only viable local option on mobile
+ *   - Gemma 7B: ~8-16 GB KV cache, desktop-only
+ *   - Local mode only competitive for simple queries
+ * 
+ * After TurboQuant:
+ *   - Gemma 2B: ~0.5-0.7 GB KV cache, runs on any device
+ *   - Gemma 7B: ~1.3-2.7 GB KV cache, now viable on 4GB+ mobile devices
+ *   - Local mode competitive with cloud for most agricultural queries
+ *   - Context windows 4-6x larger — full-season history fits in single pass
+ * 
+ * When TurboQuant lands in onnxruntime-web or @huggingface/transformers:
+ *   - Update model selection to prefer 7B over 2B on capable devices
+ *   - Raise the 'slow_connection' threshold — local is now good enough for complex tasks
+ *   - Lower battery-mode penalty — 3-bit KV cache uses less memory bandwidth
+ * 
+ * For BitNet Phase 3 (native, Q3-Q4 2026):
+ *   - 1-bit weights (BitNet) + 3-bit KV cache (TurboQuant) = maximum compression
+ *   - 70B models feasible on 8GB tablets, 100B+ on 16GB laptops
+ *   - See docs/BITNET_PHASE3_ENHANCEMENT.md for full analysis
+ */
+
 export interface SmartLLMState {
   useLocalLLM: boolean;
   reason: 'manual' | 'offline' | 'slow_connection' | 'privacy_mode' | 'battery_saving' | 'auto_fallback';
   isOnline: boolean;
   connectionSpeed: 'fast' | 'slow' | 'unknown';
   localLLMReady: boolean;
+  /** Whether TurboQuant KV compression is available in the current runtime */
+  turboQuantAvailable: boolean;
 }
 
 export function useSmartLLMSelection(initialConfig?: LocalLLMConfig) {
@@ -15,7 +45,12 @@ export function useSmartLLMSelection(initialConfig?: LocalLLMConfig) {
     reason: 'manual',
     isOnline: navigator.onLine,
     connectionSpeed: 'unknown',
-    localLLMReady: false
+    localLLMReady: false,
+    // TurboQuant: Will be set to true once onnxruntime-web or
+    // @huggingface/transformers ships 3-bit KV cache quantization support.
+    // When true, local model thresholds shift: 7B becomes mobile-viable,
+    // context windows expand 4-6x, and local mode competes with cloud.
+    turboQuantAvailable: false
   });
 
   const [localLLMConfig, setLocalLLMConfig] = useState<LocalLLMConfig>(
