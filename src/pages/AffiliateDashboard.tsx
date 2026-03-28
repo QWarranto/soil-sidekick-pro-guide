@@ -278,6 +278,9 @@ export default function AffiliateDashboard() {
           </CardContent>
         </Card>
       )}
+
+      {/* FAQ */}
+      <AffiliateFAQ />
     </div>
   );
 }
