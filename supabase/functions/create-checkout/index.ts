@@ -24,7 +24,7 @@ requestHandler({
   handler: async ({ user, validatedData, supabaseClient, req }) => {
     logSafe("create-checkout started", { userId: user.id });
 
-    const { plan, interval } = validatedData;
+    const { plan, interval, referral_code } = validatedData;
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) {

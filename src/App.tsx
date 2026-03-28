@@ -99,6 +99,7 @@ const App = () => (
       <AuthProvider>
         <BrowserRouter>
           <ScrollToTop />
+          <CaptureReferral />
           <AppHeader />
           <NetworkStatusBanner />
           <OfflineSyncIndicator />
