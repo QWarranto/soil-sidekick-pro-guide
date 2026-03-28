@@ -74,6 +74,18 @@ function ScrollToTop() {
   return null;
 }
 
+// Capture affiliate referral code from URL on first visit
+function CaptureReferral() {
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    if (ref) {
+      localStorage.setItem('affiliate_ref_code', ref.toUpperCase());
+    }
+  }, []);
+  return null;
+}
+
 const isSandboxDomain = () => {
   const hostname = window.location.hostname;
   return hostname === 'sandbox.leafengines.com' || hostname === 'www.sandbox.leafengines.com';
