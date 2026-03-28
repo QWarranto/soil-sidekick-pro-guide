@@ -59,6 +59,7 @@ import SwaggerUI from "./pages/SwaggerUI";
 import WebGPUBenchmark from "./pages/WebGPUBenchmark";
 import DemoRunbook from "./pages/DemoRunbook";
 import DV005Demo from "./pages/DV005Demo";
+import AffiliateDashboard from "./pages/AffiliateDashboard";
 
 const queryClient = new QueryClient();
 
@@ -140,6 +141,7 @@ const App = () => (
         <Route path="/webgpu-benchmark" element={<WebGPUBenchmark />} />
         <Route path="/demo-runbook" element={<DemoRunbook />} />
         <Route path="/dv005-demo" element={<DV005Demo />} />
+        <Route path="/affiliate" element={<AffiliateDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
