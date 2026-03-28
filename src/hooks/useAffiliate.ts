@@ -65,12 +65,6 @@ export const useAffiliate = () => {
     if (!user) { setLoading(false); return; }
     try {
       setLoading(true);
-      const { data: result, error } = await supabase.functions.invoke('affiliate-management', {
-        body: null,
-        headers: { 'Content-Type': 'application/json' },
-      });
-      // The function uses query params, so we need to construct the URL differently
-      // Using invoke with the action as a query param
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/affiliate-management?action=dashboard`,
         {
