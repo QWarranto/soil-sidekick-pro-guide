@@ -101,6 +101,7 @@ requestHandler({
         user_id: user.id,
         plan: plan,
         interval: interval,
+        referral_code: referral_code || '',
       },
     });
 
