@@ -24,6 +24,8 @@ project_id = "wzgnxkoeqzvueypwzvyn"
   port = 54329
 
 [functions]
+  [functions.affiliate-management]
+    verify_jwt = false
   [functions.agricultural-intelligence]
     verify_jwt = true
   [functions.alpha-earth-environmental-enhancement]
