@@ -56,6 +56,9 @@ const AppHeader = () => {
           <Button variant="ghost" size="sm" onClick={() => navigate('/user-guide')} className="hidden md:flex text-secondary-foreground hover:text-primary">
             User Guide
           </Button>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/affiliate')} className="hidden md:flex text-secondary-foreground hover:text-primary">
+            Affiliate
+          </Button>
           {user ? (
             <>
               <span className="text-sm text-secondary-foreground/80 ml-2">
