@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Users, DollarSign, TrendingUp, Copy, RefreshCw, Banknote } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { AffiliateFAQ } from '@/components/affiliate/AffiliateFAQ';
 
 export default function AffiliateDashboard() {
   const { user } = useAuth();
