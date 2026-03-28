@@ -306,6 +306,137 @@ export type Database = {
           },
         ]
       }
+      affiliate_codes: {
+        Row: {
+          code: string
+          commission_rate: number
+          created_at: string
+          id: string
+          status: string
+          total_earnings: number
+          total_referrals: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          status?: string
+          total_earnings?: number
+          total_referrals?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          status?: string
+          total_earnings?: number
+          total_referrals?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      affiliate_payouts: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          payout_method: string
+          period_end: string
+          period_start: string
+          processed_at: string | null
+          referral_count: number
+          status: string
+          stripe_transfer_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          payout_method?: string
+          period_end: string
+          period_start: string
+          processed_at?: string | null
+          referral_count?: number
+          status?: string
+          stripe_transfer_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          payout_method?: string
+          period_end?: string
+          period_start?: string
+          processed_at?: string | null
+          referral_count?: number
+          status?: string
+          stripe_transfer_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      affiliate_referrals: {
+        Row: {
+          affiliate_code_id: string
+          attribution_date: string
+          commission_amount: number
+          commission_rate: number
+          created_at: string
+          id: string
+          last_commission_date: string | null
+          referred_user_id: string
+          status: string
+          subscription_amount: number
+          subscription_tier: string | null
+          updated_at: string
+        }
+        Insert: {
+          affiliate_code_id: string
+          attribution_date?: string
+          commission_amount?: number
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          last_commission_date?: string | null
+          referred_user_id: string
+          status?: string
+          subscription_amount?: number
+          subscription_tier?: string | null
+          updated_at?: string
+        }
+        Update: {
+          affiliate_code_id?: string
+          attribution_date?: string
+          commission_amount?: number
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          last_commission_date?: string | null
+          referred_user_id?: string
+          status?: string
+          subscription_amount?: number
+          subscription_tier?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_referrals_affiliate_code_id_fkey"
+            columns: ["affiliate_code_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       api_key_access_log: {
         Row: {
           access_time: string

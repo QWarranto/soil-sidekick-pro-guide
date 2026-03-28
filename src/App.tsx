@@ -59,6 +59,7 @@ import SwaggerUI from "./pages/SwaggerUI";
 import WebGPUBenchmark from "./pages/WebGPUBenchmark";
 import DemoRunbook from "./pages/DemoRunbook";
 import DV005Demo from "./pages/DV005Demo";
+import AffiliateDashboard from "./pages/AffiliateDashboard";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +71,18 @@ function ScrollToTop() {
     window.scrollTo(0, 0);
   }, [pathname]);
 
+  return null;
+}
+
+// Capture affiliate referral code from URL on first visit
+function CaptureReferral() {
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    if (ref) {
+      localStorage.setItem('affiliate_ref_code', ref.toUpperCase());
+    }
+  }, []);
   return null;
 }
 
@@ -86,6 +99,7 @@ const App = () => (
       <AuthProvider>
         <BrowserRouter>
           <ScrollToTop />
+          <CaptureReferral />
           <AppHeader />
           <NetworkStatusBanner />
           <OfflineSyncIndicator />
@@ -140,6 +154,7 @@ const App = () => (
         <Route path="/webgpu-benchmark" element={<WebGPUBenchmark />} />
         <Route path="/demo-runbook" element={<DemoRunbook />} />
         <Route path="/dv005-demo" element={<DV005Demo />} />
+        <Route path="/affiliate" element={<AffiliateDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
