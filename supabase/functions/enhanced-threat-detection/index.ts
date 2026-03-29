@@ -88,8 +88,24 @@ Deno.serve(async (req) => {
       }
     }
 
-    // If GET request, return threat detection summary
+    // If GET request, return threat detection summary (requires auth)
     if (method === 'GET') {
+      const authHeader = req.headers.get('Authorization');
+      if (!authHeader?.startsWith('Bearer ')) {
+        return new Response(
+          JSON.stringify({ error: 'Unauthorized' }),
+          { status: 401, headers: getSecurityHeaders(corsHeaders) }
+        );
+      }
+      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser(
+        authHeader.replace('Bearer ', '')
+      );
+      if (authError || !authUser) {
+        return new Response(
+          JSON.stringify({ error: 'Unauthorized' }),
+          { status: 401, headers: getSecurityHeaders(corsHeaders) }
+        );
+      }
       return await handleGetThreatSummary();
     }
 
