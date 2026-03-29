@@ -207,6 +207,22 @@ const FAQ = () => {
     {
       question: "What is SoilSidekick Pro's SOC 2 compliance status?",
       answer: "SoilSidekick Pro maintains SOC 2 Type 1 compliance, which means we undergo rigorous point-in-time security assessments of our controls and processes. This includes comprehensive monitoring of data access controls, encryption protocols, API security, payment processing security, and database security. Our SOC 2 Type 1 compliance demonstrates our commitment to protecting your agricultural data and maintaining enterprise-grade security standards for soil analysis, water quality data, and ADAPT integrations."
+    },
+    {
+      question: "How does the Sensor Data Quality system protect my AI recommendations?",
+      answer: "Soil sensors can drift approximately 15% over 6 months without calibration, which silently degrades AI recommendation accuracy. SoilSidekick Pro now includes automated data quality checks with three layers of protection: (1) Drift Detection flags readings that deviate more than 10% from historical baselines or USDA reference values, (2) Staleness Warnings alert you when a sensor hasn't been recalibrated within its configurable window (default 6 months), and (3) Confidence Scoring (0-100) automatically downweights AI recommendations when input data quality is suspect. Each sensor receives a letter grade (A through F) visible on your Farm Overview dashboard."
+    },
+    {
+      question: "How does Drift Detection work for soil sensors?",
+      answer: "When sensor data is ingested, the system compares each reading against the last 20 historical readings for that sensor. If any parameter (moisture, temperature, pH, electrical conductivity) deviates more than 10% from the historical mean, drift is flagged. The system also validates readings against USDA reference ranges — for example, soil moisture outside 5-95% or pH outside 3.5-10 is flagged as physically implausible. Drift alerts appear on the Farm Overview dashboard with specific deviation percentages and recommended corrective actions."
+    },
+    {
+      question: "What happens when my sensor's calibration is overdue?",
+      answer: "When a sensor exceeds its calibration interval (default 180 days), the system triggers a staleness warning. Confidence is reduced by 2% for each week overdue, up to a maximum 40% penalty. You'll see a prominent red alert on the Farm Overview dashboard listing all sensors needing recalibration. AI recommendations that rely on stale sensor data will display lower confidence scores so you know to take them with appropriate caution. Recalibrating the sensor and logging it in the calibration tracker restores full confidence."
+    },
+    {
+      question: "What do the sensor quality grades (A-F) mean?",
+      answer: "Sensor quality grades reflect the overall confidence in a sensor's data: A (90-100%) means data is high quality with recent calibration and no drift detected. B (75-89%) indicates minor concerns like approaching calibration due date. C (60-74%) means moderate issues — some drift detected or calibration moderately overdue. D (40-59%) indicates significant data quality problems requiring attention. F (below 40%) means the sensor data is unreliable and should not be used for critical decisions until recalibrated and verified."
     }
   ];
 

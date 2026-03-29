@@ -1409,6 +1409,85 @@ const UserGuide = () => {
                         </div>
                       </AccordionContent>
                     </AccordionItem>
+
+                    <AccordionItem value="data-quality">
+                      <AccordionTrigger className="text-left">
+                        <div className="flex items-center gap-2">
+                          <Shield className="h-5 w-5" />
+                          Automated Data Quality Checks
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4">
+                        <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                          <h4 className="font-semibold text-yellow-800 mb-2 flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4" />
+                            Why Data Quality Matters
+                          </h4>
+                          <p className="text-sm text-yellow-700">
+                            Soil sensors can drift approximately 15% over 6 months without calibration. Uncalibrated inputs silently degrade AI recommendation accuracy. SoilSidekick Pro now includes automated checks to catch these issues before they affect your farming decisions.
+                          </p>
+                        </div>
+
+                        <div className="grid md:grid-cols-3 gap-4">
+                          <div className="bg-muted/50 p-4 rounded-lg">
+                            <h5 className="font-semibold mb-2 flex items-center gap-2">
+                              <TrendingUp className="h-4 w-4" />
+                              Drift Detection
+                            </h5>
+                            <ul className="text-xs text-muted-foreground space-y-1">
+                              <li>• Compares readings against last 20 historical values</li>
+                              <li>• Flags deviations &gt;10% from baseline mean</li>
+                              <li>• Validates against USDA reference ranges</li>
+                              <li>• Shows exact deviation percentage per parameter</li>
+                            </ul>
+                          </div>
+                          <div className="bg-muted/50 p-4 rounded-lg">
+                            <h5 className="font-semibold mb-2 flex items-center gap-2">
+                              <Clock className="h-4 w-4" />
+                              Staleness Warnings
+                            </h5>
+                            <ul className="text-xs text-muted-foreground space-y-1">
+                              <li>• Default calibration window: 180 days</li>
+                              <li>• Configurable per sensor</li>
+                              <li>• Early warning at 80% of interval</li>
+                              <li>• Confidence penalty: 2% per week overdue (max 40%)</li>
+                            </ul>
+                          </div>
+                          <div className="bg-muted/50 p-4 rounded-lg">
+                            <h5 className="font-semibold mb-2 flex items-center gap-2">
+                              <Target className="h-4 w-4" />
+                              Confidence Scoring
+                            </h5>
+                            <ul className="text-xs text-muted-foreground space-y-1">
+                              <li>• Score: 0-100 based on data quality</li>
+                              <li>• Grade A (90+) through F (&lt;40)</li>
+                              <li>• AI recommendations weighted by score</li>
+                              <li>• Visible on Farm Overview dashboard</li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div className="bg-muted/50 p-4 rounded-lg">
+                          <h4 className="font-medium mb-2">USDA Reference Ranges for Validation</h4>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                            <div><strong>Moisture:</strong> 5-95% (typical 15-75%)</div>
+                            <div><strong>Temperature:</strong> -10 to 55°C (typical 2-40°C)</div>
+                            <div><strong>pH:</strong> 3.5-10 (typical 5.5-8.5)</div>
+                            <div><strong>EC:</strong> 0-16 dS/m (typical 0.1-4)</div>
+                          </div>
+                        </div>
+
+                        <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                          <h4 className="font-semibold text-green-800 mb-2">How to View Sensor Quality</h4>
+                          <ol className="text-sm text-green-700 space-y-1">
+                            <li>1. Go to your <strong>Dashboard → Farm Overview</strong> tab</li>
+                            <li>2. Scroll to the <strong>Sensor Data Quality</strong> card</li>
+                            <li>3. Expand any sensor to see its confidence score, drift status, and calibration age</li>
+                            <li>4. Follow recommendations to recalibrate or verify sensors as needed</li>
+                          </ol>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
                   </Accordion>
                 </CardContent>
               </Card>
