@@ -197,7 +197,7 @@ export default function Pricing() {
                     <div className="mb-6">
                       {displayPrice === null ? (
                         <div>
-                          <p className="text-4xl font-bold text-foreground">{tier.customPricing}</p>
+                          <p className="text-4xl font-bold text-foreground">Custom</p>
                           <p className="text-sm text-muted-foreground">Contact for pricing</p>
                         </div>
                       ) : (
