@@ -53,20 +53,45 @@ const PropertyReport = () => {
 
   // Check for external authentication from SoilCertify.com
   useEffect(() => {
-    const checkExternalAuth = () => {
+    const checkExternalAuth = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const authToken = urlParams.get('auth_token');
       const source = urlParams.get('source');
       
       if (authToken && source === 'soilcertify') {
-        // Store the external auth token
-        sessionStorage.setItem('soilcertify_auth', authToken);
-        setIsExternalUser(true);
+        try {
+          // Validate the token server-side before trusting it
+          const { data, error } = await supabase.functions.invoke('validate-external-auth', {
+            body: { token: authToken, provider: 'soilcertify' }
+          });
+          
+          if (!error && data?.valid) {
+            sessionStorage.setItem('soilcertify_auth', authToken);
+            setIsExternalUser(true);
+          } else {
+            console.warn('External auth validation failed:', error);
+            sessionStorage.removeItem('soilcertify_auth');
+          }
+        } catch (err) {
+          console.error('External auth validation error:', err);
+          sessionStorage.removeItem('soilcertify_auth');
+        }
       } else {
-        // Check if we have a stored external auth token
+        // Validate stored token server-side
         const storedToken = sessionStorage.getItem('soilcertify_auth');
         if (storedToken) {
-          setIsExternalUser(true);
+          try {
+            const { data, error } = await supabase.functions.invoke('validate-external-auth', {
+              body: { token: storedToken, provider: 'soilcertify' }
+            });
+            if (!error && data?.valid) {
+              setIsExternalUser(true);
+            } else {
+              sessionStorage.removeItem('soilcertify_auth');
+            }
+          } catch {
+            sessionStorage.removeItem('soilcertify_auth');
+          }
         }
       }
       setExternalAuthChecked(true);

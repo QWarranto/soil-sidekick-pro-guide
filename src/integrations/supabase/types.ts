@@ -1973,6 +1973,7 @@ export type Database = {
           signal_strength: number | null
           status: string | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           battery_level?: number | null
@@ -1986,6 +1987,7 @@ export type Database = {
           signal_strength?: number | null
           status?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           battery_level?: number | null
@@ -1999,6 +2001,7 @@ export type Database = {
           signal_strength?: number | null
           status?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
