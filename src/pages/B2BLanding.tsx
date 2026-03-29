@@ -413,8 +413,8 @@ const result = await analyzer(imageData);
 
             <div className="mb-8 grid gap-6 md:grid-cols-3">
               <Card className="p-6 text-left">
-                <h3 className="mb-2 text-xl font-semibold text-foreground">Starter</h3>
-                <p className="mb-4 text-3xl font-bold text-foreground">$500<span className="text-lg text-muted-foreground">/mo</span></p>
+                <h3 className="mb-2 text-xl font-semibold text-foreground">Developer</h3>
+                <p className="mb-4 text-3xl font-bold text-foreground">$149<span className="text-lg text-muted-foreground">/mo</span></p>
                 <ul className="space-y-2 text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
@@ -422,11 +422,11 @@ const result = await analyzer(imageData);
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span>EPA Water Quality Integration</span>
+                    <span>25,000 API calls/month</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span>50,000 API calls/month</span>
+                    <span>Core environmental data</span>
                   </li>
                 </ul>
               </Card>
@@ -434,19 +434,19 @@ const result = await analyzer(imageData);
               <Card className="border-primary p-6 text-left shadow-lg">
                 <Badge className="mb-2">Most Popular</Badge>
                 <h3 className="mb-2 text-xl font-semibold text-foreground">Professional</h3>
-                <p className="mb-4 text-3xl font-bold text-foreground">$1,500<span className="text-lg text-muted-foreground">/mo</span></p>
+                <p className="mb-4 text-3xl font-bold text-foreground">$499<span className="text-lg text-muted-foreground">/mo</span></p>
                 <ul className="space-y-2 text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span>Everything in Starter</span>
+                    <span>Everything in Developer</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span>Satellite Monitoring (AlphaEarth)</span>
+                    <span>EPA Water Quality + Satellite (AlphaEarth)</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span>250,000 API calls/month</span>
+                    <span>100,000 API calls/month</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
@@ -457,7 +457,7 @@ const result = await analyzer(imageData);
 
               <Card className="p-6 text-left">
                 <h3 className="mb-2 text-xl font-semibold text-foreground">Enterprise</h3>
-                <p className="mb-4 text-3xl font-bold text-foreground">Custom</p>
+                <p className="mb-4 text-3xl font-bold text-foreground">$1,999<span className="text-lg text-muted-foreground">/mo</span></p>
                 <ul className="space-y-2 text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
@@ -465,15 +465,15 @@ const result = await analyzer(imageData);
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span>White-label solutions</span>
+                    <span>EPA + Satellite included</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span>Unlimited API calls</span>
+                    <span>500,000 API calls/month</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <span>Dedicated support team</span>
+                    <span>White-label + dedicated support</span>
                   </li>
                 </ul>
               </Card>
