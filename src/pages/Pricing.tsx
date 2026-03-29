@@ -29,7 +29,7 @@ export default function Pricing() {
         { text: "Email support (48hr response)", included: true },
         { text: "API documentation access", included: true },
         { text: "Basic analytics dashboard", included: true },
-        { text: "EPA Water Quality Integration", included: false },
+        { text: "EPA Water Quality Integration", included: true },
         { text: "AlphaEarth Satellite Data", included: false },
         { text: "White-label options", included: false },
         { text: "Dedicated account manager", included: false },
@@ -458,7 +458,7 @@ export default function Pricing() {
                 <tbody>
                   {[
                     { feature: "Environmental Compatibility Score API", starter: true, pro: true, enterprise: true },
-                    { feature: "EPA Water Quality Integration", starter: false, pro: true, enterprise: true },
+                    { feature: "EPA Water Quality Integration", starter: true, pro: true, enterprise: true },
                     { feature: "Federal FIPS Location Intelligence", starter: true, pro: true, enterprise: true },
                     { feature: "Privacy-Preserving WebGPU AI", starter: true, pro: true, enterprise: true },
                     { feature: "GDPR Compliant by Design", starter: true, pro: true, enterprise: true },
