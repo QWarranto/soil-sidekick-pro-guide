@@ -12,6 +12,7 @@ import { LocationIndicator } from "@/components/LocationIndicator";
 import { QuickAccessSuggestion } from "@/components/QuickAccessSuggestion";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import heroTechAgriculture from '@/assets/hero-tech-agriculture.jpg';
+import { SensorDataQuality } from "@/components/SensorDataQuality";
 import {
   LazyCarbonCreditDashboard,
   LazyCostMonitoringDashboard,
@@ -778,6 +779,9 @@ const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+            {/* Sensor Data Quality */}
+            <SensorDataQuality />
           </TabsContent>
 
           <TabsContent value="ai-assistant">

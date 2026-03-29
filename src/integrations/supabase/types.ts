@@ -1861,6 +1861,105 @@ export type Database = {
         }
         Relationships: []
       }
+      sensor_calibration_log: {
+        Row: {
+          baseline_values: Json | null
+          calibration_interval_days: number
+          calibration_method: string | null
+          created_at: string
+          field_id: string | null
+          id: string
+          last_calibrated_at: string
+          sensor_id: string
+          sensor_type: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          baseline_values?: Json | null
+          calibration_interval_days?: number
+          calibration_method?: string | null
+          created_at?: string
+          field_id?: string | null
+          id?: string
+          last_calibrated_at?: string
+          sensor_id: string
+          sensor_type?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          baseline_values?: Json | null
+          calibration_interval_days?: number
+          calibration_method?: string | null
+          created_at?: string
+          field_id?: string | null
+          id?: string
+          last_calibrated_at?: string
+          sensor_id?: string
+          sensor_type?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sensor_data_quality: {
+        Row: {
+          confidence_factors: Json | null
+          confidence_score: number
+          created_at: string
+          days_since_calibration: number | null
+          drift_details: Json | null
+          drift_detected: boolean
+          drift_percentage: number | null
+          field_id: string | null
+          id: string
+          quality_grade: string
+          raw_values: Json
+          reading_timestamp: string
+          sensor_id: string
+          staleness_warning: boolean
+          user_id: string
+        }
+        Insert: {
+          confidence_factors?: Json | null
+          confidence_score?: number
+          created_at?: string
+          days_since_calibration?: number | null
+          drift_details?: Json | null
+          drift_detected?: boolean
+          drift_percentage?: number | null
+          field_id?: string | null
+          id?: string
+          quality_grade?: string
+          raw_values?: Json
+          reading_timestamp?: string
+          sensor_id: string
+          staleness_warning?: boolean
+          user_id: string
+        }
+        Update: {
+          confidence_factors?: Json | null
+          confidence_score?: number
+          created_at?: string
+          days_since_calibration?: number | null
+          drift_details?: Json | null
+          drift_detected?: boolean
+          drift_percentage?: number | null
+          field_id?: string | null
+          id?: string
+          quality_grade?: string
+          raw_values?: Json
+          reading_timestamp?: string
+          sensor_id?: string
+          staleness_warning?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       sensor_devices: {
         Row: {
           battery_level: number | null
