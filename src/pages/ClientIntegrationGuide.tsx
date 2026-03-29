@@ -84,15 +84,15 @@ const ClientIntegrationGuide = () => {
                       <Zap className="h-6 w-6 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold">Starter - $500/month</h3>
-                      <p className="text-sm text-muted-foreground">Perfect for emerging plant ID apps testing market fit</p>
+                      <h3 className="text-xl font-bold">Developer - $149/month</h3>
+                      <p className="text-sm text-muted-foreground">Perfect for emerging apps integrating environmental intelligence</p>
                     </div>
                   </div>
                   <div className="grid md:grid-cols-2 gap-4 mb-4">
                     <div>
                       <h4 className="font-semibold mb-2">Best For:</h4>
                       <ul className="text-sm space-y-1 text-muted-foreground">
-                        <li>• Apps with &lt;50k users</li>
+                        <li>• Apps with &lt;25k users</li>
                         <li>• MVP and beta testing</li>
                         <li>• Small development teams</li>
                         <li>• Budget-conscious startups</li>
@@ -101,9 +101,9 @@ const ClientIntegrationGuide = () => {
                     <div>
                       <h4 className="font-semibold mb-2">What You Get:</h4>
                       <ul className="text-sm space-y-1 text-muted-foreground">
-                        <li>• 50,000 API calls/month</li>
-                        <li>• 1,000 requests/minute</li>
-                        <li>• EPA water quality data</li>
+                        <li>• 25,000 API calls/month</li>
+                        <li>• 500 requests/minute</li>
+                        <li>• Core environmental data</li>
                         <li>• Email support (48hr)</li>
                       </ul>
                     </div>
@@ -121,16 +121,16 @@ const ClientIntegrationGuide = () => {
                       <Sparkles className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold">Professional - $1,500/month</h3>
+                      <h3 className="text-xl font-bold">Professional - $499/month</h3>
                       <Badge className="ml-2">Most Popular</Badge>
-                      <p className="text-sm text-muted-foreground mt-1">Complete environmental intelligence with satellite monitoring</p>
+                      <p className="text-sm text-muted-foreground mt-1">Full environmental intelligence with EPA + satellite monitoring</p>
                     </div>
                   </div>
                   <div className="grid md:grid-cols-2 gap-4 mb-4">
                     <div>
                       <h4 className="font-semibold mb-2">Best For:</h4>
                       <ul className="text-sm space-y-1 text-muted-foreground">
-                        <li>• Apps with 50k-500k users</li>
+                        <li>• Apps with 25k-100k users</li>
                         <li>• Revenue-generating products</li>
                         <li>• Premium feature differentiation</li>
                         <li>• Agricultural focus apps</li>
@@ -139,8 +139,8 @@ const ClientIntegrationGuide = () => {
                     <div>
                       <h4 className="font-semibold mb-2">What You Get:</h4>
                       <ul className="text-sm space-y-1 text-muted-foreground">
-                        <li>• 250,000 API calls/month</li>
-                        <li>• 2,500 requests/minute</li>
+                        <li>• 100,000 API calls/month</li>
+                        <li>• 1,500 requests/minute</li>
                         <li>• AlphaEarth satellite data</li>
                         <li>• Real-time NDVI & soil moisture</li>
                         <li>• Priority support (24hr)</li>
@@ -160,15 +160,15 @@ const ClientIntegrationGuide = () => {
                       <Shield className="h-6 w-6 text-purple-600" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold">Custom - Enterprise Pricing</h3>
-                      <p className="text-sm text-muted-foreground">White-label solution with dedicated infrastructure</p>
+                      <h3 className="text-xl font-bold">Enterprise - $1,999/month</h3>
+                      <p className="text-sm text-muted-foreground">White-label solution with EPA + satellite + dedicated infrastructure</p>
                     </div>
                   </div>
                   <div className="grid md:grid-cols-2 gap-4 mb-4">
                     <div>
                       <h4 className="font-semibold mb-2">Best For:</h4>
                       <ul className="text-sm space-y-1 text-muted-foreground">
-                        <li>• Apps with 500k+ users</li>
+                        <li>• Apps with 100k+ users</li>
                         <li>• Enterprise clients</li>
                         <li>• White-label requirements</li>
                         <li>• Mission-critical applications</li>
@@ -177,8 +177,8 @@ const ClientIntegrationGuide = () => {
                     <div>
                       <h4 className="font-semibold mb-2">What You Get:</h4>
                       <ul className="text-sm space-y-1 text-muted-foreground">
-                        <li>• Unlimited API calls</li>
-                        <li>• Custom rate limits</li>
+                        <li>• 500,000 API calls/month</li>
+                        <li>• 5,000 requests/minute</li>
                         <li>• White-label branding</li>
                         <li>• Dedicated account manager</li>
                         <li>• 24/7 support & SLA</li>
@@ -320,7 +320,7 @@ const ClientIntegrationGuide = () => {
                     <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
                     <div>
                       <h4 className="font-semibold">Rate Limit Tracking System</h4>
-                      <p className="text-sm text-muted-foreground">Local tracking to stay within tier quotas (Starter: 1,000 req/min, Professional: 2,500 req/min, Custom: Unlimited)</p>
+                      <p className="text-sm text-muted-foreground">Local tracking to stay within tier quotas (Developer: 500 req/min, Professional: 1,500 req/min, Enterprise: 5,000 req/min)</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -501,22 +501,22 @@ const ClientIntegrationGuide = () => {
                       <p className="text-sm text-muted-foreground mb-2">Choose the appropriate tier based on expected usage:</p>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-2">
                         <div className="p-3 border rounded-lg">
-                          <p className="font-semibold text-sm">Starter</p>
-                          <p className="text-xs text-muted-foreground">50,000 API calls/month</p>
-                          <p className="text-xs text-muted-foreground">1,000 req/min rate limit</p>
-                          <p className="text-xs text-muted-foreground">$500/month</p>
+                          <p className="font-semibold text-sm">Developer</p>
+                          <p className="text-xs text-muted-foreground">25,000 API calls/month</p>
+                          <p className="text-xs text-muted-foreground">500 req/min rate limit</p>
+                          <p className="text-xs text-muted-foreground">$149/month</p>
                         </div>
                         <div className="p-3 border rounded-lg border-primary">
                           <p className="font-semibold text-sm">Professional</p>
-                          <p className="text-xs text-muted-foreground">250,000 API calls/month</p>
-                          <p className="text-xs text-muted-foreground">2,500 req/min rate limit</p>
-                          <p className="text-xs text-muted-foreground">$1,500/month</p>
+                          <p className="text-xs text-muted-foreground">100,000 API calls/month</p>
+                          <p className="text-xs text-muted-foreground">1,500 req/min rate limit</p>
+                          <p className="text-xs text-muted-foreground">$499/month</p>
                         </div>
                         <div className="p-3 border rounded-lg">
-                          <p className="font-semibold text-sm">Custom</p>
-                          <p className="text-xs text-muted-foreground">Unlimited API calls</p>
-                          <p className="text-xs text-muted-foreground">Custom rate limits</p>
-                          <p className="text-xs text-muted-foreground">Custom pricing</p>
+                          <p className="font-semibold text-sm">Enterprise</p>
+                          <p className="text-xs text-muted-foreground">500,000 API calls/month</p>
+                          <p className="text-xs text-muted-foreground">5,000 req/min rate limit</p>
+                          <p className="text-xs text-muted-foreground">$1,999/month</p>
                         </div>
                       </div>
                     </div>
