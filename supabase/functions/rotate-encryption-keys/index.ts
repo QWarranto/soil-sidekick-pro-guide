@@ -83,21 +83,34 @@ Deno.serve(async (req) => {
         let decryptedEmail: string | null = null;
         let decryptedStripe: string | null = null;
 
-        // Try decrypting with each old key
-        for (const oldKey of oldKeys) {
-          if (sub.encrypted_email && !decryptedEmail) {
+        // First try base64 decode (v1/v2 used simple base64)
+        if (sub.encrypted_email) {
+          try {
+            const decoded = atob(sub.encrypted_email);
+            if (decoded.includes('@')) {
+              decryptedEmail = decoded;
+            }
+          } catch { /* not base64 */ }
+        }
+
+        // If base64 didn't work, try decrypting with each old key
+        if (!decryptedEmail && sub.encrypted_email) {
+          for (const oldKey of oldKeys) {
             const { data } = await supabaseAdmin.rpc('decrypt_email_v3', {
               encrypted_email: sub.encrypted_email,
               encryption_key: oldKey,
             });
-            if (data) decryptedEmail = data;
+            if (data) { decryptedEmail = data; break; }
           }
-          if (sub.encrypted_stripe_customer_id && !decryptedStripe) {
+        }
+
+        if (sub.encrypted_stripe_customer_id) {
+          for (const oldKey of oldKeys) {
             const { data } = await supabaseAdmin.rpc('decrypt_sensitive_data_v3', {
               encrypted_data: sub.encrypted_stripe_customer_id,
               encryption_key: oldKey,
             });
-            if (data) decryptedStripe = data;
+            if (data) { decryptedStripe = data; break; }
           }
         }
 
