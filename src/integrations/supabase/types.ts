@@ -2763,10 +2763,6 @@ export type Database = {
         Args: { data_to_encrypt: string; encryption_key: string }
         Returns: string
       }
-      encrypt_sensitive_payment_data: {
-        Args: { data_to_encrypt: string }
-        Returns: string
-      }
       generate_recurring_tasks: { Args: never; Returns: undefined }
       generate_secure_session_token: { Args: never; Returns: string }
       generate_soc2_compliance_report: { Args: never; Returns: Json }
@@ -2785,10 +2781,6 @@ export type Database = {
           total_usage: number
           unique_users: number
         }[]
-      }
-      get_decrypted_stripe_customer_id: {
-        Args: { subscriber_id: string }
-        Returns: string
       }
       get_masked_subscription_data: {
         Args: { target_user_id?: string }
