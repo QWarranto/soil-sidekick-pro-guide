@@ -30,7 +30,8 @@ import {
   RefreshCw,
   Calendar,
   Brain,
-  Battery
+  Battery,
+  Clock
 } from 'lucide-react';
 
 const UserGuide = () => {
