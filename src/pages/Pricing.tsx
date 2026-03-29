@@ -519,6 +519,118 @@ export default function Pricing() {
         </div>
       </section>
 
+      {/* Enterprise Bundle Pricing */}
+      <section className="border-t border-border bg-gradient-to-br from-primary/5 via-background to-accent/5 py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-5xl">
+            <div className="mb-12 text-center">
+              <Badge className="mb-4" variant="default">
+                <Sparkles className="mr-2 h-3 w-3" />
+                Bundle & Save
+              </Badge>
+              <h2 className="mb-4 text-3xl font-bold text-foreground">
+                Enterprise Platform Bundle
+              </h2>
+              <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+                Combine SoilSidekick Pro and LeafEngines-MCP for maximum coverage at a bundled discount
+              </p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-3">
+              {/* SoilSidekick Pro Enterprise */}
+              <Card className="p-6">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="rounded-lg bg-primary/10 p-3">
+                    <Shield className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground">SoilSidekick Pro Enterprise</h3>
+                </div>
+                <p className="mb-4 text-3xl font-bold text-foreground">$1,999<span className="text-base font-normal text-muted-foreground">/mo</span></p>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span>500,000 API calls/month</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span>EPA + Satellite integration</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span>White-label + dedicated support</span>
+                  </li>
+                </ul>
+              </Card>
+
+              {/* LeafEngines-MCP Enterprise */}
+              <Card className="p-6">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="rounded-lg bg-accent/20 p-3">
+                    <Brain className="h-6 w-6 text-accent-foreground" />
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground">LeafEngines-MCP Enterprise</h3>
+                </div>
+                <p className="mb-4 text-3xl font-bold text-foreground">$1,999<span className="text-base font-normal text-muted-foreground">/mo</span></p>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span>185,000 MCP calls/month</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span>AI agent integration (MCP)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span>TurboQuant 3-bit KV cache</span>
+                  </li>
+                </ul>
+              </Card>
+
+              {/* Bundle */}
+              <Card className="relative border-2 border-primary p-6 shadow-lg">
+                <div className="absolute -top-4 left-0 right-0 flex justify-center">
+                  <Badge className="bg-primary px-4 py-1 text-sm">Save 13%</Badge>
+                </div>
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="rounded-lg bg-green-500/10 p-3">
+                    <DollarSign className="h-6 w-6 text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground">Enterprise Bundle</h3>
+                </div>
+                <div className="mb-1">
+                  <p className="text-2xl font-medium text-muted-foreground line-through">$3,998</p>
+                  <p className="text-3xl font-bold text-foreground">$3,499<span className="text-base font-normal text-muted-foreground">/mo</span></p>
+                </div>
+                <p className="mb-4 text-sm font-medium text-green-600">You save $499/mo ($5,988/year)</p>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span>500,000 API calls (SoilSidekick)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span>185,000 MCP calls (LeafEngines)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span>EPA + Satellite + AI integration</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span>White-label + dedicated support</span>
+                  </li>
+                </ul>
+                <Button className="mt-6 w-full" size="lg">
+                  Contact Sales
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Enterprise Add-On Services */}
       <section className="border-t border-border bg-gradient-to-br from-purple-500/5 via-background to-primary/5 py-16">
         <div className="container mx-auto px-4">
