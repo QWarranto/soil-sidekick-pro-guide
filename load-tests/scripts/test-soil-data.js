@@ -18,7 +18,8 @@ export const options = {
 };
 
 const BASE_URL = __ENV.SUPABASE_URL || 'https://wzgnxkoeqzvueypwzvyn.supabase.co';
-const ANON_KEY = __ENV.SUPABASE_ANON_KEY;
+const ANON_KEY = __ENV.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6Z254a29lcXp2dWV5cHd6dnluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3NzIzMTksImV4cCI6MjA2ODM0ODMxOX0.RZt9dzpH6Tw-t_eG6vlj_V7AtSz3Sg6wrAEcgF9oSN4';
+const API_KEY = __ENV.API_KEY || ''; // Pass ak_sandbox_ key via -e API_KEY=...
 
 // Mock FIPS codes for testing
 const TEST_FIPS = [
