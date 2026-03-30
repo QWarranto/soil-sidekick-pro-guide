@@ -1,0 +1,40 @@
+                              Apache License
+                        Version 2.0, January 2004
+                     http://www.apache.org/licenses/
+
+TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+[Full Apache 2.0 text: https://www.apache.org/licenses/LICENSE-2.0.txt]
+
+Copyright 2026 SoilSidekick Pro™ / LeafEngines™
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+---
+
+SCOPE OF LICENSE
+
+This Apache 2.0 license applies ONLY to the LeafEngines MCP Server
+(https://github.com/QWarranto/leafengines-claude-mcp).
+
+Apache 2.0 is used here because the MCP server is an integration adapter
+that does not implement any patented methods. The express patent grant
+in Section 3 of Apache 2.0 is therefore safe — it covers only the
+adapter code, not the underlying LeafEngines platform.
+
+PATENT NOTICE
+
+The LeafEngines platform includes technology covered by pending U.S.
+Patent Applications #19/320,727 and #19/544,827. This license does NOT
+grant any rights under those patents. Use of the MCP server to access
+LeafEngines API endpoints is governed by the LeafEngines Terms of Service.
