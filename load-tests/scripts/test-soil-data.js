@@ -45,6 +45,8 @@ export default function () {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${ANON_KEY}`,
+      'apikey': ANON_KEY,
+      ...(API_KEY ? { 'x-api-key': API_KEY } : {}),
     },
   };
 
