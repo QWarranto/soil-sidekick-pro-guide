@@ -5,10 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Users, DollarSign, TrendingUp, Copy, RefreshCw, Banknote } from 'lucide-react';
+import { Users, DollarSign, TrendingUp, Copy, RefreshCw, Banknote, Leaf, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { AffiliateFAQ } from '@/components/affiliate/AffiliateFAQ';
+import { AffiliateUseCases } from '@/components/affiliate/AffiliateUseCases';
+import { AffiliateAPIPaths } from '@/components/affiliate/AffiliateAPIPaths';
 
 export default function AffiliateDashboard() {
   const { user } = useAuth();
@@ -19,9 +21,19 @@ export default function AffiliateDashboard() {
   if (!user) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
-        <h1 className="text-3xl font-bold mb-4">Affiliate Program</h1>
-        <p className="text-muted-foreground mb-6">Sign in to join the LeafEngines affiliate program.</p>
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <Leaf className="h-8 w-8 text-primary" />
+          <h1 className="text-3xl font-bold">LeafEngines Affiliate Program</h1>
+        </div>
+        <p className="text-muted-foreground mb-6">Sign in to join the LeafEngines Agricultural Intelligence affiliate program.</p>
         <Button onClick={() => navigate('/auth')}>Sign In</Button>
+
+        {/* Show use cases and paths even when not signed in */}
+        <div className="mt-12 space-y-6 text-left">
+          <AffiliateUseCases />
+          <AffiliateAPIPaths />
+          <AffiliateFAQ />
+        </div>
       </div>
     );
   }
@@ -39,13 +51,18 @@ export default function AffiliateDashboard() {
 
   if (!data?.registered) {
     return (
-      <div className="container mx-auto px-4 py-16 max-w-2xl">
+      <div className="container mx-auto px-4 py-12 max-w-4xl space-y-8">
         <Card className="border-primary/30">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl">🌱 Join the Affiliate Program</CardTitle>
-            <CardDescription className="text-base mt-2">
-              Earn <span className="font-bold text-primary">30% recurring commissions</span> on every Pro subscription you refer.
-              That's <span className="font-bold">$14.70/month</span> for each active user, paid monthly.
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Leaf className="h-7 w-7 text-primary" />
+              <Zap className="h-5 w-5 text-amber-500" />
+            </div>
+            <CardTitle className="text-3xl">Join the LeafEngines Affiliate Program</CardTitle>
+            <CardDescription className="text-base mt-2 max-w-2xl mx-auto">
+              Environmental data is systematically mispriced. LeafEngines exposes this gap in real time with
+              <span className="font-bold text-primary"> patent-pending scoring algorithms</span>. Earn recurring commissions
+              by referring customers to the platform.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -53,6 +70,7 @@ export default function AffiliateDashboard() {
               <div className="p-4 rounded-lg bg-muted">
                 <div className="text-2xl font-bold text-primary">30%</div>
                 <div className="text-sm text-muted-foreground">Pro Commission</div>
+                <div className="text-xs text-muted-foreground/70">$14.70/mo per referral</div>
               </div>
               <div className="p-4 rounded-lg bg-muted">
                 <div className="text-2xl font-bold text-primary">15%</div>
@@ -67,6 +85,7 @@ export default function AffiliateDashboard() {
               <li>✅ Unique referral link & code</li>
               <li>✅ Real-time earnings dashboard</li>
               <li>✅ Monthly payouts via Stripe (min $50)</li>
+              <li>✅ 4 customer profiles × 3 API onboarding paths</li>
               <li>✅ Lifetime commissions on referred subscriptions</li>
             </ul>
             <Button onClick={register} className="w-full" size="lg">
@@ -75,6 +94,10 @@ export default function AffiliateDashboard() {
             </Button>
           </CardContent>
         </Card>
+
+        <AffiliateUseCases />
+        <AffiliateAPIPaths />
+        <AffiliateFAQ />
       </div>
     );
   }
@@ -97,7 +120,10 @@ export default function AffiliateDashboard() {
     <div className="container mx-auto px-4 py-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Affiliate Dashboard</h1>
+          <div className="flex items-center gap-2">
+            <Leaf className="h-6 w-6 text-primary" />
+            <h1 className="text-3xl font-bold">LeafEngines Affiliate Dashboard</h1>
+          </div>
           <p className="text-muted-foreground">Track your referrals, earnings, and payouts.</p>
         </div>
         <Button variant="outline" size="sm" onClick={refresh}>
@@ -161,7 +187,7 @@ export default function AffiliateDashboard() {
       <Card>
         <CardHeader>
           <CardTitle>Your Referral Code</CardTitle>
-          <CardDescription>Share your code or link to earn commissions.</CardDescription>
+          <CardDescription>Share your code or link to earn commissions on LeafEngines subscriptions.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-3">
@@ -202,6 +228,10 @@ export default function AffiliateDashboard() {
           </CardContent>
         </Card>
       )}
+
+      {/* Use Cases & API Paths */}
+      <AffiliateUseCases />
+      <AffiliateAPIPaths />
 
       {/* Recent Referrals */}
       <Card>
