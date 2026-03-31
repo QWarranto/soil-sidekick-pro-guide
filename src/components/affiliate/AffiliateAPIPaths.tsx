@@ -40,13 +40,24 @@ mcpServers:
   {
     icon: Globe,
     label: 'Path C',
-    title: 'Direct REST API',
+    title: 'Direct API or npm',
     description: 'Use the LeafEngines API directly from any language or platform. Get your key at /api-docs.',
-    code: `curl -X POST \\
-  https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/agricultural-intelligence \\
-  -H "x-api-key: YOUR_API_KEY_HERE" \\
+    code: `# Environment Setup
+# Get your key at app.soilsidekickpro.com/api-docs
+
+export LEAFENGINES_API_KEY="your-key-here"
+export LEAFENGINES_API_URL="https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/mcp-server"
+export LEAFENGINES_LOG_LEVEL="info"
+export LEAFENGINES_CACHE_TTL="300"  # 5 minutes
+
+# First API call
+curl -X POST "$LEAFENGINES_API_URL" \\
+  -H "x-api-key: $LEAFENGINES_API_KEY" \\
   -H "Content-Type: application/json" \\
-  -d '{"query": "soil analysis for corn in Iowa"}'`,
+  -d '{"query": "soil analysis for corn in Iowa"}'
+
+# Or install via npm
+npm install @leafengines/mcp-server`,
     lang: 'bash',
   },
 ];
