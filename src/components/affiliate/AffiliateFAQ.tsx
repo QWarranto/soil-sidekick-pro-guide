@@ -3,28 +3,32 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const faqItems = [
   {
-    question: "How can I earn commissions through the revenue share program?",
-    answer: `You can earn commissions through the automated Revenue Share Program by referring users to the Pro tier of the platform. You will earn a 30% recurring commission, which equates to $14.70 per month for every $49/month Pro subscription you refer.`
+    question: "What is the LeafEngines Affiliate Program?",
+    answer: `You earn commissions by referring customers to the LeafEngines Agricultural Intelligence Platform. Environmental data is systematically mispriced in commodity futures, crop insurance, agricultural input purchasing, and carbon credit markets — LeafEngines exposes this gap in real time with patent-pending scoring algorithms.\n\nYou earn **30% recurring** on Pro subscriptions ($14.70/month per referral) and **15% recurring** on Enterprise subscriptions — for the lifetime of the subscription.`
   },
   {
     question: "How do I get started?",
-    answer: `1. **Register** at the affiliate dashboard, where the system will auto-generate your unique referral code.\n\n2. **Share** your custom link (formatted as https://app.soilsidekickpro.com?ref=YOUR-CODE).\n\n3. **Get Paid**: The system automatically tracks visits and conversions via Stripe integration. Once your earnings reach at least $50, you can request a payout directly from the dashboard.`
+    answer: `1. **Register** at this affiliate dashboard — the system auto-generates your unique referral code.\n\n2. **Share** your custom link (e.g. app.soilsidekickpro.com?ref=YOUR-CODE) with the four target audiences: AI agent builders, homesteaders/farmers, developers, and researchers.\n\n3. **Get Paid**: The system tracks visits and conversions via Stripe. Once you reach $50, request a payout from the dashboard.`
+  },
+  {
+    question: "Who are the four target customer profiles?",
+    answer: `**USE CASE 01 — OpenClaw & AI Agents**: Real-world environmental arbitrage — a completely new profit category. First-mover advantage is real and time-limited.\n\n**USE CASE 02 — Homesteaders & Farmers**: Soil, water, and climate monitoring to detect yield deviations early. Free tier (100 calls/month), no credit card needed.\n\n**USE CASE 03 — Developers**: Open source MCP server for Claude Desktop. npm package installs in 30 seconds. Build agricultural intelligence into any app.\n\n**USE CASE 04 — Researchers & Students**: Environmental analysis, sustainability scoring, and agricultural data with 150+ country coverage and 50+ crop types.`
+  },
+  {
+    question: "What are the three API onboarding paths?",
+    answer: `**Path A — Claude Desktop**: LeafEngines appears natively in the Claude Desktop server browser. Search "LeafEngines" or configure manually with the @leafengines/mcp-server npm package.\n\n**Path B — OpenClaw Agent Config**: Run \`clawhub install leafengines-opportunity-scanner\` and add the YAML config to your OpenClaw setup.\n\n**Path C — Direct REST API**: Use the API directly from any language. Get your key at /api-docs.`
   },
   {
     question: "Where should I share my referral link?",
-    answer: `Five communities where environmental arbitrage has almost zero competition:\n\n• **Agent Builders & AI Communities** — ClawHub Discord, GitHub discussions, r/automation, r/AIagents. Pitch it as a new arbitrage primitive with real-world ROI.\n\n• **Trading & Quants** — r/algotrading, trading Discords, and quant circles. Offer entirely new data sources and "blue ocean" arbitrage signals.\n\n• **Agriculture & Agronomy** — Farming Facebook groups, AgTech Slack groups, LinkedIn. Farmers are motivated by early yield signals, fertilizer timing, and drought risk alerts.\n\n• **Insurance & Risk Pricing** — Actuaries and underwriters on LinkedIn or r/insurance. They'll pay for Pro tiers to detect water risk pricing gaps and crop insurance mispricing.\n\n• **AI Side Hustle Communities** — r/SideHustle, IndieHackers, YouTube/TikTok automation channels. Pitch "AI bots that make money" using signals nobody else has.`
+    answer: `Five communities where environmental arbitrage has almost zero competition:\n\n• **Agent Builders & AI Communities** — ClawHub Discord, GitHub discussions, r/automation, r/AIagents. Pitch new arbitrage primitives with real-world ROI.\n\n• **Trading & Quants** — r/algotrading, trading Discords. Offer entirely new "blue ocean" data sources.\n\n• **Agriculture & Agronomy** — Farming groups, AgTech Slack, LinkedIn. Early yield signals, fertilizer timing, drought risk.\n\n• **Insurance & Risk Pricing** — Actuaries on LinkedIn, r/insurance. Water risk pricing gaps and crop insurance mispricing.\n\n• **AI Side Hustle Communities** — r/SideHustle, IndieHackers, YouTube. "AI bots that make money" using exclusive signals.`
   },
   {
     question: "What are the top conversion strategies?",
-    answer: `The "Environmental Arbitrage Playbook" recommends these tactics:\n\n• **Post "Agent Recipes"** — Give people copy-paste YAML configurations so they can easily start their own bots.\n\n• **Provide Visual Proof** — Share screenshots of real arbitrage signals to prove the concept works.\n\n• **Share Real ROI** — Cite specific examples, such as a daily crop arbitrage bot returning 8.3% in 45 days.\n\n• **Create Short Tutorials** — Make 60-second tutorials on how to run a first scan and offer hands-on help to reduce friction.`
+    answer: `• **Post "Agent Recipes"** — Copy-paste YAML configurations so people can spin up bots immediately.\n\n• **Provide Visual Proof** — Screenshots of real arbitrage signals proving the concept.\n\n• **Share Real ROI** — Cite specific examples (e.g. daily crop arbitrage bot returning 8.3% in 45 days).\n\n• **Create Short Tutorials** — 60-second tutorials on running a first scan.`
   },
   {
-    question: "What is the minimum payout threshold?",
-    answer: `The minimum payout threshold is $50. Once your available earnings reach this amount, you can request a payout directly from your affiliate dashboard. Payouts are processed monthly via Stripe.`
-  },
-  {
-    question: "Are commissions one-time or recurring?",
-    answer: `Commissions are lifetime recurring. You earn 30% on Pro subscriptions and 15% on Enterprise subscriptions for as long as the referred user remains an active subscriber.`
+    question: "What is the minimum payout and how are commissions structured?",
+    answer: `The minimum payout is **$50**. Commissions are **lifetime recurring** — you earn for as long as your referrals remain active subscribers. Payouts are processed monthly via Stripe.\n\n• **Pro tier**: 30% recurring ($14.70/month per referral)\n• **Enterprise tier**: 15% recurring\n• **Free tier**: No commission (but free users who upgrade later are still attributed to you)`
   }
 ];
 
