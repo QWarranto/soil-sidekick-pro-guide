@@ -60,6 +60,7 @@ import WebGPUBenchmark from "./pages/WebGPUBenchmark";
 import DemoRunbook from "./pages/DemoRunbook";
 import DV005Demo from "./pages/DV005Demo";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
+import TurboQuantCapabilities from "./pages/TurboQuantCapabilities";
 
 const queryClient = new QueryClient();
 
