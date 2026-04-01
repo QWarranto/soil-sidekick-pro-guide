@@ -61,6 +61,7 @@ import DemoRunbook from "./pages/DemoRunbook";
 import DV005Demo from "./pages/DV005Demo";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
 import TurboQuantCapabilities from "./pages/TurboQuantCapabilities";
+import APIUsageAnalytics from "./pages/APIUsageAnalytics";
 
 const queryClient = new QueryClient();
 
@@ -157,6 +158,7 @@ const App = () => (
         <Route path="/dv005-demo" element={<DV005Demo />} />
         <Route path="/affiliate" element={<AffiliateDashboard />} />
         <Route path="/turbo-quant-capabilities" element={<TurboQuantCapabilities />} />
+        <Route path="/api-usage" element={<APIUsageAnalytics />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
