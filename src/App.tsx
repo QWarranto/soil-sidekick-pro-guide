@@ -160,6 +160,7 @@ const App = () => (
         <Route path="/affiliate" element={<AffiliateDashboard />} />
         <Route path="/turbo-quant-capabilities" element={<TurboQuantCapabilities />} />
         <Route path="/api-usage" element={<APIUsageAnalytics />} />
+        <Route path="/mcp" element={<MCPDocumentation />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
