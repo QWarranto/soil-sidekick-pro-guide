@@ -158,6 +158,7 @@ const App = () => (
         <Route path="/dv005-demo" element={<DV005Demo />} />
         <Route path="/affiliate" element={<AffiliateDashboard />} />
         <Route path="/turbo-quant-capabilities" element={<TurboQuantCapabilities />} />
+        <Route path="/api-usage" element={<APIUsageAnalytics />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
