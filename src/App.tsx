@@ -62,6 +62,7 @@ import DV005Demo from "./pages/DV005Demo";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
 import TurboQuantCapabilities from "./pages/TurboQuantCapabilities";
 import APIUsageAnalytics from "./pages/APIUsageAnalytics";
+import MCPDocumentation from "./pages/MCPDocumentation";
 
 const queryClient = new QueryClient();
 
