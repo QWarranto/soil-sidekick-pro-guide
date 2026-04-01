@@ -2,8 +2,8 @@ import { requestHandler } from '../_shared/request-handler.ts';
 import { resolveCapabilities } from '../_shared/turbo-quant.ts';
 
 requestHandler({
-  requireAuth: true,
-  requireSubscription: 'professional',
+  requireAuth: false,
+  requireSubscription: false,
   handler: async (ctx) => {
     const body = ctx.validatedData || {};
     const capabilities = resolveCapabilities({
