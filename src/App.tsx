@@ -63,6 +63,7 @@ import AffiliateDashboard from "./pages/AffiliateDashboard";
 import TurboQuantCapabilities from "./pages/TurboQuantCapabilities";
 import APIUsageAnalytics from "./pages/APIUsageAnalytics";
 import MCPDocumentation from "./pages/MCPDocumentation";
+import OperationsAudit from "./pages/OperationsAudit";
 
 const queryClient = new QueryClient();
 
