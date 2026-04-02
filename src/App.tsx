@@ -63,6 +63,7 @@ import AffiliateDashboard from "./pages/AffiliateDashboard";
 import TurboQuantCapabilities from "./pages/TurboQuantCapabilities";
 import APIUsageAnalytics from "./pages/APIUsageAnalytics";
 import MCPDocumentation from "./pages/MCPDocumentation";
+import OperationsAudit from "./pages/OperationsAudit";
 
 const queryClient = new QueryClient();
 
@@ -161,6 +162,7 @@ const App = () => (
         <Route path="/turbo-quant-capabilities" element={<TurboQuantCapabilities />} />
         <Route path="/api-usage" element={<APIUsageAnalytics />} />
         <Route path="/mcp" element={<MCPDocumentation />} />
+        <Route path="/operations-audit" element={<OperationsAudit />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
