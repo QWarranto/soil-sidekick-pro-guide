@@ -23,10 +23,38 @@ interface ToolCallAudit {
   downstream_endpoint?: string;
   jsonrpc_id?: string;
   is_batch?: boolean;
+  correlation_id?: string;
+}
+
+// ── PII / Sensitive Data Sanitization ───────────────────────────────
+const SENSITIVE_KEYS = new Set(['lat', 'lng', 'latitude', 'longitude', 'email', 'name', 'address', 'phone', 'ssn', 'password', 'token', 'secret']);
+const COORDINATE_KEYS = new Set(['lat', 'lng', 'latitude', 'longitude']);
+
+function sanitizeArguments(args: Record<string, unknown>): Record<string, unknown> {
+  const sanitized: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(args)) {
+    const lk = key.toLowerCase();
+    if (COORDINATE_KEYS.has(lk) && typeof value === 'number') {
+      // Truncate coordinates to ~11km precision (1 decimal place)
+      sanitized[key] = Math.round(value * 10) / 10;
+    } else if (SENSITIVE_KEYS.has(lk) && typeof value === 'string') {
+      sanitized[key] = `[REDACTED:${value.length}chars]`;
+    } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      sanitized[key] = sanitizeArguments(value as Record<string, unknown>);
+    } else {
+      sanitized[key] = value;
+    }
+  }
+  return sanitized;
 }
 
 function logToolCall(entry: ToolCallAudit) {
-  auditClient.from('mcp_tool_call_log').insert(entry).then(
+  // Sanitize tool_arguments before persisting
+  const sanitizedEntry = {
+    ...entry,
+    tool_arguments: entry.tool_arguments ? sanitizeArguments(entry.tool_arguments) : undefined,
+  };
+  auditClient.from('mcp_tool_call_log').insert(sanitizedEntry).then(
     () => {},
     (e: unknown) => console.error('[MCP-AUDIT]', e),
   );
