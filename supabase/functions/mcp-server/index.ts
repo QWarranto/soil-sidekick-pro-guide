@@ -523,6 +523,7 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null, reqMeta?: R
       tool_arguments: toolArgs,
       jsonrpc_id: id != null ? String(id) : undefined,
       is_batch: reqMeta?.isBatch ?? false,
+      correlation_id: reqMeta?.correlationId,
     };
 
     // Handle turbo_quant_capabilities locally (no edge function needed)
