@@ -162,6 +162,7 @@ const App = () => (
         <Route path="/turbo-quant-capabilities" element={<TurboQuantCapabilities />} />
         <Route path="/api-usage" element={<APIUsageAnalytics />} />
         <Route path="/mcp" element={<MCPDocumentation />} />
+        <Route path="/operations-audit" element={<OperationsAudit />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
