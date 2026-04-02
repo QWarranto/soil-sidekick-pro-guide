@@ -1334,6 +1334,66 @@ export type Database = {
         }
         Relationships: []
       }
+      mcp_tool_call_log: {
+        Row: {
+          api_key_hash: string | null
+          context_mode: string | null
+          created_at: string
+          downstream_endpoint: string | null
+          error_message: string | null
+          id: string
+          is_batch: boolean | null
+          jsonrpc_id: string | null
+          kv_cache_hint: string | null
+          preferred_model_tier: string | null
+          response_status: number | null
+          response_time_ms: number | null
+          source_ip: string | null
+          success: boolean
+          tool_arguments: Json | null
+          tool_name: string
+          user_agent: string | null
+        }
+        Insert: {
+          api_key_hash?: string | null
+          context_mode?: string | null
+          created_at?: string
+          downstream_endpoint?: string | null
+          error_message?: string | null
+          id?: string
+          is_batch?: boolean | null
+          jsonrpc_id?: string | null
+          kv_cache_hint?: string | null
+          preferred_model_tier?: string | null
+          response_status?: number | null
+          response_time_ms?: number | null
+          source_ip?: string | null
+          success?: boolean
+          tool_arguments?: Json | null
+          tool_name: string
+          user_agent?: string | null
+        }
+        Update: {
+          api_key_hash?: string | null
+          context_mode?: string | null
+          created_at?: string
+          downstream_endpoint?: string | null
+          error_message?: string | null
+          id?: string
+          is_batch?: boolean | null
+          jsonrpc_id?: string | null
+          kv_cache_hint?: string | null
+          preferred_model_tier?: string | null
+          response_status?: number | null
+          response_time_ms?: number | null
+          source_ip?: string | null
+          success?: boolean
+          tool_arguments?: Json | null
+          tool_name?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       plant_query_history: {
         Row: {
           created_at: string
