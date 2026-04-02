@@ -664,9 +664,12 @@ Deno.serve(async (req) => {
   }
 
   const apiKey = req.headers.get('x-api-key');
+  // Correlation ID: use client-provided header or generate one per request
+  const correlationId = req.headers.get('x-correlation-id') || crypto.randomUUID();
   const meta: ReqMeta = {
     ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || undefined,
     userAgent: req.headers.get('user-agent') || undefined,
+    correlationId,
   };
 
   try {
