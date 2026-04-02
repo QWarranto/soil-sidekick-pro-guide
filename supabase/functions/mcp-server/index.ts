@@ -441,12 +441,25 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null): Promise<un
 
   // ── tools/call ──
   if (method === 'tools/call') {
+    const callStart = Date.now();
     const toolName = (params as Record<string, unknown>)?.name as string;
     const toolArgs = (params as Record<string, unknown>)?.arguments as Record<string, unknown> ?? {};
+
+    const auditBase = {
+      api_key_hash: apiKey ? hashKey(apiKey) : undefined,
+      source_ip: reqMeta?.ip,
+      user_agent: reqMeta?.userAgent,
+      tool_name: toolName,
+      tool_arguments: toolArgs,
+      jsonrpc_id: id != null ? String(id) : undefined,
+      is_batch: reqMeta?.isBatch ?? false,
+    };
 
     // Handle turbo_quant_capabilities locally (no edge function needed)
     if (toolName === 'turbo_quant_capabilities') {
       const result = handleTurboQuantCapabilities(toolArgs);
+      // Fire-and-forget audit log
+      logToolCall({ ...auditBase, success: true, response_time_ms: Date.now() - callStart, downstream_endpoint: 'local' });
       return jsonRpcResponse(id ?? null, {
         content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
       });
@@ -454,10 +467,12 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null): Promise<un
 
     const endpoint = TOOL_TO_ENDPOINT[toolName];
     if (!endpoint) {
+      logToolCall({ ...auditBase, success: false, error_message: `Unknown tool: ${toolName}`, response_time_ms: Date.now() - callStart });
       return jsonRpcError(id ?? null, -32602, `Unknown tool: ${toolName}`);
     }
 
     if (!apiKey) {
+      logToolCall({ ...auditBase, success: false, error_message: 'Missing x-api-key', response_time_ms: Date.now() - callStart });
       return jsonRpcError(id ?? null, -32000, 'Missing x-api-key header. Obtain one at https://soilsidekick.com/api-keys');
     }
 
@@ -484,13 +499,30 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null): Promise<un
       });
 
       const data = await res.json();
+      const elapsed = Date.now() - callStart;
 
       if (!res.ok) {
+        logToolCall({
+          ...auditBase, success: false, error_message: `HTTP ${res.status}`,
+          response_status: res.status, response_time_ms: elapsed,
+          downstream_endpoint: endpoint,
+          context_mode: context_mode as string, kv_cache_hint: kv_cache_hint as string,
+          preferred_model_tier: preferred_model_tier as string,
+        });
         return jsonRpcResponse(id ?? null, {
           content: [{ type: 'text', text: `Error ${res.status}: ${JSON.stringify(data)}` }],
           isError: true,
         });
       }
+
+      // Fire-and-forget audit log for success
+      logToolCall({
+        ...auditBase, success: true,
+        response_status: res.status, response_time_ms: elapsed,
+        downstream_endpoint: endpoint,
+        context_mode: context_mode as string, kv_cache_hint: kv_cache_hint as string,
+        preferred_model_tier: preferred_model_tier as string,
+      });
 
       // Enrich response with TurboQuant metadata if TQ params were used
       const responseData = context_mode || kv_cache_hint
@@ -509,6 +541,12 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null): Promise<un
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Unknown error';
+      logToolCall({
+        ...auditBase, success: false, error_message: msg,
+        response_time_ms: Date.now() - callStart, downstream_endpoint: endpoint,
+        context_mode: context_mode as string, kv_cache_hint: kv_cache_hint as string,
+        preferred_model_tier: preferred_model_tier as string,
+      });
       return jsonRpcResponse(id ?? null, {
         content: [{ type: 'text', text: `Internal error: ${msg}` }],
         isError: true,
