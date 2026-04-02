@@ -1338,6 +1338,7 @@ export type Database = {
         Row: {
           api_key_hash: string | null
           context_mode: string | null
+          correlation_id: string | null
           created_at: string
           downstream_endpoint: string | null
           error_message: string | null
@@ -1357,6 +1358,7 @@ export type Database = {
         Insert: {
           api_key_hash?: string | null
           context_mode?: string | null
+          correlation_id?: string | null
           created_at?: string
           downstream_endpoint?: string | null
           error_message?: string | null
@@ -1376,6 +1378,7 @@ export type Database = {
         Update: {
           api_key_hash?: string | null
           context_mode?: string | null
+          correlation_id?: string | null
           created_at?: string
           downstream_endpoint?: string | null
           error_message?: string | null

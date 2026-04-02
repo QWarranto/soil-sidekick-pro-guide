@@ -464,7 +464,7 @@ function jsonRpcError(id: string | number | null, code: number, message: string)
   return { jsonrpc: '2.0', id, error: { code, message } };
 }
 
-interface ReqMeta { ip?: string; userAgent?: string; isBatch?: boolean; }
+interface ReqMeta { ip?: string; userAgent?: string; isBatch?: boolean; correlationId?: string; }
 
 async function handleRpc(req: JsonRpcRequest, apiKey: string | null, reqMeta?: ReqMeta): Promise<unknown> {
   const { method, params, id } = req;
