@@ -1,4 +1,44 @@
 import { corsHeaders } from '../_shared/cors.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+
+// Service-role client for audit logging (fire-and-forget, never blocks tool calls)
+const auditClient = createClient(
+  Deno.env.get('SUPABASE_URL') ?? '',
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+);
+
+interface ToolCallAudit {
+  api_key_hash?: string;
+  source_ip?: string;
+  user_agent?: string;
+  tool_name: string;
+  tool_arguments?: Record<string, unknown>;
+  context_mode?: string;
+  kv_cache_hint?: string;
+  preferred_model_tier?: string;
+  success: boolean;
+  error_message?: string;
+  response_status?: number;
+  response_time_ms?: number;
+  downstream_endpoint?: string;
+  jsonrpc_id?: string;
+  is_batch?: boolean;
+}
+
+function logToolCall(entry: ToolCallAudit) {
+  auditClient.from('mcp_tool_call_log').insert(entry).then(
+    () => {},
+    (e: unknown) => console.error('[MCP-AUDIT]', e),
+  );
+}
+
+function hashKey(key: string): string {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(key + '_mcp_audit');
+  let hash = 0;
+  for (const byte of data) { hash = ((hash << 5) - hash) + byte; hash |= 0; }
+  return 'mcp_' + Math.abs(hash).toString(36);
+}
 
 /**
  * LeafEngines™ MCP Server — Streamable HTTP Transport
