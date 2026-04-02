@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
-import { Shield, Activity, AlertTriangle, DollarSign, Loader2, ArrowLeft, RefreshCw, Server, Eye, Clock } from 'lucide-react';
+import { Shield, Activity, AlertTriangle, DollarSign, Loader2, ArrowLeft, RefreshCw, Server, Eye, Clock, Download, Link2 } from 'lucide-react';
 import Footer from '@/components/Footer';
 
 const CHART_COLORS = [
@@ -31,6 +31,7 @@ interface McpToolCall {
   downstream_endpoint: string | null;
   context_mode: string | null;
   is_batch: boolean | null;
+  correlation_id: string | null;
   created_at: string;
 }
 
@@ -63,6 +64,35 @@ interface ComplianceCheck {
   created_at: string;
 }
 
+// ── Export Helpers ──
+function exportToCSV(data: Record<string, unknown>[], filename: string) {
+  if (data.length === 0) return;
+  const headers = Object.keys(data[0]);
+  const csv = [
+    headers.join(','),
+    ...data.map(row => headers.map(h => {
+      const v = row[h];
+      const str = v == null ? '' : String(v);
+      return str.includes(',') || str.includes('"') || str.includes('\n') ? `"${str.replace(/"/g, '""')}"` : str;
+    }).join(','))
+  ].join('\n');
+  downloadBlob(csv, `${filename}.csv`, 'text/csv');
+}
+
+function exportToJSON(data: unknown[], filename: string) {
+  downloadBlob(JSON.stringify(data, null, 2), `${filename}.json`, 'application/json');
+}
+
+function downloadBlob(content: string, filename: string, mime: string) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 const OperationsAudit = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -93,7 +123,7 @@ const OperationsAudit = () => {
     const since = getTimeFilter();
 
     const [mcpRes, incRes, costRes, compRes] = await Promise.all([
-      supabase.from('mcp_tool_call_log').select('*').gte('created_at', since).order('created_at', { ascending: false }).limit(200),
+      supabase.from('mcp_tool_call_log').select('*').gte('created_at', since).order('created_at', { ascending: false }).limit(500),
       supabase.from('security_incidents').select('*').gte('created_at', since).order('created_at', { ascending: false }).limit(200),
       supabase.from('cost_tracking').select('*').gte('created_at', since).order('created_at', { ascending: false }).limit(200),
       supabase.from('soc2_compliance_checks').select('*').order('created_at', { ascending: false }).limit(50),
@@ -122,12 +152,43 @@ const OperationsAudit = () => {
     const avgLatency = total > 0 ? Math.round(mcpCalls.reduce((s, c) => s + (c.response_time_ms || 0), 0) / total) : 0;
     const toolBreakdown: Record<string, number> = {};
     const uniqueKeys = new Set<string>();
+    const correlations = new Set<string>();
     mcpCalls.forEach(c => {
       toolBreakdown[c.tool_name] = (toolBreakdown[c.tool_name] || 0) + 1;
       if (c.api_key_hash) uniqueKeys.add(c.api_key_hash);
+      if (c.correlation_id) correlations.add(c.correlation_id);
     });
-    return { total, success, failRate: total > 0 ? ((total - success) / total * 100).toFixed(1) : '0', avgLatency, toolBreakdown, uniqueClients: uniqueKeys.size };
+    return { total, success, failRate: total > 0 ? ((total - success) / total * 100).toFixed(1) : '0', avgLatency, toolBreakdown, uniqueClients: uniqueKeys.size, uniqueSessions: correlations.size };
   }, [mcpCalls]);
+
+  // ── Anomaly Detection ──
+  const anomalies = useMemo(() => {
+    const alerts: { type: string; message: string; severity: 'warning' | 'critical' }[] = [];
+    const failCount = mcpStats.total - mcpStats.success;
+    const failRate = mcpStats.total > 0 ? failCount / mcpStats.total : 0;
+
+    if (failRate > 0.25 && mcpStats.total >= 5) {
+      alerts.push({ type: 'high_failure_rate', message: `Failure rate is ${(failRate * 100).toFixed(0)}% (${failCount}/${mcpStats.total})`, severity: 'critical' });
+    }
+
+    // Latency spike: avg > 5s
+    if (mcpStats.avgLatency > 5000 && mcpStats.total > 0) {
+      alerts.push({ type: 'latency_spike', message: `Average latency ${(mcpStats.avgLatency / 1000).toFixed(1)}s exceeds 5s threshold`, severity: 'warning' });
+    }
+
+    // Single client domination (>90% of calls from one key)
+    if (mcpStats.uniqueClients === 1 && mcpStats.total > 20) {
+      alerts.push({ type: 'single_client', message: `All ${mcpStats.total} calls from a single API key — verify this is expected`, severity: 'warning' });
+    }
+
+    // Security: critical incidents
+    const criticalIncidents = incidents.filter(i => i.severity === 'critical').length;
+    if (criticalIncidents > 0) {
+      alerts.push({ type: 'critical_security', message: `${criticalIncidents} critical security incident(s) detected`, severity: 'critical' });
+    }
+
+    return alerts;
+  }, [mcpStats, incidents]);
 
   const toolChartData = useMemo(() =>
     Object.entries(mcpStats.toolBreakdown)
@@ -162,6 +223,51 @@ const OperationsAudit = () => {
       default: return 'outline';
     }
   };
+
+  // ── Export handlers ──
+  const handleExportMCP = useCallback((format: 'csv' | 'json') => {
+    const data = mcpCalls.map(c => ({
+      id: c.id,
+      tool_name: c.tool_name,
+      api_key_hash: c.api_key_hash || '',
+      correlation_id: c.correlation_id || '',
+      success: c.success,
+      error_message: c.error_message || '',
+      response_time_ms: c.response_time_ms || '',
+      downstream_endpoint: c.downstream_endpoint || '',
+      context_mode: c.context_mode || '',
+      created_at: c.created_at,
+    }));
+    if (format === 'csv') exportToCSV(data, `mcp-audit-${timeRange}`);
+    else exportToJSON(data, `mcp-audit-${timeRange}`);
+  }, [mcpCalls, timeRange]);
+
+  const handleExportSecurity = useCallback((format: 'csv' | 'json') => {
+    const data = incidents.map(i => ({
+      id: i.id,
+      incident_type: i.incident_type,
+      severity: i.severity,
+      source_ip: i.source_ip || '',
+      endpoint: i.endpoint || '',
+      created_at: i.created_at,
+    }));
+    if (format === 'csv') exportToCSV(data, `security-incidents-${timeRange}`);
+    else exportToJSON(data, `security-incidents-${timeRange}`);
+  }, [incidents, timeRange]);
+
+  const handleExportCosts = useCallback((format: 'csv' | 'json') => {
+    const data = costs.map(c => ({
+      id: c.id,
+      service_provider: c.service_provider,
+      service_type: c.service_type,
+      feature_name: c.feature_name,
+      cost_usd: c.cost_usd,
+      usage_count: c.usage_count,
+      date_bucket: c.date_bucket,
+    }));
+    if (format === 'csv') exportToCSV(data, `cost-tracking-${timeRange}`);
+    else exportToJSON(data, `cost-tracking-${timeRange}`);
+  }, [costs, timeRange]);
 
   if (authLoading || loading) {
     return (
@@ -203,6 +309,19 @@ const OperationsAudit = () => {
           </div>
         </div>
 
+        {/* Anomaly Alerts */}
+        {anomalies.length > 0 && (
+          <div className="space-y-2 mb-6">
+            {anomalies.map((a, i) => (
+              <div key={i} className={`flex items-center gap-3 p-3 rounded-lg border ${a.severity === 'critical' ? 'border-destructive bg-destructive/10' : 'border-yellow-500/50 bg-yellow-500/10'}`}>
+                <AlertTriangle className={`h-4 w-4 flex-shrink-0 ${a.severity === 'critical' ? 'text-destructive' : 'text-yellow-600'}`} />
+                <span className="text-sm text-foreground">{a.message}</span>
+                <Badge variant={a.severity === 'critical' ? 'destructive' : 'secondary'} className="ml-auto">{a.severity}</Badge>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <Card>
@@ -212,7 +331,7 @@ const OperationsAudit = () => {
                 <span className="text-sm text-muted-foreground">MCP Tool Calls</span>
               </div>
               <p className="text-3xl font-bold text-foreground">{mcpStats.total}</p>
-              <p className="text-xs text-muted-foreground">{mcpStats.uniqueClients} unique client(s) · {mcpStats.avgLatency}ms avg</p>
+              <p className="text-xs text-muted-foreground">{mcpStats.uniqueClients} client(s) · {mcpStats.uniqueSessions} session(s) · {mcpStats.avgLatency}ms avg</p>
             </CardContent>
           </Card>
           <Card>
@@ -307,8 +426,20 @@ const OperationsAudit = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Recent MCP Tool Calls</CardTitle>
-                <CardDescription>Full audit trail of every tools/call invocation</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg">Recent MCP Tool Calls</CardTitle>
+                    <CardDescription>Full audit trail with correlation IDs for chain tracing</CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => handleExportMCP('csv')}>
+                      <Download className="h-3 w-3 mr-1" /> CSV
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleExportMCP('json')}>
+                      <Download className="h-3 w-3 mr-1" /> JSON
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
@@ -318,6 +449,7 @@ const OperationsAudit = () => {
                         <TableHead>Time</TableHead>
                         <TableHead>Tool</TableHead>
                         <TableHead>Client</TableHead>
+                        <TableHead>Session</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Latency</TableHead>
                         <TableHead>Endpoint</TableHead>
@@ -329,6 +461,14 @@ const OperationsAudit = () => {
                           <TableCell className="text-xs">{new Date(call.created_at).toLocaleString()}</TableCell>
                           <TableCell><Badge variant="outline">{call.tool_name}</Badge></TableCell>
                           <TableCell className="text-xs font-mono">{call.api_key_hash?.slice(0, 12) || '—'}</TableCell>
+                          <TableCell className="text-xs font-mono">
+                            {call.correlation_id ? (
+                              <span className="flex items-center gap-1">
+                                <Link2 className="h-3 w-3 text-muted-foreground" />
+                                {call.correlation_id.slice(0, 8)}
+                              </span>
+                            ) : '—'}
+                          </TableCell>
                           <TableCell>
                             <Badge variant={call.success ? 'default' : 'destructive'}>
                               {call.success ? 'OK' : 'ERR'}
@@ -340,8 +480,8 @@ const OperationsAudit = () => {
                       ))}
                       {mcpCalls.length === 0 && (
                         <TableRow>
-                          <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                            No MCP tool calls recorded in this time range. Once Claude or other agents invoke tools via your MCP server, they'll appear here.
+                          <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                            No MCP tool calls recorded in this time range.
                           </TableCell>
                         </TableRow>
                       )}
@@ -356,8 +496,20 @@ const OperationsAudit = () => {
           <TabsContent value="security" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Security Incidents</CardTitle>
-                <CardDescription>Threat detection events from the enhanced-threat-detection function</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg">Security Incidents</CardTitle>
+                    <CardDescription>Threat detection events from the enhanced-threat-detection function</CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => handleExportSecurity('csv')}>
+                      <Download className="h-3 w-3 mr-1" /> CSV
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleExportSecurity('json')}>
+                      <Download className="h-3 w-3 mr-1" /> JSON
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
@@ -423,7 +575,19 @@ const OperationsAudit = () => {
                 </CardContent>
               </Card>
               <Card>
-                <CardHeader><CardTitle className="text-lg">Recent Cost Entries</CardTitle></CardHeader>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">Recent Cost Entries</CardTitle>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" onClick={() => handleExportCosts('csv')}>
+                        <Download className="h-3 w-3 mr-1" /> CSV
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => handleExportCosts('json')}>
+                        <Download className="h-3 w-3 mr-1" /> JSON
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
                 <CardContent>
                   <div className="overflow-x-auto">
                     <Table>
@@ -513,7 +677,7 @@ const OperationsAudit = () => {
                   <div className="p-4 rounded-lg bg-muted">
                     <p className="text-sm font-medium text-foreground">MCP Tool-Call Logging</p>
                     <Badge className="mt-1">Active</Badge>
-                    <p className="text-xs text-muted-foreground mt-2">Every tools/call invocation is logged with caller identity, parameters, latency, and outcome.</p>
+                    <p className="text-xs text-muted-foreground mt-2">Every tools/call invocation is logged with sanitized arguments, correlation IDs, caller identity, latency, and outcome.</p>
                   </div>
                   <div className="p-4 rounded-lg bg-muted">
                     <p className="text-sm font-medium text-foreground">Threat Detection</p>
@@ -521,9 +685,9 @@ const OperationsAudit = () => {
                     <p className="text-xs text-muted-foreground mt-2">SQL injection, XSS, path traversal, and command injection are detected and logged.</p>
                   </div>
                   <div className="p-4 rounded-lg bg-muted">
-                    <p className="text-sm font-medium text-foreground">Cost Tracking</p>
+                    <p className="text-sm font-medium text-foreground">PII Sanitization</p>
                     <Badge className="mt-1">Active</Badge>
-                    <p className="text-xs text-muted-foreground mt-2">Per-request cost tracking for all external API calls (OpenAI, USDA, etc.).</p>
+                    <p className="text-xs text-muted-foreground mt-2">Coordinates truncated to ~11km precision; emails, names, and secrets are redacted before logging.</p>
                   </div>
                 </div>
               </CardContent>
