@@ -635,13 +635,17 @@ Deno.serve(async (req) => {
   }
 
   const apiKey = req.headers.get('x-api-key');
+  const meta: ReqMeta = {
+    ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || undefined,
+    userAgent: req.headers.get('user-agent') || undefined,
+  };
 
   try {
     const body = await req.json();
 
     // Handle batch requests
     if (Array.isArray(body)) {
-      const results = await Promise.all(body.map((r: JsonRpcRequest) => handleRpc(r, apiKey)));
+      const results = await Promise.all(body.map((r: JsonRpcRequest) => handleRpc(r, apiKey, { ...meta, isBatch: true })));
       const filtered = results.filter((r) => r !== null);
       return new Response(JSON.stringify(filtered), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -649,7 +653,7 @@ Deno.serve(async (req) => {
     }
 
     // Single request
-    const result = await handleRpc(body as JsonRpcRequest, apiKey);
+    const result = await handleRpc(body as JsonRpcRequest, apiKey, meta);
     if (result === null) {
       return new Response(null, { status: 204, headers: corsHeaders });
     }
