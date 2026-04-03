@@ -63,6 +63,7 @@ export function requestHandler<T>(config: RequestHandlerConfig<T>) {
     try {
       // Authentication check
       let user = null;
+      let authenticatedViaTierKey = false;
       if (config.requireAuth) {
         const authResult = await authenticateUser(supabaseClient, req);
         if (authResult.error || !authResult.user) {
@@ -84,6 +85,10 @@ export function requestHandler<T>(config: RequestHandlerConfig<T>) {
           });
         }
         user = authResult.user;
+        // If user was authenticated via API key with a subscription_tier, skip subscription DB check
+        if (user.subscription_tier) {
+          authenticatedViaTierKey = true;
+        }
         logSafe('User authenticated', { userId: user.id });
       }
 
