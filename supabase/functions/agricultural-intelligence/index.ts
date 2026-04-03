@@ -2,6 +2,7 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { validateInput, agriculturalIntelligenceSchema } from '../_shared/validation.ts';
 import { trackOpenAICost, trackExternalAPICost } from '../_shared/cost-tracker.ts';
 import { logComplianceAudit, logExternalAPICall } from '../_shared/compliance-logger.ts';
+import { authenticateUser } from '../_shared/security-utils.ts';
 import { withFallback, safeExternalCall } from '../_shared/graceful-degradation.ts';
 import { withTimingHeaders, logResponseTime } from '../_shared/response-timing.ts';
 import { parseTQHeaders, hasTQHeaders } from '../_shared/turbo-quant.ts';
@@ -157,18 +158,16 @@ Deno.serve(async (req) => {
   let userId: string | undefined;
 
   try {
-    // Authenticate
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      throw new Error('Authentication required');
-    }
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    );
-
+    // Authenticate (supports JWT, x-api-key, and Bearer ak_ tokens)
+    const { user, error: authError } = await authenticateUser(supabase, req);
     if (authError || !user) {
-      throw new Error('Invalid authentication');
+      return new Response(JSON.stringify({
+        success: false,
+        error: authError || 'Authentication required',
+      }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     userId = user.id;
