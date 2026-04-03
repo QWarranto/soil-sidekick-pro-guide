@@ -52,14 +52,34 @@ async function logSecurityEvent(supabase: any, event: any, request?: Request): P
   }
 }
 
+async function hashApiKey(apiKey: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(apiKey);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 async function authenticateUser(supabase: any, request: Request): Promise<{ user: any; error?: string }> {
   try {
+    // Check x-api-key header first
+    const xApiKey = request.headers.get('x-api-key');
+    if (xApiKey && xApiKey.startsWith('ak_')) {
+      return await validateApiKey(supabase, xApiKey);
+    }
+
     const authHeader = request.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return { user: null, error: 'Authentication required' };
     }
 
     const token = authHeader.replace('Bearer ', '');
+
+    // Check if Bearer token is an API key
+    if (token.startsWith('ak_')) {
+      return await validateApiKey(supabase, token);
+    }
+
     const { data: { user }, error } = await supabase.auth.getUser(token);
     
     if (error || !user) {
@@ -69,6 +89,30 @@ async function authenticateUser(supabase: any, request: Request): Promise<{ user
     return { user };
   } catch (error) {
     return { user: null, error: 'Authentication failed' };
+  }
+}
+
+async function validateApiKey(supabase: any, apiKey: string): Promise<{ user: any; error?: string }> {
+  try {
+    const keyHash = await hashApiKey(apiKey);
+    const { data: keyData, error: keyError } = await supabase
+      .from('api_keys')
+      .select('user_id, is_active, expires_at, subscription_tier')
+      .eq('key_hash', keyHash)
+      .maybeSingle();
+
+    if (keyError || !keyData) {
+      return { user: null, error: 'Invalid API key' };
+    }
+    if (!keyData.is_active) {
+      return { user: null, error: 'API key is inactive' };
+    }
+    if (keyData.expires_at && new Date(keyData.expires_at) < new Date()) {
+      return { user: null, error: 'API key has expired' };
+    }
+    return { user: { id: keyData.user_id, subscription_tier: keyData.subscription_tier } };
+  } catch (err) {
+    return { user: null, error: 'API key validation failed' };
   }
 }
 
