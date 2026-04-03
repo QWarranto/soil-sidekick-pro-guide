@@ -1,0 +1,3 @@
+UPDATE public.api_keys 
+SET key_hash = 'ceec68f280c218891e674242336777c4196f86bb51de146737a98aefa40c965c'
+WHERE id = '089de3e3-35c1-4196-894c-84534710bd49';
