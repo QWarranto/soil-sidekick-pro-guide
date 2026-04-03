@@ -279,7 +279,7 @@ export function LocalLLMToggle({
               <Label className="flex items-center gap-2">
                 KV Cache Mode
                 {turboQuantDetected && (
-                  <Badge variant="outline" className="text-xs bg-emerald-50 text-emerald-700">
+                  <Badge variant="outline" className="text-xs bg-primary/10 text-primary">
                     TurboQuant available
                   </Badge>
                 )}
