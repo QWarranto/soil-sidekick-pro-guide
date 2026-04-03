@@ -161,14 +161,37 @@ function normalizeAgriculturalIntelligenceInput(body: Record<string, unknown>): 
     user_location: typeof body.user_location === 'string' ? body.user_location : typeof rawContext?.user_location === 'string' ? rawContext.user_location : undefined,
   };
 
+  // Extract explicit text query from common field names
+  let query = '';
+  for (const key of ['query', 'prompt', 'message', 'question', 'text', 'input']) {
+    if (typeof body[key] === 'string' && body[key].trim().length > 0) {
+      query = body[key] as string;
+      break;
+    }
+  }
+
+  // If no explicit query, synthesize one from structured parameters
+  if (!query) {
+    const parts: string[] = [];
+    const cropType = body.crop_type ?? body.cropType ?? rawContext?.crop_type;
+    const countyName = normalizedContext.county_name;
+    const countyFips = normalizedContext.county_fips;
+    const practiceType = body.practice_type ?? body.practiceType;
+    const analysisType = body.analysis_type ?? body.intent ?? body.type;
+
+    if (typeof analysisType === 'string') parts.push(analysisType.replace(/_/g, ' '));
+    if (typeof cropType === 'string') parts.push(`for ${cropType}`);
+    if (typeof countyName === 'string') parts.push(`in ${countyName}`);
+    else if (typeof countyFips === 'string') parts.push(`in county FIPS ${countyFips}`);
+    if (typeof practiceType === 'string') parts.push(`using ${practiceType.replace(/_/g, ' ')}`);
+
+    query = parts.length > 0
+      ? `Provide agricultural intelligence analysis ${parts.join(' ')}`
+      : 'Provide a general agricultural intelligence overview';
+  }
+
   return {
-    query: typeof body.query === 'string'
-      ? body.query
-      : typeof body.prompt === 'string'
-        ? body.prompt
-        : typeof body.message === 'string'
-          ? body.message
-          : '',
+    query,
     context: Object.values(normalizedContext).some((value) => value !== undefined)
       ? normalizedContext
       : undefined,
