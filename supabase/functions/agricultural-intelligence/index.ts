@@ -138,10 +138,42 @@ interface IntelligenceRequest {
   query: string;
   context?: {
     county_fips?: string;
+    county_name?: string;
+    state_code?: string;
     soil_data?: any;
     user_location?: string;
   };
   useGPT5?: boolean;
+}
+
+function isValidationError(error: unknown): boolean {
+  return error instanceof Error && error.message.startsWith('Validation failed:');
+}
+
+function normalizeAgriculturalIntelligenceInput(body: Record<string, unknown>): IntelligenceRequest {
+  const rawContext = body.context && typeof body.context === 'object' ? body.context as Record<string, unknown> : undefined;
+
+  const normalizedContext = {
+    county_fips: typeof body.county_fips === 'string' ? body.county_fips : typeof rawContext?.county_fips === 'string' ? rawContext.county_fips : undefined,
+    county_name: typeof body.county_name === 'string' ? body.county_name : typeof rawContext?.county_name === 'string' ? rawContext.county_name : undefined,
+    state_code: typeof body.state_code === 'string' ? body.state_code : typeof rawContext?.state_code === 'string' ? rawContext.state_code : undefined,
+    soil_data: body.soil_data ?? rawContext?.soil_data,
+    user_location: typeof body.user_location === 'string' ? body.user_location : typeof rawContext?.user_location === 'string' ? rawContext.user_location : undefined,
+  };
+
+  return {
+    query: typeof body.query === 'string'
+      ? body.query
+      : typeof body.prompt === 'string'
+        ? body.prompt
+        : typeof body.message === 'string'
+          ? body.message
+          : '',
+    context: Object.values(normalizedContext).some((value) => value !== undefined)
+      ? normalizedContext
+      : undefined,
+    useGPT5: typeof body.useGPT5 === 'boolean' ? body.useGPT5 : false,
+  };
 }
 
 Deno.serve(async (req) => {
@@ -173,8 +205,9 @@ Deno.serve(async (req) => {
     userId = user.id;
 
     // Validate input
-    const body = await req.json();
-    const validatedInput = validateInput(agriculturalIntelligenceSchema, body);
+    const body = await req.json().catch(() => ({}));
+    const normalizedBody = normalizeAgriculturalIntelligenceInput(body as Record<string, unknown>);
+    const validatedInput = validateInput(agriculturalIntelligenceSchema, normalizedBody);
     const { query, context, useGPT5 = false } = validatedInput;
 
     // ── DEMO MOCK SHORT-CIRCUIT ──────────────────────────────────────────────
@@ -275,6 +308,16 @@ Deno.serve(async (req) => {
 
   } catch (error) {
     console.error('Error in agricultural intelligence:', error);
+
+    if (isValidationError(error)) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: error.message,
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Log compliance audit for error
     try {
