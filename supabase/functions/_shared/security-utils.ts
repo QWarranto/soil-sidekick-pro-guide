@@ -215,13 +215,21 @@ export async function authenticateUser(supabase: any, request: Request): Promise
 }
 
 /**
- * Validates an ak_-prefixed API key against the api_keys table
+ * Validates an ak_-prefixed API key against the api_keys table.
+ * Uses a service-role client to bypass RLS on api_keys table.
  */
-async function validateApiKeyAuth(supabase: any, apiKey: string): Promise<{ user: any; error?: string }> {
+async function validateApiKeyAuth(_supabase: any, apiKey: string): Promise<{ user: any; error?: string }> {
   try {
+    // Import createClient dynamically to avoid circular deps
+    const { createClient } = await import('jsr:@supabase/supabase-js@2');
+    const serviceClient = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
+
     const keyHash = await hashApiKeyForValidation(apiKey);
 
-    const { data: keyData, error: keyError } = await supabase
+    const { data: keyData, error: keyError } = await serviceClient
       .from('api_keys')
       .select('user_id, is_active, expires_at, subscription_tier')
       .eq('key_hash', keyHash)
