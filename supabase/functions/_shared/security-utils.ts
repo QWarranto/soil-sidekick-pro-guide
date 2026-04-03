@@ -166,16 +166,42 @@ export function createSecureResponse(
 }
 
 /**
- * Handles authentication and extracts user info
+ * Hash an API key using SHA-256 (matches api-key-management and get-soil-data)
+ */
+async function hashApiKeyForValidation(apiKey: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(apiKey);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Handles authentication and extracts user info.
+ * Supports both Supabase JWT (Authorization: Bearer <jwt>) and
+ * custom API keys (x-api-key: ak_... or Authorization: Bearer ak_...).
  */
 export async function authenticateUser(supabase: any, request: Request): Promise<{ user: any; error?: string }> {
   try {
+    // Check x-api-key header first (preferred for SDK/partner integrations)
+    const xApiKey = request.headers.get('x-api-key');
+    if (xApiKey && xApiKey.startsWith('ak_')) {
+      return await validateApiKeyAuth(supabase, xApiKey);
+    }
+
     const authHeader = request.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return { user: null, error: 'Authentication required' };
     }
 
     const token = authHeader.replace('Bearer ', '');
+
+    // Check if Bearer token is an API key
+    if (token.startsWith('ak_')) {
+      return await validateApiKeyAuth(supabase, token);
+    }
+
+    // Standard JWT authentication
     const { data: { user }, error } = await supabase.auth.getUser(token);
     
     if (error || !user) {
@@ -185,6 +211,45 @@ export async function authenticateUser(supabase: any, request: Request): Promise
     return { user };
   } catch (error) {
     return { user: null, error: 'Authentication failed' };
+  }
+}
+
+/**
+ * Validates an ak_-prefixed API key against the api_keys table.
+ * Uses a service-role client to bypass RLS on api_keys table.
+ */
+async function validateApiKeyAuth(_supabase: any, apiKey: string): Promise<{ user: any; error?: string }> {
+  try {
+    // Import createClient dynamically to avoid circular deps
+    const { createClient } = await import('jsr:@supabase/supabase-js@2');
+    const serviceClient = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
+
+    const keyHash = await hashApiKeyForValidation(apiKey);
+
+    const { data: keyData, error: keyError } = await serviceClient
+      .from('api_keys')
+      .select('user_id, is_active, expires_at, subscription_tier')
+      .eq('key_hash', keyHash)
+      .maybeSingle();
+
+    if (keyError || !keyData) {
+      return { user: null, error: 'Invalid API key' };
+    }
+
+    if (!keyData.is_active) {
+      return { user: null, error: 'API key is inactive' };
+    }
+
+    if (keyData.expires_at && new Date(keyData.expires_at) < new Date()) {
+      return { user: null, error: 'API key has expired' };
+    }
+
+    return { user: { id: keyData.user_id, subscription_tier: keyData.subscription_tier } };
+  } catch (err) {
+    return { user: null, error: 'API key validation failed' };
   }
 }
 

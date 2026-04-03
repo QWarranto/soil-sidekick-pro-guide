@@ -63,6 +63,7 @@ export function requestHandler<T>(config: RequestHandlerConfig<T>) {
     try {
       // Authentication check
       let user = null;
+      let authenticatedViaTierKey = false;
       if (config.requireAuth) {
         const authResult = await authenticateUser(supabaseClient, req);
         if (authResult.error || !authResult.user) {
@@ -84,11 +85,15 @@ export function requestHandler<T>(config: RequestHandlerConfig<T>) {
           });
         }
         user = authResult.user;
+        // If user was authenticated via API key with a subscription_tier, skip subscription DB check
+        if (user.subscription_tier) {
+          authenticatedViaTierKey = true;
+        }
         logSafe('User authenticated', { userId: user.id });
       }
 
-      // Subscription check if required
-      if (config.requireSubscription && user) {
+      // Subscription check if required (skip for enterprise/pro API key auth)
+      if (config.requireSubscription && user && !authenticatedViaTierKey) {
         const { data: subscriber } = await supabaseClient
           .from('subscribers')
           .select('subscribed, subscription_tier')
@@ -124,6 +129,24 @@ export function requestHandler<T>(config: RequestHandlerConfig<T>) {
             });
           }
         }
+      } else if (config.requireSubscription && user && authenticatedViaTierKey) {
+        // For API key auth, validate the key's tier against the required tier
+        if (typeof config.requireSubscription === 'string') {
+          const tierHierarchy = ['starter', 'professional', 'enterprise'];
+          const requiredTierIndex = tierHierarchy.indexOf(config.requireSubscription);
+          const keyTierIndex = tierHierarchy.indexOf(user.subscription_tier || '');
+
+          if (keyTierIndex < requiredTierIndex) {
+            return new Response(JSON.stringify({
+              success: false,
+              error: `${config.requireSubscription} tier API key or higher required`,
+            }), {
+              status: 403,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            });
+          }
+        }
+        // If requireSubscription === true (any tier), enterprise key always passes
       }
 
       // Parse and validate request body

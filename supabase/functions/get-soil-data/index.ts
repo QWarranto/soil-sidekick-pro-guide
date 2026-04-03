@@ -108,8 +108,11 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Authenticate user (supports both JWT and API key)
-    const authHeader = req.headers.get('authorization');
+    // Authenticate user (supports both JWT and API key via Authorization or x-api-key header)
+    const xApiKey = req.headers.get('x-api-key');
+    const authHeader = xApiKey && xApiKey.startsWith('ak_') 
+      ? `Bearer ${xApiKey}` 
+      : req.headers.get('authorization');
     const { user, error: authError, authMethod } = await authenticateRequest(supabase, authHeader);
     
     if (authError || !user) {
