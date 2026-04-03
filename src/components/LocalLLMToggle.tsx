@@ -125,7 +125,7 @@ export function LocalLLMToggle({
           <Cpu className="h-5 w-5" />
           Offline AI Mode
           {isGemma4 && (
-            <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200">
+            <Badge variant="secondary" className="bg-accent text-accent-foreground border-accent">
               Gemma 4
             </Badge>
           )}
