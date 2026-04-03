@@ -1,7 +1,15 @@
 import { pipeline, env } from '@huggingface/transformers';
 
+export type GemmaModelId = 
+  | 'gemma-2b'       // Legacy Gemma 2 — will be deprecated
+  | 'gemma-7b'       // Legacy Gemma 2 — will be deprecated
+  | 'gemma4-e2b'     // Gemma 4 E2B: 2.3B effective, 128K ctx, text+image+audio
+  | 'gemma4-e4b'     // Gemma 4 E4B: 4.5B effective, 128K ctx, text+image+audio
+  | 'gemma4-26b-a4b' // Gemma 4 MoE: 26B total / 3.8B active, 256K ctx, text+image
+  | 'gemma4-31b';    // Gemma 4 Dense: 30.7B, 256K ctx, text+image
+
 export interface LocalLLMConfig {
-  model: 'gemma-2b' | 'gemma-7b';
+  model: GemmaModelId;
   maxTokens: number;
   temperature?: number;
   /**
@@ -9,8 +17,8 @@ export interface LocalLLMConfig {
    * - 'none': Standard 16-bit KV cache (current default)
    * - '3bit': TurboQuant 3-bit KV cache (6x memory reduction, zero accuracy loss)
    * 
-   * When enabled, Gemma 7B becomes viable on 4GB+ devices and context windows
-   * expand 4-6x. Requires runtime support in onnxruntime-web or @huggingface/transformers.
+   * Note: Gemma 4 models include built-in hybrid attention with proportional RoPE
+   * and unified K/V for global layers, making TurboQuant even more effective.
    */
   kvCacheMode?: 'none' | '3bit';
   /**
@@ -19,6 +27,12 @@ export interface LocalLLMConfig {
    * Only effective when kvCacheMode is '3bit' (cache small enough to persist).
    */
   reuseKVCache?: boolean;
+  /**
+   * Enable Gemma 4's built-in thinking/reasoning mode.
+   * When enabled, the model performs step-by-step reasoning before answering.
+   * Recommended for complex soil analysis and multi-factor agricultural queries.
+   */
+  thinkingMode?: boolean;
 }
 
 export interface ChatMessage {
@@ -34,30 +48,127 @@ export interface LLMStatus {
   initialized: boolean;
   device: DeviceType | null;
   model: string | null;
+  modelGeneration: 'gemma2' | 'gemma4';
   fallbackUsed: boolean;
   turboQuantActive: boolean;
   kvCacheMode: 'none' | '3bit';
   estimatedKVCacheGB: number;
+  contextWindow: number;
+  supportsAudio: boolean;
+  supportsImages: boolean;
+  supportsFunctionCalling: boolean;
+  activeParameters: string;
 }
 
 /**
- * TurboQuant Performance Impact Reference (March 2026)
+ * Gemma 4 Performance Reference (April 2026)
  * 
- * Before TurboQuant → After TurboQuant:
+ * Gemma 4 models feature hybrid attention (sliding window + global), built-in
+ * thinking mode, native system prompts, and function calling. With TurboQuant:
  * 
- * Gemma 2B KV cache:   2-4 GB   → 0.5-0.7 GB
- * Gemma 7B KV cache:   8-16 GB  → 1.3-2.7 GB
- * Max context (2B, 4GB device):  ~4K tokens → ~16-24K tokens
- * Max context (7B, 8GB device):  ~4K tokens → ~16K tokens
- * WASM fallback latency:  300-800ms → potentially sub-200ms
+ * Model         | Effective Params | Context | KV Cache (16-bit) | KV Cache (3-bit) | Audio
+ * E2B           | 2.3B             | 128K    | ~1.5 GB           | ~0.3 GB          | ✅
+ * E4B           | 4.5B             | 128K    | ~3.0 GB           | ~0.6 GB          | ✅
+ * 26B A4B (MoE) | 3.8B active      | 256K    | ~10 GB            | ~1.9 GB          | ❌
+ * 31B Dense     | 30.7B            | 256K    | ~14 GB            | ~2.6 GB          | ❌
  * 
- * KV cache reuse savings: ~40-60% compute per follow-up message
+ * Legacy Gemma 2 (deprecated but still supported):
+ * Gemma 2B      | 2B               | 8K      | ~3.0 GB           | ~0.6 GB          | ❌
+ * Gemma 7B      | 7B               | 8K      | ~12 GB            | ~2.3 GB          | ❌
  */
+
+interface ModelSpec {
+  onnxId: string;
+  generation: 'gemma2' | 'gemma4';
+  effectiveParams: string;
+  contextWindow: number;
+  baseKVCacheGB: number;
+  supportsAudio: boolean;
+  supportsImages: boolean;
+  supportsFunctionCalling: boolean;
+  downloadSizeLabel: string;
+  description: string;
+}
+
+const MODEL_SPECS: Record<GemmaModelId, ModelSpec> = {
+  'gemma-2b': {
+    onnxId: 'onnx-community/gemma-2b-it-onnx',
+    generation: 'gemma2',
+    effectiveParams: '2B',
+    contextWindow: 8192,
+    baseKVCacheGB: 3.0,
+    supportsAudio: false,
+    supportsImages: false,
+    supportsFunctionCalling: false,
+    downloadSizeLabel: '~1.6 GB',
+    description: 'Legacy Gemma 2B — basic summaries',
+  },
+  'gemma-7b': {
+    onnxId: 'onnx-community/gemma-7b-it-onnx',
+    generation: 'gemma2',
+    effectiveParams: '7B',
+    contextWindow: 8192,
+    baseKVCacheGB: 12.0,
+    supportsAudio: false,
+    supportsImages: false,
+    supportsFunctionCalling: false,
+    downloadSizeLabel: '~4.2 GB',
+    description: 'Legacy Gemma 7B — detailed analysis',
+  },
+  'gemma4-e2b': {
+    onnxId: 'onnx-community/gemma-4-e2b-it-onnx',
+    generation: 'gemma4',
+    effectiveParams: '2.3B',
+    contextWindow: 131072,
+    baseKVCacheGB: 1.5,
+    supportsAudio: true,
+    supportsImages: true,
+    supportsFunctionCalling: true,
+    downloadSizeLabel: '~2.0 GB',
+    description: 'Gemma 4 E2B — fast, audio+vision, 128K context',
+  },
+  'gemma4-e4b': {
+    onnxId: 'onnx-community/gemma-4-e4b-it-onnx',
+    generation: 'gemma4',
+    effectiveParams: '4.5B',
+    contextWindow: 131072,
+    baseKVCacheGB: 3.0,
+    supportsAudio: true,
+    supportsImages: true,
+    supportsFunctionCalling: true,
+    downloadSizeLabel: '~4.0 GB',
+    description: 'Gemma 4 E4B — balanced, audio+vision, 128K context',
+  },
+  'gemma4-26b-a4b': {
+    onnxId: 'onnx-community/gemma-4-26b-a4b-it-onnx',
+    generation: 'gemma4',
+    effectiveParams: '3.8B active / 26B total',
+    contextWindow: 262144,
+    baseKVCacheGB: 10.0,
+    supportsAudio: false,
+    supportsImages: true,
+    supportsFunctionCalling: true,
+    downloadSizeLabel: '~14 GB',
+    description: 'Gemma 4 MoE — frontier reasoning, 256K context, runs like 4B',
+  },
+  'gemma4-31b': {
+    onnxId: 'onnx-community/gemma-4-31b-it-onnx',
+    generation: 'gemma4',
+    effectiveParams: '30.7B',
+    contextWindow: 262144,
+    baseKVCacheGB: 14.0,
+    supportsAudio: false,
+    supportsImages: true,
+    supportsFunctionCalling: true,
+    downloadSizeLabel: '~16 GB',
+    description: 'Gemma 4 31B Dense — maximum quality, 256K context',
+  },
+};
 
 export class LocalLLMService {
   private textGenerator: any = null;
   private isInitialized = false;
-  private currentModel: string | null = null;
+  private currentModel: GemmaModelId | null = null;
   private currentDevice: DeviceType | null = null;
   private fallbackUsed = false;
   private backendsConfigured = false;
@@ -68,96 +179,80 @@ export class LocalLLMService {
   private configureBackendsOnce() {
     if (this.backendsConfigured) return;
     try {
-      // In embedded/preview environments, crossOriginIsolated is often false.
-      // Before TurboQuant: forced single-threaded to avoid memory pressure.
-      // After TurboQuant: 3-bit KV cache reduces memory bandwidth enough that
-      // multi-threading becomes safe on 8GB+ devices. For now, keep single-threaded
-      // as default and enable multi-threading when TurboQuant is confirmed active.
       const threadCount = this.turboQuantActive ? navigator.hardwareConcurrency || 2 : 1;
       (env as any).backends.onnx.wasm.numThreads = threadCount;
 
-      // Point ORT to CDN-hosted WASM artifacts (too large to bundle into repo)
       const ortWasmBase = 'https://unpkg.com/onnxruntime-web@1.22.0-dev.20250409-89f8206ba4/dist/';
       (env as any).backends.onnx.wasm.wasmPaths = ortWasmBase;
-      // Some versions also look under env.wasm
       if ((env as any).wasm) {
         (env as any).wasm.wasmPaths = ortWasmBase;
       }
     } catch {
-      // no-op: env/backends may differ across transformers.js versions
+      // no-op
     }
     this.backendsConfigured = true;
   }
 
   /**
+   * Get the specification for a model.
+   */
+  getModelSpec(model: GemmaModelId): ModelSpec {
+    return MODEL_SPECS[model] || MODEL_SPECS['gemma4-e2b'];
+  }
+
+  /**
+   * Get all available model specs for UI rendering.
+   */
+  getAllModelSpecs(): Record<GemmaModelId, ModelSpec> {
+    return MODEL_SPECS;
+  }
+
+  /**
    * Detect whether the runtime supports TurboQuant 3-bit KV cache quantization.
-   * Currently checks for the feature flag in onnxruntime-web / transformers.js.
-   * Will return true once these libraries ship TurboQuant support.
    */
   detectTurboQuantSupport(): boolean {
     try {
-      // Check for TurboQuant feature flag in ORT backends
-      // This will become true when onnxruntime-web ships 3-bit KV quantization
       const ortBackend = (env as any).backends?.onnx;
-      if (ortBackend?.kvQuantization?.turboQuant) {
-        return true;
-      }
-      // Check for transformers.js native TurboQuant support
-      if ((env as any).turboQuant?.available) {
-        return true;
-      }
+      if (ortBackend?.kvQuantization?.turboQuant) return true;
+      if ((env as any).turboQuant?.available) return true;
     } catch {
-      // Feature detection failed — not available
+      // Feature detection failed
     }
     return false;
   }
 
   /**
    * Estimate KV cache size in GB for a given model and cache mode.
-   * 
-   * Before TurboQuant: 16-bit KV cache
-   * After TurboQuant: 3-bit KV cache (6x reduction)
    */
-  estimateKVCacheGB(model: 'gemma-2b' | 'gemma-7b', mode: 'none' | '3bit'): number {
-    const baseKVCacheGB: Record<string, number> = {
-      'gemma-2b': 3.0,   // ~2-4 GB average
-      'gemma-7b': 12.0,  // ~8-16 GB average
-    };
-    const base = baseKVCacheGB[model] || 3.0;
-    // TurboQuant compresses 16-bit → 3-bit = ~5.3x reduction
+  estimateKVCacheGB(model: GemmaModelId, mode: 'none' | '3bit'): number {
+    const spec = MODEL_SPECS[model];
+    const base = spec?.baseKVCacheGB || 3.0;
     return mode === '3bit' ? base / 5.3 : base;
   }
 
   async initialize(config: LocalLLMConfig): Promise<void> {
-    if (this.isInitialized && this.currentModel === this.getModelName(config.model)) {
+    const spec = this.getModelSpec(config.model);
+    if (this.isInitialized && this.currentModel === config.model) {
       return;
     }
 
-    // Detect TurboQuant support before configuring backends
     this.turboQuantActive = this.detectTurboQuantSupport();
     this.kvCacheMode = (config.kvCacheMode === '3bit' && this.turboQuantActive) ? '3bit' : 'none';
 
-    const modelName = this.getModelName(config.model);
-
-    // Configure ORT backends for embedded/browser environments
-    this.backendsConfigured = false; // Reset to apply TurboQuant threading settings
+    this.backendsConfigured = false;
     this.configureBackendsOnce();
     
-    // Try WebGPU first, then fallback to WASM (CPU)
-    // Before TurboQuant: WASM was "degraded mode" (300-800ms)
-    // After TurboQuant: WASM becomes a viable tier (~sub-200ms with 3-bit KV)
     const webgpuSupported = await this.checkWebGPUSupport();
     
     if (webgpuSupported) {
       try {
-        console.log(`Initializing local LLM with WebGPU: ${config.model}`);
+        console.log(`Initializing ${config.model} (${spec.generation}) with WebGPU`);
         
         const pipelineOptions: any = { 
           device: 'webgpu',
           dtype: 'fp16'
         };
 
-        // Apply TurboQuant KV cache quantization if available
         if (this.turboQuantActive && this.kvCacheMode === '3bit') {
           pipelineOptions.kv_cache_dtype = 'uint3';
           console.log('TurboQuant 3-bit KV cache enabled — 6x memory reduction');
@@ -165,49 +260,46 @@ export class LocalLLMService {
 
         this.textGenerator = await pipeline(
           'text-generation',
-          modelName,
+          spec.onnxId,
           pipelineOptions
         ) as any;
 
         this.currentDevice = 'webgpu';
-        this.currentModel = modelName;
+        this.currentModel = config.model;
         this.isInitialized = true;
         this.fallbackUsed = false;
-        console.log('Local LLM initialized successfully with WebGPU');
+        console.log(`${config.model} initialized with WebGPU (${spec.contextWindow / 1024}K context)`);
         return;
       } catch (webgpuError) {
         console.warn('WebGPU initialization failed, falling back to CPU:', webgpuError);
       }
     }
 
-    // WASM fallback — Before TurboQuant: "degraded mode", After TurboQuant: viable tier
+    // WASM fallback
     try {
-      console.log(`Initializing local LLM with WASM (CPU): ${config.model}`);
+      console.log(`Initializing ${config.model} (${spec.generation}) with WASM (CPU)`);
 
       const pipelineOptions: any = { 
         device: 'wasm',
-        // Before TurboQuant: FP32 required double memory
-        // After TurboQuant: 3-bit KV cache offsets the FP32 cost
         dtype: 'fp32'
       };
 
-      // Apply TurboQuant KV cache quantization if available
       if (this.turboQuantActive && this.kvCacheMode === '3bit') {
         pipelineOptions.kv_cache_dtype = 'uint3';
-        console.log('TurboQuant 3-bit KV cache enabled on WASM — makes WASM a viable tier');
+        console.log('TurboQuant 3-bit KV cache enabled on WASM');
       }
 
       this.textGenerator = await pipeline(
         'text-generation',
-        modelName,
+        spec.onnxId,
         pipelineOptions
       ) as any;
 
       this.currentDevice = 'wasm';
-      this.currentModel = modelName;
+      this.currentModel = config.model;
       this.isInitialized = true;
-      this.fallbackUsed = !this.turboQuantActive; // Not a "fallback" if TurboQuant makes it viable
-      console.log(`Local LLM initialized with WASM${this.turboQuantActive ? ' + TurboQuant (viable tier)' : ' (degraded mode)'}`);
+      this.fallbackUsed = !this.turboQuantActive;
+      console.log(`${config.model} initialized with WASM${this.turboQuantActive ? ' + TurboQuant' : ' (degraded mode)'}`);
     } catch (wasmError) {
       console.error('Failed to initialize local LLM on both WebGPU and WASM:', wasmError);
       const detail = wasmError instanceof Error ? wasmError.message : String(wasmError);
@@ -217,29 +309,29 @@ export class LocalLLMService {
     }
   }
 
-  private getModelName(model: 'gemma-2b' | 'gemma-7b'): string {
-    switch (model) {
-      case 'gemma-2b':
-        return 'onnx-community/gemma-2b-it-onnx';
-      case 'gemma-7b':
-        return 'onnx-community/gemma-7b-it-onnx';
-      default:
-        return 'onnx-community/gemma-2b-it-onnx';
-    }
-  }
-
   /**
    * Get the recommended max context messages based on model and KV cache mode.
    * 
-   * Before TurboQuant: 5 messages (hard limit to avoid OOM)
-   * After TurboQuant: 20-30 messages (4-6x context expansion)
+   * Gemma 4 models have dramatically larger context windows (128K-256K),
+   * enabling much longer conversation histories.
    */
-  getRecommendedContextMessages(model: 'gemma-2b' | 'gemma-7b'): number {
+  getRecommendedContextMessages(model: GemmaModelId): number {
+    const spec = MODEL_SPECS[model];
+    if (!spec) return 12;
+
+    if (spec.generation === 'gemma4') {
+      if (this.kvCacheMode === '3bit') {
+        // Gemma 4 + TurboQuant: very long sessions
+        return spec.contextWindow >= 262144 ? 50 : 40;
+      }
+      // Gemma 4 without TurboQuant: still much better than Gemma 2
+      return spec.contextWindow >= 262144 ? 30 : 25;
+    }
+
+    // Legacy Gemma 2
     if (this.kvCacheMode === '3bit') {
-      // After TurboQuant: context windows expand 4-6x
       return model === 'gemma-7b' ? 30 : 20;
     }
-    // Before TurboQuant: conservative limit to prevent OOM
     return model === 'gemma-7b' ? 8 : 12;
   }
 
@@ -256,8 +348,10 @@ export class LocalLLMService {
     }
 
     try {
-      // Format messages for Gemma chat format
-      const prompt = this.formatMessagesForGemma(messages);
+      const spec = this.getModelSpec(config.model);
+      const prompt = spec.generation === 'gemma4'
+        ? this.formatMessagesForGemma4(messages, config.thinkingMode)
+        : this.formatMessagesForGemma(messages);
       
       const generateOptions: any = {
         max_new_tokens: config.maxTokens,
@@ -267,22 +361,17 @@ export class LocalLLMService {
         repetition_penalty: 1.1,
       };
 
-      // KV cache reuse: skip reprocessing system prompt if cached
-      // Before TurboQuant: KV cache too large to persist between calls
-      // After TurboQuant: 3-bit cache small enough to hold across session
       if (config.reuseKVCache && this.kvCacheMode === '3bit' && this.cachedSystemPromptKV) {
         generateOptions.past_key_values = this.cachedSystemPromptKV;
       }
 
       const result = await this.textGenerator(prompt, generateOptions);
 
-      // Cache the KV state for reuse on next call if TurboQuant is active
       if (config.reuseKVCache && this.kvCacheMode === '3bit' && result[0]?.past_key_values) {
         this.cachedSystemPromptKV = result[0].past_key_values;
       }
 
       if (Array.isArray(result) && result[0]?.generated_text) {
-        // Extract only the new generated text (remove the prompt)
         const fullText = result[0].generated_text;
         const newText = fullText.slice(prompt.length).trim();
         return newText;
@@ -357,6 +446,35 @@ export class LocalLLMService {
     return this.generateChatResponse(messages, config);
   }
 
+  /**
+   * Gemma 4 chat format — uses native system prompt support.
+   * Gemma 4 natively supports the `system` role, configurable thinking,
+   * and function calling.
+   */
+  private formatMessagesForGemma4(messages: ChatMessage[], thinkingMode?: boolean): string {
+    let prompt = '';
+
+    for (const message of messages) {
+      if (message.role === 'system') {
+        prompt += `<start_of_turn>system\n${message.content}<end_of_turn>\n`;
+      } else if (message.role === 'user') {
+        prompt += `<start_of_turn>user\n${message.content}<end_of_turn>\n`;
+      } else if (message.role === 'assistant') {
+        prompt += `<start_of_turn>model\n${message.content}<end_of_turn>\n`;
+      }
+    }
+
+    // Enable thinking mode if requested
+    if (thinkingMode) {
+      prompt += '<start_of_turn>model thinking\n';
+    } else {
+      prompt += '<start_of_turn>model\n';
+    }
+
+    return prompt;
+  }
+
+  /** Legacy Gemma 2 chat format */
   private formatMessagesForGemma(messages: ChatMessage[]): string {
     let prompt = '';
     
@@ -370,9 +488,7 @@ export class LocalLLMService {
       }
     }
     
-    // Add the model turn start for generation
     prompt += '<start_of_turn>model\n';
-    
     return prompt;
   }
 
@@ -440,18 +556,22 @@ Please provide an executive summary focusing on water safety, agricultural use s
   }
 
   getStatus(): LLMStatus {
-    const model = this.currentModel?.includes('7b') ? 'gemma-7b' : 'gemma-2b';
+    const modelId = this.currentModel || 'gemma4-e2b';
+    const spec = MODEL_SPECS[modelId] || MODEL_SPECS['gemma4-e2b'];
     return {
       initialized: this.isInitialized,
       device: this.currentDevice,
       model: this.currentModel,
+      modelGeneration: spec.generation,
       fallbackUsed: this.fallbackUsed,
       turboQuantActive: this.turboQuantActive,
       kvCacheMode: this.kvCacheMode,
-      estimatedKVCacheGB: this.estimateKVCacheGB(
-        model as 'gemma-2b' | 'gemma-7b',
-        this.kvCacheMode
-      )
+      estimatedKVCacheGB: this.estimateKVCacheGB(modelId as GemmaModelId, this.kvCacheMode),
+      contextWindow: spec.contextWindow,
+      supportsAudio: spec.supportsAudio,
+      supportsImages: spec.supportsImages,
+      supportsFunctionCalling: spec.supportsFunctionCalling,
+      activeParameters: spec.effectiveParams,
     };
   }
 

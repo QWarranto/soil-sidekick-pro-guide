@@ -3,11 +3,10 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Cpu, Wifi, WifiOff, Download, AlertCircle, Check, Zap, Shield, Battery, Gauge, Info } from 'lucide-react';
-import { localLLMService, LocalLLMConfig } from '@/services/localLLMService';
+import { Badge } from '@/components/ui/badge';
+import { Cpu, Wifi, WifiOff, Download, Check, Zap, Info, Mic, Eye, Wrench, Brain } from 'lucide-react';
+import { localLLMService, LocalLLMConfig, GemmaModelId } from '@/services/localLLMService';
 import { useToast } from '@/hooks/use-toast';
 import { SmartLLMState } from '@/hooks/useSmartLLMSelection';
 
@@ -29,9 +28,6 @@ export function LocalLLMToggle({
   onConfigChange, 
   currentConfig, 
   smartState,
-  onEnableAutoMode,
-  onEnablePrivacyMode,
-  onEnableBatterySaving,
   isAutoMode = false
 }: LocalLLMToggleProps) {
   const [isInitializing, setIsInitializing] = useState(false);
@@ -52,9 +48,6 @@ export function LocalLLMToggle({
   };
 
   const handleToggle = async (checked: boolean) => {
-    // Before TurboQuant: WebGPU was required — blocked ~30% of users
-    // After TurboQuant: WASM + 3-bit KV cache is a viable tier, so we
-    // only warn instead of blocking when WebGPU is unavailable
     if (checked && !isInitialized) {
       setIsInitializing(true);
       try {
@@ -64,15 +57,12 @@ export function LocalLLMToggle({
         const status = localLLMService.getStatus();
         const deviceLabel = status.device === 'webgpu' ? 'WebGPU' : 'WASM (CPU)';
         const tqLabel = status.turboQuantActive ? ' + TurboQuant' : '';
+        const spec = localLLMService.getModelSpec(currentConfig.model);
 
         onToggle(true);
         toast({
           title: "Offline Mode Enabled",
-          description: `${currentConfig.model} running on ${deviceLabel}${tqLabel}. ${
-            status.turboQuantActive 
-              ? 'TurboQuant 3-bit KV cache active — 6x memory savings.' 
-              : 'Standard KV cache mode.'
-          }`,
+          description: `${spec.description} on ${deviceLabel}${tqLabel}. Context: ${spec.contextWindow / 1024}K tokens.`,
         });
       } catch (error) {
         console.error('Failed to initialize local LLM:', error);
@@ -89,11 +79,10 @@ export function LocalLLMToggle({
     }
   };
 
-  const handleModelChange = (model: 'gemma-2b' | 'gemma-7b') => {
+  const handleModelChange = (model: GemmaModelId) => {
     const newConfig = { ...currentConfig, model };
     onConfigChange(newConfig);
     
-    // Reset initialization if model changes
     if (enabled && isInitialized) {
       setIsInitialized(false);
       localLLMService.clearKVCache();
@@ -117,10 +106,17 @@ export function LocalLLMToggle({
     }
   };
 
+  const handleThinkingModeChange = (checked: boolean) => {
+    const newConfig = { ...currentConfig, thinkingMode: checked };
+    onConfigChange(newConfig);
+  };
+
+  const spec = localLLMService.getModelSpec(currentConfig.model);
   const estimatedKVCache = localLLMService.estimateKVCacheGB(
     currentConfig.model, 
     currentConfig.kvCacheMode || 'none'
   );
+  const isGemma4 = spec.generation === 'gemma4';
 
   return (
     <Card className="w-full">
@@ -128,20 +124,25 @@ export function LocalLLMToggle({
         <CardTitle className="flex items-center gap-2">
           <Cpu className="h-5 w-5" />
           Offline AI Mode
+          {isGemma4 && (
+            <Badge variant="secondary" className="bg-accent text-accent-foreground border-accent">
+              Gemma 4
+            </Badge>
+          )}
           {turboQuantDetected && (
-            <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+            <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
               <Zap className="h-3 w-3 mr-1" />
               TurboQuant
             </Badge>
           )}
         </CardTitle>
         <CardDescription>
-          Use local Gemma models for agricultural intelligence without internet connection
+          {isGemma4
+            ? 'Gemma 4 multimodal models — text, image, and audio intelligence offline'
+            : 'Use local Gemma models for agricultural intelligence without internet connection'}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Before TurboQuant: hard block on non-WebGPU browsers
-            After TurboQuant: informational warning — WASM is now viable */}
         {webGPUSupported === false && (
           <Alert>
             <Info className="h-4 w-4" />
@@ -177,27 +178,82 @@ export function LocalLLMToggle({
 
         {enabled && (
           <div className="space-y-4 border-t pt-4">
+            {/* Model Selection */}
             <div className="space-y-2">
               <Label>Model Selection</Label>
               <Select
                 value={currentConfig.model}
-                onValueChange={handleModelChange}
+                onValueChange={(v) => handleModelChange(v as GemmaModelId)}
                 disabled={isInitializing}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="gemma4-e2b">
+                    Gemma 4 E2B — {localLLMService.getModelSpec('gemma4-e2b').effectiveParams}, 128K ctx, audio+vision
+                  </SelectItem>
+                  <SelectItem value="gemma4-e4b">
+                    Gemma 4 E4B — {localLLMService.getModelSpec('gemma4-e4b').effectiveParams}, 128K ctx, audio+vision
+                  </SelectItem>
+                  <SelectItem value="gemma4-26b-a4b">
+                    Gemma 4 MoE — {localLLMService.getModelSpec('gemma4-26b-a4b').effectiveParams}, 256K ctx
+                  </SelectItem>
+                  <SelectItem value="gemma4-31b">
+                    Gemma 4 31B — {localLLMService.getModelSpec('gemma4-31b').effectiveParams}, 256K ctx
+                  </SelectItem>
                   <SelectItem value="gemma-2b">
-                    Gemma 2B — Fast, ~{localLLMService.estimateKVCacheGB('gemma-2b', currentConfig.kvCacheMode || 'none').toFixed(1)} GB KV cache
+                    Legacy Gemma 2B — basic (deprecated)
                   </SelectItem>
                   <SelectItem value="gemma-7b">
-                    Gemma 7B — Better quality, ~{localLLMService.estimateKVCacheGB('gemma-7b', currentConfig.kvCacheMode || 'none').toFixed(1)} GB KV cache
+                    Legacy Gemma 7B — detailed (deprecated)
                   </SelectItem>
                 </SelectContent>
               </Select>
+
+              {/* Model capabilities badges */}
+              {isGemma4 && (
+                <div className="flex flex-wrap gap-1.5 mt-1.5">
+                  {spec.supportsAudio && (
+                    <Badge variant="outline" className="text-xs gap-1">
+                      <Mic className="h-3 w-3" /> Audio
+                    </Badge>
+                  )}
+                  {spec.supportsImages && (
+                    <Badge variant="outline" className="text-xs gap-1">
+                      <Eye className="h-3 w-3" /> Vision
+                    </Badge>
+                  )}
+                  {spec.supportsFunctionCalling && (
+                    <Badge variant="outline" className="text-xs gap-1">
+                      <Wrench className="h-3 w-3" /> Tool Use
+                    </Badge>
+                  )}
+                  <Badge variant="outline" className="text-xs">
+                    {spec.contextWindow / 1024}K context
+                  </Badge>
+                </div>
+              )}
             </div>
 
+            {/* Thinking Mode (Gemma 4 only) */}
+            {isGemma4 && (
+              <div className="flex items-center justify-between">
+                <Label htmlFor="thinking-mode" className="flex items-center gap-2">
+                  <Brain className="h-4 w-4" />
+                  Thinking Mode
+                  <span className="text-xs text-muted-foreground">(step-by-step reasoning)</span>
+                </Label>
+                <Switch
+                  id="thinking-mode"
+                  checked={currentConfig.thinkingMode || false}
+                  onCheckedChange={handleThinkingModeChange}
+                  disabled={isInitializing}
+                />
+              </div>
+            )}
+
+            {/* Response Length */}
             <div className="space-y-2">
               <Label>Response Length</Label>
               <Select
@@ -218,12 +274,12 @@ export function LocalLLMToggle({
               </Select>
             </div>
 
-            {/* TurboQuant KV cache mode selector */}
+            {/* KV Cache Mode */}
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
                 KV Cache Mode
                 {turboQuantDetected && (
-                  <Badge variant="outline" className="text-xs bg-emerald-50 text-emerald-700">
+                  <Badge variant="outline" className="text-xs bg-primary/10 text-primary">
                     TurboQuant available
                   </Badge>
                 )}
@@ -246,16 +302,17 @@ export function LocalLLMToggle({
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
-                Est. KV cache: ~{estimatedKVCache.toFixed(1)} GB
-                {currentConfig.kvCacheMode === '3bit' && ' • KV cache reuse enabled for faster follow-ups'}
+                Est. KV cache: ~{estimatedKVCache.toFixed(1)} GB • Download: {spec.downloadSizeLabel}
+                {currentConfig.kvCacheMode === '3bit' && ' • KV cache reuse enabled'}
               </p>
             </div>
 
+            {/* Download prompts */}
             {!isInitialized && !isInitializing && (
               <Alert>
                 <Download className="h-4 w-4" />
                 <AlertDescription>
-                  The model will be downloaded (~{currentConfig.model === 'gemma-2b' ? '1.6GB' : '4.2GB'}) 
+                  The model will be downloaded ({spec.downloadSizeLabel}) 
                   and cached locally on first use. This may take a few minutes.
                 </AlertDescription>
               </Alert>
@@ -265,7 +322,7 @@ export function LocalLLMToggle({
               <Alert>
                 <Download className="h-4 w-4" />
                 <AlertDescription>
-                  Downloading and initializing {currentConfig.model} model... This may take a few minutes.
+                  Downloading and initializing {spec.description}... This may take a few minutes.
                 </AlertDescription>
               </Alert>
             )}
