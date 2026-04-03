@@ -130,7 +130,7 @@ export function LocalLLMToggle({
             </Badge>
           )}
           {turboQuantDetected && (
-            <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+            <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
               <Zap className="h-3 w-3 mr-1" />
               TurboQuant
             </Badge>
