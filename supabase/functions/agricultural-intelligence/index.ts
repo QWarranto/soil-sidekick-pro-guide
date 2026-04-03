@@ -2,6 +2,7 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { validateInput, agriculturalIntelligenceSchema } from '../_shared/validation.ts';
 import { trackOpenAICost, trackExternalAPICost } from '../_shared/cost-tracker.ts';
 import { logComplianceAudit, logExternalAPICall } from '../_shared/compliance-logger.ts';
+import { authenticateUser } from '../_shared/security-utils.ts';
 import { withFallback, safeExternalCall } from '../_shared/graceful-degradation.ts';
 import { withTimingHeaders, logResponseTime } from '../_shared/response-timing.ts';
 import { parseTQHeaders, hasTQHeaders } from '../_shared/turbo-quant.ts';
