@@ -63,6 +63,26 @@ This project is built with:
 - Google Earth Engine (AlphaEarth Satellite Intelligence)
 - EPA Water Quality Portal Integration
 
+## 🚀 Quick Start — Get Your API Key
+
+**LeafEngines™** is an AI-powered agricultural intelligence API. Start building in minutes:
+
+1. **Request an API key** → [app.soilsidekickpro.com/api-keys](https://app.soilsidekickpro.com/api-keys)
+2. **Read the docs** → [LeafEngines API Documentation](https://app.soilsidekickpro.com/leafengines-api)
+3. **Install the MCP server** → `npm install @anthropic/leafengines-mcp`
+
+### Pricing Tiers
+
+| Tier | Price | Included Calls | Best For |
+|------|-------|---------------|----------|
+| **Starter** | $149/mo | 10,000 | Solo developers, prototyping |
+| **Pro** | $499/mo | 35,000 | Production apps, teams |
+| **Enterprise** | $1,999/mo | 175,000+ | White-label, SLA guarantees |
+
+> 💡 **Free sandbox keys** are available instantly — no credit card required.
+
+---
+
 ## Key Features
 
 ### 🛰️ AlphaEarth Satellite Intelligence

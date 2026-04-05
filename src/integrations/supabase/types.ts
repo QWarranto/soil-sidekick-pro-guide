@@ -897,6 +897,33 @@ export type Database = {
         }
         Relationships: []
       }
+      conversion_funnel: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          source_channel: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          source_channel?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          source_channel?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       cost_alerts: {
         Row: {
           alert_frequency: string
