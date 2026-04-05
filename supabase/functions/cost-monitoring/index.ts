@@ -82,7 +82,33 @@ Deno.serve(async (req) => {
           logStep('Alert check error', alertsError);
         } else if (alerts && alerts.length > 0) {
           logStep('Cost alerts triggered', { alertCount: alerts.length });
-          // TODO: Send notifications for triggered alerts
+        // TODO: Send notifications for triggered alerts
+        }
+
+        // Fire-and-forget: sync usage to Stripe Billing Meter
+        try {
+          const stripeResp = await fetch(
+            `${Deno.env.get('SUPABASE_URL')}/functions/v1/stripe-usage-sync`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+              },
+              body: JSON.stringify({
+                mode: 'realtime',
+                user_id: user.id,
+                service_provider,
+                service_type,
+                usage_count: 1,
+                feature_name,
+              }),
+            }
+          );
+          const stripeData = await stripeResp.json();
+          console.log(`[COST-MONITORING] Stripe sync: ${stripeData.synced ? 'synced' : 'skipped'}`);
+        } catch (stripeErr) {
+          console.warn('[COST-MONITORING] Stripe sync failed (non-blocking):', stripeErr);
         }
 
         return new Response(JSON.stringify({ 
