@@ -125,6 +125,49 @@ Deno.serve(async (req) => {
         );
       }
 
+      // Action: Request a Founders Key (manual approval queue)
+      if (action === 'request_founders') {
+        // Check for existing pending founders request
+        const { data: existingFounders } = await supabase
+          .from('api_key_requests')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('requested_tier', 'founders')
+          .eq('request_status', 'pending')
+          .limit(1);
+
+        if (existingFounders && existingFounders.length > 0) {
+          return new Response(
+            JSON.stringify({ error: 'You already have a pending Founders Key request' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        const { data: request, error: requestError } = await supabase
+          .from('api_key_requests')
+          .insert({
+            user_id: userId,
+            requested_tier: 'founders',
+            company_name: companyName || null,
+            use_case: useCase || null,
+            expected_volume: expectedVolume || null,
+            admin_notes: keyName || null,
+          })
+          .select()
+          .single();
+
+        if (requestError) throw requestError;
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            request,
+            message: 'Your Founders Key request has been submitted for review.'
+          }),
+          { status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
       // Action: Request paid tier key (requires approval)
       if (action === 'request_upgrade') {
         const validTiers = ['starter', 'pro', 'enterprise'];

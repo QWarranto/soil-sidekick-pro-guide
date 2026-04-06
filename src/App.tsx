@@ -65,6 +65,7 @@ import APIUsageAnalytics from "./pages/APIUsageAnalytics";
 import MCPDocumentation from "./pages/MCPDocumentation";
 import OperationsAudit from "./pages/OperationsAudit";
 import PodcastLanding from "./pages/PodcastLanding";
+import FoundersProgram from "./pages/FoundersProgram";
 
 const queryClient = new QueryClient();
 
@@ -165,6 +166,7 @@ const App = () => (
         <Route path="/mcp" element={<MCPDocumentation />} />
         <Route path="/operations-audit" element={<OperationsAudit />} />
         <Route path="/podcast-api" element={<PodcastLanding />} />
+        <Route path="/founders" element={<FoundersProgram />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
