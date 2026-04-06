@@ -127,11 +127,11 @@ export default function PodcastLanding() {
               </Button>
             </div>
           ) : generatedKey ? (
-            <Card className="max-w-xl border-green-500 bg-green-50 dark:bg-green-950/20">
+            <Card className="max-w-xl border-primary bg-primary/5">
               <CardContent className="pt-6">
                 <div className="flex items-center gap-2 mb-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                  <span className="font-semibold text-green-700 dark:text-green-400">Your Sandbox API Key</span>
+                  <CheckCircle className="h-5 w-5 text-primary" />
+                  <span className="font-semibold text-primary">Your Sandbox API Key</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <code className="flex-1 rounded bg-background p-3 font-mono text-sm border break-all">
