@@ -120,9 +120,9 @@ export default function PodcastLanding() {
                 Sign in to Get Your Free API Key
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <a href="https://www.npmjs.com/package/node-red-contrib-leafengines" target="_blank" rel="noopener noreferrer">
+                <a href="https://flows.nodered.org/node/node-red-contrib-leafengines" target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="mr-2 h-4 w-4" />
-                  View on npm
+                  Node-RED Flows Library
                 </a>
               </Button>
             </div>
@@ -161,9 +161,9 @@ export default function PodcastLanding() {
                 Get Instant Sandbox Key
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <a href="https://www.npmjs.com/package/node-red-contrib-leafengines" target="_blank" rel="noopener noreferrer">
+                <a href="https://flows.nodered.org/node/node-red-contrib-leafengines" target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="mr-2 h-4 w-4" />
-                  View on npm
+                  Node-RED Flows Library
                 </a>
               </Button>
             </div>
@@ -188,6 +188,40 @@ export default function PodcastLanding() {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* Distribution Links */}
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold mb-4 text-center">Available Now</h3>
+          <div className="grid sm:grid-cols-3 gap-4">
+            <a href="https://flows.nodered.org/node/node-red-contrib-leafengines" target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-3 rounded-lg border p-4 hover:bg-accent transition-colors">
+              <Radio className="h-5 w-5 text-primary shrink-0" />
+              <div>
+                <p className="font-medium text-sm">Node-RED Flows Library</p>
+                <p className="text-xs text-muted-foreground">flows.nodered.org</p>
+              </div>
+              <ExternalLink className="h-4 w-4 ml-auto text-muted-foreground" />
+            </a>
+            <a href="https://www.npmjs.com/package/node-red-contrib-leafengines" target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-3 rounded-lg border p-4 hover:bg-accent transition-colors">
+              <Zap className="h-5 w-5 text-primary shrink-0" />
+              <div>
+                <p className="font-medium text-sm">npm Registry</p>
+                <p className="text-xs text-muted-foreground">npmjs.com</p>
+              </div>
+              <ExternalLink className="h-4 w-4 ml-auto text-muted-foreground" />
+            </a>
+            <a href="https://github.com/QWarranto/node-red-contrib-leafengines" target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-3 rounded-lg border p-4 hover:bg-accent transition-colors">
+              <Globe className="h-5 w-5 text-primary shrink-0" />
+              <div>
+                <p className="font-medium text-sm">GitHub Repository</p>
+                <p className="text-xs text-muted-foreground">Source & README</p>
+              </div>
+              <ExternalLink className="h-4 w-4 ml-auto text-muted-foreground" />
+            </a>
+          </div>
         </div>
       </section>
 
@@ -271,9 +305,15 @@ export default function PodcastLanding() {
               Manage API Keys
             </Button>
             <Button variant="outline" asChild>
-              <a href="https://www.npmjs.com/package/node-red-contrib-leafengines" target="_blank" rel="noopener noreferrer">
+              <a href="https://flows.nodered.org/node/node-red-contrib-leafengines" target="_blank" rel="noopener noreferrer">
                 <Zap className="mr-2 h-4 w-4" />
-                node-red-contrib-leafengines
+                Node-RED Flows Library
+              </a>
+            </Button>
+            <Button variant="outline" asChild>
+              <a href="https://github.com/QWarranto/node-red-contrib-leafengines" target="_blank" rel="noopener noreferrer">
+                <Globe className="mr-2 h-4 w-4" />
+                GitHub
               </a>
             </Button>
           </div>
