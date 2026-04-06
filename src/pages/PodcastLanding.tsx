@@ -115,7 +115,7 @@ export default function PodcastLanding() {
           {/* Key Generation CTA */}
           {!user && !loading ? (
             <div className="flex flex-col sm:flex-row gap-3">
-              <Button size="lg" onClick={() => navigate('/auth?redirect=/podcast')}>
+              <Button size="lg" onClick={() => navigate('/auth?redirect=/podcast-api')}>
                 <Key className="mr-2 h-5 w-5" />
                 Sign in to Get Your Free API Key
               </Button>
