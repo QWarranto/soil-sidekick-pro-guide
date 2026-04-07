@@ -129,6 +129,10 @@ class LeafEnginesClient:
             payload["crop_type"] = crop_type
         return self._post("multi-parameter-planting-calendar", payload)
 
+    def reverse_geocode(self, lat: float, lon: float) -> Dict:
+        """Convert lat/lon to county FIPS via FCC Area API."""
+        return self._post("reverse-geocode", {"lat": lat, "lon": lon})
+
     def leafengines_query(
         self, county_fips: str, plant_common_name: str
     ) -> Dict:

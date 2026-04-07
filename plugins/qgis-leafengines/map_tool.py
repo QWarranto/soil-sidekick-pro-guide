@@ -37,15 +37,10 @@ class SoilQueryMapTool(QgsMapToolEmitPoint):
 
         lat, lon = point.y(), point.x()
 
-        # For now, use a coordinate-based lookup hint
-        # (the API resolves via county_lookup — future: add lat/lon endpoint)
         try:
-            # Attempt lookup by approximate location description
-            results = self.client.county_lookup(f"{lat},{lon}")
-            if not results:
-                return
-
-            fips = results[0].get("fips_code", results[0].get("fips", ""))
+            # Reverse-geocode click coordinates to county FIPS
+            geo = self.client.reverse_geocode(lat, lon)
+            fips = geo.get("county_fips", "")
             if not fips:
                 return
 
