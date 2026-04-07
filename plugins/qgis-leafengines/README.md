@@ -29,7 +29,7 @@ Restart QGIS and enable the plugin via **Plugins → Manage and Install Plugins*
 
 1. Open the plugin dialog (toolbar icon or **Plugins → LeafEngines**)
 2. Go to the **⚙ Settings** tab
-3. Enter your API key (get one at [soilsidekickpro.com/api-keys](https://soilsidekickpro.com/api-keys))
+3. Enter your API key (get one at [app.soilsidekickpro.com/api-keys](https://app.soilsidekickpro.com/api-keys))
 4. Click **Save API Key**
 
 Alternatively, set the `LEAFENGINES_API_KEY` environment variable.

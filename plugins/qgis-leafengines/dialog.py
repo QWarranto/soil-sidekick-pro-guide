@@ -74,7 +74,7 @@ class LeafEnginesDialog(QDialog):
         form.addRow(save_btn)
 
         form.addRow(QLabel(""))
-        form.addRow(QLabel("Get a key at soilsidekickpro.com/api-keys"))
+        form.addRow(QLabel("Get a key at app.soilsidekickpro.com/api-keys"))
         return w
 
     def _save_api_key(self):
