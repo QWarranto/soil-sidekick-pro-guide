@@ -103,34 +103,34 @@ export default function Features() {
   const plans = [
     { 
       id: 'basic', 
-      name: 'Basic', 
-      price: '$0.00', 
-      description: 'Perfect for hobby gardeners exploring soil basics',
+      name: 'Free', 
+      price: '$0/mo', 
+      description: 'Explore soil basics with limited county lookups',
       icon: Shield, 
       color: 'text-gray-600' 
     },
     { 
       id: 'starter', 
-      name: 'Agricultural Intelligence Starter', 
-      price: '$29/mo • $290/yr', 
-      description: 'AI soil analysis with basic recommendations and email support',
+      name: 'Starter', 
+      price: '$149/mo • $1,490/yr', 
+      description: 'Full environmental intelligence with water quality & plant care',
       popular: true,
       icon: Zap, 
       color: 'text-blue-600' 
     },
     { 
       id: 'pro', 
-      name: 'Agricultural Intelligence Pro', 
-      price: '$79/mo • $790/yr', 
-      description: 'Unlimited AI features with visual crop analysis & advanced analytics',
+      name: 'Pro', 
+      price: '$499/mo • $4,990/yr', 
+      description: 'AI-powered intelligence with satellite data & VRT maps',
       icon: Crown, 
       color: 'text-primary' 
     },
     { 
       id: 'api', 
-      name: 'API-Enterprise', 
-      price: '$149/mo • $1,490/yr', 
-      description: 'Patent-protected APIs for ag-tech platforms & enterprises',
+      name: 'Enterprise', 
+      price: '$1,999/mo • $19,990/yr', 
+      description: 'White-label APIs, ADAPT integration & dedicated infrastructure',
       icon: Sparkles, 
       color: 'text-purple-600' 
     }

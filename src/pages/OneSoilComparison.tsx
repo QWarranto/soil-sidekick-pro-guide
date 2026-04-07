@@ -81,7 +81,7 @@ const OneSoilComparison = () => {
     },
     {
       category: "Pricing Model",
-      soilSidekick: "Freemium with tiered subscriptions ($29-149/month)",
+      soilSidekick: "Freemium with tiered subscriptions ($149-$1,999/month)",
       oneSoil: "Free basic platform with premium OneSoil Pro features",
       winner: "OneSoil"
     },
@@ -108,25 +108,25 @@ const OneSoilComparison = () => {
   const pricingComparison = [
     {
       feature: "Free Tier",
-      soilSidekick: "5 county lookups/month, basic soil analysis",
+      soilSidekick: "1,000 commoditized calls/month, basic soil analysis",
       oneSoil: "Full platform access with satellite monitoring, NDVI maps, weather data",
       oneSoilWins: true
     },
     {
       feature: "Entry Level",
-      soilSidekick: "Starter: $29/month - 50 lookups, enhanced analysis",
+      soilSidekick: "Starter: $149/month - 10K calls, water quality, planting calendars",
       oneSoil: "Free (no entry-level paid tier)",
       oneSoilWins: true
     },
     {
       feature: "Professional",
-      soilSidekick: "Pro: $79/month - Unlimited lookups, full features",
+      soilSidekick: "Pro: $499/month - 37K calls, satellite data, AI intelligence",
       oneSoil: "OneSoil Pro: Premium VRA features (pricing on request)",
       oneSoilWins: null
     },
     {
       feature: "Enterprise",
-      soilSidekick: "Enterprise: $149/month - API access, custom integrations",
+      soilSidekick: "Enterprise: $1,999/month - 185K calls, ADAPT, white-label",
       oneSoil: "OneSoil Global Analytics: B2B data solutions (custom pricing)",
       oneSoilWins: null
     }

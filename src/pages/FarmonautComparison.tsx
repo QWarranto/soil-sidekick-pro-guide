@@ -93,10 +93,10 @@ const FarmonautComparison = () => {
     {
       platform: "SoilSidekick Pro",
       tiers: [
-        { name: "Basic", price: "Free", features: ["County Lookup", "Basic Soil Analysis", "Limited Reports"] },
-        { name: "Starter", price: "$19/month", features: ["Enhanced Analysis", "PDF Export", "Carbon Credits"] },
-        { name: "Pro", price: "$49/month", features: ["Advanced AI", "Water Quality", "Priority Support"] },
-        { name: "Enterprise", price: "$199/month", features: ["API Access", "ADAPT Export", "Custom Integration"] }
+        { name: "Free", price: "Free", features: ["County Lookup", "Basic Soil Analysis", "Limited Reports"] },
+        { name: "Starter", price: "$149/month", features: ["Water Quality", "Planting Calendars", "Plant Care APIs"] },
+        { name: "Pro", price: "$499/month", features: ["AI Intelligence", "Satellite Data", "VRT Maps"] },
+        { name: "Enterprise", price: "$1,999/month", features: ["ADAPT Export", "White-Label", "Dedicated Support"] }
       ]
     },
     {
