@@ -165,6 +165,7 @@ const App = () => (
         <Route path="/api-usage" element={<APIUsageAnalytics />} />
         <Route path="/mcp" element={<MCPDocumentation />} />
         <Route path="/operations-audit" element={<OperationsAudit />} />
+        <Route path="/podcast" element={<Navigate to="/founders" replace />} />
         <Route path="/podcast-api" element={<PodcastLanding />} />
         <Route path="/founders" element={<FoundersProgram />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
