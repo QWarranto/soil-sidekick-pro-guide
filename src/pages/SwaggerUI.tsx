@@ -200,6 +200,13 @@ const TIER_COLORS: Record<string, string> = {
   enterprise: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100"
 };
 
+const TIER_LABELS: Record<string, string> = {
+  free: "Free",
+  starter: "Starter · $149/mo",
+  pro: "Pro · $499/mo",
+  enterprise: "Enterprise · $1,999/mo"
+};
+
 export default function SwaggerUI() {
   const [apiKey, setApiKey] = useState("");
   const [selectedEndpoint, setSelectedEndpoint] = useState<EndpointDoc | null>(null);
@@ -396,7 +403,7 @@ export default function SwaggerUI() {
                       </Badge>
                       <code className="text-lg font-mono text-foreground">{selectedEndpoint.path}</code>
                       <Badge className={TIER_COLORS[selectedEndpoint.tier]}>
-                        {selectedEndpoint.tier}
+                        {TIER_LABELS[selectedEndpoint.tier] || selectedEndpoint.tier}
                       </Badge>
                     </div>
                     <h2 className="text-xl font-bold text-foreground">{selectedEndpoint.summary}</h2>
