@@ -3,14 +3,13 @@ name=LeafEngines Agricultural Intelligence
 qgisMinimumVersion=3.22
 description=Access USDA soil data, EPA water quality, AI crop recommendations, carbon credit calculations, and environmental impact analysis for any US county — directly in QGIS.
 version=1.0.0
-author=LeafEngines and SoilSidekick Pro
+author=LeafEngines / SoilSidekick Pro
 email=support@soilsidekickpro.com
 about=LeafEngines brings geo-specific agricultural intelligence into your GIS workflow. Query soil composition, water quality, satellite vegetation indices, and AI-powered crop recommendations by county FIPS code or map click. Results are added as styled vector layers with full attribute tables. Supports offline caching and batch processing for large-scale analysis.
 
-# Use simple URLs that will definitely pass validation
-tracker=https://app.soilsidekickpro.com
-repository=https://app.soilsidekickpro.com
-homepage=https://app.soilsidekickpro.com/leafengines
+tracker=https://github.com/leafengines/qgis-plugin/issues
+repository=https://github.com/leafengines/qgis-plugin
+homepage=https://soilsidekick.com/api-docs
 
 tags=agriculture,soil,water quality,USDA,EPA,carbon credits,precision agriculture,environmental,NDVI,satellite
 
