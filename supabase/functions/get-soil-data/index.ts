@@ -133,6 +133,16 @@ Deno.serve(async (req) => {
       console.log(`Authenticated via ${authMethod} for user ${user.id}`);
     } else {
       console.log('Free-tier access granted via x-free-tier header');
+      // Fire-and-forget anonymous usage tracking
+      const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0] || req.headers.get('x-real-ip') || 'unknown';
+      const ipHash = await hashApiKey(clientIp);
+      supabase.from('anonymous_api_usage').insert({
+        endpoint_name: ENDPOINT_NAME,
+        client_ip_hash: ipHash,
+        user_agent: req.headers.get('user-agent'),
+        request_origin: req.headers.get('origin') || req.headers.get('referer'),
+        request_metadata: { county_fips, free_tier: true },
+      }).then(() => {}).catch(() => {});
     }
 
     const userId = user?.id || null;
