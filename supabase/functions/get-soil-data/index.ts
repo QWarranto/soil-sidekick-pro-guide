@@ -108,22 +108,44 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Authenticate user (supports both JWT and API key via Authorization or x-api-key header)
-    const xApiKey = req.headers.get('x-api-key');
-    const authHeader = xApiKey && xApiKey.startsWith('ak_') 
-      ? `Bearer ${xApiKey}` 
-      : req.headers.get('authorization');
-    const { user, error: authError, authMethod } = await authenticateRequest(supabase, authHeader);
-    
-    if (authError || !user) {
-      logResponseTime(ENDPOINT_NAME, startTime, false);
-      return new Response(
-        JSON.stringify({ error: authError || 'Invalid authorization' }),
-        { status: 401, headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, ENDPOINT_NAME) }
-      );
+    // Check for free-tier access (MCP server passes this header)
+    const isFreeTier = req.headers.get('x-free-tier') === 'true';
+    let user: { id: string } | null = null;
+    let authMethod = 'free_tier';
+
+    if (!isFreeTier) {
+      // Authenticate user (supports both JWT and API key via Authorization or x-api-key header)
+      const xApiKey = req.headers.get('x-api-key');
+      const authHeader = xApiKey && xApiKey.startsWith('ak_') 
+        ? `Bearer ${xApiKey}` 
+        : req.headers.get('authorization');
+      const authResult = await authenticateRequest(supabase, authHeader);
+      
+      if (authResult.error || !authResult.user) {
+        logResponseTime(ENDPOINT_NAME, startTime, false);
+        return new Response(
+          JSON.stringify({ error: authResult.error || 'Invalid authorization' }),
+          { status: 401, headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, ENDPOINT_NAME) }
+        );
+      }
+      user = authResult.user;
+      authMethod = authResult.authMethod || 'jwt';
+      console.log(`Authenticated via ${authMethod} for user ${user.id}`);
+    } else {
+      console.log('Free-tier access granted via x-free-tier header');
+      // Fire-and-forget anonymous usage tracking
+      const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0] || req.headers.get('x-real-ip') || 'unknown';
+      const ipHash = await hashApiKey(clientIp);
+      supabase.from('anonymous_api_usage').insert({
+        endpoint_name: ENDPOINT_NAME,
+        client_ip_hash: ipHash,
+        user_agent: req.headers.get('user-agent'),
+        request_origin: req.headers.get('origin') || req.headers.get('referer'),
+        request_metadata: { county_fips, free_tier: true },
+      }).then(() => {}).catch(() => {});
     }
 
-    console.log(`Authenticated via ${authMethod} for user ${user.id}`);
+    const userId = user?.id || null;
 
     // Check cache first
     const cacheKey = `soil:${county_fips}:${analysisLocation}`;
@@ -147,11 +169,12 @@ Deno.serve(async (req) => {
         fromCache = true;
         cacheLevel = cachedEntry.cache_level;
         soilData = cachedEntry.cached_data;
-      } else {
+      } else if (userId) {
+        // Only check user-specific analyses for authenticated users
         const { data: existingAnalysis } = await supabase
           .from('soil_analyses')
           .select('*')
-          .eq('user_id', user.id)
+          .eq('user_id', userId)
           .eq('county_fips', county_fips)
           .eq('property_address', analysisLocation)
           .order('created_at', { ascending: false })
@@ -167,13 +190,13 @@ Deno.serve(async (req) => {
           );
         }
       }
-    } else {
+    } else if (userId) {
       console.log('Force refresh requested - fetching fresh data');
-      // Delete old analyses for this location
+      // Delete old analyses for this location (only for authenticated users)
       await supabase
         .from('soil_analyses')
         .delete()
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .eq('county_fips', county_fips)
         .eq('property_address', analysisLocation);
     }
@@ -228,37 +251,38 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Store the analysis in the database with property address
-    const { data: newAnalysis, error: insertError } = await supabase
-      .from('soil_analyses')
-      .insert({
-        user_id: user.id,
-        county_name,
-        county_fips,
-        state_code,
-        property_address: analysisLocation,
-        ph_level: soilData.ph_level,
-        organic_matter: soilData.organic_matter,
-        nitrogen_level: soilData.nitrogen_level,
-        phosphorus_level: soilData.phosphorus_level,
-        potassium_level: soilData.potassium_level,
-        recommendations: soilData.recommendations,
-        analysis_data: {
-          ...soilData,
-          cached: fromCache,
-          cache_level: cacheLevel,
-        }
-      })
-      .select()
-      .single();
+    // Store the analysis in the database (only for authenticated users)
+    let newAnalysis = null;
+    if (userId) {
+      const { data: inserted, error: insertError } = await supabase
+        .from('soil_analyses')
+        .insert({
+          user_id: userId,
+          county_name,
+          county_fips,
+          state_code,
+          property_address: analysisLocation,
+          ph_level: soilData.ph_level,
+          organic_matter: soilData.organic_matter,
+          nitrogen_level: soilData.nitrogen_level,
+          phosphorus_level: soilData.phosphorus_level,
+          potassium_level: soilData.potassium_level,
+          recommendations: soilData.recommendations,
+          analysis_data: {
+            ...soilData,
+            cached: fromCache,
+            cache_level: cacheLevel,
+          }
+        })
+        .select()
+        .single();
 
-    if (insertError) {
-      console.error('Error storing analysis:', insertError);
-      logResponseTime(ENDPOINT_NAME, startTime, false);
-      return new Response(
-        JSON.stringify({ error: 'Failed to store analysis' }),
-        { status: 500, headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, ENDPOINT_NAME) }
-      );
+      if (insertError) {
+        console.error('Error storing analysis:', insertError);
+        // Non-fatal for the response — we still have soilData
+      } else {
+        newAnalysis = inserted;
+      }
     }
 
     // Get rate limiter status
@@ -267,7 +291,8 @@ Deno.serve(async (req) => {
     logResponseTime(ENDPOINT_NAME, startTime, true);
     return new Response(
       JSON.stringify({ 
-        soilAnalysis: newAnalysis,
+        soilAnalysis: newAnalysis || soilData,
+        ...(isFreeTier ? { free_tier: true, message: 'Free tier access. Get full access with API key: https://buy.stripe.com/14A7sL30y8bR2F4fbgaMU02' } : {}),
         cache_info: {
           cached: fromCache,
           cache_level: cacheLevel,
