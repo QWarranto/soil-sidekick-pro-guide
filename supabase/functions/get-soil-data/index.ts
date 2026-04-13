@@ -108,22 +108,34 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Authenticate user (supports both JWT and API key via Authorization or x-api-key header)
-    const xApiKey = req.headers.get('x-api-key');
-    const authHeader = xApiKey && xApiKey.startsWith('ak_') 
-      ? `Bearer ${xApiKey}` 
-      : req.headers.get('authorization');
-    const { user, error: authError, authMethod } = await authenticateRequest(supabase, authHeader);
-    
-    if (authError || !user) {
-      logResponseTime(ENDPOINT_NAME, startTime, false);
-      return new Response(
-        JSON.stringify({ error: authError || 'Invalid authorization' }),
-        { status: 401, headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, ENDPOINT_NAME) }
-      );
+    // Check for free-tier access (MCP server passes this header)
+    const isFreeTier = req.headers.get('x-free-tier') === 'true';
+    let user: { id: string } | null = null;
+    let authMethod = 'free_tier';
+
+    if (!isFreeTier) {
+      // Authenticate user (supports both JWT and API key via Authorization or x-api-key header)
+      const xApiKey = req.headers.get('x-api-key');
+      const authHeader = xApiKey && xApiKey.startsWith('ak_') 
+        ? `Bearer ${xApiKey}` 
+        : req.headers.get('authorization');
+      const authResult = await authenticateRequest(supabase, authHeader);
+      
+      if (authResult.error || !authResult.user) {
+        logResponseTime(ENDPOINT_NAME, startTime, false);
+        return new Response(
+          JSON.stringify({ error: authResult.error || 'Invalid authorization' }),
+          { status: 401, headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, ENDPOINT_NAME) }
+        );
+      }
+      user = authResult.user;
+      authMethod = authResult.authMethod || 'jwt';
+      console.log(`Authenticated via ${authMethod} for user ${user.id}`);
+    } else {
+      console.log('Free-tier access granted via x-free-tier header');
     }
 
-    console.log(`Authenticated via ${authMethod} for user ${user.id}`);
+    const userId = user?.id || null;
 
     // Check cache first
     const cacheKey = `soil:${county_fips}:${analysisLocation}`;
@@ -147,11 +159,12 @@ Deno.serve(async (req) => {
         fromCache = true;
         cacheLevel = cachedEntry.cache_level;
         soilData = cachedEntry.cached_data;
-      } else {
+      } else if (userId) {
+        // Only check user-specific analyses for authenticated users
         const { data: existingAnalysis } = await supabase
           .from('soil_analyses')
           .select('*')
-          .eq('user_id', user.id)
+          .eq('user_id', userId)
           .eq('county_fips', county_fips)
           .eq('property_address', analysisLocation)
           .order('created_at', { ascending: false })
@@ -167,13 +180,13 @@ Deno.serve(async (req) => {
           );
         }
       }
-    } else {
+    } else if (userId) {
       console.log('Force refresh requested - fetching fresh data');
-      // Delete old analyses for this location
+      // Delete old analyses for this location (only for authenticated users)
       await supabase
         .from('soil_analyses')
         .delete()
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .eq('county_fips', county_fips)
         .eq('property_address', analysisLocation);
     }
