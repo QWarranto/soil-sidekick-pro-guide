@@ -562,14 +562,20 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null, reqMeta?: R
 
     try {
       const fnUrl = `${SUPABASE_URL}/functions/v1/${endpoint}`;
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        ...tqMeta,
+      };
+      if (apiKey) {
+        headers['x-api-key'] = apiKey;
+      }
+      if (isFreeTool && !apiKey) {
+        headers['x-free-tier'] = 'true';
+      }
       const res = await fetch(fnUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'x-api-key': apiKey,
-          ...tqMeta,
-        },
+        headers,
         body: JSON.stringify(endpointArgs),
       });
 
