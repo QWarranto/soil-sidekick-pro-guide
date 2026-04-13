@@ -241,37 +241,38 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Store the analysis in the database with property address
-    const { data: newAnalysis, error: insertError } = await supabase
-      .from('soil_analyses')
-      .insert({
-        user_id: user.id,
-        county_name,
-        county_fips,
-        state_code,
-        property_address: analysisLocation,
-        ph_level: soilData.ph_level,
-        organic_matter: soilData.organic_matter,
-        nitrogen_level: soilData.nitrogen_level,
-        phosphorus_level: soilData.phosphorus_level,
-        potassium_level: soilData.potassium_level,
-        recommendations: soilData.recommendations,
-        analysis_data: {
-          ...soilData,
-          cached: fromCache,
-          cache_level: cacheLevel,
-        }
-      })
-      .select()
-      .single();
+    // Store the analysis in the database (only for authenticated users)
+    let newAnalysis = null;
+    if (userId) {
+      const { data: inserted, error: insertError } = await supabase
+        .from('soil_analyses')
+        .insert({
+          user_id: userId,
+          county_name,
+          county_fips,
+          state_code,
+          property_address: analysisLocation,
+          ph_level: soilData.ph_level,
+          organic_matter: soilData.organic_matter,
+          nitrogen_level: soilData.nitrogen_level,
+          phosphorus_level: soilData.phosphorus_level,
+          potassium_level: soilData.potassium_level,
+          recommendations: soilData.recommendations,
+          analysis_data: {
+            ...soilData,
+            cached: fromCache,
+            cache_level: cacheLevel,
+          }
+        })
+        .select()
+        .single();
 
-    if (insertError) {
-      console.error('Error storing analysis:', insertError);
-      logResponseTime(ENDPOINT_NAME, startTime, false);
-      return new Response(
-        JSON.stringify({ error: 'Failed to store analysis' }),
-        { status: 500, headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, ENDPOINT_NAME) }
-      );
+      if (insertError) {
+        console.error('Error storing analysis:', insertError);
+        // Non-fatal for the response — we still have soilData
+      } else {
+        newAnalysis = inserted;
+      }
     }
 
     // Get rate limiter status
@@ -280,7 +281,8 @@ Deno.serve(async (req) => {
     logResponseTime(ENDPOINT_NAME, startTime, true);
     return new Response(
       JSON.stringify({ 
-        soilAnalysis: newAnalysis,
+        soilAnalysis: newAnalysis || soilData,
+        ...(isFreeTier ? { free_tier: true, message: 'Free tier access. Get full access with API key: https://buy.stripe.com/14A7sL30y8bR2F4fbgaMU02' } : {}),
         cache_info: {
           cached: fromCache,
           cache_level: cacheLevel,
