@@ -554,6 +554,28 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null, reqMeta?: R
     // Strip TurboQuant hint params before forwarding (they're metadata, not endpoint args)
     const { context_mode, kv_cache_hint, preferred_model_tier, ...endpointArgs } = toolArgs;
 
+    // Auto-resolve county_fips → county_name + state_code for get_soil_data
+    // The downstream get-soil-data endpoint requires all three, but agents only have county_fips
+    if (toolName === 'get_soil_data' && endpointArgs.county_fips && (!endpointArgs.county_name || !endpointArgs.state_code)) {
+      try {
+        const { data: countyRows } = await auditClient
+          .from('counties')
+          .select('county_name, state_code')
+          .eq('fips_code', endpointArgs.county_fips)
+          .limit(1);
+        if (countyRows && countyRows.length > 0) {
+          const county = countyRows[0];
+          // Strip the ", State" suffix if present (e.g., "Fulton County, Georgia" → "Fulton County")
+          const rawName = county.county_name;
+          endpointArgs.county_name = endpointArgs.county_name || rawName.split(',')[0].trim();
+          endpointArgs.state_code = endpointArgs.state_code || county.state_code;
+          console.log(`Resolved FIPS ${endpointArgs.county_fips} → ${endpointArgs.county_name}, ${endpointArgs.state_code}`);
+        }
+      } catch (lookupErr) {
+        console.warn('County FIPS resolution failed, forwarding as-is:', lookupErr);
+      }
+    }
+
     // Build TurboQuant metadata header for downstream functions
     const tqMeta: Record<string, string> = {};
     if (context_mode) tqMeta['x-tq-context-mode'] = String(context_mode);
