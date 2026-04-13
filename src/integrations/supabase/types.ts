@@ -437,6 +437,42 @@ export type Database = {
           },
         ]
       }
+      anonymous_api_usage: {
+        Row: {
+          client_ip_hash: string | null
+          created_at: string
+          endpoint_name: string
+          id: string
+          request_metadata: Json | null
+          request_origin: string | null
+          response_status: number | null
+          response_time_ms: number | null
+          user_agent: string | null
+        }
+        Insert: {
+          client_ip_hash?: string | null
+          created_at?: string
+          endpoint_name: string
+          id?: string
+          request_metadata?: Json | null
+          request_origin?: string | null
+          response_status?: number | null
+          response_time_ms?: number | null
+          user_agent?: string | null
+        }
+        Update: {
+          client_ip_hash?: string | null
+          created_at?: string
+          endpoint_name?: string
+          id?: string
+          request_metadata?: Json | null
+          request_origin?: string | null
+          response_status?: number | null
+          response_time_ms?: number | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       api_key_access_log: {
         Row: {
           access_time: string
