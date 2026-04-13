@@ -542,7 +542,11 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null, reqMeta?: R
       return jsonRpcError(id ?? null, -32602, `Unknown tool: ${toolName}`);
     }
 
-    if (!apiKey) {
+    // Free-tier tools that work without an API key
+    const FREE_TOOLS = ['county_lookup', 'get_soil_data'];
+    const isFreeTool = FREE_TOOLS.includes(toolName);
+
+    if (!apiKey && !isFreeTool) {
       logToolCall({ ...auditBase, success: false, error_message: 'Missing x-api-key', response_time_ms: Date.now() - callStart });
       return jsonRpcError(id ?? null, -32000, 'Missing x-api-key header. Obtain one at https://soilsidekick.com/api-keys');
     }
@@ -558,14 +562,20 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null, reqMeta?: R
 
     try {
       const fnUrl = `${SUPABASE_URL}/functions/v1/${endpoint}`;
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        ...tqMeta,
+      };
+      if (apiKey) {
+        headers['x-api-key'] = apiKey;
+      }
+      if (isFreeTool && !apiKey) {
+        headers['x-free-tier'] = 'true';
+      }
       const res = await fetch(fnUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'x-api-key': apiKey,
-          ...tqMeta,
-        },
+        headers,
         body: JSON.stringify(endpointArgs),
       });
 
