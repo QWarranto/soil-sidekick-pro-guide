@@ -98,6 +98,7 @@ export default function B2BLanding() {
                 href="https://github.com/leafengines/soilsidekick-pro/tree/main/docs/workflows"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={trackBannerClick}
               >
                 Open Workflow Docs
                 <ExternalLink className="h-4 w-4" />
