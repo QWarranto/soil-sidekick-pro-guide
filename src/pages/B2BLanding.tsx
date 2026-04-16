@@ -12,6 +12,25 @@ import gdprCertified from "@/assets/gdpr-certified.png";
 import leafEnginesHeroVideo from "@/assets/leafengines-hero.mp4";
 
 export default function B2BLanding() {
+  useEffect(() => {
+    const ua = navigator.userAgent || "";
+    const isQgis = /QGIS/i.test(ua);
+    supabase.from("pwa_analytics").insert({
+      event_type: isQgis ? "qgis_banner_view_qgis_ua" : "qgis_banner_view_web",
+      platform: isQgis ? "qgis" : "web",
+      user_agent: ua,
+    }).then(() => {}, () => {});
+  }, []);
+
+  const trackBannerClick = () => {
+    const ua = navigator.userAgent || "";
+    supabase.from("pwa_analytics").insert({
+      event_type: "qgis_banner_click_github_docs",
+      platform: /QGIS/i.test(ua) ? "qgis" : "web",
+      user_agent: ua,
+    }).then(() => {}, () => {});
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <LeafEnginesNav />
