@@ -273,6 +273,8 @@ export default function PricingNew() {
                     onClick={() => {
                       if (plan.id === 'free' && !user) {
                         navigate('/auth');
+                      } else if (plan.paymentLink) {
+                        window.open(plan.paymentLink, '_blank');
                       } else if (plan.priceId) {
                         handleSubscribe(plan.priceId, plan.name);
                       }
