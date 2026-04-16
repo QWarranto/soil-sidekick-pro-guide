@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Shield, Zap, TrendingDown, Check, Code, Database, Satellite } from "lucide-react";
+import { ArrowRight, Shield, Zap, TrendingDown, Check, Code, Database, Satellite, BookOpen, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { LeafEnginesNav } from "@/components/LeafEnginesNav";
 import { OptimizedImage } from "@/components/OptimizedImage";
@@ -51,6 +51,37 @@ export default function B2BLanding() {
                 <Link to="/privacy-advantage">Privacy Advantage</Link>
               </Button>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* QGIS Plugin Visitor Banner */}
+      <section className="border-b border-border bg-primary/5 py-6">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto flex max-w-5xl flex-col items-start gap-4 rounded-lg border border-primary/20 bg-background p-5 shadow-sm md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="rounded-md bg-primary/10 p-2">
+                <BookOpen className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">
+                  Arrived from the QGIS plugin?
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Jump straight to the workflow guides — including the new <span className="font-medium text-foreground">QGIS SDK Deep Dive</span>.
+                </p>
+              </div>
+            </div>
+            <Button variant="default" size="sm" className="gap-2 shrink-0" asChild>
+              <a
+                href="https://github.com/leafengines/soilsidekick-pro/tree/main/docs/workflows"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open Workflow Docs
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </Button>
           </div>
         </div>
       </section>
