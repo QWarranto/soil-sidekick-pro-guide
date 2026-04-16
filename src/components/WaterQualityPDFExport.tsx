@@ -366,7 +366,7 @@ and should be used in conjunction with local utility communications.
             </div>
             
              <Button variant="outline" className="w-full" onClick={() => window.open('/pricing', '_blank')}>
-               Upgrade to Pro - $79.00/month
+               Upgrade to Grower - $79.00/month
             </Button>
           </div>
         )}

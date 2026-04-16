@@ -81,8 +81,12 @@ const FeatureGate: React.FC<FeatureGateProps> = ({
 
   const getTierPrice = (tier: string) => {
     switch (tier) {
+      // New consumer tier names (Option A rename, Dec 2025)
+      case 'hobby': return '$29';
+      case 'grower': return '$79';
+      case 'pro': return '$149';
+      // Legacy aliases — kept so existing FeatureGate consumers keep working
       case 'starter': return '$29';
-      case 'pro': return '$79';
       case 'enterprise': return '$149';
       default: return '';
     }
