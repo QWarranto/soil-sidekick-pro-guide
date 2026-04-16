@@ -50,29 +50,51 @@ requestHandler({
       logSafe("Creating new customer for checkout");
     }
 
-    // Define pricing structure
-    const prices: Record<string, Record<string, number>> = {
-      starter: {
-        month: 2900,  // $29.00
-        year: 29000,  // $290.00 (2 months free)
-      },
-      pro: {
-        month: 7900,  // $79.00
-        year: 79000,  // $790.00 (2 months free)
-      },
-      enterprise: {
-        month: 14900,  // $149.00
-        year: 149000,  // $1490.00 (2 months free)
-      }
+    // Define pricing structure (Option A renaming, Dec 2025)
+    // Legacy keys (starter/pro/enterprise) remain accepted for backward compatibility
+    // and are aliased to the new consumer-tier names: hobby/grower/pro.
+    const planAliases: Record<string, string> = {
+      starter: 'hobby',     // legacy → new
+      pro: 'grower',        // legacy → new (NOTE: old "pro" === new "grower" at $79)
+      enterprise: 'pro',    // legacy → new (old "enterprise" === new "pro" at $149)
+      // New canonical keys pass through:
+      hobby: 'hobby',
+      grower: 'grower',
     };
 
-    const amount = prices[plan]?.[interval];
+    // Resolve incoming plan key to canonical new-name key.
+    // If a client sends "pro" we treat it as the legacy mid-tier ($79 grower).
+    // New clients should send hobby/grower/pro explicitly.
+    const canonicalPlan = planAliases[plan] ?? plan;
+
+    const prices: Record<string, Record<string, number>> = {
+      hobby: {
+        month: 2900,   // $29.00
+        year: 29000,   // $290.00 (2 months free)
+      },
+      grower: {
+        month: 7900,   // $79.00
+        year: 79000,   // $790.00 (2 months free)
+      },
+      pro: {
+        month: 14900,  // $149.00
+        year: 149000,  // $1,490.00 (2 months free)
+      },
+    };
+
+    const planDisplayNames: Record<string, string> = {
+      hobby: 'Hobby',
+      grower: 'Grower',
+      pro: 'Pro',
+    };
+
+    const amount = prices[canonicalPlan]?.[interval];
     if (!amount) {
       logError("Invalid plan or interval", { plan, interval });
       throw new Error("Invalid plan or billing interval");
     }
     
-    logSafe("Price calculated", { plan, interval, amount });
+    logSafe("Price calculated", { plan, canonicalPlan, interval, amount });
 
     // Create Stripe checkout session
     const origin = req.headers.get("origin") || "https://soilsidekick.com";
@@ -84,8 +106,8 @@ requestHandler({
         {
           price_data: {
             currency: "usd",
-            product_data: { 
-              name: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan ${interval === 'year' ? '(Annual)' : '(Monthly)'}`,
+            product_data: {
+              name: `${planDisplayNames[canonicalPlan] ?? canonicalPlan} Plan ${interval === 'year' ? '(Annual)' : '(Monthly)'}`,
               description: interval === 'year' ? 'Get 2 months free with annual billing' : undefined
             },
             unit_amount: amount,
@@ -99,7 +121,8 @@ requestHandler({
       cancel_url: `${origin}/pricing?canceled=true`,
       metadata: {
         user_id: user.id,
-        plan: plan,
+        plan: canonicalPlan,        // new canonical name (hobby/grower/pro)
+        plan_legacy: plan,          // original key sent by client (for audit)
         interval: interval,
         referral_code: referral_code || '',
       },

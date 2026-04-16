@@ -594,7 +594,7 @@ const UserGuide = () => {
 
                           <div className="border-2 border-primary rounded-lg p-4 bg-primary/5">
                             <div className="flex items-center gap-2 mb-2">
-                              <Badge>Starter - $29/mo</Badge>
+                              <Badge>Hobby - $29/mo</Badge>
                               <span className="text-sm font-medium">Unlimited Tasks</span>
                             </div>
                             <ul className="text-sm text-muted-foreground space-y-1">
@@ -609,11 +609,11 @@ const UserGuide = () => {
 
                           <div className="border-2 border-purple-500 rounded-lg p-4 bg-purple-50">
                             <div className="flex items-center gap-2 mb-2">
-                              <Badge className="bg-purple-600">Pro - $79/mo</Badge>
+                              <Badge className="bg-purple-600">Grower - $79/mo</Badge>
                               <span className="text-sm font-medium">Advanced Intelligence</span>
                             </div>
                             <ul className="text-sm text-muted-foreground space-y-1">
-                              <li>• Everything in Starter, plus:</li>
+                              <li>• Everything in Hobby, plus:</li>
                               <li>• <strong>Advanced recurring patterns</strong> (seasonal, monthly, custom)</li>
                               <li>• Task completion learnings & notes</li>
                               <li>• Year-over-year task comparison</li>
@@ -625,11 +625,11 @@ const UserGuide = () => {
 
                           <div className="border rounded-lg p-4">
                             <div className="flex items-center gap-2 mb-2">
-                              <Badge variant="secondary">Enterprise - $149/mo</Badge>
+                              <Badge variant="secondary">Pro - $149/mo</Badge>
                               <span className="text-sm font-medium">Team Collaboration</span>
                             </div>
                             <ul className="text-sm text-muted-foreground space-y-1">
-                              <li>• Everything in Pro, plus:</li>
+                              <li>• Everything in Grower, plus:</li>
                               <li>• Team task collaboration & assignment</li>
                               <li>• Custom task templates & workflows</li>
                               <li>• Task management API access</li>
