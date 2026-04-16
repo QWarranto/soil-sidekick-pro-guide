@@ -3,9 +3,11 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Shield, Zap, TrendingDown, Check, Code, Database, Satellite, BookOpen, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 import { LeafEnginesNav } from "@/components/LeafEnginesNav";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { DeveloperBenefitsInfographic } from "@/components/DeveloperBenefitsInfographic";
+import { supabase } from "@/integrations/supabase/client";
 import gdprCertified from "@/assets/gdpr-certified.png";
 import leafEnginesHeroVideo from "@/assets/leafengines-hero.mp4";
 
