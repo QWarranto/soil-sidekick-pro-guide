@@ -69,7 +69,8 @@ export default function PricingNew() {
       ],
       cta: 'Get Started Free',
       popular: false,
-      priceId: null
+      priceId: null,
+      paymentLink: null
     },
     {
       id: 'starter',
@@ -96,7 +97,8 @@ export default function PricingNew() {
       ],
       cta: 'Start Starter Plan',
       popular: false,
-      priceId: 'price_starter_monthly'
+      priceId: 'price_1TEaYGHwn7RXxNvkjCS7JEdF',
+      paymentLink: 'https://buy.stripe.com/5kQ6oHcB88bR93s8MSaMU04'
     },
     {
       id: 'pro',
@@ -122,7 +124,8 @@ export default function PricingNew() {
       ],
       cta: 'Start Pro Plan',
       popular: true,
-      priceId: 'price_pro_monthly'
+      priceId: 'price_1TEaiEHwn7RXxNvkjQlGxrnR',
+      paymentLink: 'https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05'
     },
     {
       id: 'enterprise',
@@ -146,7 +149,8 @@ export default function PricingNew() {
       limitations: [],
       cta: 'Contact Sales',
       popular: false,
-      priceId: 'price_enterprise_monthly'
+      priceId: 'price_1TEat8Hwn7RXxNvkPVgFw7Xv',
+      paymentLink: 'https://buy.stripe.com/eVqaEXfNkajZ6Vk0gmaMU06'
     }
   ];
 
@@ -269,6 +273,8 @@ export default function PricingNew() {
                     onClick={() => {
                       if (plan.id === 'free' && !user) {
                         navigate('/auth');
+                      } else if (plan.paymentLink) {
+                        window.open(plan.paymentLink, '_blank');
                       } else if (plan.priceId) {
                         handleSubscribe(plan.priceId, plan.name);
                       }
