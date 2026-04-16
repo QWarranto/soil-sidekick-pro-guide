@@ -202,9 +202,57 @@ That's the full SDK, surfaced through QGIS, in ten minutes.
 
 ---
 
+## API Reference & Troubleshooting
+
+### Standardized API Endpoints
+The QGIS plugin uses LeafEngines' primary API for all cloud-based intelligence:
+
+**Base URL:** `https://leafengines-emergency-api-1.onrender.com`
+
+| Endpoint | Method | Parameters | Authentication |
+|----------|--------|------------|----------------|
+| `/v1/soil/analyze` | POST | `{"county_fips": "01001"}` | `x-api-key` header |
+| `/v1/crop/recommend` | POST | `{"crop": "corn", "county_fips": "01001"}` | `x-api-key` header |
+| `/v1/health` | GET | None | None required |
+| `/v1/auth/validate` | POST | `{"api_key": "your-key"}` | None required |
+
+### Authentication
+- **Header:** `x-api-key: your-api-key` (configured in plugin settings)
+- **Test Key:** `leaf-test-370df0a2e62e` (limited functionality)
+- **Free Tier:** Plugin automatically adds `x-free-tier: true` when no API key is set
+
+### Common Parameters
+- **`county_fips`:** 5-digit FIPS code (e.g., `01001` for Autauga County, AL)
+- **`crop`:** Crop name (e.g., `"corn"`, `"soybeans"`, `"wheat"`)
+
+### Troubleshooting
+
+#### Plugin Connection Issues
+1. **Check API Key:** Verify key is saved in plugin settings
+2. **Test Connection:** Use `curl` to test API directly:
+   ```bash
+   curl -X POST https://leafengines-emergency-api-1.onrender.com/v1/soil/analyze \
+     -H "x-api-key: leaf-test-370df0a2e62e" \
+     -H "Content-Type: application/json" \
+     -d '{"county_fips":"01001"}'
+   ```
+3. **Check Firewall:** Ensure QGIS can access external APIs
+
+#### WFS Connection Issues
+1. **Test WFS URL:** Use QGIS Browser panel to test connection
+2. **Check Region:** Ensure WFS endpoint matches your geographic region
+3. **Layer Visibility:** Some WFS servers require specific layer names
+
+### Complete API Reference
+For full endpoint documentation and parameter details, see:  
+[API Endpoint Reference](../API_ENDPOINT_REFERENCE.md)
+
+---
+
 ## Next Steps
 
 → **Plugin docs:** [README](../../plugins/qgis-leafengines/README.md) · [WFS Extension](../../plugins/qgis-leafengines/WFS_EXTENSION.md)
 → **Related workflows:** [05 VRT Prescriptions](05_VRT_PRESCRIPTIONS.md) · [06 Offline AI](06_OFFLINE_AI.md) · [09 API & Equipment](09_API_EQUIPMENT_INTEGRATION.md)
 → **SDK reference:** [SDK Quickstart](../SDK_QUICKSTART.md) · [MCP Specification](../MCP_SERVER_SPECIFICATION.md)
+→ **API Reference:** [API Endpoint Reference](../API_ENDPOINT_REFERENCE.md)
 → **Get help:** partnerships@leafengines.com

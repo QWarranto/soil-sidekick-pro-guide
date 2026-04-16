@@ -294,11 +294,65 @@ The Apache 2.0 MCP-server adapter lives at https://github.com/QWarranto/leafengi
 
 ---
 
+## API Reference & Troubleshooting
+
+### MCP Server Endpoint
+The Claude MCP integration uses LeafEngines' MCP server:
+
+**MCP Server URL:** `https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/mcp-server`
+
+### Authentication
+- **Header:** `x-api-key: your-api-key`
+- **Test Key:** `leaf-test-370df0a2e62e` (limited functionality)
+- **Content-Type:** `application/json`
+- **Accept:** `application/json, text/event-stream`
+
+### Available Tools (10 Total)
+The MCP server exposes these agricultural intelligence tools:
+1. `county_lookup` - Search US counties by name, state, or FIPS code
+2. `get_soil_data` - Get soil analysis by FIPS code
+3. `agricultural_intelligence` - Structured FarmIQ insights
+4. `territorial_water_quality` - EPA/EEA WISE water quality data
+5. `carbon_credit_calculator` - Carbon credit calculations
+6. `generate_vrt_prescription` - Generate VRT prescription maps
+7. `safe_identification` - Plant toxicity & edibility identification
+8. `environmental_impact_analysis` - Runoff, biodiversity, carbon scores
+9. `planting_optimization` - Multi-parameter planting calendars
+10. `turbo_quant_capabilities` - TurboQuant offline AI capabilities
+
+### Troubleshooting
+
+#### Connection Issues
+1. **Check API Key:** Verify key in Claude Desktop config
+2. **Test MCP Server:** Use `curl` to test:
+   ```bash
+   curl -X POST https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/mcp-server \
+     -H "x-api-key: leaf-test-370df0a2e62e" \
+     -H "Content-Type: application/json" \
+     -d '{"jsonrpc":"2.0","method":"tools/list","id":1}'
+   ```
+3. **Restart Claude:** Always restart Claude Desktop after config changes
+4. **Check Connection:** Click 🔌 icon in Claude to verify connection
+
+#### Tool Discovery Issues
+1. **Verify Tools List:** MCP server should return 10 tools
+2. **Check Permissions:** Some tools require Pro/Enterprise tier
+3. **Update Config:** Ensure config file syntax is correct JSON
+
+### HTTP API Reference
+For direct HTTP API access (outside MCP), use our primary API:
+
+**Base URL:** `https://leafengines-emergency-api-1.onrender.com`
+
+For full endpoint documentation, see:  
+[API Endpoint Reference](../API_ENDPOINT_REFERENCE.md)
+
 ## Support
 
 - **GitHub Issues:** https://github.com/QWarranto/leafengines-claude-mcp/issues
 - **MCP-specific:** mcp@leafengines.com
 - **General:** support@soilsidekickpro.com
+- **API Reference:** [API Endpoint Reference](../API_ENDPOINT_REFERENCE.md)
 
 ---
 

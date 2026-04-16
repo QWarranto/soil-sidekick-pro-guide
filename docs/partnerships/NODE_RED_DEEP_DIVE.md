@@ -216,12 +216,58 @@ For sub-100ms inference on edge hardware, see the **OEM Embedded OS** doc — re
 
 ---
 
+## API Reference & Troubleshooting
+
+### Standardized API Endpoints
+The Node-RED nodes use LeafEngines' primary API for all agricultural intelligence:
+
+**Base URL:** `https://leafengines-emergency-api-1.onrender.com`
+
+| Endpoint | Method | Parameters | Authentication |
+|----------|--------|------------|----------------|
+| `/v1/soil/analyze` | POST | `{"county_fips": "01001"}` | `x-api-key` header |
+| `/v1/crop/recommend` | POST | `{"crop": "corn", "county_fips": "01001"}` | `x-api-key` header |
+| `/v1/health` | GET | None | None required |
+| `/v1/auth/validate` | POST | `{"api_key": "your-key"}` | None required |
+
+### Authentication
+- **Header:** `x-api-key: your-api-key` (configured in node settings)
+- **Test Key:** `leaf-test-370df0a2e62e` (limited functionality)
+- **Free Tier:** Add `x-free-tier: true` header (no API key required)
+
+### Common Parameters
+- **`county_fips`:** 5-digit FIPS code (e.g., `01001` for Autauga County, AL)
+- **`crop`:** Crop name (e.g., `"corn"`, `"soybeans"`, `"wheat"`)
+
+### Troubleshooting
+
+#### Connection Issues
+1. **Check API Key:** Verify key is saved in node configuration
+2. **Test API Directly:** Use `curl` to test:
+   ```bash
+   curl -X POST https://leafengines-emergency-api-1.onrender.com/v1/soil/analyze \
+     -H "x-api-key: leaf-test-370df0a2e62e" \
+     -H "Content-Type: application/json" \
+     -d '{"county_fips":"01001"}'
+   ```
+3. **Check Node-RED Logs:** View debug messages for API responses
+
+#### MQTT Integration Issues
+1. **Verify Broker Connection:** Test MQTT broker separately
+2. **Check Topic Structure:** Ensure correct topic hierarchy
+3. **Validate Payload Format:** JSON payload must match expected schema
+
+### Complete API Reference
+For full endpoint documentation and parameter details, see:  
+[API Endpoint Reference](../API_ENDPOINT_REFERENCE.md)
+
 ## Support
 
 - **npm:** `node-red-contrib-leafengines`
 - **GitHub:** github.com/leafengines/node-red-contrib-leafengines
 - **Issues:** edge@leafengines.com
 - **Flow library:** flows.nodered.org/search?term=leafengines
+- **API Reference:** [API Endpoint Reference](../API_ENDPOINT_REFERENCE.md)
 
 ---
 

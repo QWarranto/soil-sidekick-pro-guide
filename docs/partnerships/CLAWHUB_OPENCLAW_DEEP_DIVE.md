@@ -257,12 +257,58 @@ app.post('/signup', async (req, res) => {
 
 ---
 
+## API Reference & Troubleshooting
+
+### Standardized API Endpoints
+The ClawHub skill uses LeafEngines' primary API for agricultural intelligence:
+
+**Base URL:** `https://leafengines-emergency-api-1.onrender.com`
+
+| Endpoint | Method | Parameters | Authentication |
+|----------|--------|------------|----------------|
+| `/v1/soil/analyze` | POST | `{"county_fips": "01001"}` | `x-api-key` header |
+| `/v1/crop/recommend` | POST | `{"crop": "corn", "county_fips": "01001"}` | `x-api-key` header |
+| `/v1/health` | GET | None | None required |
+| `/v1/auth/validate` | POST | `{"api_key": "your-key"}` | None required |
+
+### Authentication
+- **Header:** `x-api-key: your-api-key` (configured in skill settings)
+- **Test Key:** `leaf-test-370df0a2e62e` (limited functionality)
+- **Free Tier:** Add `x-free-tier: true` header (no API key required)
+
+### Common Parameters
+- **`county_fips`:** 5-digit FIPS code (e.g., `01001` for Autauga County, AL)
+- **`crop`:** Crop name (e.g., `"corn"`, `"soybeans"`, `"wheat"`)
+
+### Troubleshooting
+
+#### Skill Installation Issues
+1. **Check ClawHub Access:** Verify you have ClawHub access
+2. **Test API Key:** Use `curl` to test API directly:
+   ```bash
+   curl -X POST https://leafengines-emergency-api-1.onrender.com/v1/soil/analyze \
+     -H "x-api-key: leaf-test-370df0a2e62e" \
+     -H "Content-Type: application/json" \
+     -d '{"county_fips":"01001"}'
+   ```
+3. **Check OpenClaw Logs:** View logs for API response errors
+
+#### Affiliate Tracking Issues
+1. **Verify Tracking Code:** Ensure affiliate code is included in requests
+2. **Check Dashboard:** Monitor affiliate dashboard for conversions
+3. **Test Links:** Verify payment links include tracking parameters
+
+### Complete API Reference
+For full endpoint documentation and parameter details, see:  
+[API Endpoint Reference](../API_ENDPOINT_REFERENCE.md)
+
 ## Support
 
 - **Partner success:** partners@leafengines.com
 - **Technical (OpenClaw open-source):** github.com/openclaw/issues
 - **Payouts / billing:** payouts@leafengines.com
 - **Brand / co-marketing:** brand@leafengines.com
+- **API Reference:** [API Endpoint Reference](../API_ENDPOINT_REFERENCE.md)
 
 ---
 
