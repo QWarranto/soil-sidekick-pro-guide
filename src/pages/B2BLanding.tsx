@@ -3,13 +3,34 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Shield, Zap, TrendingDown, Check, Code, Database, Satellite, BookOpen, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 import { LeafEnginesNav } from "@/components/LeafEnginesNav";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { DeveloperBenefitsInfographic } from "@/components/DeveloperBenefitsInfographic";
+import { supabase } from "@/integrations/supabase/client";
 import gdprCertified from "@/assets/gdpr-certified.png";
 import leafEnginesHeroVideo from "@/assets/leafengines-hero.mp4";
 
 export default function B2BLanding() {
+  useEffect(() => {
+    const ua = navigator.userAgent || "";
+    const isQgis = /QGIS/i.test(ua);
+    supabase.from("pwa_analytics").insert({
+      event_type: isQgis ? "qgis_banner_view_qgis_ua" : "qgis_banner_view_web",
+      platform: isQgis ? "qgis" : "web",
+      user_agent: ua,
+    }).then(() => {}, () => {});
+  }, []);
+
+  const trackBannerClick = () => {
+    const ua = navigator.userAgent || "";
+    supabase.from("pwa_analytics").insert({
+      event_type: "qgis_banner_click_github_docs",
+      platform: /QGIS/i.test(ua) ? "qgis" : "web",
+      user_agent: ua,
+    }).then(() => {}, () => {});
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <LeafEnginesNav />
@@ -77,6 +98,7 @@ export default function B2BLanding() {
                 href="https://github.com/leafengines/soilsidekick-pro/tree/main/docs/workflows"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={trackBannerClick}
               >
                 Open Workflow Docs
                 <ExternalLink className="h-4 w-4" />
