@@ -61,6 +61,39 @@ class LeafEnginesPlugin:
         self.iface.addPluginToMenu(f"&{self.PLUGIN_NAME}", soil_action)
         self.actions.append(soil_action)
 
+        # Interactive Tour
+        tour_action = QAction(
+            QIcon(icon_path),
+            "LeafEngines: Interactive Tour…",
+            self.iface.mainWindow(),
+        )
+        tour_action.triggered.connect(self.show_tour)
+        tour_action.setStatusTip("5-minute walkthrough of the full LeafEngines SDK")
+        self.iface.addPluginToMenu(f"&{self.PLUGIN_NAME}", tour_action)
+        self.actions.append(tour_action)
+
+        # Auto-show tour on first load (unless user opted out)
+        from .tour_dialog import LeafEnginesTourDialog
+        if LeafEnginesTourDialog.should_auto_show():
+            from qgis.PyQt.QtCore import QTimer
+            QTimer.singleShot(800, self.show_tour)
+
+    # ------------------------------------------------------------------
+    # Interactive tour
+    # ------------------------------------------------------------------
+
+    def show_tour(self):
+        """Open the interactive 5-layer tour dialog."""
+        from .tour_dialog import LeafEnginesTourDialog
+        if not hasattr(self, "tour_dialog") or self.tour_dialog is None:
+            self.tour_dialog = LeafEnginesTourDialog(
+                parent=self.iface.mainWindow(),
+                plugin=self,
+            )
+        self.tour_dialog.show()
+        self.tour_dialog.raise_()
+        self.tour_dialog.activateWindow()
+
     def unload(self):
         """Called when the plugin is unloaded."""
         for action in self.actions:
