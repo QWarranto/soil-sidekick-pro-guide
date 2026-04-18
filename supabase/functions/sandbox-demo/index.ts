@@ -1,9 +1,45 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key',
 };
+
+// Fire-and-forget logging for sandbox traffic into api_key_access_log.
+// Uses NULL api_key_id (sandbox keys aren't in api_keys table) but records
+// endpoint, IP, UA, success so reconciliation reports see the volume.
+async function logSandboxAccess(req: Request, opts: {
+  endpoint: string;
+  success: boolean;
+  failureReason?: string | null;
+  responseTimeMs?: number;
+  rateLimited?: boolean;
+}) {
+  try {
+    const serviceClient = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      || req.headers.get('cf-connecting-ip')
+      || req.headers.get('x-real-ip')
+      || null;
+    await serviceClient.from('api_key_access_log').insert({
+      api_key_id: null,
+      user_id: null,
+      endpoint: `sandbox-demo:${opts.endpoint}`,
+      success: opts.success,
+      failure_reason: opts.failureReason ?? null,
+      response_time_ms: opts.responseTimeMs ?? null,
+      rate_limited: opts.rateLimited ?? false,
+      ip_address: ip,
+      user_agent: req.headers.get('user-agent'),
+    });
+  } catch (err) {
+    console.error('[logSandboxAccess] failed:', err);
+  }
+}
 
 // ─── API Key Validation ─────────────────────────────────────────────
 // Accepts ak_sandbox_* keys via x-api-key header or Authorization: Bearer
