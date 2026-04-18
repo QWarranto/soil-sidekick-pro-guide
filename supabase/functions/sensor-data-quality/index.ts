@@ -52,24 +52,13 @@ Deno.serve(async (req) => {
   );
 
   try {
-    // Authenticate user
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Authorization required" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    // Unified auth — JWT or ak_* API key. ak_* keys auto-log to api_key_access_log.
+    const { user, error: authError } = await authenticateUser(supabase, req);
     if (authError || !user) {
-      return new Response(JSON.stringify({ error: "Invalid token" }), {
+      return new Response(JSON.stringify({ error: authError || "Authorization required" }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
-    // Also support API key auth
-    const apiKey = req.headers.get("x-api-key");
 
     let rawInput: unknown;
     try {
