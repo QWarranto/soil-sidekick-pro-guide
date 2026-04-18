@@ -177,16 +177,102 @@ async function hashApiKeyForValidation(apiKey: string): Promise<string> {
 }
 
 /**
+ * Extract endpoint name from request URL.
+ * /functions/v1/get-soil-data?... -> "get-soil-data"
+ */
+function extractEndpointName(request: Request): string {
+  try {
+    const url = new URL(request.url);
+    const parts = url.pathname.split('/').filter(Boolean);
+    // Strip /functions/v1/ prefix when present
+    const idx = parts.indexOf('v1');
+    const tail = idx >= 0 ? parts.slice(idx + 1) : parts;
+    return tail[0] ?? 'unknown';
+  } catch {
+    return 'unknown';
+  }
+}
+
+/**
+ * Extract client IP from common proxy headers.
+ */
+function extractClientIp(request: Request): string | null {
+  const fwd = request.headers.get('x-forwarded-for');
+  if (fwd) return fwd.split(',')[0].trim();
+  return request.headers.get('cf-connecting-ip') || request.headers.get('x-real-ip');
+}
+
+/**
+ * Persist an API-key access record + bump api_keys counters.
+ * Fire-and-forget — never blocks the request path.
+ * Service-role client required (RLS allows insert only for service_role).
+ */
+export async function logApiKeyAccess(params: {
+  apiKeyId: string | null;
+  userId: string | null;
+  request: Request;
+  success: boolean;
+  failureReason?: string | null;
+  responseTimeMs?: number | null;
+  rateLimited?: boolean;
+}): Promise<void> {
+  try {
+    const { createClient } = await import('jsr:@supabase/supabase-js@2');
+    const serviceClient = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
+
+    const endpoint = extractEndpointName(params.request);
+    const ip = extractClientIp(params.request);
+    const ua = params.request.headers.get('user-agent');
+
+    // Insert access log row
+    await serviceClient.from('api_key_access_log').insert({
+      api_key_id: params.apiKeyId,
+      user_id: params.userId,
+      endpoint,
+      success: params.success,
+      failure_reason: params.failureReason ?? null,
+      response_time_ms: params.responseTimeMs ?? null,
+      rate_limited: params.rateLimited ?? false,
+      ip_address: ip,
+      user_agent: ua,
+    });
+
+    // Bump usage counters on successful authenticated calls
+    if (params.success && params.apiKeyId) {
+      await serviceClient.rpc('increment_api_key_usage', { p_api_key_id: params.apiKeyId })
+        .then(({ error }: { error: any }) => {
+          if (error) {
+            // Fallback: direct update if RPC doesn't exist yet
+            return serviceClient
+              .from('api_keys')
+              .update({ last_used_at: new Date().toISOString() })
+              .eq('id', params.apiKeyId);
+          }
+        });
+    }
+  } catch (err) {
+    // Never throw — logging must never break the request
+    console.error('[logApiKeyAccess] failed:', err);
+  }
+}
+
+/**
  * Handles authentication and extracts user info.
  * Supports both Supabase JWT (Authorization: Bearer <jwt>) and
  * custom API keys (x-api-key: ak_... or Authorization: Bearer ak_...).
+ *
+ * For ak_*-keyed requests, automatically logs to api_key_access_log
+ * (fire-and-forget) so SDK/MCP/partner traffic is captured.
  */
 export async function authenticateUser(supabase: any, request: Request): Promise<{ user: any; error?: string }> {
   try {
     // Check x-api-key header first (preferred for SDK/partner integrations)
     const xApiKey = request.headers.get('x-api-key');
     if (xApiKey && xApiKey.startsWith('ak_')) {
-      return await validateApiKeyAuth(supabase, xApiKey);
+      return await validateApiKeyAuth(supabase, xApiKey, request);
     }
 
     const authHeader = request.headers.get('Authorization');
@@ -198,7 +284,7 @@ export async function authenticateUser(supabase: any, request: Request): Promise
 
     // Check if Bearer token is an API key
     if (token.startsWith('ak_')) {
-      return await validateApiKeyAuth(supabase, token);
+      return await validateApiKeyAuth(supabase, token, request);
     }
 
     // Standard JWT authentication
@@ -217,10 +303,18 @@ export async function authenticateUser(supabase: any, request: Request): Promise
 /**
  * Validates an ak_-prefixed API key against the api_keys table.
  * Uses a service-role client to bypass RLS on api_keys table.
+ * Logs every attempt (success or failure) to api_key_access_log.
  */
-async function validateApiKeyAuth(_supabase: any, apiKey: string): Promise<{ user: any; error?: string }> {
+async function validateApiKeyAuth(
+  _supabase: any,
+  apiKey: string,
+  request?: Request
+): Promise<{ user: any; error?: string }> {
+  let resolvedKeyId: string | null = null;
+  let resolvedUserId: string | null = null;
+  let failureReason: string | null = null;
+
   try {
-    // Import createClient dynamically to avoid circular deps
     const { createClient } = await import('jsr:@supabase/supabase-js@2');
     const serviceClient = createClient(
       Deno.env.get('SUPABASE_URL')!,
@@ -231,25 +325,39 @@ async function validateApiKeyAuth(_supabase: any, apiKey: string): Promise<{ use
 
     const { data: keyData, error: keyError } = await serviceClient
       .from('api_keys')
-      .select('user_id, is_active, expires_at, subscription_tier')
+      .select('id, user_id, is_active, expires_at, subscription_tier')
       .eq('key_hash', keyHash)
       .maybeSingle();
 
     if (keyError || !keyData) {
-      return { user: null, error: 'Invalid API key' };
+      failureReason = 'Invalid API key';
+      if (request) void logApiKeyAccess({ apiKeyId: null, userId: null, request, success: false, failureReason });
+      return { user: null, error: failureReason };
     }
 
+    resolvedKeyId = keyData.id;
+    resolvedUserId = keyData.user_id;
+
     if (!keyData.is_active) {
-      return { user: null, error: 'API key is inactive' };
+      failureReason = 'API key is inactive';
+      if (request) void logApiKeyAccess({ apiKeyId: resolvedKeyId, userId: resolvedUserId, request, success: false, failureReason });
+      return { user: null, error: failureReason };
     }
 
     if (keyData.expires_at && new Date(keyData.expires_at) < new Date()) {
-      return { user: null, error: 'API key has expired' };
+      failureReason = 'API key has expired';
+      if (request) void logApiKeyAccess({ apiKeyId: resolvedKeyId, userId: resolvedUserId, request, success: false, failureReason });
+      return { user: null, error: failureReason };
     }
+
+    // Success: log + bump usage counters (fire-and-forget)
+    if (request) void logApiKeyAccess({ apiKeyId: resolvedKeyId, userId: resolvedUserId, request, success: true });
 
     return { user: { id: keyData.user_id, subscription_tier: keyData.subscription_tier } };
   } catch (err) {
-    return { user: null, error: 'API key validation failed' };
+    failureReason = 'API key validation failed';
+    if (request) void logApiKeyAccess({ apiKeyId: resolvedKeyId, userId: resolvedUserId, request, success: false, failureReason });
+    return { user: null, error: failureReason };
   }
 }
 
