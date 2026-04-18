@@ -376,8 +376,11 @@ serve(async (req: Request) => {
   // ── Auth ────────────────────────────────────────────────────────
   const apiKey = extractApiKey(req);
   const auth = validateApiKey(apiKey);
+  const url = new URL(req.url);
+  const endpoint = url.searchParams.get('endpoint') || 'leafengines-query';
 
   if (!auth.valid) {
+    logSandboxAccess(req, { endpoint, success: false, failureReason: auth.error, responseTimeMs: Date.now() - startTime });
     return new Response(JSON.stringify({ error: 'Unauthorized', message: auth.error }), {
       status: 401,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -393,6 +396,7 @@ serve(async (req: Request) => {
   };
 
   if (!rl.allowed) {
+    logSandboxAccess(req, { endpoint, success: false, failureReason: 'rate_limited', responseTimeMs: Date.now() - startTime, rateLimited: true });
     return new Response(JSON.stringify({ error: 'Rate limit exceeded', retry_after_seconds: rl.reset - Math.floor(Date.now() / 1000) }), {
       status: 429,
       headers: { ...corsHeaders, ...rlHeaders, 'Content-Type': 'application/json' },
@@ -400,9 +404,6 @@ serve(async (req: Request) => {
   }
 
   try {
-    const url = new URL(req.url);
-    const endpoint = url.searchParams.get('endpoint') || 'leafengines-query';
-
     let body: Record<string, unknown> = {};
     if (req.method === 'POST') {
       try { body = await req.json(); } catch { body = {}; }
@@ -412,6 +413,7 @@ serve(async (req: Request) => {
 
     const handler = ENDPOINT_MAP[endpoint];
     if (!handler) {
+      logSandboxAccess(req, { endpoint, success: false, failureReason: 'unknown_endpoint', responseTimeMs: Date.now() - startTime });
       return new Response(JSON.stringify({
         error: "Unknown endpoint",
         available_endpoints: Object.keys(ENDPOINT_MAP),
@@ -423,6 +425,8 @@ serve(async (req: Request) => {
     }
 
     const response = handler(body, startTime);
+    const elapsed = Date.now() - startTime;
+    logSandboxAccess(req, { endpoint, success: true, responseTimeMs: elapsed });
 
     return new Response(JSON.stringify(response), {
       status: 200,
@@ -430,8 +434,8 @@ serve(async (req: Request) => {
         ...corsHeaders,
         ...rlHeaders,
         'Content-Type': 'application/json',
-        'X-Response-Time': `${Date.now() - startTime}ms`,
-        'X-Response-Time-Ms': String(Date.now() - startTime),
+        'X-Response-Time': `${elapsed}ms`,
+        'X-Response-Time-Ms': String(elapsed),
         'X-Demo-Mode': 'true',
         'X-Sandbox-Tier': auth.tier,
       },
