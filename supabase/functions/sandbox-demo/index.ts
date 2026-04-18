@@ -1,9 +1,45 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key',
 };
+
+// Fire-and-forget logging for sandbox traffic into api_key_access_log.
+// Uses NULL api_key_id (sandbox keys aren't in api_keys table) but records
+// endpoint, IP, UA, success so reconciliation reports see the volume.
+async function logSandboxAccess(req: Request, opts: {
+  endpoint: string;
+  success: boolean;
+  failureReason?: string | null;
+  responseTimeMs?: number;
+  rateLimited?: boolean;
+}) {
+  try {
+    const serviceClient = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      || req.headers.get('cf-connecting-ip')
+      || req.headers.get('x-real-ip')
+      || null;
+    await serviceClient.from('api_key_access_log').insert({
+      api_key_id: null,
+      user_id: null,
+      endpoint: `sandbox-demo:${opts.endpoint}`,
+      success: opts.success,
+      failure_reason: opts.failureReason ?? null,
+      response_time_ms: opts.responseTimeMs ?? null,
+      rate_limited: opts.rateLimited ?? false,
+      ip_address: ip,
+      user_agent: req.headers.get('user-agent'),
+    });
+  } catch (err) {
+    console.error('[logSandboxAccess] failed:', err);
+  }
+}
 
 // ─── API Key Validation ─────────────────────────────────────────────
 // Accepts ak_sandbox_* keys via x-api-key header or Authorization: Bearer
@@ -340,8 +376,11 @@ serve(async (req: Request) => {
   // ── Auth ────────────────────────────────────────────────────────
   const apiKey = extractApiKey(req);
   const auth = validateApiKey(apiKey);
+  const url = new URL(req.url);
+  const endpoint = url.searchParams.get('endpoint') || 'leafengines-query';
 
   if (!auth.valid) {
+    logSandboxAccess(req, { endpoint, success: false, failureReason: auth.error, responseTimeMs: Date.now() - startTime });
     return new Response(JSON.stringify({ error: 'Unauthorized', message: auth.error }), {
       status: 401,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -357,6 +396,7 @@ serve(async (req: Request) => {
   };
 
   if (!rl.allowed) {
+    logSandboxAccess(req, { endpoint, success: false, failureReason: 'rate_limited', responseTimeMs: Date.now() - startTime, rateLimited: true });
     return new Response(JSON.stringify({ error: 'Rate limit exceeded', retry_after_seconds: rl.reset - Math.floor(Date.now() / 1000) }), {
       status: 429,
       headers: { ...corsHeaders, ...rlHeaders, 'Content-Type': 'application/json' },
@@ -364,9 +404,6 @@ serve(async (req: Request) => {
   }
 
   try {
-    const url = new URL(req.url);
-    const endpoint = url.searchParams.get('endpoint') || 'leafengines-query';
-
     let body: Record<string, unknown> = {};
     if (req.method === 'POST') {
       try { body = await req.json(); } catch { body = {}; }
@@ -376,6 +413,7 @@ serve(async (req: Request) => {
 
     const handler = ENDPOINT_MAP[endpoint];
     if (!handler) {
+      logSandboxAccess(req, { endpoint, success: false, failureReason: 'unknown_endpoint', responseTimeMs: Date.now() - startTime });
       return new Response(JSON.stringify({
         error: "Unknown endpoint",
         available_endpoints: Object.keys(ENDPOINT_MAP),
@@ -387,6 +425,8 @@ serve(async (req: Request) => {
     }
 
     const response = handler(body, startTime);
+    const elapsed = Date.now() - startTime;
+    logSandboxAccess(req, { endpoint, success: true, responseTimeMs: elapsed });
 
     return new Response(JSON.stringify(response), {
       status: 200,
@@ -394,8 +434,8 @@ serve(async (req: Request) => {
         ...corsHeaders,
         ...rlHeaders,
         'Content-Type': 'application/json',
-        'X-Response-Time': `${Date.now() - startTime}ms`,
-        'X-Response-Time-Ms': String(Date.now() - startTime),
+        'X-Response-Time': `${elapsed}ms`,
+        'X-Response-Time-Ms': String(elapsed),
         'X-Demo-Mode': 'true',
         'X-Sandbox-Tier': auth.tier,
       },

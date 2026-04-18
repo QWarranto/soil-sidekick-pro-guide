@@ -2,6 +2,7 @@ import { createClient } from 'jsr:@supabase/supabase-js@2'
 import { rateLimiter, exponentialBackoff } from '../_shared/api-rate-limiter.ts';
 import { withTimingHeaders, logResponseTime } from '../_shared/response-timing.ts';
 import { soilDataSchema, validateInput } from '../_shared/validation.ts';
+import { authenticateUser } from '../_shared/security-utils.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -114,13 +115,10 @@ Deno.serve(async (req) => {
     let authMethod = 'free_tier';
 
     if (!isFreeTier) {
-      // Authenticate user (supports both JWT and API key via Authorization or x-api-key header)
-      const xApiKey = req.headers.get('x-api-key');
-      const authHeader = xApiKey && xApiKey.startsWith('ak_') 
-        ? `Bearer ${xApiKey}` 
-        : req.headers.get('authorization');
-      const authResult = await authenticateRequest(supabase, authHeader);
-      
+      // Unified auth path — supports JWT, x-api-key (ak_*), and Authorization: Bearer ak_*.
+      // For ak_* keys, automatically writes to api_key_access_log via security-utils hook.
+      const authResult = await authenticateUser(supabase, req);
+
       if (authResult.error || !authResult.user) {
         logResponseTime(ENDPOINT_NAME, startTime, false);
         return new Response(
@@ -129,7 +127,7 @@ Deno.serve(async (req) => {
         );
       }
       user = authResult.user;
-      authMethod = authResult.authMethod || 'jwt';
+      authMethod = req.headers.get('x-api-key')?.startsWith('ak_') ? 'api_key' : 'jwt';
       console.log(`Authenticated via ${authMethod} for user ${user.id}`);
     } else {
       console.log('Free-tier access granted via x-free-tier header');

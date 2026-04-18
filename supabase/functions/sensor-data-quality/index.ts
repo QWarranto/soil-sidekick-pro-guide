@@ -1,6 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { corsHeaders } from "../_shared/cors.ts";
+import { authenticateUser } from "../_shared/security-utils.ts";
 
 const sensorReadingSchema = z.object({
   sensor_id: z.string().min(1).max(100),
@@ -51,24 +52,13 @@ Deno.serve(async (req) => {
   );
 
   try {
-    // Authenticate user
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Authorization required" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    // Unified auth — JWT or ak_* API key. ak_* keys auto-log to api_key_access_log.
+    const { user, error: authError } = await authenticateUser(supabase, req);
     if (authError || !user) {
-      return new Response(JSON.stringify({ error: "Invalid token" }), {
+      return new Response(JSON.stringify({ error: authError || "Authorization required" }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
-    // Also support API key auth
-    const apiKey = req.headers.get("x-api-key");
 
     let rawInput: unknown;
     try {
