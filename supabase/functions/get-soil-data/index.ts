@@ -81,8 +81,14 @@ Deno.serve(async (req) => {
     // Parse input
     const rawBody = await req.json();
     
-    // Check for free-tier access (MCP server passes this header)
-    const isFreeTier = req.headers.get('x-free-tier') === 'true';
+    // Check for free-tier access (MCP server passes this header).
+    // Also auto-grant free tier for the publicly documented n8n test key.
+    const PUBLIC_FREE_TIER_KEYS = new Set(['leaf-test-370df0a2e62e']);
+    const incomingKey = req.headers.get('x-api-key')
+      || req.headers.get('authorization')?.replace(/^Bearer\s+/i, '')
+      || '';
+    const isFreeTier = req.headers.get('x-free-tier') === 'true'
+      || PUBLIC_FREE_TIER_KEYS.has(incomingKey.trim());
     
     let validatedData;
     
