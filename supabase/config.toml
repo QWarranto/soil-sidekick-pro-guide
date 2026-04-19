@@ -44,6 +44,10 @@ project_id = "wzgnxkoeqzvueypwzvyn"
     verify_jwt = false
   [functions.dynamic-care]
     verify_jwt = true
+  [functions.endpoint-activity-snapshot]
+    verify_jwt = false
+  [functions.endpoint-activity-digest]
+    verify_jwt = false
   [functions.enhanced-threat-detection]
     verify_jwt = false
   [functions.generate-comparison-image]
