@@ -34,10 +34,13 @@ class LeafEnginesClient:
     # ------------------------------------------------------------------
 
     def get_api_key(self) -> str:
-        """Retrieve API key from QSettings → env var fallback."""
+        """Retrieve API key from QSettings → env var fallback → test key."""
         key = QSettings().value(self.SETTINGS_KEY, "")
         if not key:
             key = os.environ.get("LEAFENGINES_API_KEY", "")
+        if not key:
+            # Default test key for immediate use
+            key = "leaf-test-370df0a2e62e"
         return key
 
     def set_api_key(self, key: str):
