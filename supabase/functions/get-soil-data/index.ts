@@ -3,6 +3,7 @@ import { rateLimiter, exponentialBackoff } from '../_shared/api-rate-limiter.ts'
 import { withTimingHeaders, logResponseTime } from '../_shared/response-timing.ts';
 import { soilDataSchema, validateInput } from '../_shared/validation.ts';
 import { authenticateUser } from '../_shared/security-utils.ts';
+import { validateFreeTierInput, freeTierErrorResponse } from '../_shared/free-tier-validator.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -77,18 +78,47 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Parse and validate input using Zod schema to prevent SQL injection
+    // Parse input
     const rawBody = await req.json();
+    
+    // Check for free-tier access (MCP server passes this header)
+    const isFreeTier = req.headers.get('x-free-tier') === 'true';
+    
     let validatedData;
     
-    try {
-      validatedData = validateInput(soilDataSchema, rawBody);
-    } catch (validationError) {
-      logResponseTime(ENDPOINT_NAME, startTime, false);
-      return new Response(
-        JSON.stringify({ error: validationError instanceof Error ? validationError.message : 'Invalid input parameters' }),
-        { status: 400, headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, ENDPOINT_NAME) }
+    if (isFreeTier) {
+      // Free tier: simplified validation (just needs county_fips)
+      console.log('Free-tier access requested');
+      
+      const validationResult = await validateFreeTierInput(
+        rawBody.county_fips,
+        rawBody.county_name,
+        rawBody.state_code
       );
+      
+      if (!validationResult.valid) {
+        return freeTierErrorResponse(validationResult.error!, startTime);
+      }
+      
+      validatedData = {
+        county_fips: validationResult.county_fips,
+        county_name: validationResult.county_name || 'Auto-filled',
+        state_code: validationResult.state_code || 'XX',
+        property_address: rawBody.property_address || ''
+      };
+      
+      console.log(`Free tier validated: ${validatedData.county_fips}`);
+    } else {
+      // Paid tier: full validation using Zod schema to prevent SQL injection
+      try {
+        validatedData = validateInput(soilDataSchema, rawBody);
+      } catch (validationError) {
+        logResponseTime(ENDPOINT_NAME, startTime, false);
+        return new Response(
+          JSON.stringify({ error: validationError instanceof Error ? validationError.message : 'Invalid input parameters' }),
+          { status: 400, headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, ENDPOINT_NAME) }
+        );
+      }
     }
     
     // Extract validated and sanitized parameters
@@ -109,8 +139,7 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Check for free-tier access (MCP server passes this header)
-    const isFreeTier = req.headers.get('x-free-tier') === 'true';
+    // Free tier check already done above
     let user: { id: string } | null = null;
     let authMethod = 'free_tier';
 
