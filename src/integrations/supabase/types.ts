@@ -1155,6 +1155,99 @@ export type Database = {
         }
         Relationships: []
       }
+      endpoint_activity_snapshots: {
+        Row: {
+          avg_ms: number | null
+          channel: string
+          created_at: string
+          endpoint: string
+          failures: number
+          id: string
+          metadata: Json | null
+          p95_ms: number | null
+          rate_limited: number
+          requests: number
+          window_end: string
+          window_start: string
+        }
+        Insert: {
+          avg_ms?: number | null
+          channel: string
+          created_at?: string
+          endpoint: string
+          failures?: number
+          id?: string
+          metadata?: Json | null
+          p95_ms?: number | null
+          rate_limited?: number
+          requests?: number
+          window_end: string
+          window_start: string
+        }
+        Update: {
+          avg_ms?: number | null
+          channel?: string
+          created_at?: string
+          endpoint?: string
+          failures?: number
+          id?: string
+          metadata?: Json | null
+          p95_ms?: number | null
+          rate_limited?: number
+          requests?: number
+          window_end?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
+      endpoint_digest_log: {
+        Row: {
+          channels_summary: Json | null
+          created_at: string
+          error: string | null
+          id: string
+          recipients: string[]
+          sent_at: string
+          status: string
+          total_failures: number
+          total_rate_limited: number
+          total_requests: number
+          window_end: string
+          window_hours: number
+          window_start: string
+        }
+        Insert: {
+          channels_summary?: Json | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          recipients: string[]
+          sent_at?: string
+          status?: string
+          total_failures?: number
+          total_rate_limited?: number
+          total_requests?: number
+          window_end: string
+          window_hours: number
+          window_start: string
+        }
+        Update: {
+          channels_summary?: Json | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          recipients?: string[]
+          sent_at?: string
+          status?: string
+          total_failures?: number
+          total_rate_limited?: number
+          total_requests?: number
+          window_end?: string
+          window_hours?: number
+          window_start?: string
+        }
+        Relationships: []
+      }
       environmental_impact_scores: {
         Row: {
           analysis_id: string | null
