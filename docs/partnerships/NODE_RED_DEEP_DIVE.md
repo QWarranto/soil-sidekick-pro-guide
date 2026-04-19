@@ -272,3 +272,28 @@ For full endpoint documentation and parameter details, see:
 ---
 
 © 2026 SoilSidekick Pro™ / LeafEngines™. Node-RED is a trademark of OpenJS Foundation.
+
+## 🌐 Global IoT & Automation Pricing
+
+Node-RED users deploy automation worldwide. Our pricing supports your global IoT deployments:
+
+**Subscription Plans (Monthly):**
+
+| Region | Starter | Pro | Local Payment Options |
+|--------|---------|-----|----------------------|
+| **United States** | $49 | $149 | Card, Apple Pay, Google Pay |
+| **European Union** | €45 | €135 | Klarna, iDEAL, EPS, Apple/Google Pay |
+| **United Kingdom** | £38 | £115 | Afterpay/Clearpay, Apple/Google Pay |
+| **Australia** | AU$75 | AU$225 | Afterpay, Apple/Google Pay |
+| **International** | $49* | $149* | Credit Cards, Apple/Google Pay |
+
+*Equivalent local currency at checkout
+
+**Why Local Pricing Matters for IoT:**
+- Deploy sensors globally with predictable local costs
+- Local payment methods reduce friction for team purchases
+- Tax-inclusive pricing simplifies budgeting
+- Currency stability for long-term automation projects
+- Compliance with regional financial regulations
+
+**Test Before Buying:** Use free tier (`x-free-tier: true`) or test key `leaf-test-370df0a2e62e`

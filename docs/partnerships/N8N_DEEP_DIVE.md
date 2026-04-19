@@ -140,4 +140,30 @@ We can register it as a downstream tool, letting LeafEngines agents orchestrate 
 1. Test with the free tier key  
 2. Build your first soil analysis workflow  
 3. Explore MCP integration for AI agents  
+
+## 💰 Pricing for Business Automation
+
+As an n8n user automating business processes across regions, our pricing supports your international workflows:
+
+**Monthly Subscription Plans:**
+
+| Plan | USD | EUR (EU) | GBP (UK) | Notes |
+|------|-----|----------|----------|-------|
+| **Starter** | $49 | €45 | £38 | Basic automation & API access |
+| **Pro** | $149 | €135 | £115 | Advanced workflows, higher limits |
+| **Enterprise** | Custom | Custom | Custom | Volume discounts, SLA |
+
+**Regional Payment Support:**
+- **EU Businesses:** Klarna (DE), iDEAL (NL), EPS (AT) + standard cards
+- **UK Businesses:** Afterpay/Clearpay for flexible payments
+- **Global:** Credit cards, Apple Pay, Google Pay
+- **All prices include applicable taxes** (VAT/GST/sales tax)
+
+**Free Testing:** Use `leaf-test-370df0a2e62e` test key for evaluation
+
+**Integration Value:**
+- Predictable costs for global automation deployments
+- Local payment methods for distributed teams
+- Tax compliance built-in for international clients
+- Scalable from prototype to production
 4. Contact us for enterprise bidirectional integration

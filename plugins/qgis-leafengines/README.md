@@ -63,6 +63,21 @@ Access USDA soil data, EPA water quality, AI crop recommendations, carbon credit
 
 ## Installation
 
+
+## 🏷️ Pricing & International Support
+
+LeafEngines Agricultural Intelligence Plugin supports users worldwide with localized pricing and payment options:
+
+| Region | Starter (Monthly) | Pro (Monthly) | Local Payment Methods |
+|--------|-------------------|---------------|----------------------|
+| **United States** | $49 | $149 | Card, Apple Pay, Google Pay, Affirm |
+| **European Union** | €45 (VAT incl.) | €135 (VAT incl.) | Klarna (DE), iDEAL (NL), EPS (AT), Apple/Google Pay |
+| **United Kingdom** | £38 (VAT incl.) | £115 (VAT incl.) | Afterpay/Clearpay, Apple/Google Pay |
+| **Australia** | AU$75 (GST incl.) | AU$225 (GST incl.) | Afterpay, Apple/Google Pay |
+| **Other Countries** | $49 equivalent | $149 equivalent | Credit/Debit Cards, Apple/Google Pay |
+
+**Free Tier Available:** Test with `x-free-tier: true` header or test key `leaf-test-370df0a2e62e`  
+**Founder Pricing:** First 100 customers get lifetime pricing lock
 ### From ZIP (recommended during beta)
 
 1. Download or build the plugin ZIP (see below)

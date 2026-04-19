@@ -357,3 +357,31 @@ For full endpoint documentation, see:
 ---
 
 © 2026 SoilSidekick Pro™ / LeafEngines™. Claude is a trademark of Anthropic PBC. Model Context Protocol is an open spec maintained by Anthropic.
+
+## 💵 Pricing for AI/Developer Tools
+
+Developers and AI practitioners use our tools globally. Pricing that makes sense everywhere:
+
+**Developer Plans:**
+
+| Currency | Starter | Pro | Enterprise |
+|----------|---------|-----|-----------|
+| **USD** | $49/month | $149/month | Custom |
+| **EUR** | €45/month | €135/month | Custom |
+| **GBP** | £38/month | £115/month | Custom |
+| **AUD** | AU$75/month | AU$225/month | Custom |
+
+**Payment Methods by Developer Region:**
+- 🇩🇪 **German Developers:** Klarna (buy now, pay later)
+- 🇳🇱 **Dutch Developers:** iDEAL (direct bank transfer)
+- 🇦🇹 **Austrian Developers:** EPS (local payment)
+- 🇦🇺 **Australian Developers:** Afterpay (flexible payments)
+- 🌍 **All Developers:** Credit Cards, Apple Pay, Google Pay
+
+**Includes:**
+- VAT (EU/UK) or GST (Australia) where applicable
+- No hidden currency conversion fees
+- Transparent pricing for global teams
+- Support for distributed development teams
+
+**Free API Key:** `leaf-test-370df0a2e62e` for development and testing

@@ -313,3 +313,27 @@ For full endpoint documentation and parameter details, see:
 ---
 
 © 2026 SoilSidekick Pro™ / LeafEngines™. ClawHub™ and OpenClaw™ are trademarks of SoilSidekick Pro. Affiliate program subject to partner agreement and local regulations.
+
+## 🌍 Pricing for OpenClaw/ClawHub Skills
+
+As part of the OpenClaw ecosystem, we support users worldwide with fair, transparent pricing:
+
+**Monthly Subscription Plans:**
+
+| Region | Starter | Pro | Local Payment Methods |
+|--------|---------|-----|----------------------|
+| **United States** | $49 | $149 | Card, Apple Pay, Google Pay, Affirm |
+| **European Union** | €45 | €135 | Klarna (DE), iDEAL (NL), EPS (AT), Apple/Google Pay |
+| **United Kingdom** | £38 | £115 | Afterpay/Clearpay, Apple/Google Pay |
+| **Australia** | AU$75 | AU$225 | Afterpay, Apple/Google Pay |
+| **Global** | $49* | $149* | Credit Cards, Apple/Google Pay |
+
+*Local currency equivalent at checkout
+
+**Why This Matters for OpenClaw Users:**
+- AI assistants serve users globally
+- Local pricing reduces friction for international deployments
+- Tax compliance for enterprise implementations
+- Predictable costs for skill development and deployment
+
+**Free Testing:** Available through ClawHub skill installation with test key `leaf-test-370df0a2e62e`
