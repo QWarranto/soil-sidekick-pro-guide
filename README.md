@@ -71,6 +71,23 @@ This project is built with:
 2. **Read the docs** → [LeafEngines API Documentation](https://app.soilsidekickpro.com/leafengines-api)
 3. **Install the MCP server** → `npm install @anthropic/leafengines-mcp`
 
+
+## 🆓 Free Tier - Test Immediately
+
+**Zero friction to try:** No email, no credit card, no commitment.
+
+### **Two Ways to Test Free:**
+1. **Test Key:** `leaf-test-370df0a2e62e` (works immediately)
+2. **Free Tier Header:** `x-free-tier: true` (no API key needed)
+
+### **What You Get:**
+- Basic soil analysis with county FIPS codes
+- USDA soil data access
+- Limited requests for evaluation
+- Perfect for prototyping and testing
+
+**No risk, no commitment.** Test before buying.
+
 ### Pricing Tiers
 
 | Tier | Price | Included Calls | Best For |
