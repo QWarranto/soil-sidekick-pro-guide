@@ -120,3 +120,24 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+## 💰 International Pricing
+
+| Plan | USD | EUR (EU) | GBP (UK) | AUD (Australia) |
+|------|-----|----------|----------|-----------------|
+| **Starter** | $49/month | €45/month | £38/month | AU$75/month |
+| **Pro** | $149/month | €135/month | £115/month | AU$225/month |
+| **Enterprise** | Custom | Custom | Custom | Custom |
+
+**Regional Payment Methods:**
+- 🇩🇪 **Germany:** Klarna (preferred)
+- 🇳🇱 **Netherlands:** iDEAL (preferred)
+- 🇦🇹 **Austria:** EPS (preferred)
+- 🇦🇺 **Australia:** Afterpay (preferred)
+- 🇬🇧 **UK:** Afterpay/Clearpay
+- 🌍 **Global:** Credit/Debit Cards, Apple Pay, Google Pay
+
+*EU/UK prices include VAT. Australian prices include GST.*
+*Founder pricing available for first 100 customers.*
+
+**Free Tier:** Test with `x-free-tier: true` header or test key `leaf-test-370df0a2e62e`
