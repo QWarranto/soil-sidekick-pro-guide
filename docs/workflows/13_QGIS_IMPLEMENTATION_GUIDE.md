@@ -6,6 +6,20 @@ You're in the right place. This is the official home for the LeafEngines QGIS pl
 
 ---
 
+## ⚡ Get Started Now
+
+**Free tier — no signup, no credit card:**
+- **Test key:** `leaf-test-370df0a2e62e` (works immediately in the QGIS plugin)
+- **Free header:** `x-free-tier: true` (no key needed for direct API calls)
+
+**Ready for production? Founder pricing ends June 1, 2026:**
+- [Starter — $10/mo → lifetime $49/mo lock →](https://buy.stripe.com/14A7sL30y8bR2F4fbgaMU02)
+- [Pro — $49/mo → lifetime $149/mo lock →](https://buy.stripe.com/cNi3cv1WuajZcfE7IOaMU03)
+
+**Need a turnkey soil report (no plugin required):** [soilcertify.com →](https://soilcertify.com)
+
+---
+
 > **Purpose:** A single, broad-audience guide that takes a team from zero to production with the LeafEngines QGIS plugin and SDK — covering install, configuration, day-to-day workflows, and enterprise deployment, with concrete use cases for each role.
 > **Audience:** GIS analysts, agronomists / farm advisors, and enterprise IT / integrators
 > **Companion docs:** [12 QGIS SDK Deep Dive](12_QGIS_SDK_DEEP_DIVE.md) · [Plugin README](../../plugins/qgis-leafengines/README.md) · [WFS Extension](../../plugins/qgis-leafengines/WFS_EXTENSION.md) · [MCP Specification](../MCP_SERVER_SPECIFICATION.md)
