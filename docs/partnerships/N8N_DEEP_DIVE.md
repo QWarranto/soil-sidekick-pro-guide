@@ -2,8 +2,22 @@
 
 **Audience:** n8n workflow authors, automation engineers, agency builders  
 **Repository target:** n8n community node / workflow templates repo  
-**Last updated:** 2026-04-16  
+**Last updated:** 2026-05-07  
 **API Version:** emergency_1.0
+
+---
+
+## ⚡ Get Started Now
+
+**Free tier — no signup, no credit card:**
+- **Test key:** `leaf-test-370df0a2e62e` (works immediately)
+- **Free header:** `x-free-tier: true` (no key needed)
+
+**Ready for production? Founder pricing ends June 1, 2026:**
+- [Starter — $10/mo → lifetime $49/mo lock →](https://buy.stripe.com/14A7sL30y8bR2F4fbgaMU02)
+- [Pro — $49/mo → lifetime $149/mo lock →](https://buy.stripe.com/cNi3cv1WuajZcfE7IOaMU03)
+
+**Get a professional soil report (no coding required):** [soilcertify.com →](https://soilcertify.com)
 
 ---
 

@@ -2,7 +2,21 @@
 
 > **Audience:** Claude Desktop users, Anthropic API developers, agentic-app builders, IDE/MCP host integrators
 > **Repository target:** [`leafengines-claude-mcp`](https://github.com/QWarranto/leafengines-claude-mcp) (Apache 2.0)
-> **Last updated:** 2026-04-16
+> **Last updated:** 2026-05-07
+
+---
+
+## ⚡ Get Started Now
+
+**Free tier — no signup, no credit card:**
+- **Test key:** `leaf-test-370df0a2e62e` (works immediately)
+- **Free header:** `x-free-tier: true` (no key needed)
+
+**Ready for production? Founder pricing ends June 1, 2026:**
+- [Starter — $10/mo → lifetime $49/mo lock →](https://buy.stripe.com/14A7sL30y8bR2F4fbgaMU02)
+- [Pro — $49/mo → lifetime $149/mo lock →](https://buy.stripe.com/cNi3cv1WuajZcfE7IOaMU03)
+
+**Get a professional soil report (no coding required):** [soilcertify.com →](https://soilcertify.com)
 
 ---
 
@@ -358,30 +372,45 @@ For full endpoint documentation, see:
 
 © 2026 SoilSidekick Pro™ / LeafEngines™. Claude is a trademark of Anthropic PBC. Model Context Protocol is an open spec maintained by Anthropic.
 
-## 💵 Pricing for AI/Developer Tools
+## 💰 Pricing
 
-Developers and AI practitioners use our tools globally. Pricing that makes sense everywhere:
+### Free Tier — No Credit Card
+- **Test key:** `leaf-test-370df0a2e62e`
+- **Free header:** `x-free-tier: true`
+- **Includes:** Basic soil analysis, county lookup, TurboQuant check
+- **Try it:** [soilcertify.com →](https://soilcertify.com)
 
-**Developer Plans:**
+### Pay-As-You-Go
 
-| Currency | Starter | Pro | Enterprise |
-|----------|---------|-----|-----------|
-| **USD** | $49/month | $149/month | Custom |
-| **EUR** | €45/month | €135/month | Custom |
-| **GBP** | £38/month | £115/month | Custom |
-| **AUD** | AU$75/month | AU$225/month | Custom |
+| Tier | Price | Per-Call Rate | What You Get | Buy |
+|------|-------|--------------|--------------|-----|
+| Commoditized | $0.50/bundle | $0.001/call | Basic soil/weather, county lookup | [Buy →](https://buy.stripe.com/3cIdR99oWajZdjI6EKaMU07) |
+| Enhanced | $1.50/bundle | $0.003/call | Environmental impact, crop suitability | [Buy →](https://buy.stripe.com/7sY28reJg1NtenM8MSaMU0b) |
+| Proprietary | $5.00/bundle | $0.010/call | Planting optimization, carbon credits | [Buy →](https://buy.stripe.com/3cIeVd9oW1NtgvU1kqaMU09) |
+| Exclusive | $10.00/bundle | $0.020/call | Patent-pending env compatibility scoring | [Buy →](https://buy.stripe.com/6oU4gzbx40Jp6Vk1kqaMU0a) |
 
-**Payment Methods by Developer Region:**
-- 🇩🇪 **German Developers:** Klarna (buy now, pay later)
-- 🇳🇱 **Dutch Developers:** iDEAL (direct bank transfer)
-- 🇦🇹 **Austrian Developers:** EPS (local payment)
-- 🇦🇺 **Australian Developers:** Afterpay (flexible payments)
-- 🌍 **All Developers:** Credit Cards, Apple Pay, Google Pay
+### Monthly Subscriptions
 
-**Includes:**
-- VAT (EU/UK) or GST (Australia) where applicable
-- No hidden currency conversion fees
-- Transparent pricing for global teams
-- Support for distributed development teams
+| Plan | Price | Included Calls | Best For | Subscribe |
+|------|-------|---------------|----------|-----------|
+| **Founder Starter** | $10/mo → lifetime $49/mo | 10,000/mo | Solo developers | [Subscribe →](https://buy.stripe.com/14A7sL30y8bR2F4fbgaMU02) |
+| **Founder Pro** | $49/mo → lifetime $149/mo | 35,000/mo | Production apps | [Subscribe →](https://buy.stripe.com/cNi3cv1WuajZcfE7IOaMU03) |
+| Starter | $149/mo | 10,000/mo | Solo developers | [Subscribe →](https://buy.stripe.com/5kQ6oHcB88bR93s8MSaMU04) |
+| Pro | $499/mo | 35,000/mo | Production apps, teams | [Subscribe →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05) |
+| Enterprise | $1,999/mo | 175,000+/mo | White-label, SLA, OEM | [Subscribe →](https://buy.stripe.com/eVqaEXfNkajZ6Vk0gmaMU06) |
 
-**Free API Key:** `leaf-test-370df0a2e62e` for development and testing
+> ⏰ **Founder pricing expires June 1, 2026.** First 100 customers lock lifetime rates.
+
+### International Pricing
+
+| Region | Starter | Pro | Local Payment Methods |
+|--------|---------|-----|----------------------|
+| **United States** | $49/mo | $149/mo | Card, Apple Pay, Google Pay, Affirm |
+| **European Union** | €45/mo (VAT incl.) | €135/mo (VAT incl.) | Klarna, iDEAL, EPS, Apple/Google Pay |
+| **United Kingdom** | £38/mo (VAT incl.) | £115/mo (VAT incl.) | Afterpay/Clearpay, Apple/Google Pay |
+| **Australia** | AU$75/mo (GST incl.) | AU$225/mo (GST incl.) | Afterpay, Apple/Google Pay |
+
+---
+
+🌱 **LeafEngines™** | SoilSidekick Pro® | SoilCertify | SoilTech Suite, Inc.
+*Space gives the picture. We give the truth.*
