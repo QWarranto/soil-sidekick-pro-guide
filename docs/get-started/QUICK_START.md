@@ -56,3 +56,41 @@ You just made a free LeafEngines call from inside QGIS. The test key gives you *
 - **Build with the full API** → [Free API Key](/docs/get-started/free-api-key) explains what the test key unlocks and how to get a production key.
 - **See the finished deliverable** → [Sample Reports](/docs/get-started/sample-reports) shows what the same data looks like as a client-ready PDF.
 - **Plan a budget** → [Pricing](/docs/get-started/pricing) covers pay-as-you-go, subscriptions, and SoilCertify reports.
+
+---
+
+## 💰 Pricing
+
+### Free Tier — No Credit Card
+- **Test key:** `leaf-test-370df0a2e62e`
+- **Free header:** `x-free-tier: true`
+- **Includes:** Basic soil analysis, county lookup, TurboQuant check
+- **Try it:** [soilcertify.com →](https://soilcertify.com)
+
+### Pay-As-You-Go
+
+| Tier | Price | Per-Call Rate | What You Get | Buy |
+|------|-------|--------------|--------------|-----|
+| Commoditized | $0.50/bundle | $0.001/call | Basic soil/weather, county lookup | [Buy →](https://buy.stripe.com/3cIdR99oWajZdjI6EKaMU07) |
+| Enhanced | $1.50/bundle | $0.003/call | Environmental impact, crop suitability | [Buy →](https://buy.stripe.com/7sY28reJg1NtenM8MSaMU0b) |
+| Proprietary | $5.00/bundle | $0.010/call | Planting optimization, carbon credits | [Buy →](https://buy.stripe.com/3cIeVd9oW1NtgvU1kqaMU09) |
+| Exclusive | $10.00/bundle | $0.020/call | Patent-pending env compatibility scoring | [Buy →](https://buy.stripe.com/6oU4gzbx40Jp6Vk1kqaMU0a) |
+
+### Monthly Subscriptions
+
+| Plan | Price | Included Calls | Best For | Subscribe |
+|------|-------|---------------|----------|-----------|
+| **Founder Starter** | $10/mo → lifetime $49/mo | 10,000/mo | Solo developers | [Subscribe →](https://buy.stripe.com/14A7sL30y8bR2F4fbgaMU02) |
+| **Founder Pro** | $49/mo → lifetime $149/mo | 35,000/mo | Production apps | [Subscribe →](https://buy.stripe.com/cNi3cv1WuajZcfE7IOaMU03) |
+| Starter | $149/mo | 10,000/mo | Solo developers | [Subscribe →](https://buy.stripe.com/5kQ6oHcB88bR93s8MSaMU04) |
+| Pro | $499/mo | 35,000/mo | Production apps, teams | [Subscribe →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05) |
+| Enterprise | $1,999/mo | 175,000+/mo | White-label, SLA, OEM | [Subscribe →](https://buy.stripe.com/eVqaEXfNkajZ6Vk0gmaMU06) |
+
+> ⏰ **Founder pricing expires June 1, 2026.** First 100 customers lock lifetime rates.
+
+**Enterprise Bundle** (SoilSidekick Pro + LeafEngines MCP) — $3,499/mo, 685,000 included calls/mo. Contact: sales@leafengines.com
+
+---
+
+🌱 **LeafEngines™** | SoilSidekick Pro® | SoilCertify | SoilTech Suite, Inc.
+*Space gives the picture. We give the truth.*
