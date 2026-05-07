@@ -349,3 +349,8 @@ curl -X POST https://leafengines-emergency-api-1.onrender.com/v1/soil/analyze \
 - **Agent integration:** [AGENT_INTEGRATION_GUIDE](../AGENT_INTEGRATION_GUIDE.md) · [MCP Specification](../MCP_SERVER_SPECIFICATION.md)
 - **Plugin source:** [`plugins/qgis-leafengines/`](../../plugins/qgis-leafengines/README.md)
 - **Support:** developers@leafengines.com
+
+---
+
+🌱 **LeafEngines™** | SoilSidekick Pro® | SoilCertify | SoilTech Suite, Inc.
+*Space gives the picture. We give the truth.*
