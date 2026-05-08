@@ -241,7 +241,7 @@ const identification = await plantCareApi.safeIdentification({
           <TabsContent value="v200" className="space-y-6 mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Version 2.0.0 — Skyline Sensor Integration & Real-Time APIs</CardTitle>
+                <CardTitle>Version 2.0.0 — OEM Precision Hardware Sensor Integration & Real-Time APIs</CardTitle>
                 <p className="text-muted-foreground">Released February 2026</p>
               </CardHeader>
               <CardContent className="space-y-6">
