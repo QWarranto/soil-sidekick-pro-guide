@@ -66,6 +66,7 @@ import MCPDocumentation from "./pages/MCPDocumentation";
 import OperationsAudit from "./pages/OperationsAudit";
 import PodcastLanding from "./pages/PodcastLanding";
 import FoundersProgram from "./pages/FoundersProgram";
+import DocsHub from "./pages/DocsHub";
 
 const queryClient = new QueryClient();
 
