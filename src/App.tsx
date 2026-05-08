@@ -97,14 +97,6 @@ const isSandboxDomain = () => {
   return hostname === 'sandbox.leafengines.com' || hostname === 'www.sandbox.leafengines.com';
 };
 
-function ExternalRedirect({ to }: { to: string }) {
-  useEffect(() => {
-    window.location.replace(to);
-  }, [to]);
-
-  return null;
-}
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -133,8 +125,7 @@ const App = () => (
             <Route path="/fertilizer-footprint" element={<FertilizerFootprint />} />
             <Route path="/pricing" element={<Pricing />} />
         <Route path="/api-docs" element={<ApiDocs />} />
-        <Route path="/docs" element={<ExternalRedirect to="https://docs.leafengines.com" />} />
-        <Route path="/docs/*" element={<ExternalRedirect to="https://docs.leafengines.com" />} />
+        <Route path="/docs" element={<Navigate to="/docs/get-started/quick-start" replace />} />
         <Route path="/leafengines-api" element={<LeafEnginesApiDocs />} />
         <Route path="/impact-simulator" element={<LeafEnginesImpactSimulator />} />
         <Route path="/client-integration-guide" element={<ClientIntegrationGuide />} />
