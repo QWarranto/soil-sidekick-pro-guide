@@ -365,4 +365,4 @@ const guidance = await plantCareApi.beginnerGuidance({
 | MQTT Direct Connection | No | Yes | ✨ NEW |
 | Alert Management | No | Yes | ✨ NEW |
 
-**Key Differentiator:** Version 2.0.0 adds Skyline Instruments sensor integration, transforming SoilSidekick from a data-query platform into a real-time sensor management and alerting system for precision agriculture.
+**Key Differentiator:** Version 2.0.0 adds OEM precision hardware sensor integration, transforming SoilSidekick from a data-query platform into a real-time sensor management and alerting system for precision agriculture.
