@@ -44,13 +44,10 @@ export default function DocsHub() {
   const params = useParams();
   const location = useLocation();
   const slug = params["*"]?.replace(/\/$/, "") || "";
+  const resolvedSlug = slug || "get-started/quick-start";
 
-  const selectedDoc = useMemo(() => docs.find((doc) => doc.slug === slug), [slug]);
+  const selectedDoc = useMemo(() => docs.find((doc) => doc.slug === resolvedSlug), [resolvedSlug]);
   const featured = useMemo(() => featuredDocs.map((key) => docs.find((doc) => doc.slug === key)).filter(Boolean) as DocEntry[], []);
-
-  if (!slug) {
-    return <Navigate to="/docs/get-started/quick-start" replace />;
-  }
 
   if (!selectedDoc) {
     return <Navigate to="/docs/get-started/quick-start" replace state={{ from: location.pathname }} />;
