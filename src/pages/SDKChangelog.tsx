@@ -171,11 +171,11 @@ const identification = await plantCareApi.safeIdentification({
 
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <Radio className="h-5 w-5 text-primary" />
-              What's New: Skyline Instruments Sensor Integration
+              What's New: OEM Precision Hardware Sensor Integration
             </h3>
             <p className="text-muted-foreground mb-6">
               Version 2.0.0 transforms SoilSidekick from a data-query platform into a real-time sensor management
-              and alerting system for precision agriculture, with full Skyline Instruments hardware support.
+              and alerting system for precision agriculture, with full OEM precision hardware support.
             </p>
 
             <div className="grid gap-4 md:grid-cols-3">
