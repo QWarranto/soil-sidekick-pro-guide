@@ -6,15 +6,15 @@
 
 ## Version 2.0.0 (Current)
 
-**Release Focus:** Skyline Instruments Sensor Integration & Real-Time APIs
+**Release Focus:** OEM Precision Hardware Sensor Integration & Real-Time APIs
 
 **Published:** February 2026  
 **NPM Package:** `@soilsidekick/sdk@2.0.0`
 
 ### What's New
 
-#### 🛰️ Skyline Sensor Integration (NEW)
-Full integration with Skyline Instruments sensor hardware:
+#### 🛰️ OEM Precision Hardware Sensor Integration (NEW)
+Full integration with OEM precision sensor hardware:
 
 | Feature | Description |
 |---------|-------------|
