@@ -58,10 +58,15 @@ const getStarted: NavLink[] = [
 ];
 
 const useCases: NavLink[] = [
-  { label: "LeafEngines MCP", to: "/docs/partnerships/leafengines-mcp-10-use-cases", blurb: docBySlug("partnerships/leafengines-mcp-10-use-cases")?.blurb },
-  { label: "B2B API – Marketing Overview", to: "/docs/b2b-pitch-deck-content", blurb: docBySlug("b2b-pitch-deck-content")?.blurb },
-  { label: "Case Study – SDK Integration", to: "/docs/case-studies/sdk-integration-under-4-hours", blurb: docBySlug("case-studies/sdk-integration-under-4-hours")?.blurb },
+  { label: "LeafEngines MCP — 10 Use Cases", to: "/docs/partnerships/leafengines-mcp-10-use-cases", blurb: "Ten production-ready agent workflows chaining the 10 MCP tools." },
+  { label: "B2B API — Marketing Overview", to: "/docs/b2b-pitch-deck-content", blurb: "Outcomes by vertical: Urban Forestry, Insurance, Nutraceuticals, Precision Ag." },
+  { label: "Consumer Pain Point Solutions", to: "/docs/consumer-pain-point-solutions", blurb: docBySlug("consumer-pain-point-solutions")?.blurb },
+  { label: "Case Study — SDK Integration Under 4 Hours", to: "/docs/case-studies/sdk-integration-under-4-hours", blurb: docBySlug("case-studies/sdk-integration-under-4-hours")?.blurb },
   { label: "Composio Enterprise Onboarding", to: "/docs/partnerships/composio-enterprise-onboarding", blurb: docBySlug("partnerships/composio-enterprise-onboarding")?.blurb },
+  { label: "Claude MCP Deep Dive", to: "/docs/partnerships/claude-mcp-deep-dive", blurb: docBySlug("partnerships/claude-mcp-deep-dive")?.blurb },
+  { label: "ClawHub & OpenClaw Deep Dive", to: "/docs/partnerships/clawhub-openclaw-deep-dive", blurb: docBySlug("partnerships/clawhub-openclaw-deep-dive")?.blurb },
+  { label: "n8n Deep Dive", to: "/docs/partnerships/n8n-deep-dive", blurb: docBySlug("partnerships/n8n-deep-dive")?.blurb },
+  { label: "n8n — 10 Use Cases by Tier", to: "/docs/partnerships/n8n-10-use-cases", blurb: "Tier-mapped n8n workflows with measurable ROI per use case." },
 ];
 
 const sidebarSections: { title: string; links: NavLink[] }[] = [
