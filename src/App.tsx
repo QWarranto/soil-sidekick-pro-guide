@@ -125,6 +125,8 @@ const App = () => (
             <Route path="/fertilizer-footprint" element={<FertilizerFootprint />} />
             <Route path="/pricing" element={<Pricing />} />
         <Route path="/api-docs" element={<ApiDocs />} />
+        <Route path="/docs" element={<Navigate to="https://docs.leafengines.com" replace />} />
+        <Route path="/docs/*" element={<Navigate to="https://docs.leafengines.com" replace />} />
         <Route path="/leafengines-api" element={<LeafEnginesApiDocs />} />
         <Route path="/impact-simulator" element={<LeafEnginesImpactSimulator />} />
         <Route path="/client-integration-guide" element={<ClientIntegrationGuide />} />
