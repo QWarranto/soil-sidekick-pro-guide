@@ -50,7 +50,7 @@ const client = new LeafEnginesClient({
   projectRef: 'your-project-ref',
 });
 
-// Register a Skyline sensor device
+// Register an OEM precision sensor device
 const device = await client.sensors.devices.register({
   deviceId: 'skyline-mmWave-001',
   deviceType: 'mmwave_radar',
