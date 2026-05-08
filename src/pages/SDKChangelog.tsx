@@ -55,7 +55,7 @@ const device = await client.sensors.devices.register({
 
 // Send sensor data
 await client.sensors.readings.send({
-  deviceId: 'skyline-001',
+  deviceId: 'oem-001',
   deviceType: 'mmwave_radar',
   timestamp: new Date(),
   readings: [
