@@ -1,10 +1,125 @@
 # SoilSidekick SDK Changelog
 
-## Version Comparison: 1.1.0 → 1.2.0
+## Version Comparison: 1.2.0 → 2.0.0
 
 ---
 
-## Version 1.1.0 (Previous)
+## Version 2.0.0 (Current)
+
+**Release Focus:** Skyline Instruments Sensor Integration & Real-Time APIs
+
+**Published:** February 2026  
+**NPM Package:** `@soilsidekick/sdk@2.0.0`
+
+### What's New
+
+#### 🛰️ Skyline Sensor Integration (NEW)
+Full integration with Skyline Instruments sensor hardware:
+
+| Feature | Description |
+|---------|-------------|
+| Sensor Device Management | Register, list, update, delete sensor devices per farm |
+| Device Types | mmWave radar, quantum RF, precision timing |
+| Sensor Readings | Send readings via HTTP (MQTT fallback) |
+| Historical Queries | Query readings by time range with aggregation |
+| Real-Time Streaming | WebSocket subscribe/unsubscribe pattern |
+| MQTT Direct Connection | Connect directly to MQTT broker for high-frequency data |
+| Alert Management | Subscribe to severity-filtered alerts, query & acknowledge |
+
+### New API Namespaces
+
+```typescript
+client.sensors.devices.register({...})    // Device management
+client.sensors.readings.send({...})       // Send sensor data
+client.sensors.readings.query({...})      // Historical queries
+client.sensors.readings.aggregate({...})  // Aggregated data
+client.sensors.readings.subscribe(...)    // Real-time streaming
+client.sensors.alerts.subscribe(...)      // Alert streaming
+client.sensors.alerts.getAlerts({...})    // Query alerts
+client.sensors.alerts.acknowledge(id)    // Acknowledge alerts
+client.connectMQTT({...})                // Direct MQTT connection
+```
+
+### Quick Start (v2.0.0)
+
+```typescript
+import { LeafEnginesClient } from '@soilsidekick/sdk';
+
+const client = new LeafEnginesClient({
+  apiKey: 'sk_live_your_api_key',
+  projectRef: 'your-project-ref',
+});
+
+// Register a Skyline sensor device
+const device = await client.sensors.devices.register({
+  deviceId: 'skyline-mmWave-001',
+  deviceType: 'mmwave_radar',
+  farmId: 'farm-123',
+  firmwareVersion: '1.2.0',
+});
+
+// Send sensor data
+await client.sensors.readings.send({
+  deviceId: 'skyline-001',
+  deviceType: 'mmwave_radar',
+  timestamp: new Date(),
+  readings: [
+    { metric: 'reflectivity', value: 0.92, unit: 'ratio', confidence: 0.94 },
+    { metric: 'canopy_density', value: 0.78, unit: 'ratio' },
+  ],
+});
+```
+
+### All Endpoints (v2.0.0)
+
+All v1.2.0 endpoints are carried forward unchanged.
+
+#### Free Tier (2 endpoints)
+- `/get-soil-data`
+- `/county-lookup`
+
+#### Starter Tier (8 endpoints)
+- `/territorial-water-quality`
+- `/territorial-water-analytics`
+- `/multi-parameter-planting-calendar`
+- `/live-agricultural-data`
+- `/environmental-impact-engine`
+- `/safe-identification`
+- `/dynamic-care`
+- `/beginner-guidance`
+
+#### Pro Tier (7 endpoints)
+- `/alpha-earth-environmental-enhancement`
+- `/agricultural-intelligence`
+- `/seasonal-planning-assistant`
+- `/smart-report-summary`
+- `/carbon-credit-calculator`
+- `/generate-vrt-prescription`
+- `/leafengines-query`
+
+#### Enterprise Tier (3 endpoints)
+- `/visual-crop-analysis`
+- `/gpt5-chat`
+- `/geo-consumption-analytics`
+
+#### Sensor API (NEW in v2.0.0)
+- `sensors.devices.*` — Register, list, update, delete
+- `sensors.readings.*` — Send, query, aggregate, subscribe
+- `sensors.alerts.*` — Subscribe, query, acknowledge
+- `connectMQTT()` — Direct MQTT broker connection
+
+### Rate Limits (Unchanged)
+
+| Tier | Per Minute | Per Hour | Per Day |
+|------|-----------|----------|--------|
+| Free | 10 | 100 | 1,000 |
+| Starter | 30 | 500 | 5,000 |
+| Pro | 100 | 2,000 | 25,000 |
+| Enterprise | 500 | 10,000 | 100,000 |
+
+---
+
+## Version 1.2.0
 
 **Release Focus:** Core Agricultural Intelligence Platform
 
@@ -61,7 +176,7 @@
 
 ---
 
-## Version 1.2.0 (Current)
+## Version 1.2.0
 
 **Release Focus:** Consumer Plant Care APIs
 
@@ -174,6 +289,18 @@ Three new endpoints addressing the top pain points in consumer plant identificat
 
 ## Migration Guide
 
+### From 1.2.0 to 2.0.0
+
+**Breaking Changes:** None. This is a backwards-compatible release. All v1.2.0 endpoints continue to work.
+
+**New Dependencies:** None required.
+
+**Upgrade Steps:**
+```bash
+# NPM
+npm install @soilsidekick/sdk@2.0.0
+```
+
 ### From 1.1.0 to 1.2.0
 
 **Breaking Changes:** None. This is a backwards-compatible release.
@@ -226,13 +353,16 @@ const guidance = await plantCareApi.beginnerGuidance({
 
 ## Summary
 
-| Metric | v1.1.0 | v1.2.0 | Change |
+| Metric | v1.2.0 | v2.0.0 | Change |
 |--------|--------|--------|--------|
-| Total Endpoints | 17 | 20 | +3 |
+| Total API Endpoints | 20 | 20+ | +sensor namespace |
+| Sensor APIs | 0 | 6+ | ✨ NEW |
 | Free Tier Endpoints | 2 | 2 | — |
-| Starter Tier Endpoints | 5 | 8 | +3 |
+| Starter Tier Endpoints | 8 | 8 | — |
 | Pro Tier Endpoints | 7 | 7 | — |
 | Enterprise Tier Endpoints | 3 | 3 | — |
-| SDK Languages | 6 | 6 | — |
+| Real-Time Streaming | No | Yes | ✨ NEW |
+| MQTT Direct Connection | No | Yes | ✨ NEW |
+| Alert Management | No | Yes | ✨ NEW |
 
-**Key Differentiator:** Version 1.2.0 expands SoilSidekick from a B2B agricultural platform into the B2C consumer plant care market, addressing specific pain points identified in competitor analysis of apps like PlantNet, PictureThis, and iNaturalist.
+**Key Differentiator:** Version 2.0.0 adds Skyline Instruments sensor integration, transforming SoilSidekick from a data-query platform into a real-time sensor management and alerting system for precision agriculture.
