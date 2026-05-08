@@ -95,9 +95,7 @@ export default function B2BLanding() {
             </div>
             <Button variant="default" size="sm" className="gap-2 shrink-0" asChild>
               <a
-                href="https://github.com/leafengines/soilsidekick-pro/tree/main/docs/workflows"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/docs/workflows/qgis-implementation-guide"
                 onClick={trackBannerClick}
               >
                 Open Workflow Docs
