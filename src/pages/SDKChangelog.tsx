@@ -45,9 +45,9 @@ const client = new LeafEnginesClient({
   projectRef: 'your-project-ref',
 });
 
-// Register a Skyline sensor device
+// Register an OEM precision sensor device
 const device = await client.sensors.devices.register({
-  deviceId: 'skyline-mmWave-001',
+  deviceId: 'oem-mmWave-001',
   deviceType: 'mmwave_radar',
   farmId: 'farm-123',
   firmwareVersion: '1.2.0',
@@ -55,7 +55,7 @@ const device = await client.sensors.devices.register({
 
 // Send sensor data
 await client.sensors.readings.send({
-  deviceId: 'skyline-001',
+  deviceId: 'oem-001',
   deviceType: 'mmwave_radar',
   timestamp: new Date(),
   readings: [
@@ -171,11 +171,11 @@ const identification = await plantCareApi.safeIdentification({
 
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <Radio className="h-5 w-5 text-primary" />
-              What's New: Skyline Instruments Sensor Integration
+              What's New: OEM Precision Hardware Sensor Integration
             </h3>
             <p className="text-muted-foreground mb-6">
               Version 2.0.0 transforms SoilSidekick from a data-query platform into a real-time sensor management
-              and alerting system for precision agriculture, with full Skyline Instruments hardware support.
+              and alerting system for precision agriculture, with full OEM precision hardware support.
             </p>
 
             <div className="grid gap-4 md:grid-cols-3">
@@ -241,7 +241,7 @@ const identification = await plantCareApi.safeIdentification({
           <TabsContent value="v200" className="space-y-6 mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Version 2.0.0 — Skyline Sensor Integration & Real-Time APIs</CardTitle>
+                <CardTitle>Version 2.0.0 — OEM Precision Hardware Sensor Integration & Real-Time APIs</CardTitle>
                 <p className="text-muted-foreground">Released February 2026</p>
               </CardHeader>
               <CardContent className="space-y-6">
