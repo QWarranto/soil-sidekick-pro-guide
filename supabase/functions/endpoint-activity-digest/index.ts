@@ -1,3 +1,14 @@
+// IMPORTANT — DO NOT REVERT TO send-transactional-email.
+// The transactional email queue infrastructure (suppressed_emails,
+// email_unsubscribe_tokens, enqueue_email RPC, process-email-queue) does
+// NOT exist in this project. send-transactional-email fails closed at the
+// suppression check, which records every digest as `partial` and stops
+// delivery. This was first patched on Apr 20 (Option B). It was reverted
+// on May 7 ~18:00 UTC and digests stopped again.
+//
+// This function MUST send directly via Resend until the full email queue
+// infrastructure is built. See chat history May 10 for context.
+
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -7,9 +18,62 @@ const corsHeaders = {
 
 const RECIPIENTS = ["support@sidekickpro.com", "visionassocllc@gmail.com"];
 const WINDOW_HOURS = 6;
+// Resend's shared sender. soilsidekickpro.com is not verified in Resend
+// (Lovable Emails owns notify.soilsidekickpro.com via NS delegation, so it
+// can't be verified there). Switch back to a verified sender once one exists.
+const FROM_ADDRESS = "SoilSidekick Pro Ops <onboarding@resend.dev>";
+
+function renderHtml(opts: {
+  windowHours: number;
+  windowStart: string;
+  windowEnd: string;
+  totals: { requests: number; failures: number; rate_limited: number };
+  rows: Array<{ channel: string; endpoint: string; requests: number; failures: number; rate_limited: number; avg_ms: number | null; p95_ms: number | null }>;
+}) {
+  const rowHtml = opts.rows.slice(0, 50).map(r => `
+    <tr>
+      <td style="padding:6px 10px;border-bottom:1px solid #eee;font-family:monospace;font-size:12px">${r.channel}</td>
+      <td style="padding:6px 10px;border-bottom:1px solid #eee;font-family:monospace;font-size:12px">${r.endpoint}</td>
+      <td style="padding:6px 10px;border-bottom:1px solid #eee;text-align:right">${r.requests.toLocaleString()}</td>
+      <td style="padding:6px 10px;border-bottom:1px solid #eee;text-align:right">${r.failures}</td>
+      <td style="padding:6px 10px;border-bottom:1px solid #eee;text-align:right">${r.rate_limited}</td>
+      <td style="padding:6px 10px;border-bottom:1px solid #eee;text-align:right">${r.avg_ms ?? "-"}</td>
+      <td style="padding:6px 10px;border-bottom:1px solid #eee;text-align:right">${r.p95_ms ?? "-"}</td>
+    </tr>`).join("");
+  return `<!doctype html>
+<html><body style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#222;background:#fff;padding:20px">
+  <h2 style="margin:0 0 8px">🌱 LeafEngines Endpoint Activity — ${opts.windowHours}h Digest</h2>
+  <p style="color:#666;margin:0 0 16px;font-size:13px">Window: ${opts.windowStart} → ${opts.windowEnd}</p>
+  <div style="background:#f5f7f2;padding:12px 16px;border-radius:6px;margin-bottom:16px">
+    <div><strong>Total requests:</strong> ${opts.totals.requests.toLocaleString()}</div>
+    <div><strong>Failures:</strong> ${opts.totals.failures.toLocaleString()}</div>
+    <div><strong>Rate-limited:</strong> ${opts.totals.rate_limited.toLocaleString()}</div>
+  </div>
+  <table style="width:100%;border-collapse:collapse;font-size:13px">
+    <thead><tr style="background:#fafafa;text-align:left">
+      <th style="padding:8px 10px;border-bottom:2px solid #ddd">Channel</th>
+      <th style="padding:8px 10px;border-bottom:2px solid #ddd">Endpoint</th>
+      <th style="padding:8px 10px;border-bottom:2px solid #ddd;text-align:right">Req</th>
+      <th style="padding:8px 10px;border-bottom:2px solid #ddd;text-align:right">Fail</th>
+      <th style="padding:8px 10px;border-bottom:2px solid #ddd;text-align:right">429</th>
+      <th style="padding:8px 10px;border-bottom:2px solid #ddd;text-align:right">avg ms</th>
+      <th style="padding:8px 10px;border-bottom:2px solid #ddd;text-align:right">p95 ms</th>
+    </tr></thead>
+    <tbody>${rowHtml || `<tr><td colspan="7" style="padding:12px;color:#888">No traffic in window.</td></tr>`}</tbody>
+  </table>
+  <p style="color:#999;font-size:11px;margin-top:24px">SoilSidekick Pro · Operational Monitoring</p>
+</body></html>`;
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+  if (!RESEND_API_KEY) {
+    return new Response(JSON.stringify({ error: "RESEND_API_KEY not configured" }), {
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,
@@ -27,12 +91,10 @@ Deno.serve(async (req) => {
 
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
-  // Aggregate per channel/endpoint
   const map = new Map<string, any>();
   for (const s of snaps ?? []) {
     const key = `${s.channel}::${s.endpoint}`;
@@ -51,11 +113,8 @@ Deno.serve(async (req) => {
 
   const rows = [...map.values()]
     .map((e) => ({
-      channel: e.channel,
-      endpoint: e.endpoint,
-      requests: e.requests,
-      failures: e.failures,
-      rate_limited: e.rate_limited,
+      channel: e.channel, endpoint: e.endpoint,
+      requests: e.requests, failures: e.failures, rate_limited: e.rate_limited,
       avg_ms: e.avg_ms_n ? Math.round(e.avg_ms_sum / e.avg_ms_n) : null,
       p95_ms: e.p95_max || null,
     }))
@@ -77,25 +136,34 @@ Deno.serve(async (req) => {
     channelsSummary[r.channel] = c;
   }
 
-  // Send email via send-transactional-email for each recipient
+  const html = renderHtml({
+    windowHours: WINDOW_HOURS,
+    windowStart: windowStart.toISOString(),
+    windowEnd: windowEnd.toISOString(),
+    totals, rows,
+  });
+  const subject = `LeafEngines Endpoint Activity — ${totals.requests} requests in last ${WINDOW_HOURS}h`;
+
   const sendErrors: string[] = [];
   for (const recipient of RECIPIENTS) {
     try {
-      const { error: sendErr } = await supabase.functions.invoke("send-transactional-email", {
-        body: {
-          templateName: "endpoint-activity-digest",
-          recipientEmail: recipient,
-          idempotencyKey: `digest-${windowEnd.toISOString().slice(0, 13)}-${recipient}`,
-          templateData: {
-            windowHours: WINDOW_HOURS,
-            windowStart: windowStart.toISOString(),
-            windowEnd: windowEnd.toISOString(),
-            totals,
-            rows: rows.slice(0, 50),
-          },
+      const res = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${RESEND_API_KEY}`,
         },
+        body: JSON.stringify({
+          from: FROM_ADDRESS,
+          to: [recipient],
+          subject,
+          html,
+        }),
       });
-      if (sendErr) sendErrors.push(`${recipient}: ${sendErr.message}`);
+      if (!res.ok) {
+        const body = await res.text();
+        sendErrors.push(`${recipient}: ${res.status} ${body.slice(0, 200)}`);
+      }
     } catch (e) {
       sendErrors.push(`${recipient}: ${(e as Error).message}`);
     }
