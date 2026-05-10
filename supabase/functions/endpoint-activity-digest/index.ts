@@ -18,7 +18,10 @@ const corsHeaders = {
 
 const RECIPIENTS = ["support@sidekickpro.com", "visionassocllc@gmail.com"];
 const WINDOW_HOURS = 6;
-const FROM_ADDRESS = "SoilSidekick Pro <noreply@soilsidekickpro.com>";
+// Resend's shared sender. soilsidekickpro.com is not verified in Resend
+// (Lovable Emails owns notify.soilsidekickpro.com via NS delegation, so it
+// can't be verified there). Switch back to a verified sender once one exists.
+const FROM_ADDRESS = "SoilSidekick Pro Ops <onboarding@resend.dev>";
 
 function renderHtml(opts: {
   windowHours: number;
