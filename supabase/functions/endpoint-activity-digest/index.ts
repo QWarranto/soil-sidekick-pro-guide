@@ -166,9 +166,13 @@ Deno.serve(async (req) => {
       });
       if (!res.ok) {
         const body = await res.text();
+        console.error("Resend send failed", { recipient, status: res.status, body });
         sendErrors.push(`${recipient}: ${res.status} ${body.slice(0, 200)}`);
+      } else {
+        console.log("Resend send ok", { recipient });
       }
     } catch (e) {
+      console.error("Resend fetch threw", { recipient, err: (e as Error).message });
       sendErrors.push(`${recipient}: ${(e as Error).message}`);
     }
   }
