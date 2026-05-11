@@ -10,7 +10,7 @@ import os
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlencode
 
-from qgis.PyQt.QtCore import QSettings
+from qgis.PyQt.QtCore import QSettings, QTimer
 from qgis.PyQt.QtNetwork import QNetworkRequest
 from qgis.core import QgsNetworkAccessManager, QgsBlockingNetworkRequest
 
@@ -147,3 +147,53 @@ class LeafEnginesClient:
                 "plant": {"common_name": plant_common_name},
             },
         )
+
+    # ------------------------------------------------------------------
+    # Plugin telemetry ping (no PII, fire-and-forget)
+    # ------------------------------------------------------------------
+
+    _PINGED = False
+
+    def plugin_ping(self):
+        """
+        Fire once per plugin session to confirm the plugin reaches the backend.
+        Stored in mcp_tool_call_log with tool_name='qgis_plugin_ping'.
+        No PII — just version, platform, and timestamp.
+        """
+        if self._PINGED:
+            return
+        self._PINGED = True
+
+        # Fire-and-forget via a cheap edge function call
+        import platform, sys
+        try:
+            from qgis.core import Qgis
+            qgis_ver = Qgis.version()
+        except Exception:
+            qgis_ver = "unknown"
+
+        payload = {
+            "event": "plugin_loaded",
+            "version": "1.0.2",
+            "qgis_version": qgis_ver,
+            "python_version": sys.version.split()[0],
+            "os": platform.system(),
+            "machine": platform.machine(),
+        }
+
+        try:
+            url = f"{BASE_URL}/plugin-ping"
+            request = QNetworkRequest(url)
+            request.setHeader(QNetworkRequest.ContentTypeHeader, "application/json")
+            request.setRawHeader(b"apikey", SUPABASE_ANON_KEY.encode())
+            request.setRawHeader(b"Authorization", f"Bearer {SUPABASE_ANON_KEY}".encode())
+            request.setRawHeader(b"x-plugin-ping", b"true")
+
+            from qgis.PyQt.QtNetwork import QNetworkAccessManager, QNetworkReply
+            mgr = QgsNetworkAccessManager.instance()
+            body = json.dumps(payload).encode("utf-8")
+            # Non-blocking — discard response
+            reply = mgr.post(request, body)
+            reply.finished.connect(reply.deleteLater)
+        except Exception:
+            pass  # Silent — telemetry failures never block the user

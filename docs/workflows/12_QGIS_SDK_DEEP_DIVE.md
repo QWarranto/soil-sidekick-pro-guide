@@ -84,6 +84,13 @@ scores. No GIS-to-spreadsheet round trip — the intelligence lives on the
 feature."
 ```
 
+### Sample Soil Analysis Reports
+
+If you want to show the output before walking users through the workflow, point them to these sample reports:
+
+- [Preliminary soil analysis report](https://soilcertify.com/sample-report?type=preliminary)
+- [Full soil analysis report](https://soilcertify.com/sample-report?type=full)
+
 ---
 
 ## Layer 3: Offline AI Inside QGIS (No Internet Required)

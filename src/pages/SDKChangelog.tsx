@@ -2,20 +2,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import {
-  Package,
-  Sparkles,
-  ArrowRight,
-  CheckCircle2,
-  Copy,
+import { 
+  Package, 
+  Sparkles, 
+  ArrowRight, 
+  CheckCircle2, 
+  Copy, 
   ExternalLink,
   Leaf,
   Shield,
   Users,
-  Zap,
-  Radio,
-  Activity,
-  Bell,
+  Zap
 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -45,9 +42,9 @@ const client = new LeafEnginesClient({
   projectRef: 'your-project-ref',
 });
 
-// Register an OEM precision sensor device
+// Register a Skyline sensor device
 const device = await client.sensors.devices.register({
-  deviceId: 'oem-mmWave-001',
+  deviceId: 'skyline-mmWave-001',
   deviceType: 'mmwave_radar',
   farmId: 'farm-123',
   firmwareVersion: '1.2.0',
@@ -55,7 +52,7 @@ const device = await client.sensors.devices.register({
 
 // Send sensor data
 await client.sensors.readings.send({
-  deviceId: 'oem-001',
+  deviceId: 'skyline-001',
   deviceType: 'mmwave_radar',
   timestamp: new Date(),
   readings: [
@@ -65,25 +62,14 @@ await client.sensors.readings.send({
 });
 
 // Subscribe to real-time alerts
-client.sensors.alerts.subscribe({ severity: ['high', 'critical'] }, (alert) => {
-  console.log('Alert:', alert);
-});`;
-
-  const v12UsageExample = `import { Configuration, ConsumerPlantCareApi } from '@soilsidekick/sdk';
-
-const config = new Configuration({ apiKey: 'ak_your_api_key' });
-const plantCareApi = new ConsumerPlantCareApi(config);
-
-const identification = await plantCareApi.safeIdentification({
-  image: 'base64_or_url',
-  location: { county_fips: '12086' },
-  context: { environment: 'wild', purpose: 'foraging' }
-});`;
+client.sensors.alerts.subscribe((alert) => {
+  if (alert.severity === 'critical') sendNotification(alert);
+}, { severity: ['warning', 'critical'] });`;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <LeafEnginesNav />
-
+      
       {/* Header */}
       <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-16">
@@ -92,14 +78,14 @@ const identification = await plantCareApi.safeIdentification({
               <Package className="mr-2 h-4 w-4" />
               SDK Changelog
             </Badge>
-            <a
-              href="https://www.npmjs.com/package/@soilsidekick/sdk"
-              target="_blank"
+            <a 
+              href="https://www.npmjs.com/package/@soilsidekick/sdk" 
+              target="_blank" 
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
             >
-              <img
-                src="https://img.shields.io/npm/v/@soilsidekick/sdk?style=flat-square&logo=npm&label=npm"
+              <img 
+                src="https://img.shields.io/npm/v/@soilsidekick/sdk?style=flat-square&logo=npm&label=npm" 
                 alt="npm version"
                 className="h-5"
               />
@@ -153,44 +139,43 @@ const identification = await plantCareApi.safeIdentification({
             <div className="grid gap-6 md:grid-cols-4 mb-8">
               <div className="text-center p-4 bg-muted rounded-lg">
                 <p className="text-3xl font-bold text-primary">20+</p>
-                <p className="text-sm text-muted-foreground">Total Endpoints</p>
+                <p className="text-sm text-muted-foreground">API Endpoints</p>
               </div>
               <div className="text-center p-4 bg-muted rounded-lg">
                 <p className="text-3xl font-bold text-green-500">+6</p>
                 <p className="text-sm text-muted-foreground">New Sensor APIs</p>
               </div>
               <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-3xl font-bold text-foreground">6</p>
-                <p className="text-sm text-muted-foreground">SDK Languages</p>
+                <p className="text-3xl font-bold text-foreground">MQTT</p>
+                <p className="text-sm text-muted-foreground">Real-time Streaming</p>
               </div>
               <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-3xl font-bold text-foreground">4</p>
-                <p className="text-sm text-muted-foreground">Subscription Tiers</p>
+                <p className="text-3xl font-bold text-foreground">Skyline</p>
+                <p className="text-sm text-muted-foreground">Sensor Integration</p>
               </div>
             </div>
 
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Radio className="h-5 w-5 text-primary" />
-              What's New: OEM Precision Hardware Sensor Integration
+              <Zap className="h-5 w-5 text-green-500" />
+              What's New: Skyline Sensor Integration & Real-Time APIs
             </h3>
             <p className="text-muted-foreground mb-6">
-              Version 2.0.0 transforms SoilSidekick from a data-query platform into a real-time sensor management
-              and alerting system for precision agriculture, with full OEM precision hardware support.
+              Version 2.0.0 adds full Skyline Instruments sensor integration with device management, 
+              real-time data streaming, MQTT broker connectivity, alert management, and historical data aggregation.
             </p>
 
             <div className="grid gap-4 md:grid-cols-3">
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
-                    <Radio className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-base">sensors.devices.*</CardTitle>
+                    <Zap className="h-5 w-5 text-blue-500" />
+                    <CardTitle className="text-base">Sensor Device Management</CardTitle>
                   </div>
-                  <Badge variant="secondary" className="w-fit">Device Management</Badge>
+                  <Badge variant="secondary" className="w-fit">New API</Badge>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    Register, list, update, and delete sensor devices per farm —
-                    mmWave radar, quantum RF, and precision timing.
+                    Register, list, update, and manage Skyline sensor devices (mmWave radar, quantum RF, precision timing) per farm.
                   </p>
                 </CardContent>
               </Card>
@@ -198,15 +183,14 @@ const identification = await plantCareApi.safeIdentification({
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
-                    <Activity className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-base">sensors.readings.*</CardTitle>
+                    <Sparkles className="h-5 w-5 text-purple-500" />
+                    <CardTitle className="text-base">Real-Time Streaming</CardTitle>
                   </div>
-                  <Badge variant="secondary" className="w-fit">Real-Time Streaming</Badge>
+                  <Badge variant="secondary" className="w-fit">New API</Badge>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    Send readings via HTTP (MQTT fallback), historical queries with
-                    aggregation, and WebSocket subscribe for live data.
+                    WebSocket-based live sensor readings with subscribe/unsubscribe patterns and MQTT direct broker connection.
                   </p>
                 </CardContent>
               </Card>
@@ -214,15 +198,14 @@ const identification = await plantCareApi.safeIdentification({
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
-                    <Bell className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-base">sensors.alerts.*</CardTitle>
+                    <Shield className="h-5 w-5 text-amber-500" />
+                    <CardTitle className="text-base">Alert Management</CardTitle>
                   </div>
-                  <Badge variant="secondary" className="w-fit">Alert Management</Badge>
+                  <Badge variant="secondary" className="w-fit">New API</Badge>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    Subscribe to severity-filtered alerts, query history, and acknowledge
-                    incidents. Direct MQTT broker connection supported.
+                    Subscribe to critical alerts, query unacknowledged warnings, and acknowledge alerts with severity filtering.
                   </p>
                 </CardContent>
               </Card>
@@ -232,7 +215,7 @@ const identification = await plantCareApi.safeIdentification({
 
         {/* Version Comparison Tabs */}
         <Tabs defaultValue="v200" className="mb-12">
-          <TabsList className="grid w-full grid-cols-3 max-w-xl">
+          <TabsList className="grid w-full grid-cols-3 max-w-lg">
             <TabsTrigger value="v200">v2.0.0 (Current)</TabsTrigger>
             <TabsTrigger value="v120">v1.2.0</TabsTrigger>
             <TabsTrigger value="v110">v1.1.0</TabsTrigger>
@@ -241,22 +224,54 @@ const identification = await plantCareApi.safeIdentification({
           <TabsContent value="v200" className="space-y-6 mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Version 2.0.0 — OEM Precision Hardware Sensor Integration & Real-Time APIs</CardTitle>
+                <CardTitle>Version 2.0.0 — Skyline Sensor Integration & Real-Time APIs</CardTitle>
                 <p className="text-muted-foreground">Released February 2026</p>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <h4 className="font-semibold mb-3">New Sensor API Namespaces</h4>
-                  <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
-                    <li><code>sensors.devices.*</code> — Register, list, update, delete</li>
-                    <li><code>sensors.readings.*</code> — Send, query, aggregate, subscribe</li>
-                    <li><code>sensors.alerts.*</code> — Subscribe, query, acknowledge</li>
-                    <li><code>connectMQTT()</code> — Direct MQTT broker connection</li>
-                  </ul>
+                  <h4 className="font-semibold mb-3">New Features</h4>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Badge variant="outline" className="mb-2">Sensor Device Management</Badge>
+                      <ul className="text-sm text-muted-foreground list-disc list-inside">
+                        <li className="text-green-600 font-medium">Register / list / update / delete sensor devices ✨ NEW</li>
+                        <li className="text-green-600 font-medium">Device types: mmwave_radar, quantum_rf, precision_timing ✨ NEW</li>
+                        <li className="text-green-600 font-medium">Per-farm device organization ✨ NEW</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <Badge variant="outline" className="mb-2">Sensor Readings & Aggregation</Badge>
+                      <ul className="text-sm text-muted-foreground list-disc list-inside">
+                        <li className="text-green-600 font-medium">Send sensor readings via HTTP (MQTT fallback) ✨ NEW</li>
+                        <li className="text-green-600 font-medium">Query historical readings by time range ✨ NEW</li>
+                        <li className="text-green-600 font-medium">Aggregated data (hourly/daily averages) ✨ NEW</li>
+                        <li className="text-green-600 font-medium">Latest reading lookup ✨ NEW</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <Badge variant="outline" className="mb-2">Real-Time Streaming</Badge>
+                      <ul className="text-sm text-muted-foreground list-disc list-inside">
+                        <li className="text-green-600 font-medium">WebSocket subscribe/unsubscribe pattern ✨ NEW</li>
+                        <li className="text-green-600 font-medium">MQTT direct broker connection ✨ NEW</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <Badge variant="outline" className="mb-2">Alert Management</Badge>
+                      <ul className="text-sm text-muted-foreground list-disc list-inside">
+                        <li className="text-green-600 font-medium">Subscribe to severity-filtered alerts ✨ NEW</li>
+                        <li className="text-green-600 font-medium">Query & acknowledge alerts ✨ NEW</li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
-                  <h4 className="font-semibold mb-3">All Endpoints by Tier (carried forward from v1.2.0)</h4>
+                  <h4 className="font-semibold mb-3">All Existing Endpoints (carried forward from v1.2.0)</h4>
+                  
                   <div className="space-y-4">
                     <div>
                       <Badge variant="outline" className="mb-2">Free Tier (2 endpoints)</Badge>
@@ -265,6 +280,7 @@ const identification = await plantCareApi.safeIdentification({
                         <li>/county-lookup</li>
                       </ul>
                     </div>
+
                     <div>
                       <Badge variant="outline" className="mb-2">Starter Tier (8 endpoints)</Badge>
                       <ul className="text-sm text-muted-foreground list-disc list-inside">
@@ -278,6 +294,7 @@ const identification = await plantCareApi.safeIdentification({
                         <li>/beginner-guidance</li>
                       </ul>
                     </div>
+
                     <div>
                       <Badge variant="outline" className="mb-2">Pro Tier (7 endpoints)</Badge>
                       <ul className="text-sm text-muted-foreground list-disc list-inside">
@@ -290,21 +307,13 @@ const identification = await plantCareApi.safeIdentification({
                         <li>/leafengines-query</li>
                       </ul>
                     </div>
+
                     <div>
                       <Badge variant="outline" className="mb-2">Enterprise Tier (3 endpoints)</Badge>
                       <ul className="text-sm text-muted-foreground list-disc list-inside">
                         <li>/visual-crop-analysis</li>
                         <li>/gpt5-chat</li>
                         <li>/geo-consumption-analytics</li>
-                      </ul>
-                    </div>
-                    <div>
-                      <Badge variant="outline" className="mb-2 border-green-500 text-green-600">Sensor API (NEW)</Badge>
-                      <ul className="text-sm text-muted-foreground list-disc list-inside">
-                        <li className="text-green-600 font-medium">sensors.devices.* ✨ NEW</li>
-                        <li className="text-green-600 font-medium">sensors.readings.* ✨ NEW</li>
-                        <li className="text-green-600 font-medium">sensors.alerts.* ✨ NEW</li>
-                        <li className="text-green-600 font-medium">connectMQTT() ✨ NEW</li>
                       </ul>
                     </div>
                   </div>
@@ -341,74 +350,9 @@ const identification = await plantCareApi.safeIdentification({
                 <p className="text-muted-foreground">Released December 2025</p>
               </CardHeader>
               <CardContent className="space-y-6">
-                <p className="text-muted-foreground">
-                  Added three Starter-tier endpoints addressing top consumer plant identification pain points:
-                  <code className="mx-1">/safe-identification</code>,
-                  <code className="mx-1">/dynamic-care</code>, and
-                  <code className="mx-1">/beginner-guidance</code>.
-                </p>
-
-                <div className="grid gap-4 md:grid-cols-3">
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-2">
-                        <Shield className="h-5 w-5 text-amber-500" />
-                        <CardTitle className="text-base">/safe-identification</CardTitle>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        Toxic lookalike warnings and environmental context for safer plant ID.
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-2">
-                        <Zap className="h-5 w-5 text-blue-500" />
-                        <CardTitle className="text-base">/dynamic-care</CardTitle>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        Hyper-localized, real-time care recommendations.
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-2">
-                        <Users className="h-5 w-5 text-green-500" />
-                        <CardTitle className="text-base">/beginner-guidance</CardTitle>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        Judgment-free, jargon-free guidance for new plant parents.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-
                 <div>
-                  <h4 className="font-semibold mb-3">Usage Example</h4>
-                  <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-xs">
-                    <code>{v12UsageExample}</code>
-                  </pre>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="v110" className="space-y-6 mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Version 1.1.0 — Core Agricultural Intelligence Platform</CardTitle>
-                <p className="text-muted-foreground">Initial public release</p>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <h4 className="font-semibold mb-3">Endpoints by Tier</h4>
+                  <h4 className="font-semibold mb-3">All Endpoints by Tier</h4>
+                  
                   <div className="space-y-4">
                     <div>
                       <Badge variant="outline" className="mb-2">Free Tier (2 endpoints)</Badge>
@@ -417,16 +361,21 @@ const identification = await plantCareApi.safeIdentification({
                         <li>/county-lookup</li>
                       </ul>
                     </div>
+
                     <div>
-                      <Badge variant="outline" className="mb-2">Starter Tier (5 endpoints)</Badge>
+                      <Badge variant="outline" className="mb-2">Starter Tier (8 endpoints) — +3 new</Badge>
                       <ul className="text-sm text-muted-foreground list-disc list-inside">
                         <li>/territorial-water-quality</li>
                         <li>/territorial-water-analytics</li>
                         <li>/multi-parameter-planting-calendar</li>
                         <li>/live-agricultural-data</li>
                         <li>/environmental-impact-engine</li>
+                        <li className="text-green-600 font-medium">/safe-identification ✨ NEW</li>
+                        <li className="text-green-600 font-medium">/dynamic-care ✨ NEW</li>
+                        <li className="text-green-600 font-medium">/beginner-guidance ✨ NEW</li>
                       </ul>
                     </div>
+
                     <div>
                       <Badge variant="outline" className="mb-2">Pro Tier (7 endpoints)</Badge>
                       <ul className="text-sm text-muted-foreground list-disc list-inside">
@@ -439,6 +388,7 @@ const identification = await plantCareApi.safeIdentification({
                         <li>/leafengines-query</li>
                       </ul>
                     </div>
+
                     <div>
                       <Badge variant="outline" className="mb-2">Enterprise Tier (3 endpoints)</Badge>
                       <ul className="text-sm text-muted-foreground list-disc list-inside">
@@ -448,6 +398,96 @@ const identification = await plantCareApi.safeIdentification({
                       </ul>
                     </div>
                   </div>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold mb-3">Usage Example</h4>
+                  <div className="relative">
+                    <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-xs">
+                      <code>{usageExample}</code>
+                    </pre>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="absolute top-2 right-2"
+                      onClick={() => copyToClipboard(usageExample, "Usage example")}
+                    >
+                      {copiedCode === "Usage example" ? (
+                        <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="v110" className="space-y-6 mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Version 1.1.0 — Core Agricultural Intelligence Platform</CardTitle>
+                <p className="text-muted-foreground">Previous Release</p>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <h4 className="font-semibold mb-3">Endpoints by Tier</h4>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Badge variant="outline" className="mb-2">Free Tier (2 endpoints)</Badge>
+                      <ul className="text-sm text-muted-foreground list-disc list-inside">
+                        <li>/get-soil-data</li>
+                        <li>/county-lookup</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <Badge variant="outline" className="mb-2">Starter Tier (5 endpoints)</Badge>
+                      <ul className="text-sm text-muted-foreground list-disc list-inside">
+                        <li>/territorial-water-quality</li>
+                        <li>/territorial-water-analytics</li>
+                        <li>/multi-parameter-planting-calendar</li>
+                        <li>/live-agricultural-data</li>
+                        <li>/environmental-impact-engine</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <Badge variant="outline" className="mb-2">Pro Tier (7 endpoints)</Badge>
+                      <ul className="text-sm text-muted-foreground list-disc list-inside">
+                        <li>/alpha-earth-environmental-enhancement</li>
+                        <li>/agricultural-intelligence</li>
+                        <li>/seasonal-planning-assistant</li>
+                        <li>/smart-report-summary</li>
+                        <li>/carbon-credit-calculator</li>
+                        <li>/generate-vrt-prescription</li>
+                        <li>/leafengines-query</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <Badge variant="outline" className="mb-2">Enterprise Tier (3 endpoints)</Badge>
+                      <ul className="text-sm text-muted-foreground list-disc list-inside">
+                        <li>/visual-crop-analysis</li>
+                        <li>/gpt5-chat</li>
+                        <li>/geo-consumption-analytics</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold mb-3">SDK Features</h4>
+                  <ul className="text-sm text-muted-foreground list-disc list-inside">
+                    <li>TypeScript/JavaScript SDK with fetch-based client</li>
+                    <li>Python SDK</li>
+                    <li>Go SDK</li>
+                    <li>API key authentication (x-api-key header)</li>
+                    <li>Rate limit headers in responses</li>
+                    <li>Tier-based access control</li>
+                  </ul>
                 </div>
               </CardContent>
             </Card>
@@ -512,7 +552,7 @@ const identification = await plantCareApi.safeIdentification({
               <div>
                 <p className="font-semibold text-green-700 dark:text-green-400">No Breaking Changes</p>
                 <p className="text-sm text-muted-foreground">
-                  Backwards-compatible release. All v1.2.0 endpoints continue to work; the sensor namespace is additive.
+                  All v1.2.0 integrations continue to work. v2.0.0 adds the sensor API namespace alongside existing endpoints.
                 </p>
               </div>
             </div>
@@ -522,6 +562,9 @@ const identification = await plantCareApi.safeIdentification({
               <div className="relative">
                 <pre className="bg-muted p-4 rounded-lg text-sm">
 {`# NPM
+npm update @soilsidekick/sdk
+
+# Or install specific version
 npm install @soilsidekick/sdk@2.0.0`}
                 </pre>
                 <Button
@@ -555,9 +598,9 @@ npm install @soilsidekick/sdk@2.0.0`}
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <a
-                href="https://www.npmjs.com/package/@soilsidekick/sdk"
-                target="_blank"
+              <a 
+                href="https://www.npmjs.com/package/@soilsidekick/sdk" 
+                target="_blank" 
                 rel="noopener noreferrer"
               >
                 <Package className="mr-2 h-4 w-4" />

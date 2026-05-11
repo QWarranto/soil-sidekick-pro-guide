@@ -6,15 +6,15 @@
 
 ## Version 2.0.0 (Current)
 
-**Release Focus:** OEM Precision Hardware Sensor Integration & Real-Time APIs
+**Release Focus:** Skyline Instruments Sensor Integration & Real-Time APIs
 
 **Published:** February 2026  
 **NPM Package:** `@soilsidekick/sdk@2.0.0`
 
 ### What's New
 
-#### 🛰️ OEM Precision Hardware Sensor Integration (NEW)
-Full integration with OEM precision sensor hardware:
+#### 🛰️ Skyline Sensor Integration (NEW)
+Full integration with Skyline Instruments sensor hardware:
 
 | Feature | Description |
 |---------|-------------|
@@ -50,7 +50,7 @@ const client = new LeafEnginesClient({
   projectRef: 'your-project-ref',
 });
 
-// Register an OEM precision sensor device
+// Register a Skyline sensor device
 const device = await client.sensors.devices.register({
   deviceId: 'skyline-mmWave-001',
   deviceType: 'mmwave_radar',
@@ -365,4 +365,4 @@ const guidance = await plantCareApi.beginnerGuidance({
 | MQTT Direct Connection | No | Yes | ✨ NEW |
 | Alert Management | No | Yes | ✨ NEW |
 
-**Key Differentiator:** Version 2.0.0 adds OEM precision hardware sensor integration, transforming SoilSidekick from a data-query platform into a real-time sensor management and alerting system for precision agriculture.
+**Key Differentiator:** Version 2.0.0 adds Skyline Instruments sensor integration, transforming SoilSidekick from a data-query platform into a real-time sensor management and alerting system for precision agriculture.

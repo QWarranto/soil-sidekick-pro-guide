@@ -61,6 +61,9 @@ export default function B2BLanding() {
             <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground md:text-xl">
               LeafEngines™ from SoilSidekick Pro is the world's first offline environmental/geospatial intelligence layer that transforms raw environmental data into actionable, regulatory-grade truth — deployable anywhere, integrated everywhere.
             </p>
+            <p className="mx-auto mb-8 max-w-2xl text-base text-foreground/90 md:text-lg">
+              If you arrived from QGIS, the next rung is SoilCertify: turn a parcel or county analysis into a client-ready soil report instead of stopping at raw data.
+            </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button size="lg" className="gap-2" asChild>
                 <Link to="/leafengines-api">
@@ -70,6 +73,12 @@ export default function B2BLanding() {
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link to="/privacy-advantage">Privacy Advantage</Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <a href="https://soilcertify.com" target="_blank" rel="noopener noreferrer">
+                  SoilCertify Reports
+                  <ExternalLink className="h-4 w-4" />
+                </a>
               </Button>
             </div>
           </div>
@@ -89,7 +98,7 @@ export default function B2BLanding() {
                   Arrived from the QGIS plugin?
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Jump straight to the workflow guides — including the new <span className="font-medium text-foreground">QGIS SDK Deep Dive</span>.
+                  Jump straight to the workflow guides, then move into <span className="font-medium text-foreground">SoilCertify reports</span> when you need a finished deliverable.
                 </p>
               </div>
             </div>
@@ -99,6 +108,12 @@ export default function B2BLanding() {
                 onClick={trackBannerClick}
               >
                 Open Workflow Docs
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </Button>
+            <Button variant="outline" size="sm" className="gap-2 shrink-0" asChild>
+              <a href="https://soilcertify.com" target="_blank" rel="noopener noreferrer">
+                See SoilCertify
                 <ExternalLink className="h-4 w-4" />
               </a>
             </Button>

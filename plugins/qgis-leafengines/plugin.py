@@ -34,6 +34,9 @@ class LeafEnginesPlugin:
 
     def initGui(self):
         """Called when the plugin is loaded into QGIS."""
+        # Telemetry ping — confirms the plugin reaches the backend (fire-and-forget, no PII)
+        self.client.plugin_ping()
+
         self.toolbar = self.iface.addToolBar(self.PLUGIN_NAME)
         self.toolbar.setObjectName(self.PLUGIN_NAME)
 
