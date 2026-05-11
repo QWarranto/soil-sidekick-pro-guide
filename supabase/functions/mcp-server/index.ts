@@ -58,6 +58,42 @@ function logToolCall(entry: ToolCallAudit) {
     () => {},
     (e: unknown) => console.error('[MCP-AUDIT]', e),
   );
+  // Fire-and-forget telemetry to central telemetry-ingest pipeline
+  sendTelemetry(sanitizedEntry);
+}
+
+function sendTelemetry(entry: ToolCallAudit) {
+  const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+  const anonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
+  if (!supabaseUrl) return;
+  const event = {
+    surface: 'mcp',
+    event_type: entry.success ? 'tool_call' : 'error',
+    tool_name: entry.tool_name,
+    latency_ms: entry.response_time_ms ?? 0,
+    status_code: entry.response_status ?? (entry.success ? 200 : 500),
+    error_message: entry.error_message ?? null,
+    api_key_tier: null,
+    api_key_prefix: entry.api_key_hash ? entry.api_key_hash.slice(0, 8) : null,
+    metadata: {
+      downstream_endpoint: entry.downstream_endpoint ?? 'unknown',
+      jsonrpc_id: entry.jsonrpc_id ?? null,
+      is_batch: entry.is_batch ?? false,
+      correlation_id: entry.correlation_id ?? null,
+      success: entry.success,
+    },
+  };
+  fetch(`${supabaseUrl}/functions/v1/telemetry-ingest`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(anonKey ? { 'apikey': anonKey } : {}),
+    },
+    body: JSON.stringify([event]),
+  }).then(
+    () => {},
+    (e: unknown) => console.error('[MCP-TELEMETRY]', e),
+  );
 }
 
 function hashKey(key: string): string {
@@ -373,6 +409,29 @@ const TOOLS = [
   }
 ];
 
+// ── Tool Name Aliases (LLM hallucination patterns) ─────────────────
+const TOOL_ALIASES: Record<string, string> = {
+  analyze_soil: 'get_soil_data',
+  soil_analysis: 'get_soil_data',
+  soil_data: 'get_soil_data',
+  soil_lookup: 'get_soil_data',
+  water_quality: 'territorial_water_quality',
+  plant_id: 'safe_identification',
+  plant_identification: 'safe_identification',
+  carbon_credits: 'carbon_credit_calculator',
+  carbon_offset: 'carbon_credit_calculator',
+  vrt_prescription: 'generate_vrt_prescription',
+  environmental_impact: 'environmental_impact_analysis',
+  environmental_assessment: 'environmental_impact_analysis',
+  planting_calendar: 'planting_optimization',
+  planting_date: 'planting_optimization',
+};
+
+// Normalize tool names (resolve aliases to canonical names)
+function normalizeToolName(toolName: string): string {
+  return TOOL_ALIASES[toolName] || toolName;
+}
+
 // ── Endpoint Mapping ────────────────────────────────────────────────
 
 const TOOL_TO_ENDPOINT: Record<string, string> = {
@@ -512,7 +571,7 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null, reqMeta?: R
   // ── tools/call ──
   if (method === 'tools/call') {
     const callStart = Date.now();
-    const toolName = (params as Record<string, unknown>)?.name as string;
+    const toolName = normalizeToolName((params as Record<string, unknown>)?.name as string);
     const toolArgs = (params as Record<string, unknown>)?.arguments as Record<string, unknown> ?? {};
 
     const auditBase = {
@@ -542,21 +601,23 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null, reqMeta?: R
       return jsonRpcError(id ?? null, -32602, `Unknown tool: ${toolName}`);
     }
 
-    // Free-tier tools that work without an API key
-    const FREE_TOOLS = ['county_lookup', 'get_soil_data'];
+    // Free-tier tools that work without an API key (including free previews)
+    const FREE_TOOLS = ['county_lookup', 'get_soil_data', 'safe_identification', 'territorial_water_quality', 'carbon_credit_calculator'];
     const isFreeTool = FREE_TOOLS.includes(toolName);
 
     if (!apiKey && !isFreeTool) {
       logToolCall({ ...auditBase, success: false, error_message: 'Missing x-api-key', response_time_ms: Date.now() - callStart });
-      return jsonRpcError(id ?? null, -32000, 'Missing x-api-key header. Obtain one at https://soilsidekick.com/api-keys');
+      return jsonRpcError(id ?? null, -32000, 
+        'Missing x-api-key header. Free tools available: county_lookup, get_soil_data, safe_identification, territorial_water_quality, carbon_credit_calculator. ' +
+        'Upgrade at https://soilsidekick.com/api-keys for full access to all tools.');
     }
 
     // Strip TurboQuant hint params before forwarding (they're metadata, not endpoint args)
     const { context_mode, kv_cache_hint, preferred_model_tier, ...endpointArgs } = toolArgs;
 
-    // Auto-resolve county_fips → county_name + state_code for get_soil_data
-    // The downstream get-soil-data endpoint requires all three, but agents only have county_fips
-    if (toolName === 'get_soil_data' && endpointArgs.county_fips && (!endpointArgs.county_name || !endpointArgs.state_code)) {
+    // Auto-resolve county_fips → county_name + state_code for ANY tool that needs it
+    // Applied generically to ALL tools that accept county_fips parameter
+    if (endpointArgs.county_fips && (!endpointArgs.county_name || !endpointArgs.state_code)) {
       try {
         const { data: countyRows } = await auditClient
           .from('counties')
@@ -601,7 +662,15 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null, reqMeta?: R
         body: JSON.stringify(endpointArgs),
       });
 
-      const data = await res.json();
+      // Safe response parsing - check content-type before .json()
+      const contentType = res.headers.get('content-type') ?? '';
+      let data;
+      if (contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        data = { error: text || `HTTP ${res.status}` };
+      }
       const elapsed = Date.now() - callStart;
 
       if (!res.ok) {
