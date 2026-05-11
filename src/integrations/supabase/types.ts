@@ -2603,6 +2603,60 @@ export type Database = {
           },
         ]
       }
+      telemetry_daily_summary: {
+        Row: {
+          avg_latency_ms: number | null
+          created_at: string | null
+          errors: number
+          p95_latency_ms: number | null
+          paid_conversion_pct: number | null
+          paywall_hits: number
+          success_rate_pct: number | null
+          summary_date: string
+          surface: string
+          tool_calls: number
+          top_error: string | null
+          top_tool: string | null
+          total_events: number
+          unique_users: number
+          updated_at: string | null
+        }
+        Insert: {
+          avg_latency_ms?: number | null
+          created_at?: string | null
+          errors?: number
+          p95_latency_ms?: number | null
+          paid_conversion_pct?: number | null
+          paywall_hits?: number
+          success_rate_pct?: number | null
+          summary_date: string
+          surface: string
+          tool_calls?: number
+          top_error?: string | null
+          top_tool?: string | null
+          total_events?: number
+          unique_users?: number
+          updated_at?: string | null
+        }
+        Update: {
+          avg_latency_ms?: number | null
+          created_at?: string | null
+          errors?: number
+          p95_latency_ms?: number | null
+          paid_conversion_pct?: number | null
+          paywall_hits?: number
+          success_rate_pct?: number | null
+          summary_date?: string
+          surface?: string
+          tool_calls?: number
+          top_error?: string | null
+          top_tool?: string | null
+          total_events?: number
+          unique_users?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       telemetry_rollout_milestones: {
         Row: {
           actual_completion_date: string | null
@@ -3158,6 +3212,24 @@ export type Database = {
         }
         Relationships: []
       }
+      telemetry_dashboard: {
+        Row: {
+          avg_latency_ms: number | null
+          day: string | null
+          event_type: string | null
+          events: number | null
+          failures: number | null
+          first_event: string | null
+          last_event: string | null
+          p95_latency_ms: number | null
+          successes: number | null
+          surface: string | null
+          tier: string | null
+          tool_name: string | null
+          unique_users: number | null
+        }
+        Relationships: []
+      }
       usage_summary: {
         Row: {
           action_type: string | null
@@ -3364,6 +3436,7 @@ export type Database = {
         Returns: string
       }
       disablelongtransactions: { Args: never; Returns: string }
+      do_daily_rollup: { Args: never; Returns: undefined }
       dropgeometrycolumn:
         | {
             Args: {
