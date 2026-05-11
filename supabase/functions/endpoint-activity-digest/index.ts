@@ -16,7 +16,11 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const RECIPIENTS = ["support@sidekickpro.com", "visionassocllc@gmail.com"];
+// TEMPORARY: Resend sandbox sender (onboarding@resend.dev) only allows
+// delivery to the verified Resend account email. Until a custom sender
+// domain is verified in Resend, redirect digests to the verified address
+// only. Original recipients: ["support@sidekickpro.com", "visionassocllc@gmail.com"].
+const RECIPIENTS = ["tpptrafficpump@gmail.com"];
 const WINDOW_HOURS = 6;
 // Resend's shared sender. soilsidekickpro.com is not verified in Resend
 // (Lovable Emails owns notify.soilsidekickpro.com via NS delegation, so it
