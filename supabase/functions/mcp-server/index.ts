@@ -1,5 +1,6 @@
 import { corsHeaders } from '../_shared/cors.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { validateBearerToken, checkRateLimit, RateLimitStatus } from './oauth2.ts';
 
 // Service-role client for audit logging (fire-and-forget, never blocks tool calls)
 const auditClient = createClient(
@@ -919,9 +920,61 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null, reqMeta?: R
   return jsonRpcError(id ?? null, -32601, `Method not found: ${method}`);
 }
 
+// ── Rate-limit header helper ───────────────────────────────────────
+function buildHeaders(base: Record<string, string>, rateLimit?: RateLimitStatus): Record<string, string> {
+  const h = { ...base };
+  if (rateLimit) {
+    h['X-RateLimit-Limit'] = String(rateLimit.limit);
+    h['X-RateLimit-Remaining'] = String(rateLimit.remaining);
+    h['X-RateLimit-Reset'] = String(rateLimit.reset);
+    h['X-RateLimit-Window'] = rateLimit.window;
+  }
+  return h;
+}
+
 // ── HTTP Handler ────────────────────────────────────────────────────
 
 Deno.serve(async (req) => {
+  // Extract auth early so rate-limiting works for all paths
+  const apiKeyHeader = req.headers.get('x-api-key');
+  const authHeader = req.headers.get('authorization');
+  let apiKey = apiKeyHeader;
+
+  // OAuth2 bearer token fallback (Composio marketplace flow)
+  if (!apiKey && authHeader?.startsWith('Bearer ')) {
+    const oauth = await validateBearerToken(authHeader);
+    if (oauth.apiKey) {
+      apiKey = oauth.apiKey;
+    }
+  }
+
+  // Rate-limit check (only for authenticated requests; free tools skip)
+  let rateLimit: RateLimitStatus | undefined;
+  if (apiKey) {
+    rateLimit = await checkRateLimit(hashKey(apiKey));
+  }
+
+  // Correlation ID: use client-provided header or generate one per request
+  const correlationId = req.headers.get('x-correlation-id') || crypto.randomUUID();
+  const meta: ReqMeta = {
+    ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || undefined,
+    userAgent: req.headers.get('user-agent') || undefined,
+    correlationId,
+  };
+
+  // ── /_health endpoint (Composio compatibility) ─────────────────────────
+  const url = new URL(req.url);
+  if (url.pathname.endsWith('/_health') || url.pathname.endsWith('/health')) {
+    return new Response(JSON.stringify({
+      status: 'healthy',
+      version: 'v88-oauth2',
+      timestamp: new Date().toISOString(),
+      uptime: 'ok',
+    }), {
+      headers: buildHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }),
+    });
+  }
+
   // CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, {
@@ -936,7 +989,7 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed. Use POST.' }), {
       status: 405,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: buildHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, rateLimit),
     });
   }
 
@@ -945,18 +998,9 @@ Deno.serve(async (req) => {
   if (!accept.includes('application/json') && !accept.includes('*/*')) {
     return new Response(
       JSON.stringify({ jsonrpc: '2.0', error: { code: -32000, message: 'Not Acceptable: Client must accept application/json' }, id: null }),
-      { status: 406, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 406, headers: buildHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, rateLimit) }
     );
   }
-
-  const apiKey = req.headers.get('x-api-key');
-  // Correlation ID: use client-provided header or generate one per request
-  const correlationId = req.headers.get('x-correlation-id') || crypto.randomUUID();
-  const meta: ReqMeta = {
-    ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || undefined,
-    userAgent: req.headers.get('user-agent') || undefined,
-    correlationId,
-  };
 
   try {
     const body = await req.json();
@@ -966,23 +1010,23 @@ Deno.serve(async (req) => {
       const results = await Promise.all(body.map((r: JsonRpcRequest) => handleRpc(r, apiKey, { ...meta, isBatch: true })));
       const filtered = results.filter((r) => r !== null);
       return new Response(JSON.stringify(filtered), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: buildHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, rateLimit),
       });
     }
 
     // Single request
     const result = await handleRpc(body as JsonRpcRequest, apiKey, meta);
     if (result === null) {
-      return new Response(null, { status: 204, headers: corsHeaders });
+      return new Response(null, { status: 204, headers: buildHeaders(corsHeaders, rateLimit) });
     }
 
     return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: buildHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, rateLimit),
     });
   } catch {
     return new Response(
       JSON.stringify(jsonRpcError(null, -32700, 'Parse error: invalid JSON')),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 400, headers: buildHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, rateLimit) }
     );
   }
 });
