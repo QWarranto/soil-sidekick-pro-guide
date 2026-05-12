@@ -506,6 +506,170 @@ function handleTurboQuantCapabilities(args: Record<string, unknown>) {
   };
 }
 
+// ── Local Preview Handlers (free tier, no downstream auth) ──────────
+
+function handleSafeIdentificationPreview(args: Record<string, unknown>) {
+  const plantName = String(args.plant_name ?? '').toLowerCase();
+  const location = String(args.location ?? '');
+
+  // Local toxic lookalike database (6 plants)
+  const toxicDatabase: Record<string, unknown> = {
+    'poison ivy': {
+      identification: 'Toxicodendron radicans',
+      toxic: true,
+      symptoms: 'Itchy rash, blisters, swelling. Urushiol oil causes contact dermatitis.',
+      lookalikes: ['Boxelder maple (Acer negundo) seedlings', 'Virginia creeper (Parthenocissus quinquefolia)'],
+      differentiators: 'Boxelder: opposite leaf arrangement (poison ivy is alternate). Virginia creeper: 5 leaflets (poison ivy: 3).',
+      confidence: 0.95,
+      safety_note: 'DO NOT TOUCH. Wash exposed skin with soap and cool water within 30 minutes.',
+      habitat: 'Wood edges, fence rows, disturbed areas across eastern and central US.',
+    },
+    'poison oak': {
+      identification: 'Toxicodendron diversilobum (western) / T. pubescens (eastern)',
+      toxic: true,
+      symptoms: 'Itchy rash, blisters. Same urushiol oil as poison ivy.',
+      lookalikes: ['Young blackberry (Rubus) canes', 'Fragrant sumac (Rhus aromatica)'],
+      differentiators: 'Blackberry: thorns present (poison oak has no thorns). Fragrant sumac: 3 leaflets with rounded teeth (poison oak: smooth or lobed edges).',
+      confidence: 0.92,
+      safety_note: 'DO NOT TOUCH. Same treatment as poison ivy.',
+      habitat: 'Pacific coast (western variety) or southeastern US (eastern variety).',
+    },
+    'poison sumac': {
+      identification: 'Toxicodendron vernix',
+      toxic: true,
+      symptoms: 'Severe contact dermatitis, more potent than poison ivy.',
+      lookalikes: ['Staghorn sumac (Rhus typhina)', 'Smooth sumac (Rhus glabra)'],
+      differentiators: 'Staghorn/smooth sumac: red fuzzy fruit clusters, toothed leaflets, non-toxic. Poison sumac: white/green berries, smooth leaflets.',
+      confidence: 0.94,
+      safety_note: 'DO NOT TOUCH. Most toxic of the three. Seek medical attention if exposed.',
+      habitat: 'Swampy, wet areas in eastern US. Rare.',
+    },
+    'water hemlock': {
+      identification: 'Cicuta maculata',
+      toxic: true,
+      symptoms: 'Convulsions, seizures, death within 15 minutes if ingested. Most toxic plant in North America.',
+      lookalikes: ['Wild parsnip (Pastinaca sativa)', 'Wild carrot / Queen Anne\'s lace (Daucus carota)'],
+      differentiators: 'Wild parsnip: yellow flowers, grooved stems. Wild carrot: hairy stems, white flower with dark center. Water hemlock: smooth hollow stems with purple spots.',
+      confidence: 0.96,
+      safety_note: 'LETHAL IF INGESTED. Call Poison Control immediately: 1-800-222-1222.',
+      habitat: 'Wet meadows, stream banks across North America.',
+    },
+    'deadly nightshade': {
+      identification: 'Atropa belladonna',
+      toxic: true,
+      symptoms: 'Dilated pupils, blurred vision, rapid heartbeat, hallucinations, death.',
+      lookalikes: ['Black nightshade (Solanum nigrum)', 'Garden huckleberry (Solanum melanocerasum)'],
+      differentiators: 'Black nightshade: smaller, duller berries, less glossy leaves. Deadly nightshade: large glossy black berries, purple-tinged flowers.',
+      confidence: 0.91,
+      safety_note: 'ALL PARTS TOXIC. 2-5 berries can kill a child. Call Poison Control immediately.',
+      habitat: 'Woodland edges, disturbed ground. Introduced in eastern US, rare.',
+    },
+    'foxglove': {
+      identification: 'Digitalis purpurea',
+      toxic: true,
+      symptoms: 'Nausea, vomiting, irregular heartbeat, cardiac arrest. Source of digitalis (heart medication).',
+      lookalikes: ['Penstemon (Penstemon digitalis)', 'Mullein (Verbascum thapsus)'],
+      differentiators: 'Penstemon: similar tubular flowers but 5 stamens (foxglove: 4). Mullein: fuzzy leaves, yellow flowers on tall spike.',
+      confidence: 0.93,
+      safety_note: 'ALL PARTS TOXIC. Ingestion requires immediate medical attention.',
+      habitat: 'Woodland clearings, roadside banks across northern and western US.',
+    },
+  };
+
+  const result = toxicDatabase[plantName] ?? {
+    identification: plantName,
+    toxic: 'unknown',
+    safety_note: 'Plant not in local safety database. Exercise caution: do not consume any wild plant without expert identification. Consult a local extension service or certified forager.',
+    confidence: 0.5,
+    _free_preview: true,
+    _upgrade_url: 'https://soilsidekick.com/api-keys',
+    location_context: location || null,
+  };
+
+  return {
+    ...result,
+    _free_preview: true,
+    _upgrade_url: 'https://soilsidekick.com/api-keys',
+    location_context: location || null,
+  };
+}
+
+function handleWaterQualityPreview(args: Record<string, unknown>) {
+  const countyFips = String(args.county_fips ?? '');
+  return {
+    preview: true,
+    county_fips: countyFips,
+    message: 'EPA water quality data requires a valid API key for county-specific analysis.',
+    general_guidance: {
+      well_water: 'Test annually for bacteria, nitrates, and pH. Use a certified lab.',
+      surface_water: 'Check EPA Surf Your Watershed: https://www.epa.gov/surf',
+      agricultural_runoff: 'Monitor nitrate and phosphorus levels near fields.',
+      regulatory_compliance: 'Contact your county health department for local water quality reports.',
+    },
+    epa_resources: {
+      safe_drinking_water: 'https://www.epa.gov/ground-water-and-drinking-water',
+      water_quality_standards: 'https://www.epa.gov/wqs-tech',
+      local_reports: `https://www.epa.gov/surf/yourwatershed?fips=${countyFips}`,
+    },
+    _free_preview: true,
+    _upgrade_url: 'https://soilsidekick.com/api-keys',
+  };
+}
+
+function handleCarbonCreditsPreview(args: Record<string, unknown>) {
+  const fieldSize = Number(args.field_size_acres ?? 0);
+  const soilOm = Number(args.soil_organic_matter ?? 0);
+  const practice = String(args.practice_type ?? 'unknown');
+
+  // Defensible rough estimate: 0.6 tCO2e/acre/year national average for cover cropping
+  // Range: 0.3-1.2 depending on practice, soil, climate
+  const baseRate = 0.6;
+  const omMultiplier = soilOm > 0 ? Math.min(2.0, 1 + (soilOm / 10)) : 1.0;
+  const practiceMultiplier: Record<string, number> = {
+    cover_cropping: 1.0,
+    no_till: 0.8,
+    reduced_till: 0.5,
+    agroforestry: 1.5,
+    nutrient_management: 0.3,
+  };
+  const pm = practiceMultiplier[practice] ?? 1.0;
+
+  const annualTons = fieldSize > 0 ? fieldSize * baseRate * omMultiplier * pm : 0;
+  const pricePerTonne = 15; // National average
+  const annualValue = annualTons * pricePerTonne;
+
+  return {
+    preview: true,
+    estimate_type: 'rough_order_of_magnitude',
+    disclaimer: 'This is a free preview estimate for planning purposes only. Actual credits require third-party verification (Verra VCS, Gold Standard, or Climate Action Reserve).',
+    calculation: {
+      field_size_acres: fieldSize,
+      soil_organic_matter_pct: soilOm,
+      practice_type: practice,
+      base_sequestration_rate_tco2e_acre_year: baseRate,
+      om_multiplier: omMultiplier,
+      practice_multiplier: pm,
+      estimated_annual_credits_tco2e: Math.round(annualTons * 10) / 10,
+      estimated_price_per_tonne_usd: pricePerTonne,
+      estimated_annual_value_usd: Math.round(annualValue * 100) / 100,
+    },
+    ranges: {
+      conservative: Math.round(annualTons * 0.5 * 10) / 10,
+      optimistic: Math.round(annualTons * 1.5 * 10) / 10,
+    },
+    next_steps: [
+      '1. Sign a contract with a carbon credit developer or aggregator.',
+      '2. Implement conservation practice for minimum period (usually 1-3 years).',
+      '3. Hire a third-party verifier to measure and verify sequestration.',
+      '4. Register credits with Verra VCS, Gold Standard, or CAR.',
+      '5. Sell credits on voluntary carbon market or to corporate buyers.',
+    ],
+    verification_timeline: '12-36 months from practice start to credit issuance',
+    _free_preview: true,
+    _upgrade_url: 'https://soilsidekick.com/api-keys',
+  };
+}
+
 // ── JSON-RPC Handler ────────────────────────────────────────────────
 
 interface JsonRpcRequest {
@@ -601,9 +765,12 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null, reqMeta?: R
       return jsonRpcError(id ?? null, -32602, `Unknown tool: ${toolName}`);
     }
 
-    // Free-tier tools that work without an API key (including free previews)
-    const FREE_TOOLS = ['county_lookup', 'get_soil_data', 'safe_identification', 'territorial_water_quality', 'carbon_credit_calculator'];
+    // Free-tier tools that work without an API key
+    const FULLY_FREE_TOOLS = ['county_lookup', 'get_soil_data'];
+    const PREVIEW_TOOLS = ['safe_identification', 'territorial_water_quality', 'carbon_credit_calculator'];
+    const FREE_TOOLS = [...FULLY_FREE_TOOLS, ...PREVIEW_TOOLS];
     const isFreeTool = FREE_TOOLS.includes(toolName);
+    const isPreviewTool = PREVIEW_TOOLS.includes(toolName);
 
     if (!apiKey && !isFreeTool) {
       logToolCall({ ...auditBase, success: false, error_message: 'Missing x-api-key', response_time_ms: Date.now() - callStart });
@@ -634,6 +801,24 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null, reqMeta?: R
         }
       } catch (lookupErr) {
         console.warn('County FIPS resolution failed, forwarding as-is:', lookupErr);
+      }
+    }
+
+    // Local preview handlers (free tier, no downstream auth needed)
+    if (isPreviewTool && !apiKey) {
+      let result;
+      if (toolName === 'safe_identification') {
+        result = handleSafeIdentificationPreview(endpointArgs);
+      } else if (toolName === 'territorial_water_quality') {
+        result = handleWaterQualityPreview(endpointArgs);
+      } else if (toolName === 'carbon_credit_calculator') {
+        result = handleCarbonCreditsPreview(endpointArgs);
+      }
+      if (result) {
+        logToolCall({ ...auditBase, success: true, response_time_ms: Date.now() - callStart, downstream_endpoint: 'local-preview' });
+        return jsonRpcResponse(id ?? null, {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        });
       }
     }
 
