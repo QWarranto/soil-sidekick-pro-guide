@@ -1640,6 +1640,39 @@ export type Database = {
         }
         Relationships: []
       }
+      oauth_tokens: {
+        Row: {
+          api_key_hash: string | null
+          client_id: string
+          created_at: string | null
+          expires_at: string
+          jti: string
+          revoked: boolean
+          scope: string
+          user_id: string
+        }
+        Insert: {
+          api_key_hash?: string | null
+          client_id: string
+          created_at?: string | null
+          expires_at: string
+          jti: string
+          revoked?: boolean
+          scope?: string
+          user_id: string
+        }
+        Update: {
+          api_key_hash?: string | null
+          client_id?: string
+          created_at?: string | null
+          expires_at?: string
+          jti?: string
+          revoked?: boolean
+          scope?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       plant_query_history: {
         Row: {
           created_at: string
@@ -1897,6 +1930,24 @@ export type Database = {
           timestamp?: string
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      rate_limit_counters: {
+        Row: {
+          api_key_hash: string
+          request_count: number
+          window_start: number
+        }
+        Insert: {
+          api_key_hash: string
+          request_count?: number
+          window_start: number
+        }
+        Update: {
+          api_key_hash?: string
+          request_count?: number
+          window_start?: number
         }
         Relationships: []
       }
@@ -3757,6 +3808,14 @@ export type Database = {
       }
       postgis_version: { Args: never; Returns: string }
       postgis_wagyu_version: { Args: never; Returns: string }
+      rate_limit_hit: {
+        Args: {
+          p_api_key_hash: string
+          p_max_requests: number
+          p_window_start: number
+        }
+        Returns: number
+      }
       refresh_cost_summaries: { Args: never; Returns: undefined }
       rotate_api_key: {
         Args: { new_key_hash: string; old_key_id: string }
