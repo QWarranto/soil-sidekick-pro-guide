@@ -24,6 +24,7 @@ import { OptimizedImage } from '@/components/OptimizedImage';
 import heroAerialFarm from '@/assets/hero-aerial-farm.jpg';
 import leafEnginesHeroVideo from '@/assets/leafengines-hero.mp4';
 import { LeafEnginesNav } from '@/components/LeafEnginesNav';
+import { SEO } from '@/components/SEO';
 
 const Index = () => {
   const { user } = useAuth();
