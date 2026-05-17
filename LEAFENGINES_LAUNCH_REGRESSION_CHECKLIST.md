@@ -132,3 +132,24 @@ Launch is **GO** only when:
 - `bunx vitest run` and `supabase--linter` re-run on the cutover commit are both clean.
 
 Any single red row blocks launch until remediated or formally accepted (with a security-memory update if the acceptance touches a security finding).
+
+---
+
+## v0.2.1 Patch — Gap closure rows
+
+Maps the eight gaps folded into Launch Plan §16. Same row format: ID · Type · Owner · Test/Step · Pass.
+
+| ID | Type | Owner | Test / Step | Pass |
+|---|---|---|---|---|
+| L1.7 | manual | eng | Log into `app.soilsidekickpro.com/link-telegram` as a test user, generate a code, open the `t.me/<bot>?start=<code>` deep link, run `/start <code>` in Telegram | `telegram_link.linked_user_id` is set to the test user's `auth.uid()` within 60 s; `rate_limit_tracking` row consumed |
+| L2.7 | auto | eng | `psql -c "SELECT count(*) FROM public.api_keys WHERE channel IS NULL;"` after migration | Returns `0` |
+| L2.8 | auto | eng | Insert a synthetic `api_keys` row with `channel='telegram'`, no linked user, `daily_call_count=600`; run founders upgrade job | Row tier unchanged; log line `skipped: unlinked telegram key` present |
+| L4.6 | auto | eng | `psql -c "SELECT bucket_id, name FROM storage.objects WHERE bucket_id='telegram-uploads' LIMIT 1;"` as anon (publishable key) | Returns 0 rows / permission denied; signed-URL fetch of the same path returns 200 |
+| L4.7 | manual | qa | From one IP, hit `telegram-webhook` with two `/start` updates 5 min apart | Second request returns a throttle reply; `rate_limit_tracking` shows `kind='telegram_start'` count=2 |
+| L4.8 | manual | compliance | Open `GDPR_SAR_PROCEDURE.md` | Telegram-only SAR + erasure paragraph present, references `telegram_link`, `api_keys`, `telegram-uploads` cleanup |
+| L4.9 | manual | ops | Open `OPERATIONAL_MAINTENANCE.md` rollback section | All 4 steps present (deleteWebhook, deactivate keys, flag flip, status note); dry-run executed in staging without errors |
+| L5.5 | manual | ops | Trigger a synthetic spike (≥ threshold) in staging with `channel='telegram'` LLM calls | Alert fires within 15 min on the configured channel; alert payload includes `channel=telegram` and cost figure |
+
+### Updated Go / No-Go gate
+
+In addition to the original gate (L0–L6 + I.1–I.9), **all eight v0.2.1 rows (L1.7, L2.7, L2.8, L4.6, L4.7, L4.8, L4.9, L5.5) must be green** on the cutover ticket. Any red row blocks launch.

@@ -242,3 +242,43 @@ The launch does **not** ship: dual metering, direct-provider LLM failover, `ak_`
 - **Net new code surface introduced by the launch itself:** Phase L4's one edge function + one table + one column + one bucket. Everything else is configuration, tests, docs, and small patches inside existing files.
 
 This is the launch the current codebase can support without forcing any of the cross-cutting decisions deferred to the addendums.
+
+---
+
+## 16. v0.2.1 Patch — Gap Closures
+
+Folds eight previously unaccounted-for gaps into the launch. Each is small, scoped, and does not reopen any addendum. Phase letter suffixes (`.x`) keep numbering stable.
+
+### L1.x — Web
+
+- **L1.7 `/link` one-time-code issuance UI.** New authenticated page at `app.soilsidekickpro.com/link-telegram`. Generates a 6-char code, writes to `rate_limit_tracking` with `kind='telegram_link_code'`, TTL 10 min, displays the code + a `t.me/<bot>?start=<code>` deep link. Owner: eng. Depends on L4.0.
+
+### L2.x — MCP / Backend
+
+- **L2.7 `channel` column backfill.** Migration sets `api_keys.channel = 'web'` where null at cutover. One-line SQL in the L4.0 migration. Owner: eng.
+- **L2.8 Founders auto-upgrade constraint for unlinked Telegram keys.** Update `founders-auto-upgrade` function (or trigger) to skip rows where `channel = 'telegram' AND linked_user_id IS NULL` (joined via `telegram_link`). Owner: eng.
+
+### L4.x — Telegram
+
+- **L4.6 Storage RLS policy text for `telegram-uploads`.** Bucket private. Policies: `service_role` full access; no anon/authenticated SELECT (signed URLs only). Lifecycle: 24 h object expiry. Specified in the L4.0 migration body. Owner: eng.
+- **L4.7 Inbound `/start` rate-limit.** 1 `/start` per source IP per hour via `rate_limit_tracking` (`kind='telegram_start'`). Webhook returns a polite throttle reply on breach. Owner: eng.
+- **L4.8 Telegram-only SAR amendment.** Append one paragraph to `GDPR_SAR_PROCEDURE.md` describing how a Telegram-only user (no `auth.users` row) proves identity via `telegram_user_id` + a fresh `/start` code, and how erasure deletes `telegram_link` + cascades the `api_keys` row + purges `telegram-uploads/{telegram_user_id}/`. Owner: compliance.
+- **L4.9 Rollback runbook.** New section in `OPERATIONAL_MAINTENANCE.md`: (a) `deleteWebhook` via connector gateway, (b) `UPDATE api_keys SET is_active=false WHERE channel='telegram'`, (c) flip feature flag `TELEGRAM_BOT_ENABLED=false`, (d) post status page note. Owner: ops.
+
+### L5.x — Observability
+
+- **L5.5 Lovable AI Gateway cost-ceiling alert for Telegram traffic class.** Threshold: `channel='telegram'` daily LLM-call cost > $X (X set by ops at cutover). Alert fires to the same channel as the triage-queue alert (L5.2). Owner: ops.
+
+### Dependency delta
+
+- L1.7 depends on L4.0 (needs `telegram_link` table to exist).
+- L2.7, L2.8, L4.6, L4.7 fold into the existing L4.0 migration — no new migration file.
+- L4.8, L4.9, L5.5 are doc/config only.
+
+### Acceptance gate addition
+
+All 8 items must show pass evidence in the regression checklist v0.2.1 rows before Go/No-Go.
+
+### Out-of-scope reaffirmed
+
+This patch does **not** introduce: a new auth provider, a second meter, a new LLM route, an SDK regen, or any change to existing `mcp-server` tool contracts.
