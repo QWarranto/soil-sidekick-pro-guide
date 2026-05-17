@@ -169,6 +169,8 @@ const Index = () => {
 
   // SCENARIO B: Authenticated User View (Logged In)
   return (
+    <>
+    {seo}
     <div className="min-h-screen relative overflow-hidden">
       <LeafEnginesNav />
       {/* Background Hero Image */}
