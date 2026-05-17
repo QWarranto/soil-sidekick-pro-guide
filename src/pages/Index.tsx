@@ -24,6 +24,7 @@ import { OptimizedImage } from '@/components/OptimizedImage';
 import heroAerialFarm from '@/assets/hero-aerial-farm.jpg';
 import leafEnginesHeroVideo from '@/assets/leafengines-hero.mp4';
 import { LeafEnginesNav } from '@/components/LeafEnginesNav';
+import { SEO } from '@/components/SEO';
 
 const Index = () => {
   const { user } = useAuth();
@@ -44,9 +45,19 @@ const Index = () => {
     return 'Good Evening';
   };
 
+  const seo = (
+    <SEO
+      title="SoilSidekick Pro — Agricultural Intelligence Platform"
+      description="USDA soil data, EPA water quality, AI crop recommendations, carbon credits, and a developer API for any US county. Built for growers, agtech, and OEMs."
+      path="/"
+    />
+  );
+
   // SCENARIO A: Public/Guest View (Not Logged In)
   if (!user) {
     return (
+      <>
+      {seo}
       <div className="min-h-screen relative overflow-hidden">
         <LeafEnginesNav />
         {/* Background Hero Image */}
@@ -152,11 +163,14 @@ const Index = () => {
         </main>
         <Footer />
       </div>
+      </>
     );
   }
 
   // SCENARIO B: Authenticated User View (Logged In)
   return (
+    <>
+    {seo}
     <div className="min-h-screen relative overflow-hidden">
       <LeafEnginesNav />
       {/* Background Hero Image */}
@@ -222,6 +236,7 @@ const Index = () => {
         </div>
       </main>
     </div>
+    </>
   );
 };
 

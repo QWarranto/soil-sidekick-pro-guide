@@ -9,6 +9,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SEO } from "@/components/SEO";
 
 const FAQ = () => {
   const faqs = [
@@ -226,8 +227,24 @@ const FAQ = () => {
     }
   ];
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  };
+
   return (
     <div className="min-h-screen bg-gradient-hero parallax-scroll">
+      <SEO
+        title="FAQ — SoilSidekick Pro Agricultural Intelligence"
+        description="Answers about SoilSidekick Pro: task manager, AI crop recommendations, satellite monitoring, ADAPT/VRT integration, sensor data quality, water-quality grades, and pricing tiers."
+        path="/faq"
+        jsonLd={faqSchema}
+      />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
         <div className="mb-8 slide-in-up">

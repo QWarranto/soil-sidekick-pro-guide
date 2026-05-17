@@ -12,3 +12,5 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://soil-sidekick-pro-guide.lovable.app/sitemap.xml
