@@ -56,7 +56,8 @@ const Index = () => {
   // SCENARIO A: Public/Guest View (Not Logged In)
   if (!user) {
     return (
-      <>{seo}</>.type === 'fragment' ? null : null,
+      <>
+      {seo}
       <div className="min-h-screen relative overflow-hidden">
         <LeafEnginesNav />
         {/* Background Hero Image */}
