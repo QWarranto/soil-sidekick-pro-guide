@@ -261,12 +261,12 @@ export default function Pricing() {
                         <div key={idx} className="flex items-start gap-2">
                           <Check
                             className={`mt-0.5 h-4 w-4 shrink-0 ${
-                              feature.included ? "text-primary" : "text-muted-foreground/30"
+                              feature.included ? "text-primary" : "text-muted-foreground"
                             }`}
                           />
                           <span
                             className={`text-sm ${
-                              feature.included ? "text-foreground" : "text-muted-foreground/50 line-through"
+                              feature.included ? "text-foreground" : "text-muted-foreground line-through"
                             }`}
                           >
                             {feature.text}

@@ -576,6 +576,8 @@ export type Database = {
           access_count: number | null
           allowed_ips: string[] | null
           created_at: string | null
+          daily_ai_count: number | null
+          daily_data_count: number | null
           expires_at: string | null
           failed_attempts: number | null
           id: string
@@ -586,9 +588,11 @@ export type Database = {
           key_name: string
           last_access_ip: unknown
           last_failed_attempt: string | null
+          last_reset_date: string | null
           last_used_at: string | null
           lock_reason: string | null
           max_uses: number | null
+          monthly_alert_count: number | null
           permissions: Json | null
           rate_limit: number | null
           rate_window_minutes: number | null
@@ -601,6 +605,8 @@ export type Database = {
           access_count?: number | null
           allowed_ips?: string[] | null
           created_at?: string | null
+          daily_ai_count?: number | null
+          daily_data_count?: number | null
           expires_at?: string | null
           failed_attempts?: number | null
           id?: string
@@ -611,9 +617,11 @@ export type Database = {
           key_name: string
           last_access_ip?: unknown
           last_failed_attempt?: string | null
+          last_reset_date?: string | null
           last_used_at?: string | null
           lock_reason?: string | null
           max_uses?: number | null
+          monthly_alert_count?: number | null
           permissions?: Json | null
           rate_limit?: number | null
           rate_window_minutes?: number | null
@@ -626,6 +634,8 @@ export type Database = {
           access_count?: number | null
           allowed_ips?: string[] | null
           created_at?: string | null
+          daily_ai_count?: number | null
+          daily_data_count?: number | null
           expires_at?: string | null
           failed_attempts?: number | null
           id?: string
@@ -636,9 +646,11 @@ export type Database = {
           key_name?: string
           last_access_ip?: unknown
           last_failed_attempt?: string | null
+          last_reset_date?: string | null
           last_used_at?: string | null
           lock_reason?: string | null
           max_uses?: number | null
+          monthly_alert_count?: number | null
           permissions?: Json | null
           rate_limit?: number | null
           rate_window_minutes?: number | null
