@@ -79,8 +79,11 @@ export const OptimizedImage = ({
         <img
           src={src}
           alt={alt}
+          width={width}
+          height={height}
           loading={priority ? 'eager' : 'lazy'}
           decoding={priority ? 'sync' : 'async'}
+          {...(priority ? { fetchPriority: 'high' as const } : {})}
           onLoad={() => setIsLoaded(true)}
           className={cn(
             'w-full h-full transition-opacity duration-300',
