@@ -93,6 +93,7 @@ const sidebarSections: { title: string; links: NavLink[] }[] = [
       { label: "QGIS Use Cases", to: "/docs/partnerships/qgis-10-use-cases" },
       { label: "n8n Use Cases", to: "/docs/partnerships/n8n-10-use-cases" },
       { label: "Node-RED Use Cases", to: "/docs/partnerships/node-red-10-use-cases" },
+      { label: "Telegram Use Cases", to: "/docs/telegram/telegram-10-use-cases" },
       { label: "Composio Onboarding", to: "/docs/partnerships/composio-enterprise-onboarding" },
       { label: "Claude MCP Deep Dive", to: "/docs/partnerships/claude-mcp-deep-dive" },
     ],
