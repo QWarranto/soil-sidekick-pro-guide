@@ -52,11 +52,22 @@ export async function validateTrialAccess(
   // Update access count
   await supabase.rpc('update_trial_access', { trial_email: email });
 
-  // Get trial user details
+  // Hash email for lookup (must match public.hash_email DB function: sha256(lower(email) || salt))
+  const encoder = new TextEncoder();
+  const emailHashBuf = await crypto.subtle.digest(
+    'SHA-256',
+    encoder.encode(email.toLowerCase() + 'SoilSidekickTrialSalt2024!')
+  );
+  const emailHash = Array.from(new Uint8Array(emailHashBuf))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+
+
+  // Get trial user details by hashed email
   const { data: trialUser, error: fetchError } = await supabase
     .from('trial_users')
-    .select('id, email, trial_start, trial_end, access_count')
-    .eq('email', email)
+    .select('id, trial_start, trial_end, access_count')
+    .eq('email_hash', emailHash)
     .single();
 
   if (fetchError || !trialUser) {
@@ -67,12 +78,13 @@ export async function validateTrialAccess(
     isValid: true,
     trialUser: {
       id: trialUser.id,
-      email: trialUser.email,
+      email, // echo back the caller-supplied email; not stored in DB
       trial_start: trialUser.trial_start,
       trial_end: trialUser.trial_end,
       access_count: trialUser.access_count,
     },
   };
+
 }
 
 /**
