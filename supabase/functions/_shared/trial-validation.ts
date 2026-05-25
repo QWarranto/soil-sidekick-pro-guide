@@ -52,15 +52,16 @@ export async function validateTrialAccess(
   // Update access count
   await supabase.rpc('update_trial_access', { trial_email: email });
 
-  // Hash email for lookup (plaintext email column has been removed for PII minimization)
+  // Hash email for lookup (must match public.hash_email DB function: sha256(lower(email) || salt))
   const encoder = new TextEncoder();
   const emailHashBuf = await crypto.subtle.digest(
     'SHA-256',
-    encoder.encode(email.toLowerCase())
+    encoder.encode(email.toLowerCase() + 'SoilSidekickTrialSalt2024!')
   );
   const emailHash = Array.from(new Uint8Array(emailHashBuf))
     .map(b => b.toString(16).padStart(2, '0'))
     .join('');
+
 
   // Get trial user details by hashed email
   const { data: trialUser, error: fetchError } = await supabase
