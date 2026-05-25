@@ -79,6 +79,14 @@ const sidebarSections: { title: string; links: NavLink[] }[] = [
     ],
   },
   {
+    title: "Telegram",
+    links: [
+      { label: "Bot Quick Start", to: "/docs/telegram/telegram-quick-start" },
+      { label: "Command Reference", to: "/docs/telegram/telegram-command-reference" },
+      { label: "Bot Architecture", to: "/docs/telegram/telegram-bot-architecture" },
+    ],
+  },
+  {
     title: "Use Cases",
     links: [
       { label: "LeafEngines MCP", to: "/docs/partnerships/leafengines-mcp-10-use-cases" },
