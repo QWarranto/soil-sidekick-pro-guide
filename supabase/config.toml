@@ -24,6 +24,8 @@ project_id = "wzgnxkoeqzvueypwzvyn"
   port = 54329
 
 [functions]
+  [functions.address-geocode]
+    verify_jwt = false
   [functions.affiliate-management]
     verify_jwt = false
   [functions.agricultural-intelligence]
