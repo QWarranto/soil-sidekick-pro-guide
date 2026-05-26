@@ -85,7 +85,12 @@ Deno.serve(async (req) => {
     if (!county?.county_fips || !county?.state_fips) {
       return bad(404, "No county found at coordinates", { lat, lon });
     }
-    const fips = `${county.state_fips}${county.county_fips}`;
+    // FCC's county_fips is already the full 5-digit state+county code.
+    const rawCounty = String(county.county_fips);
+    const stateFips = String(county.state_fips);
+    const fips = rawCounty.startsWith(stateFips)
+      ? rawCounty
+      : `${stateFips}${rawCounty}`;
 
     return new Response(
       JSON.stringify({
