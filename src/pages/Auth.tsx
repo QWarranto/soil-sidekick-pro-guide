@@ -238,6 +238,8 @@ const Auth = () => {
                   </svg>
                   Continue with Google
                 </Button>
+
+                <PasskeyButton mode="authenticate" email={email} onSuccess={() => navigate('/')} />
                 
                 <div className="text-center mt-4">
                   <button
