@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { Leaf, ArrowLeft } from 'lucide-react';
+import { PasskeyButton } from '@/components/PasskeyButton';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -237,6 +238,8 @@ const Auth = () => {
                   </svg>
                   Continue with Google
                 </Button>
+
+                <PasskeyButton mode="authenticate" email={email} onSuccess={() => navigate('/')} />
                 
                 <div className="text-center mt-4">
                   <button
