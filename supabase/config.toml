@@ -90,6 +90,10 @@ project_id = "wzgnxkoeqzvueypwzvyn"
     verify_jwt = true
   [functions.trial-auth]
     verify_jwt = false
+  [functions.webauthn-register]
+    verify_jwt = true
+  [functions.webauthn-authenticate]
+    verify_jwt = false
 
 [inbucket]
   enabled = true
