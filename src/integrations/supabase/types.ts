@@ -3702,6 +3702,48 @@ export type Database = {
         }
         Relationships: []
       }
+      user_passkeys: {
+        Row: {
+          backed_up: boolean
+          counter: number
+          created_at: string
+          credential_id: string
+          device_type: string | null
+          id: string
+          last_used_at: string | null
+          nickname: string | null
+          public_key: string
+          transports: string[] | null
+          user_id: string
+        }
+        Insert: {
+          backed_up?: boolean
+          counter?: number
+          created_at?: string
+          credential_id: string
+          device_type?: string | null
+          id?: string
+          last_used_at?: string | null
+          nickname?: string | null
+          public_key: string
+          transports?: string[] | null
+          user_id: string
+        }
+        Update: {
+          backed_up?: boolean
+          counter?: number
+          created_at?: string
+          credential_id?: string
+          device_type?: string | null
+          id?: string
+          last_used_at?: string | null
+          nickname?: string | null
+          public_key?: string
+          transports?: string[] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -4056,6 +4098,36 @@ export type Database = {
           location_data?: Json | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      webauthn_challenges: {
+        Row: {
+          challenge: string
+          created_at: string
+          email: string | null
+          expires_at: string
+          id: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          challenge: string
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          id?: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          challenge?: string
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          id?: string
+          type?: string
+          user_id?: string | null
         }
         Relationships: []
       }
