@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   startRegistration,
   startAuthentication,
-} from 'https://esm.sh/@simplewebauthn/browser@10.0.0';
+} from '@simplewebauthn/browser';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
