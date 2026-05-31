@@ -521,6 +521,13 @@ export type Database = {
             foreignKeyName: "api_key_access_log_api_key_id_fkey"
             columns: ["api_key_id"]
             isOneToOne: false
+            referencedRelation: "active_telegram_users"
+            referencedColumns: ["api_key_id"]
+          },
+          {
+            foreignKeyName: "api_key_access_log_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
             referencedRelation: "api_keys"
             referencedColumns: ["id"]
           },
@@ -575,6 +582,7 @@ export type Database = {
         Row: {
           access_count: number | null
           allowed_ips: string[] | null
+          channel: string | null
           created_at: string | null
           daily_ai_count: number | null
           daily_data_count: number | null
@@ -604,6 +612,7 @@ export type Database = {
         Insert: {
           access_count?: number | null
           allowed_ips?: string[] | null
+          channel?: string | null
           created_at?: string | null
           daily_ai_count?: number | null
           daily_data_count?: number | null
@@ -633,6 +642,7 @@ export type Database = {
         Update: {
           access_count?: number | null
           allowed_ips?: string[] | null
+          channel?: string | null
           created_at?: string | null
           daily_ai_count?: number | null
           daily_data_count?: number | null
@@ -744,6 +754,74 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      bigfoot_autogen_queue: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          entity_type: string
+          error_message: string | null
+          fips_code: string | null
+          generated_page_id: string | null
+          id: string
+          mega_directory: string
+          priority: number
+          processing_time_ms: number | null
+          queued_at: string
+          source_data: Json | null
+          source_query_ids: string[] | null
+          started_at: string | null
+          state_code: string | null
+          status: string
+          target_slug: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          entity_type: string
+          error_message?: string | null
+          fips_code?: string | null
+          generated_page_id?: string | null
+          id?: string
+          mega_directory: string
+          priority?: number
+          processing_time_ms?: number | null
+          queued_at?: string
+          source_data?: Json | null
+          source_query_ids?: string[] | null
+          started_at?: string | null
+          state_code?: string | null
+          status?: string
+          target_slug: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          entity_type?: string
+          error_message?: string | null
+          fips_code?: string | null
+          generated_page_id?: string | null
+          id?: string
+          mega_directory?: string
+          priority?: number
+          processing_time_ms?: number | null
+          queued_at?: string
+          source_data?: Json | null
+          source_query_ids?: string[] | null
+          started_at?: string | null
+          state_code?: string | null
+          status?: string
+          target_slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bigfoot_autogen_queue_generated_page_id_fkey"
+            columns: ["generated_page_id"]
+            isOneToOne: false
+            referencedRelation: "directory_pages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       carbon_credit_transactions: {
         Row: {
@@ -1032,6 +1110,60 @@ export type Database = {
         }
         Relationships: []
       }
+      correlation_edges: {
+        Row: {
+          causal_direction: string | null
+          co_occurrence_count: number
+          correlation_weight: number
+          created_at: string
+          fips_code: string | null
+          first_observed_at: string
+          id: string
+          is_significant: boolean
+          last_observed_at: string
+          observation_window_days: number
+          p_value: number | null
+          state_code: string | null
+          updated_at: string
+          variable_a: string
+          variable_b: string
+        }
+        Insert: {
+          causal_direction?: string | null
+          co_occurrence_count?: number
+          correlation_weight?: number
+          created_at?: string
+          fips_code?: string | null
+          first_observed_at?: string
+          id?: string
+          is_significant?: boolean
+          last_observed_at?: string
+          observation_window_days?: number
+          p_value?: number | null
+          state_code?: string | null
+          updated_at?: string
+          variable_a: string
+          variable_b: string
+        }
+        Update: {
+          causal_direction?: string | null
+          co_occurrence_count?: number
+          correlation_weight?: number
+          created_at?: string
+          fips_code?: string | null
+          first_observed_at?: string
+          id?: string
+          is_significant?: boolean
+          last_observed_at?: string
+          observation_window_days?: number
+          p_value?: number | null
+          state_code?: string | null
+          updated_at?: string
+          variable_a?: string
+          variable_b?: string
+        }
+        Relationships: []
+      }
       cost_alerts: {
         Row: {
           alert_frequency: string
@@ -1223,6 +1355,134 @@ export type Database = {
           encryption_required?: boolean | null
           id?: string
           table_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      directory_pages: {
+        Row: {
+          canonical_url: string | null
+          content: Json
+          country_code: string | null
+          county_name: string | null
+          created_at: string
+          data_maturity: string
+          fips_code: string | null
+          id: string
+          is_indexable: boolean
+          is_published: boolean
+          last_source_query_at: string | null
+          layer_depth: number
+          mega_directory: string
+          meta_description: string | null
+          page_type: string
+          parent_hub_id: string | null
+          sitemap_priority: number
+          slug: string
+          source_query_count: number
+          state_code: string | null
+          summary_text: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          canonical_url?: string | null
+          content?: Json
+          country_code?: string | null
+          county_name?: string | null
+          created_at?: string
+          data_maturity?: string
+          fips_code?: string | null
+          id?: string
+          is_indexable?: boolean
+          is_published?: boolean
+          last_source_query_at?: string | null
+          layer_depth?: number
+          mega_directory: string
+          meta_description?: string | null
+          page_type: string
+          parent_hub_id?: string | null
+          sitemap_priority?: number
+          slug: string
+          source_query_count?: number
+          state_code?: string | null
+          summary_text?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          canonical_url?: string | null
+          content?: Json
+          country_code?: string | null
+          county_name?: string | null
+          created_at?: string
+          data_maturity?: string
+          fips_code?: string | null
+          id?: string
+          is_indexable?: boolean
+          is_published?: boolean
+          last_source_query_at?: string | null
+          layer_depth?: number
+          mega_directory?: string
+          meta_description?: string | null
+          page_type?: string
+          parent_hub_id?: string | null
+          sitemap_priority?: number
+          slug?: string
+          source_query_count?: number
+          state_code?: string | null
+          summary_text?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "directory_pages_parent_hub_id_fkey"
+            columns: ["parent_hub_id"]
+            isOneToOne: false
+            referencedRelation: "directory_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      directory_slug_rules: {
+        Row: {
+          auto_publish_threshold: number
+          content_template: Json
+          created_at: string
+          entity_type: string
+          example_slug: string
+          id: string
+          mega_directory: string
+          meta_pattern: string | null
+          slug_pattern: string
+          title_pattern: string
+          updated_at: string
+        }
+        Insert: {
+          auto_publish_threshold?: number
+          content_template?: Json
+          created_at?: string
+          entity_type: string
+          example_slug: string
+          id?: string
+          mega_directory: string
+          meta_pattern?: string | null
+          slug_pattern: string
+          title_pattern: string
+          updated_at?: string
+        }
+        Update: {
+          auto_publish_threshold?: number
+          content_template?: Json
+          created_at?: string
+          entity_type?: string
+          example_slug?: string
+          id?: string
+          mega_directory?: string
+          meta_pattern?: string | null
+          slug_pattern?: string
+          title_pattern?: string
           updated_at?: string
         }
         Relationships: []
@@ -1652,6 +1912,251 @@ export type Database = {
         }
         Relationships: []
       }
+      model_benchmark_results: {
+        Row: {
+          benchmark_id: string
+          id: string
+          latency_ms: number | null
+          model_id: string
+          ran_at: string
+          raw_output: Json | null
+          score: number
+          tokens_used: number | null
+        }
+        Insert: {
+          benchmark_id: string
+          id?: string
+          latency_ms?: number | null
+          model_id: string
+          ran_at?: string
+          raw_output?: Json | null
+          score: number
+          tokens_used?: number | null
+        }
+        Update: {
+          benchmark_id?: string
+          id?: string
+          latency_ms?: number | null
+          model_id?: string
+          ran_at?: string
+          raw_output?: Json | null
+          score?: number
+          tokens_used?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "model_benchmark_results_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "model_capabilities"
+            referencedColumns: ["model_id"]
+          },
+        ]
+      }
+      model_capabilities: {
+        Row: {
+          active: boolean
+          api_key_env_var: string
+          base_url: string | null
+          context_window: number
+          created_at: string
+          deprecated: boolean
+          deprecation_note: string | null
+          display_name: string
+          id: string
+          input_cost_per_1m: number | null
+          latency_p50_ms: number | null
+          latency_p99_ms: number | null
+          model_id: string
+          output_cost_per_1m: number | null
+          provider: string
+          quality_ag_response: number | null
+          quality_intent_analysis: number | null
+          quality_overall: number | null
+          quality_reasoning_depth: number | null
+          quality_structured_json: number | null
+          release_date: string | null
+          routing_weight: number
+          supports_streaming: boolean
+          supports_structured_output: boolean
+          supports_tool_use: boolean
+          supports_vision: boolean
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          api_key_env_var?: string
+          base_url?: string | null
+          context_window?: number
+          created_at?: string
+          deprecated?: boolean
+          deprecation_note?: string | null
+          display_name: string
+          id?: string
+          input_cost_per_1m?: number | null
+          latency_p50_ms?: number | null
+          latency_p99_ms?: number | null
+          model_id: string
+          output_cost_per_1m?: number | null
+          provider: string
+          quality_ag_response?: number | null
+          quality_intent_analysis?: number | null
+          quality_overall?: number | null
+          quality_reasoning_depth?: number | null
+          quality_structured_json?: number | null
+          release_date?: string | null
+          routing_weight?: number
+          supports_streaming?: boolean
+          supports_structured_output?: boolean
+          supports_tool_use?: boolean
+          supports_vision?: boolean
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          api_key_env_var?: string
+          base_url?: string | null
+          context_window?: number
+          created_at?: string
+          deprecated?: boolean
+          deprecation_note?: string | null
+          display_name?: string
+          id?: string
+          input_cost_per_1m?: number | null
+          latency_p50_ms?: number | null
+          latency_p99_ms?: number | null
+          model_id?: string
+          output_cost_per_1m?: number | null
+          provider?: string
+          quality_ag_response?: number | null
+          quality_intent_analysis?: number | null
+          quality_overall?: number | null
+          quality_reasoning_depth?: number | null
+          quality_structured_json?: number | null
+          release_date?: string | null
+          routing_weight?: number
+          supports_streaming?: boolean
+          supports_structured_output?: boolean
+          supports_tool_use?: boolean
+          supports_vision?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      model_routing_log: {
+        Row: {
+          cost_usd: number | null
+          created_at: string
+          error_message: string | null
+          feature_name: string | null
+          id: string
+          input_tokens: number | null
+          intended_model: string | null
+          latency_ms: number | null
+          model_id: string
+          output_tokens: number | null
+          provider: string
+          success: boolean
+          task_type: string
+          user_id: string | null
+          was_fallback: boolean
+        }
+        Insert: {
+          cost_usd?: number | null
+          created_at?: string
+          error_message?: string | null
+          feature_name?: string | null
+          id?: string
+          input_tokens?: number | null
+          intended_model?: string | null
+          latency_ms?: number | null
+          model_id: string
+          output_tokens?: number | null
+          provider: string
+          success?: boolean
+          task_type: string
+          user_id?: string | null
+          was_fallback?: boolean
+        }
+        Update: {
+          cost_usd?: number | null
+          created_at?: string
+          error_message?: string | null
+          feature_name?: string | null
+          id?: string
+          input_tokens?: number | null
+          intended_model?: string | null
+          latency_ms?: number | null
+          model_id?: string
+          output_tokens?: number | null
+          provider?: string
+          success?: boolean
+          task_type?: string
+          user_id?: string | null
+          was_fallback?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "model_routing_log_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "model_capabilities"
+            referencedColumns: ["model_id"]
+          },
+          {
+            foreignKeyName: "model_routing_log_task_type_fkey"
+            columns: ["task_type"]
+            isOneToOne: false
+            referencedRelation: "model_task_types"
+            referencedColumns: ["task_type"]
+          },
+        ]
+      }
+      model_task_types: {
+        Row: {
+          created_at: string
+          display_name: string
+          fallback_chain: string[]
+          id: string
+          min_context_window: number
+          min_quality_overall: number
+          optimization_priority: string
+          requires_structured_output: boolean
+          requires_tool_use: boolean
+          requires_vision: boolean
+          task_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name: string
+          fallback_chain?: string[]
+          id?: string
+          min_context_window?: number
+          min_quality_overall?: number
+          optimization_priority?: string
+          requires_structured_output?: boolean
+          requires_tool_use?: boolean
+          requires_vision?: boolean
+          task_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          fallback_chain?: string[]
+          id?: string
+          min_context_window?: number
+          min_quality_overall?: number
+          optimization_priority?: string
+          requires_structured_output?: boolean
+          requires_tool_use?: boolean
+          requires_vision?: boolean
+          task_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       oauth_tokens: {
         Row: {
           api_key_hash: string | null
@@ -1846,6 +2351,93 @@ export type Database = {
           },
         ]
       }
+      privacy_aggregated_snapshots: {
+        Row: {
+          aggregation_scope: string
+          created_at: string
+          data_maturity: string
+          export_at: string | null
+          exported_to: string[] | null
+          fips_code: string | null
+          id: string
+          is_exportable: boolean
+          mega_directory_distribution: Json
+          query_type_distribution: Json
+          snapshot_date: string
+          soil_ph_range: Json | null
+          state_code: string | null
+          top_risk_signals: Json | null
+          top_species_requested: Json | null
+          total_queries: number
+          unique_query_hashes: number
+          water_quality_flags: Json | null
+        }
+        Insert: {
+          aggregation_scope: string
+          created_at?: string
+          data_maturity?: string
+          export_at?: string | null
+          exported_to?: string[] | null
+          fips_code?: string | null
+          id?: string
+          is_exportable?: boolean
+          mega_directory_distribution?: Json
+          query_type_distribution?: Json
+          snapshot_date: string
+          soil_ph_range?: Json | null
+          state_code?: string | null
+          top_risk_signals?: Json | null
+          top_species_requested?: Json | null
+          total_queries?: number
+          unique_query_hashes?: number
+          water_quality_flags?: Json | null
+        }
+        Update: {
+          aggregation_scope?: string
+          created_at?: string
+          data_maturity?: string
+          export_at?: string | null
+          exported_to?: string[] | null
+          fips_code?: string | null
+          id?: string
+          is_exportable?: boolean
+          mega_directory_distribution?: Json
+          query_type_distribution?: Json
+          snapshot_date?: string
+          soil_ph_range?: Json | null
+          state_code?: string | null
+          top_risk_signals?: Json | null
+          top_species_requested?: Json | null
+          total_queries?: number
+          unique_query_hashes?: number
+          water_quality_flags?: Json | null
+        }
+        Relationships: []
+      }
+      processed_updates: {
+        Row: {
+          chat_id: number | null
+          command: string | null
+          processed_at: string | null
+          telegram_id: number | null
+          update_id: number
+        }
+        Insert: {
+          chat_id?: number | null
+          command?: string | null
+          processed_at?: string | null
+          telegram_id?: number | null
+          update_id: number
+        }
+        Update: {
+          chat_id?: number | null
+          command?: string | null
+          processed_at?: string | null
+          telegram_id?: number | null
+          update_id?: number
+        }
+        Relationships: []
+      }
       professional_info: {
         Row: {
           created_at: string | null
@@ -1965,6 +2557,7 @@ export type Database = {
       }
       rate_limit_tracking: {
         Row: {
+          action: string | null
           created_at: string | null
           endpoint: string
           id: string
@@ -1974,6 +2567,7 @@ export type Database = {
           window_start: string | null
         }
         Insert: {
+          action?: string | null
           created_at?: string | null
           endpoint: string
           id?: string
@@ -1983,6 +2577,7 @@ export type Database = {
           window_start?: string | null
         }
         Update: {
+          action?: string | null
           created_at?: string | null
           endpoint?: string
           id?: string
@@ -2666,6 +3261,150 @@ export type Database = {
           },
         ]
       }
+      telegram_link: {
+        Row: {
+          api_key_id: string
+          created_at: string | null
+          first_name: string | null
+          id: string
+          is_active: boolean | null
+          language_code: string | null
+          last_name: string | null
+          link_code: string | null
+          link_code_expires_at: string | null
+          linked_user_id: string | null
+          telegram_id: number
+          updated_at: string | null
+          username: string | null
+        }
+        Insert: {
+          api_key_id: string
+          created_at?: string | null
+          first_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          language_code?: string | null
+          last_name?: string | null
+          link_code?: string | null
+          link_code_expires_at?: string | null
+          linked_user_id?: string | null
+          telegram_id: number
+          updated_at?: string | null
+          username?: string | null
+        }
+        Update: {
+          api_key_id?: string
+          created_at?: string | null
+          first_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          language_code?: string | null
+          last_name?: string | null
+          link_code?: string | null
+          link_code_expires_at?: string | null
+          linked_user_id?: string | null
+          telegram_id?: number
+          updated_at?: string | null
+          username?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telegram_link_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "active_telegram_users"
+            referencedColumns: ["api_key_id"]
+          },
+          {
+            foreignKeyName: "telegram_link_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      telegram_query_signals: {
+        Row: {
+          command: string
+          correlation_processed: boolean
+          county_name: string | null
+          created_at: string
+          directory_page_created: string | null
+          directory_page_updated: string | null
+          environmental_tags: string[] | null
+          fips_code: string | null
+          id: string
+          model_used: string | null
+          raw_input: string | null
+          response_latency_ms: number | null
+          response_success: boolean
+          risk_signals: string[] | null
+          species_requested: string | null
+          state_code: string | null
+          tier: string
+          tool_name: string | null
+          user_hash: string
+        }
+        Insert: {
+          command: string
+          correlation_processed?: boolean
+          county_name?: string | null
+          created_at?: string
+          directory_page_created?: string | null
+          directory_page_updated?: string | null
+          environmental_tags?: string[] | null
+          fips_code?: string | null
+          id?: string
+          model_used?: string | null
+          raw_input?: string | null
+          response_latency_ms?: number | null
+          response_success?: boolean
+          risk_signals?: string[] | null
+          species_requested?: string | null
+          state_code?: string | null
+          tier?: string
+          tool_name?: string | null
+          user_hash: string
+        }
+        Update: {
+          command?: string
+          correlation_processed?: boolean
+          county_name?: string | null
+          created_at?: string
+          directory_page_created?: string | null
+          directory_page_updated?: string | null
+          environmental_tags?: string[] | null
+          fips_code?: string | null
+          id?: string
+          model_used?: string | null
+          raw_input?: string | null
+          response_latency_ms?: number | null
+          response_success?: boolean
+          risk_signals?: string[] | null
+          species_requested?: string | null
+          state_code?: string | null
+          tier?: string
+          tool_name?: string | null
+          user_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telegram_query_signals_directory_page_created_fkey"
+            columns: ["directory_page_created"]
+            isOneToOne: false
+            referencedRelation: "directory_pages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "telegram_query_signals_directory_page_updated_fkey"
+            columns: ["directory_page_updated"]
+            isOneToOne: false
+            referencedRelation: "directory_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       telemetry_daily_summary: {
         Row: {
           avg_latency_ms: number | null
@@ -3123,6 +3862,164 @@ export type Database = {
         }
         Relationships: []
       }
+      vendor_leads: {
+        Row: {
+          contacted_at: string | null
+          converted_at: string | null
+          created_at: string
+          directory_page_id: string | null
+          id: string
+          lead_price_cents: number
+          source_slug: string
+          status: string
+          trigger_signal: string | null
+          user_email: string | null
+          user_message: string | null
+          user_phone: string | null
+          vendor_id: string
+        }
+        Insert: {
+          contacted_at?: string | null
+          converted_at?: string | null
+          created_at?: string
+          directory_page_id?: string | null
+          id?: string
+          lead_price_cents: number
+          source_slug: string
+          status?: string
+          trigger_signal?: string | null
+          user_email?: string | null
+          user_message?: string | null
+          user_phone?: string | null
+          vendor_id: string
+        }
+        Update: {
+          contacted_at?: string | null
+          converted_at?: string | null
+          created_at?: string
+          directory_page_id?: string | null
+          id?: string
+          lead_price_cents?: number
+          source_slug?: string
+          status?: string
+          trigger_signal?: string | null
+          user_email?: string | null
+          user_message?: string | null
+          user_phone?: string | null
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_leads_directory_page_id_fkey"
+            columns: ["directory_page_id"]
+            isOneToOne: false
+            referencedRelation: "directory_pages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_leads_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendors: {
+        Row: {
+          business_name: string
+          city: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          directory_page_id: string | null
+          featured_until: string | null
+          fips_code: string | null
+          id: string
+          is_active: boolean
+          is_verified: boolean
+          lead_price_cents: number | null
+          leads_this_month: number
+          listing_tier: string
+          monthly_lead_limit: number | null
+          pay_per_lead_enabled: boolean
+          premium_features: Json | null
+          service_fips: string[] | null
+          service_states: string[] | null
+          slug: string
+          state_code: string | null
+          street_address: string | null
+          updated_at: string
+          vendor_category: string
+          website_url: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          business_name: string
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          directory_page_id?: string | null
+          featured_until?: string | null
+          fips_code?: string | null
+          id?: string
+          is_active?: boolean
+          is_verified?: boolean
+          lead_price_cents?: number | null
+          leads_this_month?: number
+          listing_tier?: string
+          monthly_lead_limit?: number | null
+          pay_per_lead_enabled?: boolean
+          premium_features?: Json | null
+          service_fips?: string[] | null
+          service_states?: string[] | null
+          slug: string
+          state_code?: string | null
+          street_address?: string | null
+          updated_at?: string
+          vendor_category: string
+          website_url?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          business_name?: string
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          directory_page_id?: string | null
+          featured_until?: string | null
+          fips_code?: string | null
+          id?: string
+          is_active?: boolean
+          is_verified?: boolean
+          lead_price_cents?: number | null
+          leads_this_month?: number
+          listing_tier?: string
+          monthly_lead_limit?: number | null
+          pay_per_lead_enabled?: boolean
+          premium_features?: Json | null
+          service_fips?: string[] | null
+          service_states?: string[] | null
+          slug?: string
+          state_code?: string | null
+          street_address?: string | null
+          updated_at?: string
+          vendor_category?: string
+          website_url?: string | null
+          zip_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendors_directory_page_id_fkey"
+            columns: ["directory_page_id"]
+            isOneToOne: false
+            referencedRelation: "directory_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       visual_analysis_results: {
         Row: {
           analysis_result: Json
@@ -3164,6 +4061,21 @@ export type Database = {
       }
     }
     Views: {
+      active_telegram_users: {
+        Row: {
+          api_key_id: string | null
+          daily_ai_count: number | null
+          daily_data_count: number | null
+          first_name: string | null
+          last_name: string | null
+          last_reset_date: string | null
+          linked_user_id: string | null
+          subscription_tier: string | null
+          telegram_id: number | null
+          username: string | null
+        }
+        Relationships: []
+      }
       cost_summary: {
         Row: {
           avg_cost_per_request: number | null
@@ -3540,6 +4452,7 @@ export type Database = {
         Returns: string
       }
       equals: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      flag_stale_model_scores: { Args: never; Returns: undefined }
       generate_recurring_tasks: { Args: never; Returns: undefined }
       generate_secure_session_token: { Args: never; Returns: string }
       generate_soc2_compliance_report: { Args: never; Returns: Json }
@@ -3777,6 +4690,24 @@ export type Database = {
         Args: { trial_email: string }
         Returns: boolean
       }
+      log_model_route: {
+        Args: {
+          p_cost_usd?: number
+          p_error_message?: string
+          p_feature_name?: string
+          p_input_tokens?: number
+          p_intended_model?: string
+          p_latency_ms?: number
+          p_model_id: string
+          p_output_tokens?: number
+          p_provider: string
+          p_success?: boolean
+          p_task_type: string
+          p_user_id?: string
+          p_was_fallback?: boolean
+        }
+        Returns: string
+      }
       longtransactionsenabled: { Args: never; Returns: boolean }
       migrate_account_security_emails: { Args: never; Returns: undefined }
       migrate_subscriber_data_to_encrypted: { Args: never; Returns: number }
@@ -3829,6 +4760,14 @@ export type Database = {
         Returns: number
       }
       refresh_cost_summaries: { Args: never; Returns: undefined }
+      resolve_model: {
+        Args: {
+          p_feature_name?: string
+          p_task_type: string
+          p_user_id?: string
+        }
+        Returns: Json
+      }
       rotate_api_key: {
         Args: { new_key_hash: string; old_key_id: string }
         Returns: string
