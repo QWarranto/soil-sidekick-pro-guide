@@ -36,7 +36,7 @@ export const PasskeyButton = ({ mode, email: initialEmail, onSuccess }: Props) =
       );
       if (optErr) throw optErr;
 
-      const attResp = await startRegistration({ optionsJSON: options });
+      const attResp = await startRegistration(options);
 
       const { data: result, error: vErr } = await supabase.functions.invoke(
         'webauthn-register',
@@ -64,7 +64,7 @@ export const PasskeyButton = ({ mode, email: initialEmail, onSuccess }: Props) =
       );
       if (optErr) throw optErr;
 
-      const authResp = await startAuthentication({ optionsJSON: options });
+      const authResp = await startAuthentication(options);
 
       const { data: result, error: vErr } = await supabase.functions.invoke(
         'webauthn-authenticate',
