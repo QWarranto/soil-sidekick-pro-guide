@@ -919,59 +919,83 @@ export type Database = {
         Row: {
           api_key_prefix: string | null
           api_key_tier: string | null
+          app_version: string | null
           client_install_id: string | null
           client_version: string | null
           created_at: string
           error_message: string | null
           error_stack: string | null
+          event_id: string
+          event_name: string
           event_type: string
           id: string
           ip_hash: string | null
           latency_ms: number | null
           metadata: Json | null
           os: string | null
+          platform: string | null
+          properties: Json | null
           runtime_version: string | null
+          severity: string | null
           status_code: number | null
           surface: string
+          timestamp: string
           tool_name: string | null
+          user_id: string | null
         }
         Insert: {
           api_key_prefix?: string | null
           api_key_tier?: string | null
+          app_version?: string | null
           client_install_id?: string | null
           client_version?: string | null
           created_at?: string
           error_message?: string | null
           error_stack?: string | null
+          event_id?: string
+          event_name?: string
           event_type: string
           id?: string
           ip_hash?: string | null
           latency_ms?: number | null
           metadata?: Json | null
           os?: string | null
+          platform?: string | null
+          properties?: Json | null
           runtime_version?: string | null
+          severity?: string | null
           status_code?: number | null
           surface: string
+          timestamp?: string
           tool_name?: string | null
+          user_id?: string | null
         }
         Update: {
           api_key_prefix?: string | null
           api_key_tier?: string | null
+          app_version?: string | null
           client_install_id?: string | null
           client_version?: string | null
           created_at?: string
           error_message?: string | null
           error_stack?: string | null
+          event_id?: string
+          event_name?: string
           event_type?: string
           id?: string
           ip_hash?: string | null
           latency_ms?: number | null
           metadata?: Json | null
           os?: string | null
+          platform?: string | null
+          properties?: Json | null
           runtime_version?: string | null
+          severity?: string | null
           status_code?: number | null
           surface?: string
+          timestamp?: string
           tool_name?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
