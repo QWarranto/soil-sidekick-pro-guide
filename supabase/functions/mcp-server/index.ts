@@ -737,7 +737,60 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null, reqMeta?: R
   if (method === 'tools/call') {
     const callStart = Date.now();
     const toolName = normalizeToolName((params as Record<string, unknown>)?.name as string);
-    const toolArgs = (params as Record<string, unknown>)?.arguments as Record<string, unknown> ?? {};
+    const rawToolArgs = (params as Record<string, unknown>)?.arguments as Record<string, unknown> ?? {};
+
+    // ── Permissive parameter normalization ──
+    // Map common FIPS synonyms used by AI agents → canonical `county_fips`.
+    // Then validate shape (5-digit numeric) BEFORE forwarding downstream so we
+    // return a clear JSON-RPC -32602 instead of a raw HTTP 400 from the edge fn.
+    const toolArgs: Record<string, unknown> = { ...rawToolArgs };
+    const FIPS_ALIASES = ['fips', 'geoid', 'county_geoid', 'fips_code', 'countyFips', 'county_id'];
+    if (!toolArgs.county_fips) {
+      for (const alias of FIPS_ALIASES) {
+        if (toolArgs[alias] != null && toolArgs[alias] !== '') {
+          toolArgs.county_fips = toolArgs[alias];
+          delete toolArgs[alias];
+          break;
+        }
+      }
+    }
+    // Coerce to string; pad numeric 4-digit FIPS (some states drop leading zero).
+    if (toolArgs.county_fips != null) {
+      let f = String(toolArgs.county_fips).trim();
+      if (/^\d{4}$/.test(f)) f = '0' + f;
+      toolArgs.county_fips = f;
+    }
+
+    // Tools that require a valid 5-digit county_fips. county_lookup is exempt
+    // (it accepts free-form `term`); turbo_quant_capabilities and safe_identification too.
+    const FIPS_REQUIRED_TOOLS = new Set([
+      'get_soil_data', 'territorial_water_quality', 'agricultural_intelligence',
+      'environmental_impact_engine', 'multi_parameter_planting_calendar',
+      'generate_vrt_prescription', 'carbon_credit_calculator', 'leafengines_query',
+    ]);
+    if (FIPS_REQUIRED_TOOLS.has(toolName)) {
+      const fips = toolArgs.county_fips;
+      if (!fips || typeof fips !== 'string' || !/^\d{5}$/.test(fips)) {
+        const errMsg = `Invalid county_fips: expected 5-digit US FIPS code (e.g. "13067"), received ${JSON.stringify(fips ?? null)}. Use the \`county_lookup\` tool first to resolve a place name to a FIPS code.`;
+        logToolCall({
+          api_key_hash: apiKey ? hashKey(apiKey) : undefined,
+          source_ip: reqMeta?.ip,
+          user_agent: reqMeta?.userAgent,
+          tool_name: toolName,
+          tool_arguments: toolArgs,
+          jsonrpc_id: id != null ? String(id) : undefined,
+          is_batch: reqMeta?.isBatch ?? false,
+          correlation_id: reqMeta?.correlationId,
+          success: false,
+          response_status: 400,
+          error_message: errMsg,
+          response_time_ms: Date.now() - callStart,
+        });
+        return jsonRpcError(id ?? null, -32602, errMsg);
+      }
+    }
+
+
 
     const auditBase = {
       api_key_hash: apiKey ? hashKey(apiKey) : undefined,
