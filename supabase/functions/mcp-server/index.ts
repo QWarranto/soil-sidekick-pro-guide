@@ -913,8 +913,18 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null, reqMeta?: R
       const elapsed = Date.now() - callStart;
 
       if (!res.ok) {
+        // Capture downstream body (truncated) so we can distinguish auth/validation/upstream failures
+        let bodySnippet: string;
+        try {
+          bodySnippet = typeof data === 'string' ? data : JSON.stringify(data);
+        } catch {
+          bodySnippet = '[unserializable]';
+        }
+        if (bodySnippet.length > 500) bodySnippet = bodySnippet.slice(0, 500) + '…';
+        const usedFreeTier = isFreeTool && !apiKey;
+        const errMsg = `HTTP ${res.status} from ${endpoint} (free_tier=${usedFreeTier}, api_key=${apiKey ? 'present' : 'none'}): ${bodySnippet}`;
         logToolCall({
-          ...auditBase, success: false, error_message: `HTTP ${res.status}`,
+          ...auditBase, success: false, error_message: errMsg,
           response_status: res.status, response_time_ms: elapsed,
           downstream_endpoint: endpoint,
           context_mode: context_mode as string, kv_cache_hint: kv_cache_hint as string,
