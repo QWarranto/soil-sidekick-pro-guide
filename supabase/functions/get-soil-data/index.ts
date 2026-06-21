@@ -576,20 +576,28 @@ function generateRecommendations(ph: number, organicMatter: number, nitrogen: st
   
   if (potassium === 'low') {
     recommendations.push('Potassium levels need improvement. Potash applications will enhance drought tolerance and disease resistance.');
+  }
+
+  if (recommendations.length === 1 && ph >= 6.0 && ph <= 7.5) {
+    recommendations.push('Overall soil conditions are favorable for most landscaping and agricultural applications. Continue current management practices.');
+  }
+
+  return recommendations;
 }
 
 /**
  * Derive drainage class from SSURGO soil texture data.
  * Uses clay/sand percentages and ksat (saturated hydraulic conductivity).
+ * Supports both JSON+COLUMNNAME (named-key objects) and positional-array SDA rows.
  */
 function deriveDrainageClass(tableData: any[]): string {
-  // Use the dominant component (first row, highest comppct_r)
   if (!tableData || tableData.length === 0) return 'moderate';
 
   const row = tableData[0];
-  const clay = row[9] || 0;   // claytotal_r
-  const sand = row[11] || 0;  // sandtotal_r
-  const ksat = row[14] || 0;  // ksat_r (µm/sec)
+  const isObject = !Array.isArray(row);
+  const clay = isObject ? Number(row['clay'] ?? row[9] ?? 0) : Number(row[9] ?? 0);
+  const sand = isObject ? Number(row['sand'] ?? row[11] ?? 0) : Number(row[11] ?? 0);
+  const ksat = isObject ? Number(row['ksat'] ?? row[14] ?? 0) : Number(row[14] ?? 0);
 
   // ksat-based classification (most reliable if available)
   if (ksat > 0) {
@@ -604,11 +612,4 @@ function deriveDrainageClass(tableData: any[]): string {
   if (clay > 25) return 'moderate';
   if (sand > 70) return 'excessive';
   return 'good';
-}
-
-  if (recommendations.length === 1 && ph >= 6.0 && ph <= 7.5) {
-    recommendations.push('Overall soil conditions are favorable for most landscaping and agricultural applications. Continue current management practices.');
-  }
-
-  return recommendations;
 }
