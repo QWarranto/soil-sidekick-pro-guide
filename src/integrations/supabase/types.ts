@@ -203,7 +203,6 @@ export type Database = {
       }
       adapt_integrations: {
         Row: {
-          api_credentials: Json | null
           created_at: string
           encrypted_api_credentials: string | null
           encryption_version: number | null
@@ -218,7 +217,6 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          api_credentials?: Json | null
           created_at?: string
           encrypted_api_credentials?: string | null
           encryption_version?: number | null
@@ -233,7 +231,6 @@ export type Database = {
           user_id: string
         }
         Update: {
-          api_credentials?: Json | null
           created_at?: string
           encrypted_api_credentials?: string | null
           encryption_version?: number | null
@@ -711,7 +708,6 @@ export type Database = {
         Row: {
           created_at: string
           device_fingerprint: string | null
-          email: string | null
           event_type: string
           failure_reason: string | null
           id: string
@@ -726,7 +722,6 @@ export type Database = {
         Insert: {
           created_at?: string
           device_fingerprint?: string | null
-          email?: string | null
           event_type: string
           failure_reason?: string | null
           id?: string
@@ -741,7 +736,6 @@ export type Database = {
         Update: {
           created_at?: string
           device_fingerprint?: string | null
-          email?: string | null
           event_type?: string
           failure_reason?: string | null
           id?: string
@@ -3538,7 +3532,6 @@ export type Database = {
         Row: {
           attempts: number
           created_at: string
-          email: string
           email_hash: string | null
           id: string
           ip_address: unknown
@@ -3546,7 +3539,6 @@ export type Database = {
         Insert: {
           attempts?: number
           created_at?: string
-          email: string
           email_hash?: string | null
           id?: string
           ip_address: unknown
@@ -3554,7 +3546,6 @@ export type Database = {
         Update: {
           attempts?: number
           created_at?: string
-          email?: string
           email_hash?: string | null
           id?: string
           ip_address?: unknown
@@ -3565,7 +3556,6 @@ export type Database = {
         Row: {
           access_count: number
           created_at: string
-          email: string
           email_hash: string | null
           first_trial_start: string | null
           id: string
@@ -3580,7 +3570,6 @@ export type Database = {
         Insert: {
           access_count?: number
           created_at?: string
-          email: string
           email_hash?: string | null
           first_trial_start?: string | null
           id?: string
@@ -3595,7 +3584,6 @@ export type Database = {
         Update: {
           access_count?: number
           created_at?: string
-          email?: string
           email_hash?: string | null
           first_trial_start?: string | null
           id?: string
