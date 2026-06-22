@@ -223,24 +223,24 @@ Pricing aligned to outcomes delivered:
 
 ### Monthly Subscriptions
 
-| Plan | Price | Included Calls | Best For | Subscribe |
-|------|-------|---------------|----------|-----------|
-| **Founder Starter** | $10/mo → lifetime $49/mo | 10,000/mo | Solo developers | [Subscribe →](https://buy.stripe.com/14A7sL30y8bR2F4fbgaMU02) |
-| **Founder Pro** | $49/mo → lifetime $149/mo | 35,000/mo | Production apps | [Subscribe →](https://buy.stripe.com/cNi3cv1WuajZcfE7IOaMU03) |
-| Starter | $149/mo | 10,000/mo | Solo developers | [Subscribe →](https://buy.stripe.com/5kQ6oHcB88bR93s8MSaMU04) |
-| Pro | $499/mo | 35,000/mo | Production apps, teams | [Subscribe →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05) |
-| Enterprise | $1,999/mo | 175,000+/mo | White-label, SLA, OEM | [Subscribe →](https://buy.stripe.com/eVqaEXfNkajZ6Vk0gmaMU06) |
+Subscriptions are pre-allocated by category so the blend rewards you for committing to monthly volume — face value of included calls exceeds the sticker price, and the discount widens at higher tiers.
 
-> ⏰ **Founder pricing expires June 1, 2026.** First 100 customers lock lifetime rates.
+| Plan | Price | Commoditized | Enhanced | Proprietary | Exclusive | Face Value | Effective Discount | Subscribe |
+|------|-------|--------------|----------|-------------|-----------|------------|-------------------|-----------|
+| Starter | $149/mo | 20,000 | 15,000 | 7,500 | 4,000 | **$220** | ~32% off pack rates | [Subscribe →](https://buy.stripe.com/5kQ6oHcB88bR93s8MSaMU04) |
+| Pro | $499/mo | 80,000 | 60,000 | 30,000 | 17,000 | **$900** | ~45% off pack rates | [Subscribe →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05) |
+| Enterprise | $1,999/mo | 400,000 | 250,000 | 120,000 | 80,000 | **$3,950** | ~49% off + 20% overage discount | [Subscribe →](https://buy.stripe.com/eVqaEXfNkajZ6Vk0gmaMU06) |
+
+Overage on Starter/Pro is billed at standard tier rates ($0.001 / $0.003 / $0.010 / $0.020). Enterprise overage is billed at the same rates with an additional 20% discount.
 
 ### International Pricing
 
 | Region | Starter | Pro | Local Payment Methods |
 |--------|---------|-----|----------------------|
-| **United States** | $49/mo | $149/mo | Card, Apple Pay, Google Pay, Affirm |
-| **European Union** | €45/mo (VAT incl.) | €135/mo (VAT incl.) | Klarna, iDEAL, EPS, Apple/Google Pay |
-| **United Kingdom** | £38/mo (VAT incl.) | £115/mo (VAT incl.) | Afterpay/Clearpay, Apple/Google Pay |
-| **Australia** | AU$75/mo (GST incl.) | AU$225/mo (GST incl.) | Afterpay, Apple/Google Pay |
+| **United States** | $149/mo | $499/mo | Card, Apple Pay, Google Pay, Affirm |
+| **European Union** | €139/mo (VAT incl.) | €459/mo (VAT incl.) | Klarna, iDEAL, EPS, Apple/Google Pay |
+| **United Kingdom** | £119/mo (VAT incl.) | £395/mo (VAT incl.) | Afterpay/Clearpay, Apple/Google Pay |
+| **Australia** | AU$229/mo (GST incl.) | AU$759/mo (GST incl.) | Afterpay, Apple/Google Pay |
 
 ---
 

@@ -90,14 +90,15 @@ export const SDK_TIER_LIMITS: Record<SDKTier, TierLimits> = {
     price: '$149/month',
     monthlyPrice: 149,
     requestsPerMinute: 60,
-    requestsPerHour: 1000,
-    requestsPerDay: 10000,
+    requestsPerHour: 1500,
+    requestsPerDay: 15000,
     maxConcurrentRequests: 5,
+    // Face value $220 vs $149 price (~32% effective discount over pack rates)
     monthlyQuotas: {
-      commoditized: 5000,
-      enhanced: 3000,
-      proprietary: 1500,
-      exclusive: 500,
+      commoditized: 20000,  // $20 @ $0.001
+      enhanced: 15000,      // $45 @ $0.003
+      proprietary: 7500,    // $75 @ $0.010
+      exclusive: 4000,      // $80 @ $0.020
     },
     features: [
       'soil_analysis', 'county_lookup',
@@ -110,15 +111,16 @@ export const SDK_TIER_LIMITS: Record<SDKTier, TierLimits> = {
     displayName: 'Pro',
     price: '$499/month',
     monthlyPrice: 499,
-    requestsPerMinute: 200,
-    requestsPerHour: 3000,
-    requestsPerDay: 37000,
+    requestsPerMinute: 250,
+    requestsPerHour: 6000,
+    requestsPerDay: 65000,
     maxConcurrentRequests: 15,
+    // Face value $900 vs $499 price (~45% effective discount over pack rates)
     monthlyQuotas: {
-      commoditized: 20000,
-      enhanced: 10000,
-      proprietary: 5000,
-      exclusive: 2000,
+      commoditized: 80000,  // $80 @ $0.001
+      enhanced: 60000,      // $180 @ $0.003
+      proprietary: 30000,   // $300 @ $0.010
+      exclusive: 17000,     // $340 @ $0.020
     },
     features: [
       'soil_analysis', 'county_lookup',
@@ -132,15 +134,17 @@ export const SDK_TIER_LIMITS: Record<SDKTier, TierLimits> = {
     displayName: 'Enterprise',
     price: '$1,999/month',
     monthlyPrice: 1999,
-    requestsPerMinute: 500,
-    requestsPerHour: 10000,
-    requestsPerDay: 185000,
+    requestsPerMinute: 800,
+    requestsPerHour: 20000,
+    requestsPerDay: 290000,
     maxConcurrentRequests: 50,
+    // Face value $3,950 vs $1,999 price (~49% effective discount over pack rates)
+    // Overage billed at tier rates with 20% discount.
     monthlyQuotas: {
-      commoditized: 100000,
-      enhanced: 50000,
-      proprietary: 25000,
-      exclusive: 10000,
+      commoditized: 400000,  // $400 @ $0.001
+      enhanced: 250000,      // $750 @ $0.003
+      proprietary: 120000,   // $1,200 @ $0.010
+      exclusive: 80000,      // $1,600 @ $0.020
     },
     features: ['all'],
   },
