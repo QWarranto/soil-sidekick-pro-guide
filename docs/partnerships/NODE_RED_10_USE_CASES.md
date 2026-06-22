@@ -177,11 +177,15 @@ Questions? `support@soilsidekickpro.com` · Node-RED module: `node-red-contrib-l
 
 ### Monthly Subscriptions
 
-| Plan | Price | Included Calls | Best For | Subscribe |
-|------|-------|---------------|----------|-----------|
-| Starter | $149/mo | 10,000/mo | Solo developers | [Subscribe →](https://buy.stripe.com/5kQ6oHcB88bR93s8MSaMU04) |
-| Pro | $499/mo | 35,000/mo | Production apps, teams | [Subscribe →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05) |
-| Enterprise | $1,999/mo | 175,000+/mo | White-label, SLA, OEM | [Subscribe →](https://buy.stripe.com/eVqaEXfNkajZ6Vk0gmaMU06) |
+Subscriptions are pre-allocated by category so face value of included calls exceeds the sticker price; the discount widens at higher tiers.
+
+| Plan | Price | Commoditized | Enhanced | Proprietary | Exclusive | Face Value | Effective Discount | Subscribe |
+|------|-------|--------------|----------|-------------|-----------|------------|--------------------|-----------|
+| Starter | $149/mo | 20,000 | 15,000 | 7,500 | 4,000 | **$220** | ~32% off pack rates | [Subscribe →](https://buy.stripe.com/5kQ6oHcB88bR93s8MSaMU04) |
+| Pro | $499/mo | 80,000 | 60,000 | 30,000 | 17,000 | **$900** | ~45% off pack rates | [Subscribe →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05) |
+| Enterprise | $1,999/mo | 400,000 | 250,000 | 120,000 | 80,000 | **$3,950** | ~49% off + 20% overage discount | [Subscribe →](https://buy.stripe.com/eVqaEXfNkajZ6Vk0gmaMU06) |
+
+Overage on Starter/Pro is billed at standard tier rates ($0.001 / $0.003 / $0.010 / $0.020). Enterprise overage applies an additional 20% discount.
 
 ### International Pricing
 
