@@ -187,10 +187,10 @@ Questions? `support@soilsidekickpro.com` · Node-RED module: `node-red-contrib-l
 
 | Region | Starter | Pro | Local Payment Methods |
 |--------|---------|-----|----------------------|
-| **United States** | $49/mo | $149/mo | Card, Apple Pay, Google Pay, Affirm |
-| **European Union** | €45/mo (VAT incl.) | €135/mo (VAT incl.) | Klarna, iDEAL, EPS, Apple/Google Pay |
-| **United Kingdom** | £38/mo (VAT incl.) | £115/mo (VAT incl.) | Afterpay/Clearpay, Apple/Google Pay |
-| **Australia** | AU$75/mo (GST incl.) | AU$225/mo (GST incl.) | Afterpay, Apple/Google Pay |
+| **United States** | $149/mo | $499/mo | Card, Apple Pay, Google Pay, Affirm |
+| **European Union** | €139/mo (VAT incl.) | €459/mo (VAT incl.) | Klarna, iDEAL, EPS, Apple/Google Pay |
+| **United Kingdom** | £119/mo (VAT incl.) | £395/mo (VAT incl.) | Afterpay/Clearpay, Apple/Google Pay |
+| **Australia** | AU$229/mo (GST incl.) | AU$759/mo (GST incl.) | Afterpay, Apple/Google Pay |
 
 ---
 
