@@ -91,6 +91,9 @@ If you want to show the output before walking users through the workflow, point 
 - [Preliminary soil analysis report](https://soilcertify.com/sample-report?type=preliminary)
 - [Full soil analysis report](https://soilcertify.com/sample-report?type=full)
 
+**Preliminary Site Scan - SoilCertify**
+Quick geotechnical overview with essential soil data and basic risk indicators.
+https://buy.stripe.com/fZu00j44C0Jp4Nc3syaMU0f
 ---
 
 ## Layer 3: Offline AI Inside QGIS (No Internet Required)

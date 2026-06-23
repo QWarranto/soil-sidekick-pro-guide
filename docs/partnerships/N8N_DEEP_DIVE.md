@@ -14,11 +14,14 @@
 - **Free header:** `x-free-tier: true` (no key needed)
 
 **Ready for production? Founder pricing ends June 1, 2026:**
-- [Starter — $10/mo → lifetime $49/mo lock →](https://buy.stripe.com/14A7sL30y8bR2F4fbgaMU02)
-- [Pro — $49/mo → lifetime $149/mo lock →](https://buy.stripe.com/cNi3cv1WuajZcfE7IOaMU03)
+- [Starter — $10/mo → lifetime $49/mo lock →](https://buy.stripe.com/5kQ6oHcB88bR93s8MSaMU04)
+- [Pro — $49/mo → lifetime $149/mo lock →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05)
 
 **Get a professional soil report (no coding required):** [soilcertify.com →](https://soilcertify.com)
 
+**Preliminary Site Scan - SoilCertify**
+Quick geotechnical overview with essential soil data and basic risk indicators.
+https://buy.stripe.com/fZu00j44C0Jp4Nc3syaMU0f
 ---
 
 n8n excels at gluing services together. LeafEngines provides the agricultural and environmental intelligence layer that most automation stacks lack: USDA soil data, EPA water quality, AI crop recommendations, carbon credit math, and patent-pending dead-reckoning positioning — all reachable over plain HTTP or via the MCP Streamable HTTP endpoint.

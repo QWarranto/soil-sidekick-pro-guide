@@ -29,6 +29,9 @@
 
 **Get a professional soil report (no coding required):** [soilcertify.com →](https://soilcertify.com)
 
+**Preliminary Site Scan - SoilCertify**
+Quick geotechnical overview with essential soil data and basic risk indicators.
+https://buy.stripe.com/fZu00j44C0Jp4Nc3syaMU0f
 ---
 
 ## FREE TIER — $0/month — 2 Endpoints, 1,000 req/day
@@ -356,9 +359,9 @@ U.S. Patent Applications #19/320,727 & #19/544,827
 
 | Tier | Price | Per-Call Rate | What You Get | Buy |
 |------|-------|--------------|--------------|-----|
-| Commoditized | $0.50/bundle | $0.001/call | Basic soil/weather, county lookup | [Buy →](https://buy.stripe.com/3cIdR99oWajZdjI6EKaMU07) |
-| Enhanced | $1.50/bundle | $0.003/call | Environmental impact, crop suitability | [Buy →](https://buy.stripe.com/7sY28reJg1NtenM8MSaMU0b) |
-| Proprietary | $5.00/bundle | $0.010/call | Planting optimization, carbon credits | [Buy →](https://buy.stripe.com/3cIeVd9oW1NtgvU1kqaMU09) |
+| Commoditized | $0.50/bundle | $0.001/call | Basic soil/weather, county lookup | [Buy →](https://buy.stripe.com/bJe3cvfNk77N5RgfbgaMU0e) |
+| Enhanced | $1.50/bundle | $0.003/call | Environmental impact, crop suitability | [Buy →](https://buy.stripe.com/cNi9AT1Wu0Jp93s8MSaMU0c) |
+| Proprietary | $5.00/bundle | $0.010/call | Planting optimization, carbon credits | [Buy →](https://buy.stripe.com/28EeVd9oWeAf2F48MSaMU0d) |
 | Exclusive | $10.00/bundle | $0.020/call | Patent-pending env compatibility scoring | [Buy →](https://buy.stripe.com/6oU4gzbx40Jp6Vk1kqaMU0a) |
 
 ### Monthly Subscriptions
@@ -369,7 +372,7 @@ Subscriptions are pre-allocated by category so face value of included calls exce
 |------|-------|--------------|----------|-------------|-----------|------------|--------------------|-----------|
 | Starter | $149/mo | 20,000 | 15,000 | 7,500 | 4,000 | **$220** | ~32% off pack rates | [Subscribe →](https://buy.stripe.com/5kQ6oHcB88bR93s8MSaMU04) |
 | Pro | $499/mo | 80,000 | 60,000 | 30,000 | 17,000 | **$900** | ~45% off pack rates | [Subscribe →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05) |
-| Enterprise | $1,999/mo | 400,000 | 250,000 | 120,000 | 80,000 | **$3,950** | ~49% off + 20% overage discount | [Subscribe →](https://buy.stripe.com/eVqaEXfNkajZ6Vk0gmaMU06) |
+| Enterprise | $1,999/mo | 400,000 | 250,000 | 120,000 | 80,000 | **$3,950** | ~49% off + 20% overage discount | [Subscribe →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05) |
 
 Overage on Starter/Pro is billed at standard tier rates ($0.001 / $0.003 / $0.010 / $0.020). Enterprise overage applies an additional 20% discount.
 
