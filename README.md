@@ -8,9 +8,10 @@
 - **Test key:** `leaf-test-370df0a2e62e` (works immediately)
 - **Free header:** `x-free-tier: true` (no key needed at all)
 
-**Ready for production? Founder pricing ends June 1, 2026:**
-- [Starter — $10/mo → lifetime $49/mo lock →](https://buy.stripe.com/5kQ6oHcB88bR93s8MSaMU04)
-- [Pro — $49/mo → lifetime $149/mo lock →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05)
+**Ready for production? Subscribe now:**
+- [Starter — $149/mo →](https://buy.stripe.com/5kQ6oHcB88bR93s8MSaMU04)
+- [Pro — $499/mo →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05)
+- [Enterprise — $1,999/mo →](https://buy.stripe.com/eVqaEXfNkajZ6Vk0gmaMU06)
 
 **Get a professional soil report (no coding required):** [soilcertify.com →](https://soilcertify.com)
 
@@ -66,23 +67,20 @@ SoilSidekick Pro delivers agricultural intelligence through multiple channels:
 
 | Plan | Price | Included Calls | Best For | Subscribe |
 |------|-------|---------------|----------|-----------|
-| **Founder Starter** | $10/mo → lifetime $49/mo | 10,000/mo | Solo developers, prototyping | [Subscribe →](https://buy.stripe.com/5kQ6oHcB88bR93s8MSaMU04) |
-| **Founder Pro** | $49/mo → lifetime $149/mo | 35,000/mo | Production apps, teams | [Subscribe →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05) |
-| Starter | $149/mo | 10,000/mo | Solo developers | [Subscribe →](https://buy.stripe.com/5kQ6oHcB88bR93s8MSaMU04) |
+| Starter | $149/mo | 10,000/mo | Solo developers, prototyping | [Subscribe →](https://buy.stripe.com/5kQ6oHcB88bR93s8MSaMU04) |
 | Pro | $499/mo | 35,000/mo | Production apps, teams | [Subscribe →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05) |
-| Enterprise | $1,999/mo | 175,000+/mo | White-label, SLA, OEM | [Subscribe →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05) |
+| Enterprise | $1,999/mo | 175,000+/mo | White-label, SLA, OEM | [Subscribe →](https://buy.stripe.com/eVqaEXfNkajZ6Vk0gmaMU06) |
 | Enterprise Bundle | $3,499/mo | 685,000/mo | Large OEM, max volume | Contact: sales@leafengines.com |
 
-> ⏰ **Founder pricing expires June 1, 2026.** First 100 customers lock lifetime rates.
 
 ### International Pricing
 
 | Region | Starter | Pro | Local Payment Methods |
 |--------|---------|-----|----------------------|
-| **United States** | $49/mo | $149/mo | Card, Apple Pay, Google Pay, Affirm |
-| **European Union** | €45/mo (VAT incl.) | €135/mo (VAT incl.) | Klarna, iDEAL, EPS, Apple/Google Pay |
-| **United Kingdom** | £38/mo (VAT incl.) | £115/mo (VAT incl.) | Afterpay/Clearpay, Apple/Google Pay |
-| **Australia** | AU$75/mo (GST incl.) | AU$225/mo (GST incl.) | Afterpay, Apple/Google Pay |
+| **United States** | $149/mo | $499/mo | Card, Apple Pay, Google Pay, Affirm |
+| **European Union** | €135/mo (VAT incl.) | €450/mo (VAT incl.) | Klarna, iDEAL, EPS, Apple/Google Pay |
+| **United Kingdom** | £115/mo (VAT incl.) | £385/mo (VAT incl.) | Afterpay/Clearpay, Apple/Google Pay |
+| **Australia** | AU$225/mo (GST incl.) | AU$750/mo (GST incl.) | Afterpay, Apple/Google Pay |
 
 ## 🔧 Key Features
 

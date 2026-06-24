@@ -297,7 +297,7 @@ export default function PodcastLanding() {
           <h2 className="text-2xl font-bold mb-3">Contributor Program</h2>
           <p className="text-muted-foreground max-w-xl mx-auto mb-6">
             Build an integration, submit a Node-RED node, or contribute domain expertise
-            to earn a <strong>Founders Series API key</strong> with lifetime pricing.
+            to earn API credits and priority support.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button onClick={() => navigate('/api-keys')}>
