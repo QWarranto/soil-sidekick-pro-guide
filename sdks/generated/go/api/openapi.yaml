@@ -1,0 +1,4256 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@soilsidekickpro.com
+    name: SoilSidekick Support
+    url: https://soilsidekick.com/support
+  description: |
+    Agricultural intelligence and soil analysis API with tier-based access control.
+
+    ## What's New in 1.2.0
+    - **Consumer Plant Care APIs**: Three new endpoints addressing top pain points in plant ID apps:
+      - `/safe-identification`: Toxic lookalike warnings and environmental context
+      - `/dynamic-care`: Hyper-localized, real-time care recommendations
+      - `/beginner-guidance`: Judgment-free, jargon-free plant guidance
+
+    ## Authentication
+    All endpoints require an API key passed via the `x-api-key` header:
+    ```
+    x-api-key: ak_your_api_key_here
+    ```
+
+    API keys are generated through the dashboard and use the `ak_*` format.
+
+    ## Rate Limiting
+    Rate limits are enforced based on your subscription tier:
+    - **Free**: 10 req/min, 100 req/hour, 1,000 req/day
+    - **Starter**: 30 req/min, 500 req/hour, 5,000 req/day
+    - **Pro**: 100 req/min, 2,000 req/hour, 25,000 req/day
+    - **Enterprise**: 500 req/min, 10,000 req/hour, 100,000 req/day
+
+    Rate limit information is returned in response headers:
+    - `X-RateLimit-Limit`: Maximum requests in window
+    - `X-RateLimit-Remaining`: Remaining requests in window
+    - `X-RateLimit-Reset`: Unix timestamp when limit resets
+
+    ## Response Time SLAs
+    All endpoints return response time headers for performance monitoring:
+    - `X-Response-Time`: Human-readable response time (e.g., "245ms")
+    - `X-Response-Time-Ms`: Response time in milliseconds
+    - `X-Response-Time-Target`: Target response time for this endpoint
+    - `X-Response-Time-Max`: Maximum acceptable response time
+    - `X-Response-Time-Status`: Performance status (`optimal`, `acceptable`, `exceeded`)
+
+    ### Response Time Targets by Category
+
+    | Category | Target | Maximum | Endpoints |
+    |----------|--------|---------|-----------|
+    | **Fast** | 200ms | 500ms | county-lookup, check-subscription |
+    | **Standard** | 500ms | 1,500ms | get-soil-data, territorial-water-quality |
+    | **Complex** | 2,000ms | 5,000ms | agricultural-intelligence, gpt5-chat, visual-crop-analysis |
+    | **Heavy** | 5,000ms | 15,000ms | live-agricultural-data, generate-vrt-prescription |
+  license:
+    name: Commercial License
+    url: https://soilsidekick.com/license
+  title: SoilSidekick Pro API
+  version: 3.0.0
+servers:
+- description: Production server
+  url: https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1
+- description: Local development server
+  url: http://localhost:54321/functions/v1
+security:
+- ApiKeyAuth: []
+tags:
+- description: Soil data and analysis endpoints
+  name: Soil Analysis
+- description: County and location-based endpoints
+  name: Geographic
+- description: Water quality assessment
+  name: Water Quality
+- description: Environmental impact and analytics
+  name: Environmental
+- description: Satellite imagery and analysis
+  name: Satellite Data
+- description: AI-powered agricultural intelligence
+  name: AI Services
+- description: Variable rate technology and prescription maps
+  name: VRT
+- description: Carbon credit calculation and tracking
+  name: Carbon
+- description: LeafEngines plant compatibility API
+  name: LeafEngines
+- description: "Consumer-focused plant identification, care, and guidance APIs designed\
+    \ to solve common pain points in plant ID apps"
+  name: Consumer Plant Care
+- description: TurboQuant KV cache optimization and device capability endpoints
+  name: TurboQuant
+paths:
+  /turbo-quant-capabilities:
+    post:
+      description: |
+        Returns hardware-specific model recommendations and estimated performance
+        based on detected device capabilities. Use this to determine the optimal
+        local inference configuration for the end-user's device.
+
+        **Tier requirement:** Pro or Enterprise
+      operationId: turboQuantCapabilities
+      parameters:
+      - description: |
+          TurboQuant extended context window size (tokens).
+          With 3-bit KV cache, context windows up to 24K tokens are feasible
+          within the same memory budget as standard 4K.
+        explode: false
+        in: header
+        name: x-tq-context-mode
+        required: false
+        schema:
+          default: 4096
+          enum:
+          - 4096
+          - 8192
+          - 16384
+          - 24576
+          type: integer
+        style: simple
+      - description: |
+          KV cache management hint.
+          - `none`: No caching (default)
+          - `reuse`: Reuse KV cache from previous request in same session (40-60% compute savings)
+          - `persist`: Persist cache to disk for cross-session reuse
+        explode: false
+        in: header
+        name: x-tq-kv-cache-hint
+        required: false
+        schema:
+          default: none
+          enum:
+          - none
+          - reuse
+          - persist
+          type: string
+        style: simple
+      - description: |
+          Preferred model tier for inference.
+          - `auto`: Server selects optimal model based on device capabilities
+          - `gemma-2b`: Lightweight model (~0.5GB KV with TQ)
+          - `gemma-7b`: Full model, standard KV cache
+          - `gemma-7b-tq`: Full model with TurboQuant 3-bit KV cache (~1.3GB)
+        explode: false
+        in: header
+        name: x-tq-model-tier
+        required: false
+        schema:
+          default: auto
+          enum:
+          - auto
+          - gemma-2b
+          - gemma-7b
+          - gemma-7b-tq
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/turboQuantCapabilities_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TurboQuantCapabilities"
+          description: TurboQuant capability assessment
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+      summary: Query TurboQuant device capabilities
+      tags:
+      - TurboQuant
+      x-tier-required: pro
+  /get-soil-data:
+    post:
+      description: Retrieve comprehensive soil analysis for a specific county
+      operationId: getSoilData
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/getSoilData_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SoilData"
+          description: Successful response
+          headers:
+            X-RateLimit-Limit:
+              description: Maximum requests per window
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              description: Remaining requests in window
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              description: Unix timestamp when limit resets
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: "Human-readable response time (e.g., \"245ms\")"
+              example: 245ms
+              explode: false
+              schema:
+                type: string
+              style: simple
+            X-Response-Time-Ms:
+              description: Response time in milliseconds
+              example: 245
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time-Target:
+              description: Target response time for this endpoint
+              example: 500ms
+              explode: false
+              schema:
+                type: string
+              style: simple
+            X-Response-Time-Status:
+              description: Performance status relative to SLA targets
+              explode: false
+              schema:
+                enum:
+                - optimal
+                - acceptable
+                - exceeded
+                type: string
+              style: simple
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+        "500":
+          content:
+            application/json:
+              example:
+                error: Internal server error
+                message: An unexpected error occurred
+                code: INTERNAL_ERROR
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal server error
+          headers:
+            X-Response-Time:
+              description: Response time for error responses
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Get soil analysis data
+      tags:
+      - Soil Analysis
+      x-tier-required: free
+  /county-lookup:
+    post:
+      description: "Search counties by name, state, or FIPS code"
+      operationId: countyLookup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/countyLookup_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/countyLookup_200_response"
+          description: Successful response
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Search for counties
+      tags:
+      - Geographic
+      x-tier-required: free
+  /territorial-water-quality:
+    post:
+      description: Retrieve water quality metrics for a specific county
+      operationId: getWaterQuality
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/getSoilData_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WaterQuality"
+          description: Successful response
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Get water quality data
+      tags:
+      - Water Quality
+      x-tier-required: starter
+  /territorial-water-analytics:
+    post:
+      description: Generate territorial water quality analytics across regions
+      operationId: getTerritorialWaterAnalytics
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/getTerritorialWaterAnalytics_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TerritorialWaterAnalytics"
+          description: Successful response
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Get territorial water analytics
+      tags:
+      - Water Quality
+      x-tier-required: starter
+  /multi-parameter-planting-calendar:
+    post:
+      description: Multi-parameter planting calendar with climate and soil factors
+      operationId: getPlantingCalendar
+      parameters:
+      - description: |
+          TurboQuant extended context window size (tokens).
+          With 3-bit KV cache, context windows up to 24K tokens are feasible
+          within the same memory budget as standard 4K.
+        explode: false
+        in: header
+        name: x-tq-context-mode
+        required: false
+        schema:
+          default: 4096
+          enum:
+          - 4096
+          - 8192
+          - 16384
+          - 24576
+          type: integer
+        style: simple
+      - description: |
+          KV cache management hint.
+          - `none`: No caching (default)
+          - `reuse`: Reuse KV cache from previous request in same session (40-60% compute savings)
+          - `persist`: Persist cache to disk for cross-session reuse
+        explode: false
+        in: header
+        name: x-tq-kv-cache-hint
+        required: false
+        schema:
+          default: none
+          enum:
+          - none
+          - reuse
+          - persist
+          type: string
+        style: simple
+      - description: |
+          Preferred model tier for inference.
+          - `auto`: Server selects optimal model based on device capabilities
+          - `gemma-2b`: Lightweight model (~0.5GB KV with TQ)
+          - `gemma-7b`: Full model, standard KV cache
+          - `gemma-7b-tq`: Full model with TurboQuant 3-bit KV cache (~1.3GB)
+        explode: false
+        in: header
+        name: x-tq-model-tier
+        required: false
+        schema:
+          default: auto
+          enum:
+          - auto
+          - gemma-2b
+          - gemma-7b
+          - gemma-7b-tq
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/getPlantingCalendar_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlantingCalendar"
+          description: Successful response
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Get planting calendar recommendations
+      tags:
+      - Soil Analysis
+      x-tier-required: starter
+  /live-agricultural-data:
+    post:
+      description: "Fetch real-time agricultural data from multiple federal sources\
+        \ (NOAA, USDA, EPA)"
+      operationId: getLiveAgriculturalData
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/getLiveAgriculturalData_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LiveAgriculturalData"
+          description: Successful response
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Get live agricultural data
+      tags:
+      - Soil Analysis
+      x-tier-required: starter
+  /environmental-impact-engine:
+    post:
+      description: "Assess environmental impact including runoff risk, contamination,\
+        \ and eco-friendly alternatives"
+      operationId: calculateEnvironmentalImpact
+      parameters:
+      - description: |
+          TurboQuant extended context window size (tokens).
+          With 3-bit KV cache, context windows up to 24K tokens are feasible
+          within the same memory budget as standard 4K.
+        explode: false
+        in: header
+        name: x-tq-context-mode
+        required: false
+        schema:
+          default: 4096
+          enum:
+          - 4096
+          - 8192
+          - 16384
+          - 24576
+          type: integer
+        style: simple
+      - description: |
+          KV cache management hint.
+          - `none`: No caching (default)
+          - `reuse`: Reuse KV cache from previous request in same session (40-60% compute savings)
+          - `persist`: Persist cache to disk for cross-session reuse
+        explode: false
+        in: header
+        name: x-tq-kv-cache-hint
+        required: false
+        schema:
+          default: none
+          enum:
+          - none
+          - reuse
+          - persist
+          type: string
+        style: simple
+      - description: |
+          Preferred model tier for inference.
+          - `auto`: Server selects optimal model based on device capabilities
+          - `gemma-2b`: Lightweight model (~0.5GB KV with TQ)
+          - `gemma-7b`: Full model, standard KV cache
+          - `gemma-7b-tq`: Full model with TurboQuant 3-bit KV cache (~1.3GB)
+        explode: false
+        in: header
+        name: x-tq-model-tier
+        required: false
+        schema:
+          default: auto
+          enum:
+          - auto
+          - gemma-2b
+          - gemma-7b
+          - gemma-7b-tq
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/calculateEnvironmentalImpact_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvironmentalImpact"
+          description: Successful response
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Calculate environmental impact
+      tags:
+      - Environmental
+      x-tier-required: starter
+  /alpha-earth-environmental-enhancement:
+    post:
+      description: AlphaEarth satellite intelligence integration
+      operationId: getSatelliteData
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/getSatelliteData_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SatelliteData"
+          description: Successful response
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Get satellite environmental data
+      tags:
+      - Satellite Data
+      x-tier-required: pro
+  /agricultural-intelligence:
+    post:
+      description: Agricultural intelligence with AI recommendations
+      operationId: getAgriculturalIntelligence
+      parameters:
+      - description: |
+          TurboQuant extended context window size (tokens).
+          With 3-bit KV cache, context windows up to 24K tokens are feasible
+          within the same memory budget as standard 4K.
+        explode: false
+        in: header
+        name: x-tq-context-mode
+        required: false
+        schema:
+          default: 4096
+          enum:
+          - 4096
+          - 8192
+          - 16384
+          - 24576
+          type: integer
+        style: simple
+      - description: |
+          KV cache management hint.
+          - `none`: No caching (default)
+          - `reuse`: Reuse KV cache from previous request in same session (40-60% compute savings)
+          - `persist`: Persist cache to disk for cross-session reuse
+        explode: false
+        in: header
+        name: x-tq-kv-cache-hint
+        required: false
+        schema:
+          default: none
+          enum:
+          - none
+          - reuse
+          - persist
+          type: string
+        style: simple
+      - description: |
+          Preferred model tier for inference.
+          - `auto`: Server selects optimal model based on device capabilities
+          - `gemma-2b`: Lightweight model (~0.5GB KV with TQ)
+          - `gemma-7b`: Full model, standard KV cache
+          - `gemma-7b-tq`: Full model with TurboQuant 3-bit KV cache (~1.3GB)
+        explode: false
+        in: header
+        name: x-tq-model-tier
+        required: false
+        schema:
+          default: auto
+          enum:
+          - auto
+          - gemma-2b
+          - gemma-7b
+          - gemma-7b-tq
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/getAgriculturalIntelligence_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AIAnalysis"
+          description: Successful response
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Get AI-powered agricultural insights
+      tags:
+      - AI Services
+      x-tier-required: pro
+  /seasonal-planning-assistant:
+    post:
+      description: AI-powered seasonal planning with weather integration
+      operationId: getSeasonalPlanningAssistant
+      parameters:
+      - description: |
+          TurboQuant extended context window size (tokens).
+          With 3-bit KV cache, context windows up to 24K tokens are feasible
+          within the same memory budget as standard 4K.
+        explode: false
+        in: header
+        name: x-tq-context-mode
+        required: false
+        schema:
+          default: 4096
+          enum:
+          - 4096
+          - 8192
+          - 16384
+          - 24576
+          type: integer
+        style: simple
+      - description: |
+          KV cache management hint.
+          - `none`: No caching (default)
+          - `reuse`: Reuse KV cache from previous request in same session (40-60% compute savings)
+          - `persist`: Persist cache to disk for cross-session reuse
+        explode: false
+        in: header
+        name: x-tq-kv-cache-hint
+        required: false
+        schema:
+          default: none
+          enum:
+          - none
+          - reuse
+          - persist
+          type: string
+        style: simple
+      - description: |
+          Preferred model tier for inference.
+          - `auto`: Server selects optimal model based on device capabilities
+          - `gemma-2b`: Lightweight model (~0.5GB KV with TQ)
+          - `gemma-7b`: Full model, standard KV cache
+          - `gemma-7b-tq`: Full model with TurboQuant 3-bit KV cache (~1.3GB)
+        explode: false
+        in: header
+        name: x-tq-model-tier
+        required: false
+        schema:
+          default: auto
+          enum:
+          - auto
+          - gemma-2b
+          - gemma-7b
+          - gemma-7b-tq
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/getSeasonalPlanningAssistant_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SeasonalPlanningResponse"
+          description: Successful response
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Get seasonal planning recommendations
+      tags:
+      - AI Services
+      x-tier-required: pro
+  /smart-report-summary:
+    post:
+      description: Generate AI-powered summaries for soil or water quality reports
+      operationId: generateSmartReportSummary
+      parameters:
+      - description: |
+          TurboQuant extended context window size (tokens).
+          With 3-bit KV cache, context windows up to 24K tokens are feasible
+          within the same memory budget as standard 4K.
+        explode: false
+        in: header
+        name: x-tq-context-mode
+        required: false
+        schema:
+          default: 4096
+          enum:
+          - 4096
+          - 8192
+          - 16384
+          - 24576
+          type: integer
+        style: simple
+      - description: |
+          KV cache management hint.
+          - `none`: No caching (default)
+          - `reuse`: Reuse KV cache from previous request in same session (40-60% compute savings)
+          - `persist`: Persist cache to disk for cross-session reuse
+        explode: false
+        in: header
+        name: x-tq-kv-cache-hint
+        required: false
+        schema:
+          default: none
+          enum:
+          - none
+          - reuse
+          - persist
+          type: string
+        style: simple
+      - description: |
+          Preferred model tier for inference.
+          - `auto`: Server selects optimal model based on device capabilities
+          - `gemma-2b`: Lightweight model (~0.5GB KV with TQ)
+          - `gemma-7b`: Full model, standard KV cache
+          - `gemma-7b-tq`: Full model with TurboQuant 3-bit KV cache (~1.3GB)
+        explode: false
+        in: header
+        name: x-tq-model-tier
+        required: false
+        schema:
+          default: auto
+          enum:
+          - auto
+          - gemma-2b
+          - gemma-7b
+          - gemma-7b-tq
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/generateSmartReportSummary_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SmartReportSummary"
+          description: Successful response
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Generate AI report summary
+      tags:
+      - AI Services
+      x-tier-required: pro
+  /carbon-credit-calculator:
+    post:
+      description: Calculate carbon credits based on field data and soil organic matter
+      operationId: calculateCarbonCredits
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/calculateCarbonCredits_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CarbonCreditCalculation"
+          description: Successful response
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Calculate carbon credits
+      tags:
+      - Carbon
+      x-tier-required: pro
+  /generate-vrt-prescription:
+    post:
+      description: Generate variable rate technology prescription maps
+      operationId: generateVRTPrescription
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/generateVRTPrescription_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VRTPrescription"
+          description: Successful response
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Generate VRT prescription map
+      tags:
+      - VRT
+      x-tier-required: pro
+  /leafengines-query:
+    post:
+      description: LeafEngines API for plant compatibility scoring with environmental
+        factors
+      operationId: leafenginesQuery
+      parameters:
+      - description: |
+          TurboQuant extended context window size (tokens).
+          With 3-bit KV cache, context windows up to 24K tokens are feasible
+          within the same memory budget as standard 4K.
+        explode: false
+        in: header
+        name: x-tq-context-mode
+        required: false
+        schema:
+          default: 4096
+          enum:
+          - 4096
+          - 8192
+          - 16384
+          - 24576
+          type: integer
+        style: simple
+      - description: |
+          KV cache management hint.
+          - `none`: No caching (default)
+          - `reuse`: Reuse KV cache from previous request in same session (40-60% compute savings)
+          - `persist`: Persist cache to disk for cross-session reuse
+        explode: false
+        in: header
+        name: x-tq-kv-cache-hint
+        required: false
+        schema:
+          default: none
+          enum:
+          - none
+          - reuse
+          - persist
+          type: string
+        style: simple
+      - description: |
+          Preferred model tier for inference.
+          - `auto`: Server selects optimal model based on device capabilities
+          - `gemma-2b`: Lightweight model (~0.5GB KV with TQ)
+          - `gemma-7b`: Full model, standard KV cache
+          - `gemma-7b-tq`: Full model with TurboQuant 3-bit KV cache (~1.3GB)
+        explode: false
+        in: header
+        name: x-tq-model-tier
+        required: false
+        schema:
+          default: auto
+          enum:
+          - auto
+          - gemma-2b
+          - gemma-7b
+          - gemma-7b-tq
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/leafenginesQuery_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeafEnginesCompatibility"
+          description: Successful response
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+      security:
+      - ApiKeyAuth: []
+      summary: Query plant-environment compatibility
+      tags:
+      - LeafEngines
+      x-tier-required: pro
+  /safe-identification:
+    post:
+      description: |
+        Environmentally-contextualized plant identification that addresses misidentification concerns.
+        Unlike generic plant ID, this endpoint:
+        - Checks against a toxic lookalike database with visual similarity scores
+        - Uses environmental context (soil, climate, regional flora) to weight identification probability
+        - Provides confidence breakdowns showing why alternatives were considered
+        - Issues explicit warnings for dangerous lookalikes (Poison Hemlock vs Wild Carrot)
+        - Accounts for plant growth stage (seedling identification challenges)
+      operationId: safeIdentification
+      parameters:
+      - description: |
+          TurboQuant extended context window size (tokens).
+          With 3-bit KV cache, context windows up to 24K tokens are feasible
+          within the same memory budget as standard 4K.
+        explode: false
+        in: header
+        name: x-tq-context-mode
+        required: false
+        schema:
+          default: 4096
+          enum:
+          - 4096
+          - 8192
+          - 16384
+          - 24576
+          type: integer
+        style: simple
+      - description: |
+          KV cache management hint.
+          - `none`: No caching (default)
+          - `reuse`: Reuse KV cache from previous request in same session (40-60% compute savings)
+          - `persist`: Persist cache to disk for cross-session reuse
+        explode: false
+        in: header
+        name: x-tq-kv-cache-hint
+        required: false
+        schema:
+          default: none
+          enum:
+          - none
+          - reuse
+          - persist
+          type: string
+        style: simple
+      - description: |
+          Preferred model tier for inference.
+          - `auto`: Server selects optimal model based on device capabilities
+          - `gemma-2b`: Lightweight model (~0.5GB KV with TQ)
+          - `gemma-7b`: Full model, standard KV cache
+          - `gemma-7b-tq`: Full model with TurboQuant 3-bit KV cache (~1.3GB)
+        explode: false
+        in: header
+        name: x-tq-model-tier
+        required: false
+        schema:
+          default: auto
+          enum:
+          - auto
+          - gemma-2b
+          - gemma-7b
+          - gemma-7b-tq
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/safeIdentification_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SafeIdentification"
+          description: Successful identification with safety analysis
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Safe plant identification with toxic lookalike warnings
+      tags:
+      - Consumer Plant Care
+      x-tier-required: starter
+  /dynamic-care:
+    post:
+      description: |
+        Real-time, environment-aware care recommendations that solve the "generic advice" problem.
+        Unlike static "water every 7 days" recommendations, this endpoint:
+        - Adjusts watering based on current humidity, temperature, and recent rainfall
+        - Considers container type, soil composition, and drainage
+        - Factors in seasonal changes and indoor environment conditions
+        - Accounts for plant maturity and growth phase
+        - Provides actionable guidance, not rigid schedules
+      operationId: dynamicCare
+      parameters:
+      - description: |
+          TurboQuant extended context window size (tokens).
+          With 3-bit KV cache, context windows up to 24K tokens are feasible
+          within the same memory budget as standard 4K.
+        explode: false
+        in: header
+        name: x-tq-context-mode
+        required: false
+        schema:
+          default: 4096
+          enum:
+          - 4096
+          - 8192
+          - 16384
+          - 24576
+          type: integer
+        style: simple
+      - description: |
+          KV cache management hint.
+          - `none`: No caching (default)
+          - `reuse`: Reuse KV cache from previous request in same session (40-60% compute savings)
+          - `persist`: Persist cache to disk for cross-session reuse
+        explode: false
+        in: header
+        name: x-tq-kv-cache-hint
+        required: false
+        schema:
+          default: none
+          enum:
+          - none
+          - reuse
+          - persist
+          type: string
+        style: simple
+      - description: |
+          Preferred model tier for inference.
+          - `auto`: Server selects optimal model based on device capabilities
+          - `gemma-2b`: Lightweight model (~0.5GB KV with TQ)
+          - `gemma-7b`: Full model, standard KV cache
+          - `gemma-7b-tq`: Full model with TurboQuant 3-bit KV cache (~1.3GB)
+        explode: false
+        in: header
+        name: x-tq-model-tier
+        required: false
+        schema:
+          default: auto
+          enum:
+          - auto
+          - gemma-2b
+          - gemma-7b
+          - gemma-7b-tq
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/dynamicCare_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DynamicCare"
+          description: Dynamic care recommendations
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Hyper-localized dynamic plant care recommendations
+      tags:
+      - Consumer Plant Care
+      x-tier-required: starter
+  /beginner-guidance:
+    post:
+      description: |
+        Judgment-free, accessible plant guidance that solves community gatekeeping issues.
+        This endpoint:
+        - Translates scientific jargon into plain language
+        - Never makes users feel stupid for asking about common plants
+        - Uses progressive disclosure (simple answer first, details on request)
+        - Provides encouraging, supportive tone
+        - Offers practical "what do I do right now" guidance
+      operationId: beginnerGuidance
+      parameters:
+      - description: |
+          TurboQuant extended context window size (tokens).
+          With 3-bit KV cache, context windows up to 24K tokens are feasible
+          within the same memory budget as standard 4K.
+        explode: false
+        in: header
+        name: x-tq-context-mode
+        required: false
+        schema:
+          default: 4096
+          enum:
+          - 4096
+          - 8192
+          - 16384
+          - 24576
+          type: integer
+        style: simple
+      - description: |
+          KV cache management hint.
+          - `none`: No caching (default)
+          - `reuse`: Reuse KV cache from previous request in same session (40-60% compute savings)
+          - `persist`: Persist cache to disk for cross-session reuse
+        explode: false
+        in: header
+        name: x-tq-kv-cache-hint
+        required: false
+        schema:
+          default: none
+          enum:
+          - none
+          - reuse
+          - persist
+          type: string
+        style: simple
+      - description: |
+          Preferred model tier for inference.
+          - `auto`: Server selects optimal model based on device capabilities
+          - `gemma-2b`: Lightweight model (~0.5GB KV with TQ)
+          - `gemma-7b`: Full model, standard KV cache
+          - `gemma-7b-tq`: Full model with TurboQuant 3-bit KV cache (~1.3GB)
+        explode: false
+        in: header
+        name: x-tq-model-tier
+        required: false
+        schema:
+          default: auto
+          enum:
+          - auto
+          - gemma-2b
+          - gemma-7b
+          - gemma-7b-tq
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/beginnerGuidance_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BeginnerGuidance"
+          description: Beginner-friendly guidance response
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Beginner-friendly plant guidance without jargon
+      tags:
+      - Consumer Plant Care
+      x-tier-required: starter
+  /visual-crop-analysis:
+    post:
+      description: "AI-powered visual crop analysis for pest detection, health assessment,\
+        \ and disease screening"
+      operationId: visualCropAnalysis
+      parameters:
+      - description: |
+          TurboQuant extended context window size (tokens).
+          With 3-bit KV cache, context windows up to 24K tokens are feasible
+          within the same memory budget as standard 4K.
+        explode: false
+        in: header
+        name: x-tq-context-mode
+        required: false
+        schema:
+          default: 4096
+          enum:
+          - 4096
+          - 8192
+          - 16384
+          - 24576
+          type: integer
+        style: simple
+      - description: |
+          KV cache management hint.
+          - `none`: No caching (default)
+          - `reuse`: Reuse KV cache from previous request in same session (40-60% compute savings)
+          - `persist`: Persist cache to disk for cross-session reuse
+        explode: false
+        in: header
+        name: x-tq-kv-cache-hint
+        required: false
+        schema:
+          default: none
+          enum:
+          - none
+          - reuse
+          - persist
+          type: string
+        style: simple
+      - description: |
+          Preferred model tier for inference.
+          - `auto`: Server selects optimal model based on device capabilities
+          - `gemma-2b`: Lightweight model (~0.5GB KV with TQ)
+          - `gemma-7b`: Full model, standard KV cache
+          - `gemma-7b-tq`: Full model with TurboQuant 3-bit KV cache (~1.3GB)
+        explode: false
+        in: header
+        name: x-tq-model-tier
+        required: false
+        schema:
+          default: auto
+          enum:
+          - auto
+          - gemma-2b
+          - gemma-7b
+          - gemma-7b-tq
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/visualCropAnalysis_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VisualCropAnalysis"
+          description: Successful response
+        "401":
+          content:
+            application/json:
+              example:
+                error: Authentication required
+                message: Invalid or missing API key
+                code: UNAUTHORIZED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Authentication required or invalid API key
+        "403":
+          content:
+            application/json:
+              example:
+                error: Tier restriction
+                message: This feature requires Pro tier or higher
+                code: TIER_RESTRICTED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Tier restriction - upgrade required
+        "429":
+          content:
+            application/json:
+              example:
+                error: Rate limit exceeded
+                message: You have exceeded your rate limit. Retry after reset time.
+                code: RATE_LIMITED
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Remaining:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-RateLimit-Reset:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+            X-Response-Time:
+              description: Response time even for rate-limited requests
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: Analyze crop images
+      tags:
+      - AI Services
+      x-tier-required: enterprise
+components:
+  parameters:
+    TQContextMode:
+      description: |
+        TurboQuant extended context window size (tokens).
+        With 3-bit KV cache, context windows up to 24K tokens are feasible
+        within the same memory budget as standard 4K.
+      explode: false
+      in: header
+      name: x-tq-context-mode
+      required: false
+      schema:
+        default: 4096
+        enum:
+        - 4096
+        - 8192
+        - 16384
+        - 24576
+        type: integer
+      style: simple
+    TQKVCacheHint:
+      description: |
+        KV cache management hint.
+        - `none`: No caching (default)
+        - `reuse`: Reuse KV cache from previous request in same session (40-60% compute savings)
+        - `persist`: Persist cache to disk for cross-session reuse
+      explode: false
+      in: header
+      name: x-tq-kv-cache-hint
+      required: false
+      schema:
+        default: none
+        enum:
+        - none
+        - reuse
+        - persist
+        type: string
+      style: simple
+    TQModelTier:
+      description: |
+        Preferred model tier for inference.
+        - `auto`: Server selects optimal model based on device capabilities
+        - `gemma-2b`: Lightweight model (~0.5GB KV with TQ)
+        - `gemma-7b`: Full model, standard KV cache
+        - `gemma-7b-tq`: Full model with TurboQuant 3-bit KV cache (~1.3GB)
+      explode: false
+      in: header
+      name: x-tq-model-tier
+      required: false
+      schema:
+        default: auto
+        enum:
+        - auto
+        - gemma-2b
+        - gemma-7b
+        - gemma-7b-tq
+        type: string
+      style: simple
+  responses:
+    Unauthorized:
+      content:
+        application/json:
+          example:
+            error: Authentication required
+            message: Invalid or missing API key
+            code: UNAUTHORIZED
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Authentication required or invalid API key
+    Forbidden:
+      content:
+        application/json:
+          example:
+            error: Tier restriction
+            message: This feature requires Pro tier or higher
+            code: TIER_RESTRICTED
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Tier restriction - upgrade required
+    RateLimited:
+      content:
+        application/json:
+          example:
+            error: Rate limit exceeded
+            message: You have exceeded your rate limit. Retry after reset time.
+            code: RATE_LIMITED
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          explode: false
+          schema:
+            type: integer
+          style: simple
+        X-RateLimit-Remaining:
+          explode: false
+          schema:
+            type: integer
+          style: simple
+        X-RateLimit-Reset:
+          explode: false
+          schema:
+            type: integer
+          style: simple
+        X-Response-Time:
+          description: Response time even for rate-limited requests
+          explode: false
+          schema:
+            type: string
+          style: simple
+    ServerError:
+      content:
+        application/json:
+          example:
+            error: Internal server error
+            message: An unexpected error occurred
+            code: INTERNAL_ERROR
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Internal server error
+      headers:
+        X-Response-Time:
+          description: Response time for error responses
+          explode: false
+          schema:
+            type: string
+          style: simple
+  schemas:
+    SoilData:
+      example:
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        county_fips: county_fips
+        county_name: county_name
+        state_code: state_code
+        ph_level: 0.8008282
+        organic_matter: 6.0274563
+        nitrogen_level: nitrogen_level
+        phosphorus_level: phosphorus_level
+        potassium_level: potassium_level
+        recommendations: recommendations
+        analysis_data:
+          key: ""
+      properties:
+        id:
+          format: uuid
+          type: string
+        county_fips:
+          type: string
+        county_name:
+          type: string
+        state_code:
+          type: string
+        ph_level:
+          format: float
+          type: number
+        organic_matter:
+          format: float
+          type: number
+        nitrogen_level:
+          type: string
+        phosphorus_level:
+          type: string
+        potassium_level:
+          type: string
+        recommendations:
+          type: string
+        analysis_data:
+          additionalProperties: true
+          type: object
+      type: object
+    County:
+      example:
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        county_name: county_name
+        state_name: state_name
+        state_code: state_code
+        fips_code: fips_code
+      properties:
+        id:
+          format: uuid
+          type: string
+        county_name:
+          type: string
+        state_name:
+          type: string
+        state_code:
+          type: string
+        fips_code:
+          type: string
+      type: object
+    WaterQuality:
+      example:
+        county_fips: county_fips
+        ph: 0.8008282
+        dissolved_oxygen: 6.0274563
+        turbidity: 1.4658129
+        nitrates: 5.962134
+        phosphates: 5.637377
+        contamination_risk: low
+      properties:
+        county_fips:
+          type: string
+        ph:
+          format: float
+          type: number
+        dissolved_oxygen:
+          format: float
+          type: number
+        turbidity:
+          format: float
+          type: number
+        nitrates:
+          format: float
+          type: number
+        phosphates:
+          format: float
+          type: number
+        contamination_risk:
+          enum:
+          - low
+          - medium
+          - high
+          type: string
+      type: object
+    TerritorialWaterAnalytics:
+      example:
+        success: true
+        analytics:
+          territorial_coverage: "{}"
+          water_quality_metrics: "{}"
+          regional_insights: "{}"
+          compliance_status: "{}"
+        generated_at: 2000-01-23T04:56:07.000+00:00
+      properties:
+        success:
+          type: boolean
+        analytics:
+          $ref: "#/components/schemas/TerritorialWaterAnalytics_analytics"
+        generated_at:
+          format: date-time
+          type: string
+      type: object
+    PlantingCalendar:
+      example:
+        crop_type: crop_type
+        optimal_planting_window:
+          start_date: 2000-01-23
+          end_date: 2000-01-23
+        climate_factors: "{}"
+        soil_factors: "{}"
+        recommendations:
+        - recommendations
+        - recommendations
+      properties:
+        crop_type:
+          type: string
+        optimal_planting_window:
+          $ref: "#/components/schemas/getTerritorialWaterAnalytics_request_date_range"
+        climate_factors:
+          type: object
+        soil_factors:
+          type: object
+        recommendations:
+          items:
+            type: string
+          type: array
+      type: object
+    LiveAgriculturalData:
+      example:
+        county_fips: county_fips
+        county_name: county_name
+        state_code: state_code
+        data:
+          weather: "{}"
+          soil: "{}"
+          crop: "{}"
+          environmental: "{}"
+        sources:
+        - sources
+        - sources
+        timestamp: 2000-01-23T04:56:07.000+00:00
+        cache_status: updated
+      properties:
+        county_fips:
+          type: string
+        county_name:
+          type: string
+        state_code:
+          type: string
+        data:
+          $ref: "#/components/schemas/LiveAgriculturalData_data"
+        sources:
+          items:
+            type: string
+          type: array
+        timestamp:
+          format: date-time
+          type: string
+        cache_status:
+          enum:
+          - updated
+          - fallback
+          type: string
+      type: object
+    EnvironmentalImpact:
+      example:
+        impact_assessment:
+          runoff_risk_score: 0.8008281904610115
+          water_body_proximity: 6.027456183070403
+          contamination_risk: contamination_risk
+          carbon_footprint_score: 1.4658129805029452
+          biodiversity_impact: biodiversity_impact
+        detailed_analysis:
+          runoff_risk:
+            score: 5.962133916683182
+            risk_level: low
+            contributing_factors: "{}"
+          contamination_assessment: "{}"
+          eco_alternatives:
+            alternatives:
+            - category: category
+              alternative: alternative
+              description: description
+              environmental_benefit: environmental_benefit
+              effectiveness_score: 5.637376656633329
+            - category: category
+              alternative: alternative
+              description: description
+              environmental_benefit: environmental_benefit
+              effectiveness_score: 5.637376656633329
+          carbon_analysis: "{}"
+          biodiversity_assessment: "{}"
+        recommendations:
+        - recommendations
+        - recommendations
+      properties:
+        impact_assessment:
+          $ref: "#/components/schemas/EnvironmentalImpact_impact_assessment"
+        detailed_analysis:
+          $ref: "#/components/schemas/EnvironmentalImpact_detailed_analysis"
+        recommendations:
+          items:
+            type: string
+          type: array
+      type: object
+    SatelliteData:
+      example:
+        ndvi: 0.8008282
+        evi: 6.0274563
+        soil_moisture: 1.4658129
+        temperature: 5.962134
+        cloud_cover: 5.637377
+      properties:
+        ndvi:
+          description: Normalized Difference Vegetation Index
+          format: float
+          type: number
+        evi:
+          description: Enhanced Vegetation Index
+          format: float
+          type: number
+        soil_moisture:
+          format: float
+          type: number
+        temperature:
+          format: float
+          type: number
+        cloud_cover:
+          format: float
+          type: number
+      type: object
+    AIAnalysis:
+      example:
+        analysis_type: analysis_type
+        confidence_score: 0.8008282
+        recommendations:
+        - title: title
+          description: description
+          priority: low
+        - title: title
+          description: description
+          priority: low
+      properties:
+        analysis_type:
+          type: string
+        confidence_score:
+          format: float
+          type: number
+        recommendations:
+          items:
+            $ref: "#/components/schemas/AIAnalysis_recommendations_inner"
+          type: array
+      type: object
+    SeasonalPlanningResponse:
+      example:
+        success: true
+        recommendations:
+          seasonal_tasks:
+          - "{}"
+          - "{}"
+          crop_recommendations:
+          - crop_recommendations
+          - crop_recommendations
+          timing_guidance: "{}"
+        weatherData:
+          currentSeason: currentSeason
+          temperature: temperature
+          rainfall: rainfall
+          frostDates: "{}"
+          growingSeason: growingSeason
+          zone: zone
+        modelUsed: modelUsed
+      properties:
+        success:
+          type: boolean
+        recommendations:
+          $ref: "#/components/schemas/SeasonalPlanningResponse_recommendations"
+        weatherData:
+          $ref: "#/components/schemas/SeasonalPlanningResponse_weatherData"
+        modelUsed:
+          type: string
+      type: object
+    SmartReportSummary:
+      example:
+        success: true
+        summary:
+          executive_summary: executive_summary
+          key_findings:
+          - key_findings
+          - key_findings
+          recommendations:
+          - recommendations
+          - recommendations
+          risk_assessment: risk_assessment
+        modelUsed: modelUsed
+      properties:
+        success:
+          type: boolean
+        summary:
+          $ref: "#/components/schemas/SmartReportSummary_summary"
+        modelUsed:
+          type: string
+      type: object
+    CarbonCreditCalculation:
+      example:
+        success: true
+        credit_record:
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          field_name: field_name
+          field_size_acres: 0.8008281904610115
+          credits_earned: 6.027456183070403
+          verification_status: pending
+        calculation_details:
+          credits_earned: 1.4658129805029452
+          calculation_method: calculation_method
+          baseline_carbon: 5.962133916683182
+          enhanced_carbon: 5.637376656633329
+          verification_confidence: 2.3021358869347655
+          metadata:
+            calculation_factors: "{}"
+            data_sources:
+            - data_sources
+            - data_sources
+            confidence_score: 7.061401241503109
+      properties:
+        success:
+          type: boolean
+        credit_record:
+          $ref: "#/components/schemas/CarbonCreditCalculation_credit_record"
+        calculation_details:
+          $ref: "#/components/schemas/CarbonCreditCalculation_calculation_details"
+      type: object
+    VRTPrescription:
+      example:
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        field_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        application_type: application_type
+        zones:
+        - zone_id: 0
+          application_rate: 6.027456183070403
+          geometry: "{}"
+        - zone_id: 0
+          application_rate: 6.027456183070403
+          geometry: "{}"
+      properties:
+        id:
+          format: uuid
+          type: string
+        field_id:
+          format: uuid
+          type: string
+        application_type:
+          type: string
+        zones:
+          items:
+            $ref: "#/components/schemas/VRTPrescription_zones_inner"
+          type: array
+      type: object
+    LeafEnginesCompatibility:
+      example:
+        success: true
+        data:
+          overall_score: 0.8008281904610115
+          soil_compatibility: 6.027456183070403
+          water_compatibility: 1.4658129805029452
+          climate_compatibility: 5.962133916683182
+          breakdown:
+            soil:
+              score: 5.637376656633329
+              factors:
+              - factors
+              - factors
+              concerns:
+              - concerns
+              - concerns
+            water: "{}"
+            climate: "{}"
+          recommendations:
+          - recommendations
+          - recommendations
+          risk_level: low
+          metadata:
+            location: location
+            timestamp: 2000-01-23T04:56:07.000+00:00
+            data_sources:
+            - data_sources
+            - data_sources
+        usage:
+          credits_used: 2
+          response_time_ms: 7
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: "#/components/schemas/LeafEnginesCompatibility_data"
+        usage:
+          $ref: "#/components/schemas/LeafEnginesCompatibility_usage"
+      type: object
+    VisualCropAnalysis:
+      example:
+        success: true
+        analysis:
+          analysis_type: analysis_type
+          confidence: 0.8008281904610115
+          findings: "{}"
+          recommendations:
+          - recommendations
+          - recommendations
+          severity: low
+        analysis_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        success:
+          type: boolean
+        analysis:
+          $ref: "#/components/schemas/VisualCropAnalysis_analysis"
+        analysis_id:
+          format: uuid
+          type: string
+        timestamp:
+          format: date-time
+          type: string
+      type: object
+    SafeIdentification:
+      description: Safe plant identification response with toxic lookalike analysis
+      example:
+        success: true
+        identification:
+          primary_match:
+            common_name: common_name
+            scientific_name: scientific_name
+            confidence: 0.8008281904610115
+            family: family
+          environmental_probability: 6.027456183070403
+          growth_stage_detected: seedling
+        safety_analysis:
+          toxicity_level: safe
+          toxic_to:
+          - toxic_to
+          - toxic_to
+          lookalikes:
+          - plant_name: plant_name
+            visual_similarity: 1.4658129805029452
+            toxicity_level: toxicity_level
+            distinguishing_features:
+            - distinguishing_features
+            - distinguishing_features
+          - plant_name: plant_name
+            visual_similarity: 1.4658129805029452
+            toxicity_level: toxicity_level
+            distinguishing_features:
+            - distinguishing_features
+            - distinguishing_features
+          warnings:
+          - warnings
+          - warnings
+        confidence_breakdown:
+          visual_match: 5.962133916683182
+          environmental_context: 5.637376656633329
+          regional_prevalence: 2.3021358869347655
+          growth_stage_alignment: 7.061401241503109
+        metadata:
+          analysis_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          timestamp: 2000-01-23T04:56:07.000+00:00
+          environmental_data_used:
+          - environmental_data_used
+          - environmental_data_used
+      properties:
+        success:
+          type: boolean
+        identification:
+          $ref: "#/components/schemas/SafeIdentification_identification"
+        safety_analysis:
+          $ref: "#/components/schemas/SafeIdentification_safety_analysis"
+        confidence_breakdown:
+          $ref: "#/components/schemas/SafeIdentification_confidence_breakdown"
+        metadata:
+          $ref: "#/components/schemas/SafeIdentification_metadata"
+      type: object
+    DynamicCare:
+      description: "Dynamic, environment-aware plant care recommendations"
+      example:
+        success: true
+        plant:
+          common_name: common_name
+          scientific_name: scientific_name
+          care_difficulty: easy
+        current_conditions:
+          temperature_f: 0.8008281904610115
+          humidity_percent: 6.027456183070403
+          recent_rainfall_inches: 1.4658129805029452
+          season: season
+          days_since_watered: 5
+        care_recommendations:
+          watering:
+            action: water_now
+            reasoning: reasoning
+            next_check_days: 5
+            amount_guidance: amount_guidance
+          light:
+            current_assessment: current_assessment
+            adjustment_needed: true
+            recommendation: recommendation
+          humidity:
+            current_level: current_level
+            ideal_range: ideal_range
+            adjustment_recommendation: adjustment_recommendation
+          seasonal_notes: seasonal_notes
+        warnings:
+        - warnings
+        - warnings
+        metadata:
+          location_data_used: true
+          weather_data_freshness: weather_data_freshness
+          confidence: 2.3021358869347655
+      properties:
+        success:
+          type: boolean
+        plant:
+          $ref: "#/components/schemas/DynamicCare_plant"
+        current_conditions:
+          $ref: "#/components/schemas/DynamicCare_current_conditions"
+        care_recommendations:
+          $ref: "#/components/schemas/DynamicCare_care_recommendations"
+        warnings:
+          description: Any urgent care warnings
+          items:
+            type: string
+          type: array
+        metadata:
+          $ref: "#/components/schemas/DynamicCare_metadata"
+      type: object
+    BeginnerGuidance:
+      description: Beginner-friendly plant guidance response
+      example:
+        success: true
+        simple_answer: simple_answer
+        what_to_do_now: what_to_do_now
+        why_this_happens: why_this_happens
+        detailed_explanation:
+          technical_term: technical_term
+          plain_english: plain_english
+          common_causes:
+          - common_causes
+          - common_causes
+          prevention_tips:
+          - prevention_tips
+          - prevention_tips
+        encouragement: encouragement
+        related_questions:
+        - related_questions
+        - related_questions
+        confidence: 0.8008281904610115
+        metadata:
+          expertise_level_used: expertise_level_used
+          plant_identified: true
+          environmental_context: true
+      properties:
+        success:
+          type: boolean
+        simple_answer:
+          description: "Plain-language answer without jargon, 1-2 sentences"
+          type: string
+        what_to_do_now:
+          description: Immediate actionable step
+          type: string
+        why_this_happens:
+          description: Simple explanation of the cause
+          type: string
+        detailed_explanation:
+          $ref: "#/components/schemas/BeginnerGuidance_detailed_explanation"
+        encouragement:
+          description: Supportive message for the user
+          type: string
+        related_questions:
+          description: Common follow-up questions
+          items:
+            type: string
+          type: array
+        confidence:
+          description: Confidence in the guidance (0-100)
+          type: number
+        metadata:
+          $ref: "#/components/schemas/BeginnerGuidance_metadata"
+      type: object
+    Error:
+      example:
+        error: error
+        message: message
+        code: code
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+      type: object
+    TurboQuantCapabilities:
+      example:
+        supported: true
+        recommended_model: gemma-2b
+        max_context_tokens: 24576
+        estimated_kv_cache_gb: 1.3
+        kv_compression_ratio: 5.3x
+        estimated_latency_ms:
+          first_token: 180
+          per_token: 12
+        runtime_tier: webgpu
+      properties:
+        supported:
+          description: Whether TurboQuant is supported on this device
+          type: boolean
+        recommended_model:
+          description: Recommended model for the device
+          enum:
+          - gemma-2b
+          - gemma-7b
+          - gemma-7b-tq
+          type: string
+        max_context_tokens:
+          description: Maximum context window feasible on this device
+          example: 24576
+          type: integer
+        estimated_kv_cache_gb:
+          description: Estimated KV cache size in GB
+          example: 1.3
+          type: number
+        kv_compression_ratio:
+          description: Compression ratio vs 16-bit baseline
+          example: 5.3x
+          type: string
+        estimated_latency_ms:
+          $ref: "#/components/schemas/TurboQuantCapabilities_estimated_latency_ms"
+        runtime_tier:
+          description: Detected or recommended runtime
+          enum:
+          - webgpu
+          - wasm_tq
+          - wasm_standard
+          - cloud_fallback
+          type: string
+      type: object
+    turboQuantCapabilities_request:
+      properties:
+        device_memory_gb:
+          description: Device RAM in GB
+          example: 4
+          type: number
+        has_webgpu:
+          description: Whether WebGPU is available
+          example: true
+          type: boolean
+        platform:
+          enum:
+          - mobile
+          - tablet
+          - desktop
+          - server
+          example: mobile
+          type: string
+      type: object
+    getSoilData_request:
+      properties:
+        county_fips:
+          description: 5-digit FIPS code
+          example: "12345"
+          pattern: "^[0-9]{5}$"
+          type: string
+      required:
+      - county_fips
+      type: object
+    countyLookup_request:
+      properties:
+        term:
+          description: "Search term (county name, state, or FIPS)"
+          example: Miami-Dade
+          maxLength: 100
+          minLength: 2
+          type: string
+      required:
+      - term
+      type: object
+    countyLookup_200_response:
+      example:
+        counties:
+        - id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          county_name: county_name
+          state_name: state_name
+          state_code: state_code
+          fips_code: fips_code
+        - id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          county_name: county_name
+          state_name: state_name
+          state_code: state_code
+          fips_code: fips_code
+      properties:
+        counties:
+          items:
+            $ref: "#/components/schemas/County"
+          type: array
+      type: object
+    getTerritorialWaterAnalytics_request_date_range:
+      example:
+        start_date: 2000-01-23
+        end_date: 2000-01-23
+      properties:
+        start_date:
+          format: date
+          type: string
+        end_date:
+          format: date
+          type: string
+      type: object
+    getTerritorialWaterAnalytics_request:
+      properties:
+        territory_type:
+          description: Type of territory to analyze
+          enum:
+          - state
+          - territory
+          - compact_state
+          type: string
+        epa_region:
+          description: EPA region identifier
+          type: string
+        date_range:
+          $ref: "#/components/schemas/getTerritorialWaterAnalytics_request_date_range"
+      type: object
+    getPlantingCalendar_request:
+      properties:
+        county_fips:
+          pattern: "^[0-9]{5}$"
+          type: string
+        crop_type:
+          example: corn
+          type: string
+      required:
+      - county_fips
+      - crop_type
+      type: object
+    getLiveAgriculturalData_request:
+      properties:
+        county_fips:
+          pattern: "^[0-9]{5}$"
+          type: string
+        data_types:
+          description: Types of data to fetch
+          items:
+            enum:
+            - weather
+            - soil
+            - crop
+            - environmental
+            type: string
+          type: array
+        state_code:
+          maxLength: 2
+          type: string
+        county_name:
+          type: string
+      required:
+      - county_fips
+      - county_name
+      - data_types
+      - state_code
+      type: object
+    calculateEnvironmentalImpact_request_soil_data:
+      properties:
+        ph_level:
+          type: number
+        organic_matter:
+          type: number
+        slope:
+          enum:
+          - flat
+          - gentle
+          - moderate
+          - steep
+          - very_steep
+          type: string
+        drainage:
+          enum:
+          - poor
+          - moderate
+          - good
+          - excessive
+          type: string
+        nitrogen_level:
+          type: string
+        phosphorus_level:
+          type: string
+      type: object
+    calculateEnvironmentalImpact_request_proposed_treatments_inner:
+      properties:
+        type:
+          enum:
+          - nitrogen_fertilizer
+          - phosphorus_fertilizer
+          - pesticide
+          type: string
+      type: object
+    calculateEnvironmentalImpact_request_water_body_data:
+      properties:
+        distance_miles:
+          type: number
+      type: object
+    calculateEnvironmentalImpact_request:
+      properties:
+        analysis_id:
+          format: uuid
+          type: string
+        county_fips:
+          pattern: "^[0-9]{5}$"
+          type: string
+        soil_data:
+          $ref: "#/components/schemas/calculateEnvironmentalImpact_request_soil_data"
+        proposed_treatments:
+          items:
+            $ref: "#/components/schemas/calculateEnvironmentalImpact_request_proposed_treatments_inner"
+          type: array
+        water_body_data:
+          $ref: "#/components/schemas/calculateEnvironmentalImpact_request_water_body_data"
+      required:
+      - analysis_id
+      - county_fips
+      - soil_data
+      type: object
+    getSatelliteData_request:
+      properties:
+        latitude:
+          format: float
+          maximum: 90
+          minimum: -90
+          type: number
+        longitude:
+          format: float
+          maximum: 180
+          minimum: -180
+          type: number
+      required:
+      - latitude
+      - longitude
+      type: object
+    getAgriculturalIntelligence_request:
+      properties:
+        county_fips:
+          pattern: "^[0-9]{5}$"
+          type: string
+        analysis_type:
+          enum:
+          - crop_recommendation
+          - yield_prediction
+          - pest_analysis
+          type: string
+      required:
+      - analysis_type
+      - county_fips
+      type: object
+    getSeasonalPlanningAssistant_request_location:
+      properties:
+        county_fips:
+          type: string
+        state_code:
+          type: string
+        county_name:
+          type: string
+      type: object
+    getSeasonalPlanningAssistant_request:
+      properties:
+        location:
+          $ref: "#/components/schemas/getSeasonalPlanningAssistant_request_location"
+        soilData:
+          description: Optional soil data for enhanced recommendations
+          type: object
+        planningType:
+          enum:
+          - spring_planting
+          - fall_harvest
+          - winter_prep
+          - year_round
+          type: string
+        cropPreferences:
+          items:
+            type: string
+          type: array
+        timeframe:
+          description: "Planning timeframe (e.g., \"3 months\", \"1 year\")"
+          type: string
+      required:
+      - location
+      - planningType
+      type: object
+    generateSmartReportSummary_request:
+      properties:
+        reportType:
+          enum:
+          - soil
+          - water_quality
+          type: string
+        reportData:
+          description: Report data to summarize
+          type: object
+      required:
+      - reportData
+      - reportType
+      type: object
+    calculateCarbonCredits_request:
+      properties:
+        field_name:
+          description: Name of the field
+          type: string
+        field_size_acres:
+          description: Field size in acres
+          minimum: 0.1
+          type: number
+        soil_organic_matter:
+          description: Soil organic matter percentage
+          type: number
+        soil_analysis_id:
+          description: Reference to existing soil analysis
+          format: uuid
+          type: string
+        verification_type:
+          enum:
+          - self_reported
+          - third_party
+          - satellite
+          type: string
+      required:
+      - field_name
+      - field_size_acres
+      type: object
+    generateVRTPrescription_request:
+      properties:
+        field_id:
+          format: uuid
+          type: string
+        application_type:
+          enum:
+          - fertilizer
+          - seed
+          - pesticide
+          type: string
+        soil_analysis_id:
+          format: uuid
+          type: string
+      required:
+      - application_type
+      - field_id
+      type: object
+    leafenginesQuery_request_location:
+      properties:
+        latitude:
+          type: number
+        longitude:
+          type: number
+        address:
+          type: string
+        county_fips:
+          type: string
+      type: object
+    leafenginesQuery_request_plant_care_requirements_soil_ph_range:
+      properties:
+        min:
+          type: number
+        max:
+          type: number
+      type: object
+    leafenginesQuery_request_plant_care_requirements:
+      properties:
+        sun_exposure:
+          enum:
+          - full_sun
+          - partial_shade
+          - full_shade
+          type: string
+        water_needs:
+          enum:
+          - low
+          - medium
+          - high
+          type: string
+        soil_ph_range:
+          $ref: "#/components/schemas/leafenginesQuery_request_plant_care_requirements_soil_ph_range"
+      type: object
+    leafenginesQuery_request_plant:
+      properties:
+        common_name:
+          type: string
+        scientific_name:
+          type: string
+        plant_id:
+          type: string
+        care_requirements:
+          $ref: "#/components/schemas/leafenginesQuery_request_plant_care_requirements"
+      type: object
+    leafenginesQuery_request_options:
+      properties:
+        include_satellite_data:
+          type: boolean
+        include_water_quality:
+          type: boolean
+        include_recommendations:
+          type: boolean
+      type: object
+    leafenginesQuery_request:
+      properties:
+        location:
+          $ref: "#/components/schemas/leafenginesQuery_request_location"
+        plant:
+          $ref: "#/components/schemas/leafenginesQuery_request_plant"
+        options:
+          $ref: "#/components/schemas/leafenginesQuery_request_options"
+      required:
+      - location
+      - plant
+      type: object
+    safeIdentification_request_location_coordinates:
+      properties:
+        latitude:
+          type: number
+        longitude:
+          type: number
+      type: object
+    safeIdentification_request_location:
+      properties:
+        county_fips:
+          pattern: "^[0-9]{5}$"
+          type: string
+        state_code:
+          maxLength: 2
+          type: string
+        coordinates:
+          $ref: "#/components/schemas/safeIdentification_request_location_coordinates"
+      type: object
+    safeIdentification_request_context:
+      properties:
+        environment:
+          enum:
+          - wild
+          - garden
+          - indoor
+          - agricultural
+          type: string
+        purpose:
+          enum:
+          - foraging
+          - gardening
+          - curiosity
+          - pet_safety
+          type: string
+        growth_stage:
+          enum:
+          - seedling
+          - juvenile
+          - mature
+          - flowering
+          - fruiting
+          type: string
+      type: object
+    safeIdentification_request:
+      properties:
+        image:
+          description: Base64 encoded image or image URL
+          type: string
+        location:
+          $ref: "#/components/schemas/safeIdentification_request_location"
+        context:
+          $ref: "#/components/schemas/safeIdentification_request_context"
+      required:
+      - image
+      type: object
+    dynamicCare_request_location:
+      properties:
+        county_fips:
+          pattern: "^[0-9]{5}$"
+          type: string
+        state_code:
+          type: string
+        indoor:
+          description: Whether the plant is indoors
+          type: boolean
+      required:
+      - county_fips
+      type: object
+    dynamicCare_request_environment:
+      properties:
+        light_exposure:
+          enum:
+          - full_sun
+          - partial_sun
+          - partial_shade
+          - full_shade
+          - artificial
+          type: string
+        humidity_level:
+          description: Approximate indoor humidity if applicable
+          enum:
+          - low
+          - medium
+          - high
+          type: string
+      type: object
+    dynamicCare_request_container_details:
+      properties:
+        type:
+          enum:
+          - terracotta
+          - plastic
+          - ceramic
+          - fabric
+          - ground
+          type: string
+        size_inches:
+          type: number
+        has_drainage:
+          type: boolean
+      type: object
+    dynamicCare_request:
+      properties:
+        plant_species:
+          description: Common or scientific plant name
+          example: Monstera deliciosa
+          type: string
+        location:
+          $ref: "#/components/schemas/dynamicCare_request_location"
+        environment:
+          $ref: "#/components/schemas/dynamicCare_request_environment"
+        container_details:
+          $ref: "#/components/schemas/dynamicCare_request_container_details"
+        soil_type:
+          enum:
+          - potting_mix
+          - succulent_mix
+          - orchid_bark
+          - garden_soil
+          - sandy
+          - clay
+          type: string
+        last_watered:
+          description: Date plant was last watered
+          format: date
+          type: string
+      required:
+      - location
+      - plant_species
+      type: object
+    beginnerGuidance_request_plant_context:
+      properties:
+        plant_name:
+          description: Common plant name if known
+          type: string
+        image:
+          description: Base64 image for context
+          type: string
+      type: object
+    beginnerGuidance_request_location:
+      properties:
+        county_fips:
+          type: string
+        indoor:
+          type: boolean
+      type: object
+    beginnerGuidance_request:
+      properties:
+        question:
+          description: User's plant question in natural language
+          example: "My plant has yellow leaves, what's wrong?"
+          type: string
+        plant_context:
+          $ref: "#/components/schemas/beginnerGuidance_request_plant_context"
+        location:
+          $ref: "#/components/schemas/beginnerGuidance_request_location"
+        user_expertise:
+          default: complete_beginner
+          description: User's self-assessed expertise level
+          enum:
+          - complete_beginner
+          - some_experience
+          - intermediate
+          type: string
+      required:
+      - question
+      type: object
+    visualCropAnalysis_request_location:
+      properties:
+        county_fips:
+          type: string
+        county_name:
+          type: string
+        state_code:
+          type: string
+      type: object
+    visualCropAnalysis_request:
+      properties:
+        image:
+          description: Base64 encoded image or image URL
+          type: string
+        analysis_type:
+          enum:
+          - pest_detection
+          - crop_health
+          - disease_screening
+          type: string
+        location:
+          $ref: "#/components/schemas/visualCropAnalysis_request_location"
+        crop_type:
+          description: Type of crop being analyzed
+          type: string
+      required:
+      - analysis_type
+      - image
+      type: object
+    TerritorialWaterAnalytics_analytics:
+      example:
+        territorial_coverage: "{}"
+        water_quality_metrics: "{}"
+        regional_insights: "{}"
+        compliance_status: "{}"
+      properties:
+        territorial_coverage:
+          type: object
+        water_quality_metrics:
+          type: object
+        regional_insights:
+          type: object
+        compliance_status:
+          type: object
+      type: object
+    LiveAgriculturalData_data:
+      example:
+        weather: "{}"
+        soil: "{}"
+        crop: "{}"
+        environmental: "{}"
+      properties:
+        weather:
+          type: object
+        soil:
+          type: object
+        crop:
+          type: object
+        environmental:
+          type: object
+      type: object
+    EnvironmentalImpact_impact_assessment:
+      example:
+        runoff_risk_score: 0.8008281904610115
+        water_body_proximity: 6.027456183070403
+        contamination_risk: contamination_risk
+        carbon_footprint_score: 1.4658129805029452
+        biodiversity_impact: biodiversity_impact
+      properties:
+        runoff_risk_score:
+          type: number
+        water_body_proximity:
+          type: number
+        contamination_risk:
+          type: string
+        carbon_footprint_score:
+          type: number
+        biodiversity_impact:
+          type: string
+      type: object
+    EnvironmentalImpact_detailed_analysis_runoff_risk:
+      example:
+        score: 5.962133916683182
+        risk_level: low
+        contributing_factors: "{}"
+      properties:
+        score:
+          type: number
+        risk_level:
+          enum:
+          - low
+          - medium
+          - high
+          type: string
+        contributing_factors:
+          type: object
+      type: object
+    EnvironmentalImpact_detailed_analysis_eco_alternatives_alternatives_inner:
+      example:
+        category: category
+        alternative: alternative
+        description: description
+        environmental_benefit: environmental_benefit
+        effectiveness_score: 5.637376656633329
+      properties:
+        category:
+          type: string
+        alternative:
+          type: string
+        description:
+          type: string
+        environmental_benefit:
+          type: string
+        effectiveness_score:
+          type: number
+      type: object
+    EnvironmentalImpact_detailed_analysis_eco_alternatives:
+      example:
+        alternatives:
+        - category: category
+          alternative: alternative
+          description: description
+          environmental_benefit: environmental_benefit
+          effectiveness_score: 5.637376656633329
+        - category: category
+          alternative: alternative
+          description: description
+          environmental_benefit: environmental_benefit
+          effectiveness_score: 5.637376656633329
+      properties:
+        alternatives:
+          items:
+            $ref: "#/components/schemas/EnvironmentalImpact_detailed_analysis_eco_alternatives_alternatives_inner"
+          type: array
+      type: object
+    EnvironmentalImpact_detailed_analysis:
+      example:
+        runoff_risk:
+          score: 5.962133916683182
+          risk_level: low
+          contributing_factors: "{}"
+        contamination_assessment: "{}"
+        eco_alternatives:
+          alternatives:
+          - category: category
+            alternative: alternative
+            description: description
+            environmental_benefit: environmental_benefit
+            effectiveness_score: 5.637376656633329
+          - category: category
+            alternative: alternative
+            description: description
+            environmental_benefit: environmental_benefit
+            effectiveness_score: 5.637376656633329
+        carbon_analysis: "{}"
+        biodiversity_assessment: "{}"
+      properties:
+        runoff_risk:
+          $ref: "#/components/schemas/EnvironmentalImpact_detailed_analysis_runoff_risk"
+        contamination_assessment:
+          type: object
+        eco_alternatives:
+          $ref: "#/components/schemas/EnvironmentalImpact_detailed_analysis_eco_alternatives"
+        carbon_analysis:
+          type: object
+        biodiversity_assessment:
+          type: object
+      type: object
+    AIAnalysis_recommendations_inner:
+      example:
+        title: title
+        description: description
+        priority: low
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        priority:
+          enum:
+          - low
+          - medium
+          - high
+          type: string
+      type: object
+    SeasonalPlanningResponse_recommendations:
+      example:
+        seasonal_tasks:
+        - "{}"
+        - "{}"
+        crop_recommendations:
+        - crop_recommendations
+        - crop_recommendations
+        timing_guidance: "{}"
+      properties:
+        seasonal_tasks:
+          items:
+            type: object
+          type: array
+        crop_recommendations:
+          items:
+            type: string
+          type: array
+        timing_guidance:
+          type: object
+      type: object
+    SeasonalPlanningResponse_weatherData:
+      example:
+        currentSeason: currentSeason
+        temperature: temperature
+        rainfall: rainfall
+        frostDates: "{}"
+        growingSeason: growingSeason
+        zone: zone
+      properties:
+        currentSeason:
+          type: string
+        temperature:
+          type: string
+        rainfall:
+          type: string
+        frostDates:
+          type: object
+        growingSeason:
+          type: string
+        zone:
+          type: string
+      type: object
+    SmartReportSummary_summary:
+      example:
+        executive_summary: executive_summary
+        key_findings:
+        - key_findings
+        - key_findings
+        recommendations:
+        - recommendations
+        - recommendations
+        risk_assessment: risk_assessment
+      properties:
+        executive_summary:
+          type: string
+        key_findings:
+          items:
+            type: string
+          type: array
+        recommendations:
+          items:
+            type: string
+          type: array
+        risk_assessment:
+          type: string
+      type: object
+    CarbonCreditCalculation_credit_record:
+      example:
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        field_name: field_name
+        field_size_acres: 0.8008281904610115
+        credits_earned: 6.027456183070403
+        verification_status: pending
+      properties:
+        id:
+          format: uuid
+          type: string
+        field_name:
+          type: string
+        field_size_acres:
+          type: number
+        credits_earned:
+          type: number
+        verification_status:
+          enum:
+          - pending
+          - verified
+          type: string
+      type: object
+    CarbonCreditCalculation_calculation_details_metadata:
+      example:
+        calculation_factors: "{}"
+        data_sources:
+        - data_sources
+        - data_sources
+        confidence_score: 7.061401241503109
+      properties:
+        calculation_factors:
+          type: object
+        data_sources:
+          items:
+            type: string
+          type: array
+        confidence_score:
+          type: number
+      type: object
+    CarbonCreditCalculation_calculation_details:
+      example:
+        credits_earned: 1.4658129805029452
+        calculation_method: calculation_method
+        baseline_carbon: 5.962133916683182
+        enhanced_carbon: 5.637376656633329
+        verification_confidence: 2.3021358869347655
+        metadata:
+          calculation_factors: "{}"
+          data_sources:
+          - data_sources
+          - data_sources
+          confidence_score: 7.061401241503109
+      properties:
+        credits_earned:
+          type: number
+        calculation_method:
+          type: string
+        baseline_carbon:
+          type: number
+        enhanced_carbon:
+          type: number
+        verification_confidence:
+          type: number
+        metadata:
+          $ref: "#/components/schemas/CarbonCreditCalculation_calculation_details_metadata"
+      type: object
+    VRTPrescription_zones_inner:
+      example:
+        zone_id: 0
+        application_rate: 6.027456183070403
+        geometry: "{}"
+      properties:
+        zone_id:
+          type: integer
+        application_rate:
+          type: number
+        geometry:
+          type: object
+      type: object
+    LeafEnginesCompatibility_data_breakdown_soil:
+      example:
+        score: 5.637376656633329
+        factors:
+        - factors
+        - factors
+        concerns:
+        - concerns
+        - concerns
+      properties:
+        score:
+          type: number
+        factors:
+          items:
+            type: string
+          type: array
+        concerns:
+          items:
+            type: string
+          type: array
+      type: object
+    LeafEnginesCompatibility_data_breakdown:
+      example:
+        soil:
+          score: 5.637376656633329
+          factors:
+          - factors
+          - factors
+          concerns:
+          - concerns
+          - concerns
+        water: "{}"
+        climate: "{}"
+      properties:
+        soil:
+          $ref: "#/components/schemas/LeafEnginesCompatibility_data_breakdown_soil"
+        water:
+          type: object
+        climate:
+          type: object
+      type: object
+    LeafEnginesCompatibility_data_metadata:
+      example:
+        location: location
+        timestamp: 2000-01-23T04:56:07.000+00:00
+        data_sources:
+        - data_sources
+        - data_sources
+      properties:
+        location:
+          type: string
+        timestamp:
+          format: date-time
+          type: string
+        data_sources:
+          items:
+            type: string
+          type: array
+      type: object
+    LeafEnginesCompatibility_data:
+      example:
+        overall_score: 0.8008281904610115
+        soil_compatibility: 6.027456183070403
+        water_compatibility: 1.4658129805029452
+        climate_compatibility: 5.962133916683182
+        breakdown:
+          soil:
+            score: 5.637376656633329
+            factors:
+            - factors
+            - factors
+            concerns:
+            - concerns
+            - concerns
+          water: "{}"
+          climate: "{}"
+        recommendations:
+        - recommendations
+        - recommendations
+        risk_level: low
+        metadata:
+          location: location
+          timestamp: 2000-01-23T04:56:07.000+00:00
+          data_sources:
+          - data_sources
+          - data_sources
+      properties:
+        overall_score:
+          description: Overall compatibility score (0-100)
+          type: number
+        soil_compatibility:
+          type: number
+        water_compatibility:
+          type: number
+        climate_compatibility:
+          type: number
+        breakdown:
+          $ref: "#/components/schemas/LeafEnginesCompatibility_data_breakdown"
+        recommendations:
+          items:
+            type: string
+          type: array
+        risk_level:
+          enum:
+          - low
+          - medium
+          - high
+          type: string
+        metadata:
+          $ref: "#/components/schemas/LeafEnginesCompatibility_data_metadata"
+      type: object
+    LeafEnginesCompatibility_usage:
+      example:
+        credits_used: 2
+        response_time_ms: 7
+      properties:
+        credits_used:
+          type: integer
+        response_time_ms:
+          type: integer
+      type: object
+    VisualCropAnalysis_analysis:
+      example:
+        analysis_type: analysis_type
+        confidence: 0.8008281904610115
+        findings: "{}"
+        recommendations:
+        - recommendations
+        - recommendations
+        severity: low
+      properties:
+        analysis_type:
+          type: string
+        confidence:
+          type: number
+        findings:
+          type: object
+        recommendations:
+          items:
+            type: string
+          type: array
+        severity:
+          enum:
+          - low
+          - medium
+          - high
+          type: string
+      type: object
+    SafeIdentification_identification_primary_match:
+      example:
+        common_name: common_name
+        scientific_name: scientific_name
+        confidence: 0.8008281904610115
+        family: family
+      properties:
+        common_name:
+          type: string
+        scientific_name:
+          type: string
+        confidence:
+          description: Confidence percentage (0-100)
+          type: number
+        family:
+          type: string
+      type: object
+    SafeIdentification_identification:
+      example:
+        primary_match:
+          common_name: common_name
+          scientific_name: scientific_name
+          confidence: 0.8008281904610115
+          family: family
+        environmental_probability: 6.027456183070403
+        growth_stage_detected: seedling
+      properties:
+        primary_match:
+          $ref: "#/components/schemas/SafeIdentification_identification_primary_match"
+        environmental_probability:
+          description: Likelihood this plant exists in the given environment
+          type: number
+        growth_stage_detected:
+          enum:
+          - seedling
+          - juvenile
+          - mature
+          - flowering
+          - fruiting
+          type: string
+      type: object
+    SafeIdentification_safety_analysis_lookalikes_inner:
+      example:
+        plant_name: plant_name
+        visual_similarity: 1.4658129805029452
+        toxicity_level: toxicity_level
+        distinguishing_features:
+        - distinguishing_features
+        - distinguishing_features
+      properties:
+        plant_name:
+          type: string
+        visual_similarity:
+          description: Visual similarity score (0-100)
+          type: number
+        toxicity_level:
+          type: string
+        distinguishing_features:
+          items:
+            type: string
+          type: array
+      type: object
+    SafeIdentification_safety_analysis:
+      example:
+        toxicity_level: safe
+        toxic_to:
+        - toxic_to
+        - toxic_to
+        lookalikes:
+        - plant_name: plant_name
+          visual_similarity: 1.4658129805029452
+          toxicity_level: toxicity_level
+          distinguishing_features:
+          - distinguishing_features
+          - distinguishing_features
+        - plant_name: plant_name
+          visual_similarity: 1.4658129805029452
+          toxicity_level: toxicity_level
+          distinguishing_features:
+          - distinguishing_features
+          - distinguishing_features
+        warnings:
+        - warnings
+        - warnings
+      properties:
+        toxicity_level:
+          enum:
+          - safe
+          - mildly_toxic
+          - toxic
+          - highly_toxic
+          type: string
+        toxic_to:
+          description: "List of animals/people this is toxic to (e.g., cats, dogs,\
+            \ children)"
+          items:
+            type: string
+          type: array
+        lookalikes:
+          items:
+            $ref: "#/components/schemas/SafeIdentification_safety_analysis_lookalikes_inner"
+          type: array
+        warnings:
+          items:
+            type: string
+          type: array
+      type: object
+    SafeIdentification_confidence_breakdown:
+      example:
+        visual_match: 5.962133916683182
+        environmental_context: 5.637376656633329
+        regional_prevalence: 2.3021358869347655
+        growth_stage_alignment: 7.061401241503109
+      properties:
+        visual_match:
+          type: number
+        environmental_context:
+          type: number
+        regional_prevalence:
+          type: number
+        growth_stage_alignment:
+          type: number
+      type: object
+    SafeIdentification_metadata:
+      example:
+        analysis_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        timestamp: 2000-01-23T04:56:07.000+00:00
+        environmental_data_used:
+        - environmental_data_used
+        - environmental_data_used
+      properties:
+        analysis_id:
+          format: uuid
+          type: string
+        timestamp:
+          format: date-time
+          type: string
+        environmental_data_used:
+          items:
+            type: string
+          type: array
+      type: object
+    DynamicCare_plant:
+      example:
+        common_name: common_name
+        scientific_name: scientific_name
+        care_difficulty: easy
+      properties:
+        common_name:
+          type: string
+        scientific_name:
+          type: string
+        care_difficulty:
+          enum:
+          - easy
+          - moderate
+          - challenging
+          type: string
+      type: object
+    DynamicCare_current_conditions:
+      example:
+        temperature_f: 0.8008281904610115
+        humidity_percent: 6.027456183070403
+        recent_rainfall_inches: 1.4658129805029452
+        season: season
+        days_since_watered: 5
+      properties:
+        temperature_f:
+          type: number
+        humidity_percent:
+          type: number
+        recent_rainfall_inches:
+          type: number
+        season:
+          type: string
+        days_since_watered:
+          type: integer
+      type: object
+    DynamicCare_care_recommendations_watering:
+      example:
+        action: water_now
+        reasoning: reasoning
+        next_check_days: 5
+        amount_guidance: amount_guidance
+      properties:
+        action:
+          enum:
+          - water_now
+          - wait
+          - check_soil
+          - reduce_frequency
+          type: string
+        reasoning:
+          type: string
+        next_check_days:
+          type: integer
+        amount_guidance:
+          type: string
+      type: object
+    DynamicCare_care_recommendations_light:
+      example:
+        current_assessment: current_assessment
+        adjustment_needed: true
+        recommendation: recommendation
+      properties:
+        current_assessment:
+          type: string
+        adjustment_needed:
+          type: boolean
+        recommendation:
+          type: string
+      type: object
+    DynamicCare_care_recommendations_humidity:
+      example:
+        current_level: current_level
+        ideal_range: ideal_range
+        adjustment_recommendation: adjustment_recommendation
+      properties:
+        current_level:
+          type: string
+        ideal_range:
+          type: string
+        adjustment_recommendation:
+          type: string
+      type: object
+    DynamicCare_care_recommendations:
+      example:
+        watering:
+          action: water_now
+          reasoning: reasoning
+          next_check_days: 5
+          amount_guidance: amount_guidance
+        light:
+          current_assessment: current_assessment
+          adjustment_needed: true
+          recommendation: recommendation
+        humidity:
+          current_level: current_level
+          ideal_range: ideal_range
+          adjustment_recommendation: adjustment_recommendation
+        seasonal_notes: seasonal_notes
+      properties:
+        watering:
+          $ref: "#/components/schemas/DynamicCare_care_recommendations_watering"
+        light:
+          $ref: "#/components/schemas/DynamicCare_care_recommendations_light"
+        humidity:
+          $ref: "#/components/schemas/DynamicCare_care_recommendations_humidity"
+        seasonal_notes:
+          description: Season-specific care adjustments
+          type: string
+      type: object
+    DynamicCare_metadata:
+      example:
+        location_data_used: true
+        weather_data_freshness: weather_data_freshness
+        confidence: 2.3021358869347655
+      properties:
+        location_data_used:
+          type: boolean
+        weather_data_freshness:
+          type: string
+        confidence:
+          type: number
+      type: object
+    BeginnerGuidance_detailed_explanation:
+      description: More details for users who want to learn
+      example:
+        technical_term: technical_term
+        plain_english: plain_english
+        common_causes:
+        - common_causes
+        - common_causes
+        prevention_tips:
+        - prevention_tips
+        - prevention_tips
+      properties:
+        technical_term:
+          type: string
+        plain_english:
+          type: string
+        common_causes:
+          items:
+            type: string
+          type: array
+        prevention_tips:
+          items:
+            type: string
+          type: array
+      type: object
+    BeginnerGuidance_metadata:
+      example:
+        expertise_level_used: expertise_level_used
+        plant_identified: true
+        environmental_context: true
+      properties:
+        expertise_level_used:
+          type: string
+        plant_identified:
+          type: boolean
+        environmental_context:
+          type: boolean
+      type: object
+    TurboQuantCapabilities_estimated_latency_ms:
+      example:
+        first_token: 180
+        per_token: 12
+      properties:
+        first_token:
+          example: 180
+          type: integer
+        per_token:
+          example: 12
+          type: integer
+      type: object
+  securitySchemes:
+    ApiKeyAuth:
+      description: |
+        API key authentication. Format: `ak_your_api_key_here`
+
+        Obtain your API key from the SoilSidekick dashboard or via the api-key-management endpoint.
+      in: header
+      name: x-api-key
+      type: apiKey
