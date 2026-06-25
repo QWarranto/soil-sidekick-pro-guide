@@ -1,0 +1,80 @@
+# SDK Publish Workflow
+# Publishes generated SDKs to language-specific registries on tag push or manual trigger.
+#
+# Required GitHub secrets:
+#   PYPI_API_TOKEN     — PyPI API token (password for __token__ user)
+#   RUBYGEMS_API_KEY   — RubyGems API key for gem push
+#
+# Usage:
+#   git tag sdk-v3.0.0
+#   git push origin sdk-v3.0.0
+#   — or —
+#   GitHub UI → Actions → SDK Publish → Run workflow → enter version
+
+name: SDK Publish
+
+on:
+  push:
+    tags:
+      - 'sdk-v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'SDK version override (e.g. 3.0.0)'
+        required: false
+        default: ''
+
+jobs:
+  publish-pypi:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./sdks/generated/python
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Build Python package
+        run: python -m build
+
+      - name: Publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: twine upload dist/*
+
+  publish-rubygems:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./sdks/generated/ruby
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Configure RubyGems credentials
+        env:
+          RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+        run: |
+          mkdir -p ~/.gem
+          printf -- "---\n:rubygems_api_key: %s\n" "$RUBYGEMS_API_KEY" > ~/.gem/credentials
+          chmod 600 ~/.gem/credentials
+
+      - name: Build gem
+        run: gem build soilsidekick.gemspec
+
+      - name: Push to RubyGems
+        run: gem push soilsidekick-*.gem
