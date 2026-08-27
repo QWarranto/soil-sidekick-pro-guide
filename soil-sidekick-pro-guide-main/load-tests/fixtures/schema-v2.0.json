@@ -1,0 +1,256 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Skyline mmWave Sensor Data Schema v2.0",
+  "description": "Schema for Skyline Instruments mmWave sensor data ingestion - Major breaking changes in v2.0",
+  "type": "object",
+  "required": [
+    "device_id",
+    "firmware_version",
+    "timestamp",
+    "sensor_data",  // CHANGED from sensor_readings
+    "calibration"
+  ],
+  "properties": {
+    "device_id": {
+      "type": "string",
+      "pattern": "^SKY-[A-Z0-9]{8}-[A-Z0-9]{4}$",
+      "description": "Unique device identifier in SKY-XXXXXXXX-XXXX format"
+    },
+    "firmware_version": {
+      "type": "string",
+      "pattern": "^v\\d+\\.\\d+\\.\\d+$",
+      "description": "Device firmware version in semantic versioning format"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of sensor reading"
+    },
+    "sensor_data": {  // CHANGED from sensor_readings in v2.0
+      "type": "object",
+      "required": [
+        "frequency_ghz",  // CHANGED from mmwave_frequency_ghz
+        "signal_power_db",  // CHANGED from signal_strength_db
+        "velocity_mps",  // CHANGED from doppler_velocity_mps
+        "range_mm",  // CHANGED from range_resolution_mm
+        "angle_deg",  // CHANGED from angle_resolution_deg
+        "tracked_targets"  // CHANGED from target_tracking
+      ],
+      "properties": {
+        "frequency_ghz": {
+          "type": "number",
+          "minimum": 24,
+          "maximum": 81,
+          "description": "mmWave frequency in GHz"
+        },
+        "signal_power_db": {
+          "type": "number",
+          "minimum": -120,
+          "maximum": 0,
+          "description": "Signal power in dBm"
+        },
+        "velocity_mps": {
+          "type": "number",
+          "minimum": -50,
+          "maximum": 50,
+          "description": "Velocity in meters per second"
+        },
+        "range_mm": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Range resolution in millimeters"
+        },
+        "angle_deg": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 10,
+          "description": "Angular resolution in degrees"
+        },
+        "detected_targets": {  // NEW in v2.0
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 512,
+          "description": "Number of detected targets"
+        },
+        "noise_level_db": {  // CHANGED from noise_floor_db
+          "type": "number",
+          "minimum": -140,
+          "maximum": -80,
+          "description": "Noise level in dBm"
+        },
+        "interference_score": {  // CHANGED from interference_level
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10,
+          "description": "Interference score (0-10)"
+        },
+        "tracked_targets": {
+          "type": "array",
+          "maxItems": 50,  // INCREASED from 20
+          "items": {
+            "type": "object",
+            "required": ["id", "distance_m", "speed_mps", "azimuth_deg", "track_confidence"],  // CHANGED field names
+            "properties": {
+              "id": {
+                "type": "string",  // CHANGED from integer to string
+                "pattern": "^TGT-[0-9]{6}$",
+                "description": "Target identifier in TGT-XXXXXX format"
+              },
+              "distance_m": {  // CHANGED from range_m
+                "type": "number",
+                "minimum": 0,
+                "maximum": 500,  // INCREASED from 200
+                "description": "Target distance in meters"
+              },
+              "speed_mps": {  // CHANGED from velocity_mps
+                "type": "number",
+                "minimum": -100,  // INCREASED range
+                "maximum": 100,
+                "description": "Target speed in m/s"
+              },
+              "azimuth_deg": {  // CHANGED from angle_deg
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180,
+                "description": "Target azimuth in degrees"
+              },
+              "elevation_deg": {  // NEW in v2.0
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90,
+                "description": "Target elevation in degrees"
+              },
+              "track_confidence": {  // CHANGED from confidence
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "Tracking confidence (0-1)"
+              },
+              "signal_quality": {  // NEW in v2.0
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Signal quality percentage"
+              }
+            }
+          }
+        }
+      }
+    },
+    "calibration": {  // CHANGED from calibration_status
+      "type": "object",
+      "required": [
+        "last_calibrated",
+        "drift_percentage",
+        "needs_calibration"
+      ],
+      "properties": {
+        "last_calibrated": {  // CHANGED from last_calibration
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of last calibration"
+        },
+        "drift_percentage": {  // CHANGED from calibration_drift
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Calibration drift percentage"
+        },
+        "needs_calibration": {  // CHANGED from requires_recalibration
+          "type": "boolean",
+          "description": "Flag indicating if calibration is needed"
+        },
+        "calibration_quality": {  // NEW in v2.0
+          "type": "string",
+          "enum": ["excellent", "good", "fair", "poor"],
+          "description": "Calibration quality rating"
+        }
+      }
+    },
+    "environment": {  // CHANGED from environmental_conditions
+      "type": "object",
+      "properties": {
+        "temp_c": {  // CHANGED from temperature_c
+          "type": "number",
+          "minimum": -40,
+          "maximum": 85,
+          "description": "Temperature in Celsius"
+        },
+        "humidity_pct": {  // CHANGED from humidity_percent
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Humidity percentage"
+        },
+        "rain_mm": {  // CHANGED from precipitation_mm
+          "type": "number",
+          "minimum": 0,
+          "description": "Rainfall in millimeters"
+        },
+        "wind_mps": {  // CHANGED from wind_speed_mps
+          "type": "number",
+          "minimum": 0,
+          "description": "Wind speed in m/s"
+        },
+        "visibility_m": {  // NEW in v2.0
+          "type": "number",
+          "minimum": 0,
+          "description": "Visibility in meters"
+        }
+      }
+    },
+    "position": {  // CHANGED from location
+      "type": "object",
+      "required": ["lat", "lon"],  // CHANGED from latitude/longitude
+      "properties": {
+        "lat": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "lon": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        },
+        "alt_m": {  // CHANGED from altitude_m
+          "type": "number",
+          "description": "Altitude in meters"
+        }
+      }
+    },
+    "device_metadata": {  // CHANGED from metadata
+      "type": "object",
+      "required": ["transmission_id", "seq_num", "battery_pct"],  // CHANGED field names
+      "properties": {
+        "transmission_id": {
+          "type": "string",
+          "description": "Unique transmission identifier"
+        },
+        "seq_num": {  // CHANGED from sequence_number
+          "type": "integer",
+          "minimum": 0,
+          "description": "Sequence number"
+        },
+        "battery_pct": {  // CHANGED from battery_level
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Battery percentage"
+        },
+        "signal_strength": {  // CHANGED from network_rssi
+          "type": "number",
+          "minimum": -120,
+          "maximum": 0,
+          "description": "Signal strength in dBm"
+        },
+        "uptime_seconds": {  // NEW in v2.0
+          "type": "integer",
+          "minimum": 0,
+          "description": "Device uptime in seconds"
+        }
+      }
+    }
+  }
+}

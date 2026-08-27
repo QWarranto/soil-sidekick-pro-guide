@@ -1,0 +1,140 @@
+{
+  "metadata": {
+    "generated": "2026-03-03T02:33:45.155Z",
+    "sdkVersion": "2.0.0",
+    "phase": "Phase 1 - Action 3.1"
+  },
+  "overview": {
+    "name": "@soilsidekick/sdk",
+    "version": "2.0.0",
+    "description": "LeafEngines API SDK - Soil and environmental intelligence for agriculture",
+    "entryPoints": [
+      "client.ts",
+      "sensors/index.ts",
+      "types.ts"
+    ]
+  },
+  "quickStart": "## Quick Start\n\n```typescript\nimport { LeafEnginesClient } from '@soilsidekick/sdk';\n\nconst client = new LeafEnginesClient({\n  apiKey: 'sk_live_your_api_key',\n  projectRef: 'your-project-ref',\n});\n\n// Register a Skyline sensor device\nconst device = await client.sensors.devices.register({\n  deviceId: 'skyline-mmWave-001',\n  deviceType: 'mmwave_radar',\n  farmId: 'farm-123',\n  firmwareVersion: '1.2.0',\n});\n\nconsole.log(`Device registered: ${device.deviceId}`);\n```\n",
+  "apiReference": {
+    "client": {
+      "fileName": "client.ts",
+      "classes": [
+        "LeafEnginesClient",
+        "LeafEnginesError"
+      ],
+      "functions": [],
+      "interfaces": [],
+      "types": [],
+      "lineCount": 199
+    },
+    "sensors": {
+      "directory": "sensors",
+      "fileCount": 5,
+      "files": [
+        {
+          "fileName": "alerts.ts",
+          "classes": [
+            "SensorAlertsAPI"
+          ],
+          "functions": [],
+          "interfaces": [],
+          "types": [],
+          "lineCount": 154
+        },
+        {
+          "fileName": "devices.ts",
+          "classes": [
+            "SensorDevicesAPI"
+          ],
+          "functions": [],
+          "interfaces": [],
+          "types": [],
+          "lineCount": 148
+        },
+        {
+          "fileName": "index.ts",
+          "classes": [],
+          "functions": [],
+          "interfaces": [],
+          "types": [],
+          "lineCount": 5
+        },
+        {
+          "fileName": "mqtt.ts",
+          "classes": [
+            "MQTTClient"
+          ],
+          "functions": [],
+          "interfaces": [],
+          "types": [],
+          "lineCount": 212
+        },
+        {
+          "fileName": "readings.ts",
+          "classes": [
+            "SensorReadingsAPI"
+          ],
+          "functions": [],
+          "interfaces": [],
+          "types": [],
+          "lineCount": 242
+        }
+      ]
+    },
+    "types": {
+      "fileName": "types.ts",
+      "classes": [],
+      "functions": [],
+      "interfaces": [
+        "SensorDevice",
+        "RegisterDeviceParams",
+        "UpdateDeviceParams",
+        "SensorReading",
+        "SensorReadingData",
+        "SensorReadingPayload",
+        "IngestionResponse",
+        "ReadingsQueryParams",
+        "ReadingsAggregation",
+        "SensorAlert",
+        "AlertsQueryParams",
+        "AlertSubscription",
+        "MQTTConfig",
+        "MQTTPublishOptions",
+        "APIResponse",
+        "APIError",
+        "Subscription",
+        "ClientConfig",
+        "RequestOptions"
+      ],
+      "types": [
+        "DeviceType",
+        "DeviceStatus",
+        "AlertSeverity",
+        "AlertType",
+        "ConnectionStatus",
+        "MessageHandler"
+      ],
+      "lineCount": 223
+    }
+  },
+  "examples": {
+    "sourceFile": "test-sdk.ts",
+    "exampleCount": 0,
+    "examples": []
+  },
+  "changelog": {
+    "currentVersion": "2.0.0",
+    "recentChanges": [
+      {
+        "date": "2026-03-02",
+        "change": "Phase 1 QA Acceleration - Documentation automation implemented",
+        "type": "improvement"
+      },
+      {
+        "date": "2026-02-28",
+        "change": "SDK v2.0 released with Skyline integration",
+        "type": "major"
+      }
+    ]
+  }
+}

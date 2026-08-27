@@ -1,0 +1,53 @@
+{
+  "scenario": "burst_load_50_devices",
+  "timestamp": "2026-03-03T09:50:15.000Z",
+  "readings_per_second_per_device": 100,
+  "total_devices": 50,
+  "total_readings_per_second": 5000,
+  "devices": [
+    {
+      "device_id": "SKY-LOAD001-0001",
+      "firmware_version": "v1.1.2",
+      "timestamp": "2026-03-03T09:50:15.000Z",
+      "sensor_readings": {
+        "mmwave_frequency_ghz": 60.5,
+        "signal_strength_db": -45.2,
+        "doppler_velocity_mps": 12.3,
+        "range_resolution_mm": 5.2,
+        "angle_resolution_deg": 2.5,
+        "target_count": 3,
+        "noise_floor_db": -95.7,
+        "interference_level": 0.1,
+        "target_tracking": []
+      }
+    },
+    {
+      "device_id": "SKY-LOAD001-0002",
+      "firmware_version": "v1.1.2",
+      "timestamp": "2026-03-03T09:50:15.001Z",
+      "sensor_readings": {
+        "mmwave_frequency_ghz": 61.0,
+        "signal_strength_db": -46.8,
+        "doppler_velocity_mps": 11.7,
+        "range_resolution_mm": 5.1,
+        "angle_resolution_deg": 2.4,
+        "target_count": 2,
+        "noise_floor_db": -96.2,
+        "interference_level": 0.12,
+        "target_tracking": []
+      }
+    }
+  ],
+  "metadata": {
+    "purpose": "Burst load testing - 50 devices transmitting simultaneously",
+    "expected_throughput": "5000 readings/second",
+    "validation_criteria": [
+      "All 50 readings ingested within 1 second",
+      "No data loss during burst",
+      "P95 ingestion latency < 100ms",
+      "CPU utilization < 80% during burst"
+    ],
+    "test_duration": "60 seconds",
+    "total_expected_readings": 300000
+  }
+}

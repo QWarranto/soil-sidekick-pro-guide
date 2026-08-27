@@ -1,0 +1,38 @@
+{
+  "device_id": "SKY-MNOP2468-GH79",
+  "firmware_version": "v1.0.8",
+  "timestamp": "2026-03-03T09:47:45.250Z",
+  "sensor_readings": {
+    "mmwave_frequency_ghz": 81.0,
+    "signal_strength_db": -28.5,
+    "doppler_velocity_mps": 0.0,
+    "range_resolution_mm": 2.1,
+    "angle_resolution_deg": 0.5,
+    "target_count": 1,
+    "noise_floor_db": -88.3,
+    "interference_level": 0.8
+  },
+  "calibration_status": {
+    "last_calibration": "2026-03-02T08:00:00.000Z",
+    "calibration_drift": 0.5,
+    "requires_recalibration": false,
+    "calibration_notes": "Factory calibration - industrial environment"
+  },
+  "environmental_conditions": {
+    "temperature_c": 65.2,
+    "humidity_percent": 15.8,
+    "precipitation_mm": 0,
+    "wind_speed_mps": 0.5
+  },
+  "location": {
+    "latitude": 29.7604,
+    "longitude": -95.3698,
+    "altitude_m": 13.0
+  },
+  "metadata": {
+    "transmission_id": "TX-20260303-094745-004",
+    "sequence_number": 23456,
+    "battery_level": 98.2,
+    "network_rssi": -55.7
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "mcp_version": "1.0",
+  "server_name": "leafengines-mcp-directory",
+  "base_url": "https://app.soilsidekickpro.com",
+  "description": "Model Context Protocol server directory for LeafEngines. Discover, test, and connect to MCP tools for agricultural intelligence.",
+  "tools": [
+    {
+      "name": "list_mcp_tools",
+      "description": "List all MCP tools exposed by the LeafEngines server with tier pricing and capability summaries.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "tier": {
+            "type": "string",
+            "enum": [
+              "commoditized",
+              "enhanced",
+              "proprietary",
+              "exclusive",
+              "all"
+            ],
+            "description": "Filter by pricing tier. Default: all"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "soil",
+              "water",
+              "plant",
+              "carbon",
+              "location",
+              "analytics",
+              "all"
+            ],
+            "description": "Filter by data category. Default: all"
+          }
+        }
+      },
+      "endpoint": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/webmcp-mcp-page"
+    },
+    {
+      "name": "get_tool_schema",
+      "description": "Return the JSON schema, parameters, and example usage for a specific MCP tool.",
+      "parameters": {
+        "type": "object",
+        "required": [
+          "tool_name"
+        ],
+        "properties": {
+          "tool_name": {
+            "type": "string",
+            "description": "Tool identifier, e.g. 'get-soil-data', 'environmental-compatibility-score'"
+          }
+        }
+      },
+      "endpoint": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/webmcp-mcp-page"
+    },
+    {
+      "name": "test_mcp_tool",
+      "description": "Execute a live test of an MCP tool against the sandbox with provided arguments. Returns real data.",
+      "parameters": {
+        "type": "object",
+        "required": [
+          "tool_name",
+          "arguments"
+        ],
+        "properties": {
+          "tool_name": {
+            "type": "string",
+            "description": "Tool to test"
+          },
+          "arguments": {
+            "type": "object",
+            "description": "Arguments matching the tool's JSON schema"
+          },
+          "show_pricing": {
+            "type": "boolean",
+            "description": "Include cost estimate in response. Default: true"
+          }
+        }
+      },
+      "endpoint": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/webmcp-mcp-page"
+    },
+    {
+      "name": "get_connection_string",
+      "description": "Return the MCP server connection string (SSE endpoint) and authentication requirements.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "transport": {
+            "type": "string",
+            "enum": [
+              "sse",
+              "stdio",
+              "http"
+            ],
+            "description": "Preferred transport. Default: sse"
+          }
+        }
+      },
+      "endpoint": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/webmcp-mcp-page"
+    },
+    {
+      "name": "estimate_usage_cost",
+      "description": "Calculate estimated cost for a batch of MCP tool calls based on tier pricing.",
+      "parameters": {
+        "type": "object",
+        "required": [
+          "calls"
+        ],
+        "properties": {
+          "calls": {
+            "type": "array",
+            "description": "Array of {tool_name, count} objects",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tool_name": {
+                  "type": "string"
+                },
+                "count": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      },
+      "endpoint": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/webmcp-mcp-page"
+    }
+  ],
+  "resources": [
+    {
+      "name": "mcp_server_manifest",
+      "uri": "https://app.soilsidekickpro.com/mcp/manifest.json",
+      "mimeType": "application/json",
+      "description": "Official MCP server manifest for io.github.QWarranto/leafengines"
+    },
+    {
+      "name": "github_mcp_registry_entry",
+      "uri": "https://github.com/github/mcp-registry/blob/main/registry.json",
+      "mimeType": "application/json",
+      "description": "GitHub MCP Registry entry for LeafEngines"
+    }
+  ]
+}

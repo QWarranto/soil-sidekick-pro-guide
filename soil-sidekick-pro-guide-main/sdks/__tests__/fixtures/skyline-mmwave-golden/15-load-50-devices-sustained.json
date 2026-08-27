@@ -1,0 +1,94 @@
+{
+  "scenario": "sustained_load_50_devices_24h",
+  "start_timestamp": "2026-03-03T00:00:00.000Z",
+  "end_timestamp": "2026-03-04T00:00:00.000Z",
+  "device_configurations": [
+    {
+      "device_id_pattern": "SKY-SUST001-00[01-10]",
+      "count": 10,
+      "transmission_rate": "100 readings/sec",
+      "firmware_version": "v2.0.1",
+      "schema_version": "v2.0",
+      "purpose": "High-frequency monitoring - critical infrastructure"
+    },
+    {
+      "device_id_pattern": "SKY-SUST001-01[11-30]",
+      "count": 20,
+      "transmission_rate": "10 readings/sec",
+      "firmware_version": "v1.1.5",
+      "schema_version": "v1.1",
+      "purpose": "Medium-frequency monitoring - perimeter security"
+    },
+    {
+      "device_id_pattern": "SKY-SUST001-0[31-50]",
+      "count": 20,
+      "transmission_rate": "1 reading/sec",
+      "firmware_version": "v1.0.8",
+      "schema_version": "v1.0",
+      "purpose": "Low-frequency monitoring - environmental sensing"
+    }
+  ],
+  "total_readings_per_second": 1210,
+  "total_readings_per_hour": 4356000,
+  "total_readings_per_day": 104544000,
+  "sample_readings": {
+    "high_frequency_device": {
+      "device_id": "SKY-SUST001-0001",
+      "firmware_version": "v2.0.1",
+      "timestamp": "2026-03-03T12:00:00.000Z",
+      "sensor_data": {
+        "frequency_ghz": 77.0,
+        "signal_power_db": -38.7,
+        "velocity_mps": 0.0,
+        "range_mm": 2.5,
+        "angle_deg": 1.2,
+        "detected_targets": 0,
+        "noise_level_db": -92.1,
+        "interference_score": 0.5,
+        "tracked_targets": []
+      }
+    },
+    "medium_frequency_device": {
+      "device_id": "SKY-SUST001-0011",
+      "firmware_version": "v1.1.5",
+      "timestamp": "2026-03-03T12:00:00.000Z",
+      "sensor_readings": {
+        "mmwave_frequency_ghz": 60.5,
+        "signal_strength_db": -52.3,
+        "doppler_velocity_mps": 8.9,
+        "range_resolution_mm": 5.8,
+        "angle_resolution_deg": 3.2,
+        "target_count": 5,
+        "noise_floor_db": -98.7,
+        "interference_level": 0.2,
+        "target_tracking": []
+      }
+    },
+    "low_frequency_device": {
+      "device_id": "SKY-SUST001-0031",
+      "firmware_version": "v1.0.8",
+      "timestamp": "2026-03-03T12:00:00.000Z",
+      "sensor_readings": {
+        "mmwave_frequency_ghz": 24.0,
+        "signal_strength_db": -68.9,
+        "doppler_velocity_mps": 0.5,
+        "range_resolution_mm": 12.5,
+        "angle_resolution_deg": 8.5,
+        "target_count": 0,
+        "noise_floor_db": -105.2,
+        "interference_level": 0.05
+      }
+    }
+  },
+  "validation_criteria": {
+    "data_retention": "All 104.5M readings stored without loss",
+    "query_performance": "Time-series queries < 100ms P95 for 1h window",
+    "storage_efficiency": "Compression ratio > 10:1 for time-series data",
+    "system_stability": "No service interruptions over 24h period",
+    "resource_utilization": {
+      "cpu": "< 70% sustained",
+      "memory": "< 80% of allocated",
+      "disk_io": "< 100MB/s sustained"
+    }
+  }
+}

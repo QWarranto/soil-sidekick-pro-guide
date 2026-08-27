@@ -1,0 +1,142 @@
+project_id = "wzgnxkoeqzvueypwzvyn"
+
+[functions.trial-auth]
+verify_jwt = false
+
+[functions.telegram-webhook]
+verify_jwt = false
+
+[functions.t4-watch]
+verify_jwt = false
+
+[functions.soc2-compliance-monitor]
+verify_jwt = true
+
+[functions.gpt5-chat]
+verify_jwt = true
+
+[functions.alpha-earth-environmental-enhancement]
+verify_jwt = true
+
+[functions.webmcp-api-docs]
+verify_jwt = false
+
+[functions.webmcp-mcp-page]
+verify_jwt = false
+
+[functions.webmcp-sandbox]
+verify_jwt = false
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+api_url = "http://localhost"
+
+[inbucket]
+enabled = true
+port = 54324
+smtp_port = 54325
+pop3_port = 54326
+
+[storage]
+enabled = true
+image_transformation = {enabled = true}
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["https://wzgnxkoeqzvueypwzvyn.supabase.co"]
+jwt_expiry = 3600
+
+[analytics]
+enabled = false
+
+[functions.get-soil-data]
+verify_jwt = false
+
+[functions.populate-counties]
+verify_jwt = true
+
+[functions.territorial-water-quality]
+verify_jwt = true
+
+[functions.territorial-water-analytics]
+verify_jwt = true
+
+[functions.agricultural-intelligence]
+verify_jwt = true
+
+[functions.live-agricultural-data]
+verify_jwt = true
+
+[functions.security-monitoring]
+verify_jwt = true
+
+[functions.api-key-management]
+verify_jwt = true
+
+[functions.enhanced-threat-detection]
+verify_jwt = false
+
+[functions.carbon-credit-calculator]
+verify_jwt = true
+
+[functions.smart-report-summary]
+verify_jwt = true
+
+[functions.seasonal-planning-assistant]
+verify_jwt = true
+
+[functions.county-lookup]
+verify_jwt = false
+
+[functions.leafengines-query]
+verify_jwt = false
+
+[functions.plant-id-comparison]
+verify_jwt = false
+
+[functions.generate-comparison-image]
+verify_jwt = false
+
+[functions.get-mapbox-token]
+verify_jwt = false
+
+[functions.safe-identification]
+verify_jwt = true
+
+[functions.dynamic-care]
+verify_jwt = true
+
+[functions.beginner-guidance]
+verify_jwt = true
+
+[functions.sandbox-demo]
+verify_jwt = false
+
+[functions.api-usage-dashboard]
+verify_jwt = false
+
+[functions.mcp-server]
+verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.endpoint-activity-snapshot]
+verify_jwt = false
+
+[functions.endpoint-activity-digest]
+verify_jwt = false

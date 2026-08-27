@@ -1,0 +1,831 @@
+{
+  "config": {
+    "endpoint": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/county-lookup",
+    "sampleSize": 100,
+    "concurrency": 5,
+    "timeoutMs": 5000,
+    "targetP95": 1000,
+    "testCounty": "01001",
+    "outputFile": "benchmark-results/county-lookup-metrics.json"
+  },
+  "startTime": "2026-03-03T02:19:08.034Z",
+  "requests": [
+    {
+      "requestId": 1,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 648.9772499999999,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 2,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 723.348084,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 3,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 622.098542,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 4,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 667.18475,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 5,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 635.540875,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 6,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 636.01275,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 7,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 914.594334,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 8,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 676.153083,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 9,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 1095.183291,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 10,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 666.226625,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 11,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 684.579583,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 12,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 675.184792,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 13,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 664.69375,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 14,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 607.24125,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 15,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 673.566625,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 16,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 706.127042,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 17,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 621.7363330000001,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 18,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 606.041875,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 19,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 615.907084,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 20,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 701.736208,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 21,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 655.284334,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 22,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 604.083,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 23,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 653.564583,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 24,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 600.965375,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 25,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 662.1146669999999,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 26,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 626.952375,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 27,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 671.026833,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 28,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 611.1969999999999,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 29,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 680.879167,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 30,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 671.4688329999999,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 31,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 660.310041,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 32,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 680.204625,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 33,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 609.408917,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 34,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 602.3892500000001,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 35,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 611.609625,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 36,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 613.646791,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 37,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 600.657375,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 38,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 696.777208,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 39,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 651.264167,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 40,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 995.2615,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 41,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 651.217667,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 42,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 696.416208,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 43,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 4298.554916,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 44,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 675.7715000000001,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 45,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 895.053458,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 46,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 854.507792,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 47,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 986.312542,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 48,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 1025.795208,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 49,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 946.313167,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 50,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 882.641375,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 51,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 940.5677919999999,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 52,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 868.474375,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 53,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 968.9826249999999,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 54,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 953.459167,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 55,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 956.5590420000001,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 56,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 895.8016670000001,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 57,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 816.945875,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 58,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 957.9869580000001,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 59,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 816.461708,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 60,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 1001.9428750000001,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 61,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 880.372792,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 62,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 931.4747500000001,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 63,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 953.377333,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 64,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 1022.9624580000001,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 65,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 980.8334169999999,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 66,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 932.086666,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 67,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 823.132041,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 68,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 872.2351249999999,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 69,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 949.750458,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 70,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 912.830917,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 71,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 991.0280419999999,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 72,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 936.9893330000001,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 73,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 920.897875,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 74,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 928.9575,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 75,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 923.19575,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 76,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 949.1279999999999,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 77,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 908.638042,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 78,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 790.3235,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 79,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 816.068667,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 80,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 888.663708,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 81,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 923.63225,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 82,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 895.3246250000001,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 83,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 1339.3246669999999,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 84,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 870.9175419999999,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 85,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 881.929792,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 86,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 908.129917,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 87,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 1321.22575,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 88,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 898.389666,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 89,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 878.532292,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 90,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 804.2597920000001,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 91,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 869.479292,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 92,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 928.579958,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 93,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 878.0806670000001,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 94,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 864.367875,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 95,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 868.5258749999999,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 96,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 747.483208,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 97,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 867.8245840000001,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 98,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 916.1711250000001,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 99,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 750.219833,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    },
+    {
+      "requestId": 100,
+      "timestamp": "2026-03-03T02:19:12.362Z",
+      "success": true,
+      "statusCode": 400,
+      "durationMs": 883.549417,
+      "dataSample": "{\"success\":false,\"error\":\"Validation failed: term: Required\"}"
+    }
+  ],
+  "summary": {
+    "totalRequests": 100,
+    "successfulRequests": 100,
+    "failedRequests": 0,
+    "timeouts": 0,
+    "totalDurationMs": 4325.687417,
+    "averageTime": 846.9986020999999,
+    "minTime": 600.657375,
+    "maxTime": 4298.554916,
+    "successRate": 100
+  },
+  "percentiles": {
+    "p50": 867.8245840000001,
+    "p95": 1025.795208,
+    "p99": 4298.554916
+  },
+  "meetsTarget": false
+}

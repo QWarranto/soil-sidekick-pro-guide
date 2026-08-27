@@ -1,0 +1,17 @@
+{
+  "firmware_version": "v1.0.5",
+  "timestamp": "2026-03-03T09:48:30.000Z",
+  "sensor_readings": {
+    "signal_strength_db": -45.2,
+    "doppler_velocity_mps": 12.3,
+    "range_resolution_mm": 5.2,
+    "angle_resolution_deg": 2.5
+  },
+  "calibration_status": {
+    "calibration_drift": 2.3,
+    "requires_recalibration": false
+  },
+  "environmental_conditions": {
+    "temperature_c": 22.5
+  }
+}

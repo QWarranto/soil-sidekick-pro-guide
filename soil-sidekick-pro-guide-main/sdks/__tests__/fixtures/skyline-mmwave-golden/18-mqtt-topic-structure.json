@@ -1,0 +1,156 @@
+{
+  "topic_structure": {
+    "base_format": "skyline/{region}/{deployment_id}/{device_id}/{data_type}/{qos}",
+    "components": {
+      "skyline": "Fixed namespace prefix",
+      "region": "Geographic region (us-east-1, eu-west-1, etc.)",
+      "deployment_id": "Deployment identifier (factory-001, warehouse-alpha, etc.)",
+      "device_id": "Device identifier (SKY-ABCD1234-EF56)",
+      "data_type": "Type of data (sensor/reading, status/health, config/update, alert/event)",
+      "qos": "Quality of Service level (qos0, qos1, qos2)"
+    }
+  },
+  "topic_examples": {
+    "sensor_data_qos1": "skyline/us-east-1/factory-001/SKY-ABCD1234-EF56/sensor/reading/qos1",
+    "device_status_qos0": "skyline/eu-west-1/warehouse-alpha/SKY-WXYZ9876-AB12/status/health/qos0",
+    "config_update_qos2": "skyline/us-west-2/office-campus/SKY-EFGH5678-CD34/config/update/qos2",
+    "alert_event_qos1": "skyline/ap-southeast-1/retail-store/SKY-MNOP2468-GH79/alert/event/qos1",
+    "wildcard_patterns": {
+      "all_devices_in_deployment": "skyline/us-east-1/factory-001/+/sensor/reading/qos1",
+      "all_data_types_for_device": "skyline/us-east-1/factory-001/SKY-ABCD1234-EF56/+/+/qos1",
+      "all_deployments_in_region": "skyline/us-east-1/+/SKY-ABCD1234-EF56/sensor/reading/qos1",
+      "all_qos_levels": "skyline/us-east-1/factory-001/SKY-ABCD1234-EF56/sensor/reading/+"
+    }
+  },
+  "payload_examples": {
+    "sensor_reading": {
+      "topic": "skyline/us-east-1/factory-001/SKY-ABCD1234-EF56/sensor/reading/qos1",
+      "payload": {
+        "device_id": "SKY-ABCD1234-EF56",
+        "firmware_version": "v1.1.5",
+        "timestamp": "2026-03-03T12:03:00.000Z",
+        "sensor_readings": {
+          "mmwave_frequency_ghz": 60.5,
+          "signal_strength_db": -45.2,
+          "doppler_velocity_mps": 12.3,
+          "range_resolution_mm": 5.2,
+          "angle_resolution_deg": 2.5,
+          "target_count": 3,
+          "noise_floor_db": -95.7,
+          "interference_level": 0.1,
+          "target_tracking": []
+        }
+      },
+      "metadata": {
+        "message_id": "msg-20260303-120300-001",
+        "qos": 1,
+        "retain": false,
+        "dup": false,
+        "timestamp": 1740996180000
+      }
+    },
+    "device_status": {
+      "topic": "skyline/us-east-1/factory-001/SKY-ABCD1234-EF56/status/health/qos0",
+      "payload": {
+        "device_id": "SKY-ABCD1234-EF56",
+        "timestamp": "2026-03-03T12:03:30.000Z",
+        "status": "online",
+        "uptime_seconds": 86400,
+        "battery_level": 87.5,
+        "memory_usage_mb": 128,
+        "cpu_usage_percent": 15.2,
+        "network_status": {
+          "rssi": -65.3,
+          "connected": true,
+          "last_disconnect": "2026-03-02T04:30:00.000Z"
+        },
+        "sensor_status": {
+          "mmwave_sensor": "operational",
+          "temperature_sensor": "operational",
+          "gps_sensor": "operational"
+        }
+      }
+    },
+    "configuration_update": {
+      "topic": "skyline/us-east-1/factory-001/SKY-ABCD1234-EF56/config/update/qos2",
+      "payload": {
+        "device_id": "SKY-ABCD1234-EF56",
+        "timestamp": "2026-03-03T12:04:00.000Z",
+        "update_type": "configuration",
+        "configuration": {
+          "transmission_interval_ms": 100,
+          "sensor_frequency_ghz": 60.5,
+          "range_resolution_mm": 5.2,
+          "calibration_interval_hours": 24,
+          "power_saving_mode": false,
+          "alert_thresholds": {
+            "signal_strength_db": -80,
+            "battery_level": 20,
+            "temperature_c": 70
+          }
+        },
+        "requires_acknowledgment": true,
+        "acknowledgment_topic": "skyline/us-east-1/factory-001/SKY-ABCD1234-EF56/config/ack/qos1"
+      }
+    },
+    "alert_event": {
+      "topic": "skyline/us-east-1/factory-001/SKY-ABCD1234-EF56/alert/event/qos1",
+      "payload": {
+        "device_id": "SKY-ABCD1234-EF56",
+        "timestamp": "2026-03-03T12:04:30.000Z",
+        "alert_type": "calibration_required",
+        "severity": "warning",
+        "description": "Calibration drift exceeds 5% threshold",
+        "details": {
+          "current_drift": 5.8,
+          "threshold": 5.0,
+          "last_calibration": "2026-02-15T10:00:00.000Z"
+        },
+        "recommended_action": "Schedule calibration within 7 days",
+        "acknowledgment_required": true
+      }
+    }
+  },
+  "qos_guidelines": {
+    "qos0": {
+      "use_case": "Device status updates, non-critical telemetry",
+      "delivery": "At most once",
+      "overhead": "Lowest",
+      "reliability": "Fire and forget"
+    },
+    "qos1": {
+      "use_case": "Sensor readings, configuration updates",
+      "delivery": "At least once",
+      "overhead": "Medium",
+      "reliability": "Acknowledged delivery"
+    },
+    "qos2": {
+      "use_case": "Critical commands, firmware updates",
+      "delivery": "Exactly once",
+      "overhead": "Highest",
+      "reliability": "Guaranteed delivery"
+    }
+  },
+  "implementation_notes": {
+    "aws_iot_core": {
+      "topic_prefix": "$aws/things/{thingName}/",
+      "certificate_auth": "Required",
+      "policy_requirements": "Topic subscription permissions",
+      "best_practices": "Use thing shadow for desired/state management"
+    },
+    "hivemq": {
+      "authentication": "Username/password or client certificate",
+      "persistence": "Session persistence available",
+      "clustering": "Horizontal scaling support",
+      "extensions": "Enterprise extensions for rules and transformations"
+    },
+    "general_best_practices": [
+      "Use retained messages sparingly for last known good state",
+      "Implement topic hierarchy for efficient subscription management",
+      "Include message metadata in payload for traceability",
+      "Use QoS appropriately based on message criticality",
+      "Implement reconnection logic with exponential backoff",
+      "Monitor message queue depth for backpressure detection"
+    ]
+  }
+}

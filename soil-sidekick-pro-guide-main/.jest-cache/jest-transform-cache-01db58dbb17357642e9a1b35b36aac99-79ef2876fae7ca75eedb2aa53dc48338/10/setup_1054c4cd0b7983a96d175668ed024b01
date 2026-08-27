@@ -1,0 +1,42 @@
+6c068f2ed3b667c5b785edcdb5cdbc1f
+"use strict";
+// Mock setup for testing - Phase 1 Action 1.1
+// Created: March 2, 2026 for parallel test execution verification
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PERFORMANCE_THRESHOLDS = exports.measureResponseTime = exports.SUBSCRIPTION_TIERS = exports.createTestUser = exports.createMockSupabaseClient = void 0;
+const createMockSupabaseClient = () => ({
+    from: () => ({ select: () => ({ eq: () => ({ single: () => Promise.resolve({ data: null, error: null }) }) }) }),
+    auth: { getUser: () => Promise.resolve({ data: { user: null }, error: null }) }
+});
+exports.createMockSupabaseClient = createMockSupabaseClient;
+const createTestUser = () => ({
+    id: 'test-user-123',
+    email: 'test@example.com',
+    subscription_tier: 'free'
+});
+exports.createTestUser = createTestUser;
+exports.SUBSCRIPTION_TIERS = {
+    FREE: 'free',
+    PRO: 'pro',
+    ENTERPRISE: 'enterprise'
+};
+const measureResponseTime = (fn) => __awaiter(void 0, void 0, void 0, function* () {
+    const start = Date.now();
+    yield fn();
+    return Date.now() - start;
+});
+exports.measureResponseTime = measureResponseTime;
+exports.PERFORMANCE_THRESHOLDS = {
+    p95: 1000, // 1 second
+    p99: 2000 // 2 seconds
+};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJmaWxlIjoiL1VzZXJzL3JlZ2luYWxkcmljZS9jbGF3ZC9zb2lsLXNpZGVraWNrLXByby1ndWlkZS1tYWluL3N1cGFiYXNlL2Z1bmN0aW9ucy9fX3Rlc3RzX18vc2V0dXAudHMiLCJtYXBwaW5ncyI6IjtBQUFBLDhDQUE4QztBQUM5QyxrRUFBa0U7Ozs7Ozs7Ozs7OztBQUUzRCxNQUFNLHdCQUF3QixHQUFHLEdBQUcsRUFBRSxDQUFDLENBQUM7SUFDN0MsSUFBSSxFQUFFLEdBQUcsRUFBRSxDQUFDLENBQUMsRUFBRSxNQUFNLEVBQUUsR0FBRyxFQUFFLENBQUMsQ0FBQyxFQUFFLEVBQUUsRUFBRSxHQUFHLEVBQUUsQ0FBQyxDQUFDLEVBQUUsTUFBTSxFQUFFLEdBQUcsRUFBRSxDQUFDLE9BQU8sQ0FBQyxPQUFPLENBQUMsRUFBRSxJQUFJLEVBQUUsSUFBSSxFQUFFLEtBQUssRUFBRSxJQUFJLEVBQUUsQ0FBQyxFQUFFLENBQUMsRUFBRSxDQUFDLEVBQUUsQ0FBQztJQUNoSCxJQUFJLEVBQUUsRUFBRSxPQUFPLEVBQUUsR0FBRyxFQUFFLENBQUMsT0FBTyxDQUFDLE9BQU8sQ0FBQyxFQUFFLElBQUksRUFBRSxFQUFFLElBQUksRUFBRSxJQUFJLEVBQUUsRUFBRSxLQUFLLEVBQUUsSUFBSSxFQUFFLENBQUMsRUFBRTtDQUNoRixDQUFDLENBQUM7QUFIVSxRQUFBLHdCQUF3Qiw0QkFHbEM7QUFFSSxNQUFNLGNBQWMsR0FBRyxHQUFHLEVBQUUsQ0FBQyxDQUFDO0lBQ25DLEVBQUUsRUFBRSxlQUFlO0lBQ25CLEtBQUssRUFBRSxrQkFBa0I7SUFDekIsaUJBQWlCLEVBQUUsTUFBTTtDQUMxQixDQUFDLENBQUM7QUFKVSxRQUFBLGNBQWMsa0JBSXhCO0FBRVUsUUFBQSxrQkFBa0IsR0FBRztJQUNoQyxJQUFJLEVBQUUsTUFBTTtJQUNaLEdBQUcsRUFBRSxLQUFLO0lBQ1YsVUFBVSxFQUFFLFlBQVk7Q0FDekIsQ0FBQztBQUVLLE1BQU0sbUJBQW1CLEdBQUcsQ0FBTyxFQUFzQixFQUFFLEVBQUU7SUFDbEUsTUFBTSxLQUFLLEdBQUcsSUFBSSxDQUFDLEdBQUcsRUFBRSxDQUFDO0lBQ3pCLE1BQU0sRUFBRSxFQUFFLENBQUM7SUFDWCxPQUFPLElBQUksQ0FBQyxHQUFHLEVBQUUsR0FBRyxLQUFLLENBQUM7QUFDNUIsQ0FBQyxDQUFBLENBQUM7QUFKVyxRQUFBLG1CQUFtQix1QkFJOUI7QUFFVyxRQUFBLHNCQUFzQixHQUFHO0lBQ3BDLEdBQUcsRUFBRSxJQUFJLEVBQUUsV0FBVztJQUN0QixHQUFHLEVBQUUsSUFBSSxDQUFFLFlBQVk7Q0FDeEIsQ0FBQyIsIm5hbWVzIjpbXSwic291cmNlcyI6WyIvVXNlcnMvcmVnaW5hbGRyaWNlL2NsYXdkL3NvaWwtc2lkZWtpY2stcHJvLWd1aWRlLW1haW4vc3VwYWJhc2UvZnVuY3Rpb25zL19fdGVzdHNfXy9zZXR1cC50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIvLyBNb2NrIHNldHVwIGZvciB0ZXN0aW5nIC0gUGhhc2UgMSBBY3Rpb24gMS4xXG4vLyBDcmVhdGVkOiBNYXJjaCAyLCAyMDI2IGZvciBwYXJhbGxlbCB0ZXN0IGV4ZWN1dGlvbiB2ZXJpZmljYXRpb25cblxuZXhwb3J0IGNvbnN0IGNyZWF0ZU1vY2tTdXBhYmFzZUNsaWVudCA9ICgpID0+ICh7XG4gIGZyb206ICgpID0+ICh7IHNlbGVjdDogKCkgPT4gKHsgZXE6ICgpID0+ICh7IHNpbmdsZTogKCkgPT4gUHJvbWlzZS5yZXNvbHZlKHsgZGF0YTogbnVsbCwgZXJyb3I6IG51bGwgfSkgfSkgfSkgfSksXG4gIGF1dGg6IHsgZ2V0VXNlcjogKCkgPT4gUHJvbWlzZS5yZXNvbHZlKHsgZGF0YTogeyB1c2VyOiBudWxsIH0sIGVycm9yOiBudWxsIH0pIH1cbn0pO1xuXG5leHBvcnQgY29uc3QgY3JlYXRlVGVzdFVzZXIgPSAoKSA9PiAoe1xuICBpZDogJ3Rlc3QtdXNlci0xMjMnLFxuICBlbWFpbDogJ3Rlc3RAZXhhbXBsZS5jb20nLFxuICBzdWJzY3JpcHRpb25fdGllcjogJ2ZyZWUnXG59KTtcblxuZXhwb3J0IGNvbnN0IFNVQlNDUklQVElPTl9USUVSUyA9IHtcbiAgRlJFRTogJ2ZyZWUnLFxuICBQUk86ICdwcm8nLFxuICBFTlRFUlBSSVNFOiAnZW50ZXJwcmlzZSdcbn07XG5cbmV4cG9ydCBjb25zdCBtZWFzdXJlUmVzcG9uc2VUaW1lID0gYXN5bmMgKGZuOiAoKSA9PiBQcm9taXNlPGFueT4pID0+IHtcbiAgY29uc3Qgc3RhcnQgPSBEYXRlLm5vdygpO1xuICBhd2FpdCBmbigpO1xuICByZXR1cm4gRGF0ZS5ub3coKSAtIHN0YXJ0O1xufTtcblxuZXhwb3J0IGNvbnN0IFBFUkZPUk1BTkNFX1RIUkVTSE9MRFMgPSB7XG4gIHA5NTogMTAwMCwgLy8gMSBzZWNvbmRcbiAgcDk5OiAyMDAwICAvLyAyIHNlY29uZHNcbn07XG4iXSwidmVyc2lvbiI6M30=

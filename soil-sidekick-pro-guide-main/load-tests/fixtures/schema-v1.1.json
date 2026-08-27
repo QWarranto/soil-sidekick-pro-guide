@@ -1,0 +1,236 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Skyline mmWave Sensor Data Schema v1.1",
+  "description": "Schema for Skyline Instruments mmWave sensor data ingestion - Firmware v1.1 adds multi-target tracking",
+  "type": "object",
+  "required": [
+    "device_id",
+    "firmware_version",
+    "timestamp",
+    "sensor_readings",
+    "calibration_status"
+  ],
+  "properties": {
+    "device_id": {
+      "type": "string",
+      "pattern": "^SKY-[A-Z0-9]{8}-[A-Z0-9]{4}$",
+      "description": "Unique device identifier in SKY-XXXXXXXX-XXXX format"
+    },
+    "firmware_version": {
+      "type": "string",
+      "pattern": "^v\\d+\\.\\d+\\.\\d+$",
+      "description": "Device firmware version in semantic versioning format"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of sensor reading"
+    },
+    "sensor_readings": {
+      "type": "object",
+      "required": [
+        "mmwave_frequency_ghz",
+        "signal_strength_db",
+        "doppler_velocity_mps",
+        "range_resolution_mm",
+        "angle_resolution_deg",
+        "target_tracking"  // NEW in v1.1
+      ],
+      "properties": {
+        "mmwave_frequency_ghz": {
+          "type": "number",
+          "minimum": 24,
+          "maximum": 81,
+          "description": "mmWave frequency in GHz (24-81 GHz range)"
+        },
+        "signal_strength_db": {
+          "type": "number",
+          "minimum": -120,
+          "maximum": 0,
+          "description": "Signal strength in dBm"
+        },
+        "doppler_velocity_mps": {
+          "type": "number",
+          "minimum": -50,
+          "maximum": 50,
+          "description": "Doppler velocity in meters per second"
+        },
+        "range_resolution_mm": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Range resolution in millimeters"
+        },
+        "angle_resolution_deg": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 10,
+          "description": "Angular resolution in degrees"
+        },
+        "target_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 256,
+          "description": "Number of detected targets"
+        },
+        "noise_floor_db": {
+          "type": "number",
+          "minimum": -140,
+          "maximum": -80,
+          "description": "Noise floor level in dBm"
+        },
+        "interference_level": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Interference level (0=clean, 1=severe interference)"
+        },
+        "target_tracking": {  // NEW in v1.1
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "required": ["target_id", "range_m", "velocity_mps", "angle_deg", "confidence"],
+            "properties": {
+              "target_id": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Unique target identifier"
+              },
+              "range_m": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 200,
+                "description": "Target range in meters"
+              },
+              "velocity_mps": {
+                "type": "number",
+                "minimum": -50,
+                "maximum": 50,
+                "description": "Target velocity in m/s"
+              },
+              "angle_deg": {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180,
+                "description": "Target angle in degrees"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "Tracking confidence (0-1)"
+              },
+              "signal_to_noise": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Signal-to-noise ratio"
+              }
+            }
+          }
+        }
+      }
+    },
+    "calibration_status": {
+      "type": "object",
+      "required": [
+        "last_calibration",
+        "calibration_drift",
+        "requires_recalibration"
+      ],
+      "properties": {
+        "last_calibration": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of last calibration"
+        },
+        "calibration_drift": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Calibration drift percentage (0-100%)"
+        },
+        "requires_recalibration": {
+          "type": "boolean",
+          "description": "Flag indicating if recalibration is needed"
+        },
+        "calibration_notes": {
+          "type": "string",
+          "description": "Optional calibration notes"
+        }
+      }
+    },
+    "environmental_conditions": {
+      "type": "object",
+      "properties": {
+        "temperature_c": {
+          "type": "number",
+          "minimum": -40,
+          "maximum": 85,
+          "description": "Ambient temperature in Celsius"
+        },
+        "humidity_percent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Relative humidity percentage"
+        },
+        "precipitation_mm": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Precipitation in millimeters"
+        },
+        "wind_speed_mps": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Wind speed in meters per second"
+        }
+      }
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "latitude": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "longitude": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        },
+        "altitude_m": {
+          "type": "number",
+          "description": "Altitude in meters"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "transmission_id": {
+          "type": "string",
+          "description": "Unique transmission identifier"
+        },
+        "sequence_number": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Sequence number for ordering"
+        },
+        "battery_level": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Battery level percentage"
+        },
+        "network_rssi": {
+          "type": "number",
+          "minimum": -120,
+          "maximum": 0,
+          "description": "Network signal strength"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "device_id": "SKY-QRST1357-IJ80",
+  "firmware_version": "v1.1.5",
+  "timestamp": "2026-03-03T09:48:00.000Z",
+  "sensor_readings": {
+    "mmwave_frequency_ghz": 28.0,
+    "signal_strength_db": -61.3,
+    "doppler_velocity_mps": 3.7,
+    "range_resolution_mm": 15.8,
+    "angle_resolution_deg": 8.2,
+    "target_count": 5,
+    "noise_floor_db": -98.5,
+    "interference_level": 0.05,
+    "target_tracking": [
+      {
+        "target_id": 101,
+        "range_m": 152.3,
+        "velocity_mps": 2.8,
+        "angle_deg": 67.8,
+        "confidence": 0.65,
+        "signal_to_noise": 12.3
+      },
+      {
+        "target_id": 102,
+        "range_m": 98.7,
+        "velocity_mps": 0.5,
+        "angle_deg": 12.3,
+        "confidence": 0.91,
+        "signal_to_noise": 28.9
+      },
+      {
+        "target_id": 103,
+        "range_m": 203.5,
+        "velocity_mps": -3.2,
+        "angle_deg": -45.6,
+        "confidence": 0.72,
+        "signal_to_noise": 15.7
+      },
+      {
+        "target_id": 104,
+        "range_m": 56.8,
+        "velocity_mps": 18.9,
+        "angle_deg": 89.2,
+        "confidence": 0.88,
+        "signal_to_noise": 22.4
+      },
+      {
+        "target_id": 105,
+        "range_m": 178.2,
+        "velocity_mps": 1.2,
+        "angle_deg": -12.8,
+        "confidence": 0.79,
+        "signal_to_noise": 18.6
+      }
+    ]
+  },
+  "calibration_status": {
+    "last_calibration": "2026-02-20T14:45:00.000Z",
+    "calibration_drift": 3.7,
+    "requires_recalibration": false
+  },
+  "environmental_conditions": {
+    "temperature_c": 10.2,
+    "humidity_percent": 85.7,
+    "precipitation_mm": 1.2,
+    "wind_speed_mps": 8.9
+  },
+  "location": {
+    "latitude": 47.6062,
+    "longitude": -122.3321,
+    "altitude_m": 86.0
+  },
+  "metadata": {
+    "transmission_id": "TX-20260303-094800-005",
+    "sequence_number": 18923,
+    "battery_level": 74.8,
+    "network_rssi": -81.5
+  }
+}

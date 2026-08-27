@@ -1,0 +1,27 @@
+{
+  "name": "LeafEngines SDK",
+  "entryPoints": ["./client.ts", "./sensors/index.ts", "./types.ts"],
+  "out": "./docs",
+  "theme": "default",
+  "includeVersion": true,
+  "excludeExternals": true,
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "categorizeByGroup": true,
+  "categoryOrder": [
+    "Client",
+    "Sensors",
+    "Devices",
+    "Data",
+    "Types",
+    "Utilities"
+  ],
+  "readme": "README.md",
+  "githubPages": true,
+  "hideGenerator": false,
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "notDocumented": true
+  }
+}

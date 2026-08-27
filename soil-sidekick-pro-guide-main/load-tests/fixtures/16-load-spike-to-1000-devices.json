@@ -1,0 +1,103 @@
+{
+  "scenario": "device_spike_50_to_1000",
+  "baseline_devices": 50,
+  "spike_devices": 1000,
+  "spike_duration": "5 minutes",
+  "ramp_up_time": "30 seconds",
+  "timeline": {
+    "t_0_to_30s": "Baseline - 50 devices at 10 readings/sec each (500 rps)",
+    "t_30_to_60s": "Ramp up - adding 950 devices over 30 seconds",
+    "t_60_to_300s": "Peak load - 1000 devices at 10 readings/sec each (10,000 rps)",
+    "t_300_to_330s": "Ramp down - removing 950 devices over 30 seconds",
+    "t_330_onwards": "Return to baseline - 50 devices at 10 readings/sec"
+  },
+  "sample_device_groups": {
+    "baseline_group": {
+      "device_ids": ["SKY-BASE001-0001", "SKY-BASE001-0002", "SKY-BASE001-0003"],
+      "transmission_rate": "10 readings/sec",
+      "firmware_mix": {
+        "v1.0": 10,
+        "v1.1": 25,
+        "v2.0": 15
+      }
+    },
+    "spike_group_1": {
+      "device_ids": ["SKY-SPIKE1-0001", "SKY-SPIKE1-0002", "SKY-SPIKE1-0003"],
+      "transmission_rate": "10 readings/sec",
+      "firmware": "v2.0.1",
+      "purpose": "Temporary deployment - event monitoring"
+    },
+    "spike_group_2": {
+      "device_ids": ["SKY-SPIKE2-0001", "SKY-SPIKE2-0002", "SKY-SPIKE2-0003"],
+      "transmission_rate": "10 readings/sec",
+      "firmware": "v1.1.5",
+      "purpose": "Mobile sensor network - disaster response"
+    },
+    "spike_group_3": {
+      "device_ids": ["SKY-SPIKE3-0001", "SKY-SPIKE3-0002", "SKY-SPIKE3-0003"],
+      "transmission_rate": "10 readings/sec",
+      "firmware": "v1.0.8",
+      "purpose": "Backup sensors - redundancy"
+    }
+  },
+  "sample_spike_reading": {
+    "device_id": "SKY-SPIKE1-0123",
+    "firmware_version": "v2.0.1",
+    "timestamp": "2026-03-03T12:01:30.500Z",
+    "sensor_data": {
+      "frequency_ghz": 60.5,
+      "signal_power_db": -48.7,
+      "velocity_mps": 15.2,
+      "range_mm": 4.8,
+      "angle_deg": 2.1,
+      "detected_targets": 8,
+      "noise_level_db": -94.3,
+      "interference_score": 2.5,
+      "tracked_targets": [
+        {
+          "id": "TGT-001234",
+          "distance_m": 45.2,
+          "speed_mps": 12.8,
+          "azimuth_deg": 15.7,
+          "elevation_deg": 1.2,
+          "track_confidence": 0.85,
+          "signal_quality": 78.9
+        }
+      ]
+    },
+    "device_metadata": {
+      "transmission_id": "TX-SPIKE-20260303-120130-0123",
+      "seq_num": 1,
+      "battery_pct": 100.0,
+      "signal_strength": -72.5,
+      "uptime_seconds": 3600
+    }
+  },
+  "performance_requirements": {
+    "ingestion_latency": {
+      "baseline": "P95 < 50ms",
+      "during_spike": "P95 < 200ms",
+      "recovery": "Return to baseline within 60s of ramp down"
+    },
+    "data_loss": "Zero data loss during spike",
+    "auto_scaling": {
+      "scale_out": "Initiate within 10s of crossing 70% capacity",
+      "scale_in": "Initiate within 60s of dropping below 30% capacity"
+    },
+    "resource_limits": {
+      "max_cpu": "90% during spike",
+      "max_memory": "95% of allocated",
+      "max_connections": "1100 concurrent MQTT connections"
+    }
+  },
+  "monitoring_metrics": [
+    "Active device count",
+    "Readings per second",
+    "Ingestion queue depth",
+    "Processing latency percentiles (P50, P95, P99)",
+    "Error rate by device firmware version",
+    "Schema validation failure rate",
+    "Database write latency",
+    "Cache hit ratio during spike"
+  ]
+}

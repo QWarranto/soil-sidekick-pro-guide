@@ -1,0 +1,37 @@
+{
+  "device_id": "SKY-TEST1234-5678",
+  "firmware_version": "v1.0.9",
+  "timestamp": "2026-03-03T09:49:30.000Z",
+  "sensor_readings": {
+    "mmwave_frequency_ghz": 60.5,
+    "signal_strength_db": -45.2,
+    "doppler_velocity_mps": 12.3,
+    "range_resolution_mm": 5.2,
+    "angle_resolution_deg": 2.5,
+    "target_count": 3,
+    "noise_floor_db": -95.7,
+    "interference_level": 0.1
+  },
+  "calibration_status": {
+    "last_calibration": "2026-02-28T14:30:00.000Z",
+    "calibration_drift": 2.3,
+    "requires_recalibration": false
+  },
+  "environmental_conditions": {
+    "temperature_c": 22.5,
+    "humidity_percent": 45.2,
+    "precipitation_mm": 0,
+    "wind_speed_mps": 3.2
+  },
+  "location": {
+    "latitude": 40.7128,
+    "longitude": -74.006,
+    "altitude_m": 10.5
+  },
+  "metadata": {
+    "transmission_id": "TX-20260303-094930-012",
+    "sequence_number": 12543,
+    "battery_level": 87.5,
+    "network_rssi": -65.3
+  }
+}

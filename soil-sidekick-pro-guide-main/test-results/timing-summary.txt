@@ -1,0 +1,9 @@
+trial-auth: 1 seconds
+get-soil-data: 0 seconds
+api-key-request: 1 seconds
+trial-auth: 3 seconds
+get-soil-data: 2 seconds
+api-key-request: 2 seconds
+trial-auth: 2 seconds
+get-soil-data: 3 seconds
+api-key-request: 2 seconds

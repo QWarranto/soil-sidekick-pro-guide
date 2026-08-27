@@ -1,0 +1,37 @@
+{
+  "device_id": "SKY-INVALID-1234",
+  "firmware_version": "v1.0.5",
+  "timestamp": "2026-03-03T09:48:15.000Z",
+  "sensor_readings": {
+    "mmwave_frequency_ghz": "sixty",
+    "signal_strength_db": -45.2,
+    "doppler_velocity_mps": 12.3,
+    "range_resolution_mm": 5.2,
+    "angle_resolution_deg": 2.5,
+    "target_count": "three",
+    "noise_floor_db": -95.7,
+    "interference_level": 0.1
+  },
+  "calibration_status": {
+    "last_calibration": "not-a-date",
+    "calibration_drift": "high",
+    "requires_recalibration": "yes"
+  },
+  "environmental_conditions": {
+    "temperature_c": 22.5,
+    "humidity_percent": 450,
+    "precipitation_mm": -5,
+    "wind_speed_mps": "calm"
+  },
+  "location": {
+    "latitude": 95.0,
+    "longitude": -190.0,
+    "altitude_m": "sea level"
+  },
+  "metadata": {
+    "transmission_id": 12345,
+    "sequence_number": -10,
+    "battery_level": 150,
+    "network_rssi": "good"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "device_id": "SKY-ABCD1234-EF56",
+  "firmware_version": "v1.0.5",
+  "timestamp": "2026-03-03T09:49:00.000Z",
+  "sensor_readings": {
+    "mmwave_frequency_ghz": 60.5,
+    "signal_strength_db": -45.2,
+    "doppler_velocity_mps": 12.3,
+    "range_resolution_mm": 5.2,
+    "angle_resolution_deg": 2.5,
+    "target_count": 3,
+    "noise_floor_db": -95.7,
+    "interference_level": 0.1
+  },
+  "calibration_status": {
+    "last_calibration": "2026-02-28T14:30:00.000Z",
+    "calibration_drift": 2.3,
+    "requires_recalibration": false,
+    "calibration_notes": "Calibrated with reference target at 50m. Special chars: \u0000\u0001\u0002\u0003 null bytes and control chars \u0007\b\u000b\f\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f and emoji \ud83d\ude00\ud83d\udce1\ud83d\udea8 and unicode \u4f60\u597d\u4e16\u754c and script <script>alert('xss')</script> and SQL ' OR '1'='1"
+  },
+  "environmental_conditions": {
+    "temperature_c": 22.5,
+    "humidity_percent": 45.2,
+    "precipitation_mm": 0,
+    "wind_speed_mps": 3.2
+  },
+  "location": {
+    "latitude": 40.7128,
+    "longitude": -74.006,
+    "altitude_m": 10.5
+  },
+  "metadata": {
+    "transmission_id": "TX-20260303-094900-009",
+    "sequence_number": 12543,
+    "battery_level": 87.5,
+    "network_rssi": -65.3
+  }
+}

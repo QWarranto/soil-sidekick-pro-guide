@@ -1,0 +1,302 @@
+name: Load Testing with k6
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'src/**'
+      - 'load-tests/**'
+      - '.github/workflows/load-test.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'load-tests/**'
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      test-type:
+        description: 'Type of test to run'
+        required: true
+        default: 'smoke'
+        type: choice
+        options:
+          - smoke
+          - load
+          - stress
+      environment:
+        description: 'Environment to test against'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  # Default environment URLs - override with secrets in repository settings
+  CLOUD_API_URL: ${{ secrets.CLOUD_API_URL || 'https://api.staging.example.com' }}
+  EDGE_API_URL: ${{ secrets.EDGE_API_URL || 'https://edge-api.staging.example.com' }}
+  MQTT_BROKER_URL: ${{ secrets.MQTT_BROKER_URL || 'https://mqtt-broker.staging.example.com' }}
+  API_KEY: ${{ secrets.LOAD_TEST_API_KEY }}
+  EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
+  MQTT_CLIENT_ID: 'github-actions-${{ github.run_id }}'
+
+jobs:
+  smoke-test:
+    name: Smoke Test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event.inputs.test-type == 'smoke'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup k6
+        uses: grafana/setup-k6@v3
+        with:
+          k6-version: '0.54.0'
+      
+      - name: Run smoke test
+        id: smoke-test
+        run: |
+          echo "Running smoke test against: $CLOUD_API_URL"
+          k6 run \
+            --out json=smoke-test-results.json \
+            --summary-export=smoke-summary.json \
+            load-tests/scripts/test-skyline-smoke.js
+      
+      - name: Upload smoke test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-test-results
+          path: |
+            smoke-test-results.json
+            smoke-summary.json
+      
+      - name: Check smoke test results
+        if: always()
+        run: |
+          if [ -f smoke-summary.json ]; then
+            RESULTS=$(cat smoke-summary.json | jq -r '.root_group.checks[0].passes')
+            if [ "$RESULTS" = "true" ] || [ "$RESULTS" = "1" ]; then
+              echo "Smoke test passed"
+              exit 0
+            else
+              echo "Smoke test failed"
+              exit 1
+            fi
+          else
+            echo "No test results found"
+            exit 1
+          fi
+
+  load-test:
+    name: Load Test
+    runs-on: ubuntu-latest
+    needs: smoke-test
+    if: github.event_name == 'push' || github.event.inputs.test-type == 'load'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup k6
+        uses: grafana/setup-k6@v3
+        with:
+          k6-version: '0.54.0'
+      
+      - name: Load test fixtures from Action 1.2
+        run: |
+          echo "Loading test fixtures from Action 1.2..."
+          # Copy test fixtures if they exist in the workspace
+          if [ -d "../tests/fixtures/skyline-mmwave-golden" ]; then
+            cp -r ../tests/fixtures/skyline-mmwave-golden load-tests/fixtures/
+            echo "Test fixtures copied"
+          elif [ -d "tests/fixtures/skyline-mmwave-golden" ]; then
+            cp -r tests/fixtures/skyline-mmwave-golden load-tests/fixtures/
+            echo "Test fixtures copied from local tests directory"
+          else
+            echo "No test fixtures found, using generated data"
+          fi
+      
+      - name: Run load test
+        id: load-test
+        run: |
+          echo "Running comprehensive load test"
+          echo "Cloud API: $CLOUD_API_URL"
+          echo "Edge API: $EDGE_API_URL"
+          echo "MQTT Broker: $MQTT_BROKER_URL"
+          
+          # Run k6 with environment variables
+          k6 run \
+            --env CLOUD_API_URL="$CLOUD_API_URL" \
+            --env EDGE_API_URL="$EDGE_API_URL" \
+            --env MQTT_BROKER_URL="$MQTT_BROKER_URL" \
+            --env API_KEY="$API_KEY" \
+            --env EDGE_API_KEY="$EDGE_API_KEY" \
+            --env MQTT_CLIENT_ID="$MQTT_CLIENT_ID" \
+            --out json=load-test-results.json \
+            --summary-export=load-summary.json \
+            --out influxdb=http://localhost:8086/k6 \
+            load-tests/scripts/test-skyline-mmwave.js
+      
+      - name: Upload load test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: load-test-results
+          path: |
+            load-test-results.json
+            load-summary.json
+            load-test-results/
+      
+      - name: Parse and validate performance gates
+        id: performance-gates
+        if: always()
+        run: |
+          if [ -f load-summary.json ]; then
+            # Extract performance metrics
+            CLOUD_P95=$(cat load-summary.json | jq -r '.metrics | .["http_req_duration{scenario:cloud_api}"]? | .["p(95)"] // 0')
+            EDGE_P95=$(cat load-summary.json | jq -r '.metrics | .["http_req_duration{scenario:edge_inference}"]? | .["p(95)"] // 0')
+            ERROR_RATE=$(cat load-summary.json | jq -r '.metrics | .["errors"]? | .rate // 0')
+            
+            # Calculate throughput (requests per minute)
+            TOTAL_REQUESTS=$(cat load-summary.json | jq -r '.metrics | .["http_reqs"]? | .count // 0')
+            DURATION_MS=$(cat load-summary.json | jq -r '.state.testRunDurationMs // 60000')
+            REQUESTS_PER_MINUTE=$((TOTAL_REQUESTS * 60000 / DURATION_MS))
+            
+            echo "Cloud P95: ${CLOUD_P95}ms (threshold: < 1000ms)"
+            echo "Edge P95: ${EDGE_P95}ms (threshold: < 100ms)"
+            echo "Throughput: ${REQUESTS_PER_MINUTE} req/min (threshold: > 10,000 req/min)"
+            echo "Error Rate: $(echo "$ERROR_RATE * 100" | bc -l | xargs printf "%.2f")% (threshold: < 1%)"
+            
+            # Check performance gates
+            CLOUD_PASS=$(echo "$CLOUD_P95 < 1000" | bc -l)
+            EDGE_PASS=$(echo "$EDGE_P95 < 100" | bc -l)
+            THROUGHPUT_PASS=$(echo "$REQUESTS_PER_MINUTE > 10000" | bc -l)
+            ERROR_PASS=$(echo "$ERROR_RATE < 0.01" | bc -l)
+            
+            ALL_PASS=$((CLOUD_PASS && EDGE_PASS && THROUGHPUT_PASS && ERROR_PASS))
+            
+            if [ $ALL_PASS -eq 1 ]; then
+              echo "✅ All performance gates passed"
+              echo "PERFORMANCE_GATES_PASSED=true" >> $GITHUB_OUTPUT
+            else
+              echo "❌ Some performance gates failed:"
+              [ $CLOUD_PASS -eq 0 ] && echo "  - Cloud P95: ${CLOUD_P95}ms >= 1000ms"
+              [ $EDGE_PASS -eq 0 ] && echo "  - Edge P95: ${EDGE_P95}ms >= 100ms"
+              [ $THROUGHPUT_PASS -eq 0 ] && echo "  - Throughput: ${REQUESTS_PER_MINUTE} req/min <= 10,000 req/min"
+              [ $ERROR_PASS -eq 0 ] && echo "  - Error Rate: $(echo "$ERROR_RATE * 100" | bc -l | xargs printf "%.2f")% >= 1%"
+              echo "PERFORMANCE_GATES_PASSED=false" >> $GITHUB_OUTPUT
+            fi
+            
+            # Create performance report
+            cat > performance-report.md << EOF
+            # Performance Test Report
+            **Run ID:** ${{ github.run_id }}
+            **Timestamp:** $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+            **Environment:** ${{ github.event.inputs.environment || 'staging' }}
+            
+            ## Performance Gates
+            | Metric | Result | Threshold | Status |
+            |--------|--------|-----------|--------|
+            | Cloud API P95 | ${CLOUD_P95}ms | < 1000ms | $( [ $CLOUD_PASS -eq 1 ] && echo "✅ PASS" || echo "❌ FAIL" ) |
+            | Edge Inference P95 | ${EDGE_P95}ms | < 100ms | $( [ $EDGE_PASS -eq 1 ] && echo "✅ PASS" || echo "❌ FAIL" ) |
+            | Throughput | ${REQUESTS_PER_MINUTE} req/min | > 10,000 req/min | $( [ $THROUGHPUT_PASS -eq 1 ] && echo "✅ PASS" || echo "❌ FAIL" ) |
+            | Error Rate | $(echo "$ERROR_RATE * 100" | bc -l | xargs printf "%.2f")% | < 1% | $( [ $ERROR_PASS -eq 1 ] && echo "✅ PASS" || echo "❌ FAIL" ) |
+            
+            ## Summary
+            **Overall Status:** $( [ $ALL_PASS -eq 1 ] && echo "✅ ALL TESTS PASSED" || echo "❌ TESTS FAILED" )
+            
+            ## Recommendations
+            $(if [ $CLOUD_PASS -eq 0 ]; then echo "- Investigate Cloud API latency issues"; fi)
+            $(if [ $EDGE_PASS -eq 0 ]; then echo "- Optimize edge inference pipeline"; fi)
+            $(if [ $THROUGHPUT_PASS -eq 0 ]; then echo "- Scale infrastructure to handle higher throughput"; fi)
+            $(if [ $ERROR_PASS -eq 0 ]; then echo "- Fix errors causing high error rate"; fi)
+            EOF
+            
+            # Upload performance report
+            cat performance-report.md
+          else
+            echo "No test results found"
+            echo "PERFORMANCE_GATES_PASSED=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Upload performance report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: performance-report
+          path: performance-report.md
+      
+      - name: Fail workflow if performance gates not met
+        if: steps.performance-gates.outputs.PERFORMANCE_GATES_PASSED == 'false'
+        run: |
+          echo "Performance gates not met. Failing workflow."
+          exit 1
+
+  stress-test:
+    name: Stress Test
+    runs-on: ubuntu-latest
+    needs: load-test
+    if: github.event.inputs.test-type == 'stress'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup k6
+        uses: grafana/setup-k6@v3
+        with:
+          k6-version: '0.54.0'
+      
+      - name: Run stress test
+        run: |
+          echo "Running stress test (breaking point analysis)"
+          # This would be a more aggressive test to find breaking points
+          k6 run \
+            --env CLOUD_API_URL="$CLOUD_API_URL" \
+            --env API_KEY="$API_KEY" \
+            --vus 500 \
+            --duration 10m \
+            --out json=stress-test-results.json \
+            load-tests/scripts/test-skyline-mmwave.js
+      
+      - name: Upload stress test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: stress-test-results
+          path: stress-test-results.json
+
+  notify:
+    name: Notify Results
+    runs-on: ubuntu-latest
+    needs: [smoke-test, load-test]
+    if: always()
+    
+    steps:
+      - name: Download test results
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      
+      - name: Send notification
+        run: |
+          echo "Test completed with status: ${{ needs.load-test.result || needs.smoke-test.result }}"
+          # Here you could add notifications to Slack, Teams, etc.
+          # Example for Slack:
+          # curl -X POST -H 'Content-type: application/json' \
+          #   --data "{\"text\":\"Load test completed: ${{ needs.load-test.result }}\"}" \
+          #   ${{ secrets.SLACK_WEBHOOK_URL }}
+          
+          # For now, just output summary
+          if [ -f artifacts/performance-report/performance-report.md ]; then
+            cat artifacts/performance-report/performance-report.md
+          fi

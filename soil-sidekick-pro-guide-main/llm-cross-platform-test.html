@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Router - Cross-Platform Performance Test</title>
+    <script type="module">
+        import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2';
+
+        env.allowLocalModels = false;
+        env.allowRemoteModels = true;
+        env.useBrowserCache = true;
+
+        // Test configuration
+        const TEST_CONFIG = {
+            iterations: 3,
+            warmupRuns: 1,
+            models: [
+                { name: 'DistilGPT2', source: 'Xenova/distilgpt2', size: '88MB' },
+                { name: 'TinyGPT2', source: 'Xenova/tiny-gpt2', size: '40MB' },
+            ]
+        };
+
+        // Detect platform capabilities
+        async function detectPlatform() {
+            const platform = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                cores: navigator.hardwareConcurrency || 'unknown',
+                memory: navigator.deviceMemory || 'unknown',
+                online: navigator.onLine,
+            };
+
+            // Browser detection
+            const ua = navigator.userAgent.toLowerCase();
+            platform.browser = 
+                ua.includes('chrome') && !ua.includes('edg') ? 'Chrome' :
+                ua.includes('edg') ? 'Edge' :
+                ua.includes('firefox') ? 'Firefox' :
+                ua.includes('safari') && !ua.includes('chrome') ? 'Safari' :
+                'Unknown';
+            
+            platform.browserVersion = 
+                platform.browser === 'Chrome' ? ua.match(/chrome\/(\d+)/)?.[1] :
+                platform.browser === 'Firefox' ? ua.match(/firefox\/(\d+)/)?.[1] :
+                platform.browser === 'Safari' ? ua.match(/version\/(\d+)/)?.[1] :
+                platform.browser === 'Edge' ? ua.match(/edg\/(\d+)/)?.[1] :
+                'unknown';
+
+            // WebGPU detection
+            if (navigator.gpu) {
+                try {
+                    const adapter = await navigator.gpu.requestAdapter();
+                    platform.webgpu = {
+                        available: !!adapter,
+                        // Don't call requestAdapterInfo - not supported everywhere
+                    };
+                } catch (e) {
+                    platform.webgpu = { available: false, error: e.message };
+                }
+            } else {
+                platform.webgpu = { available: false };
+            }
+
+            // WebGL detection (fallback)
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+            platform.webgl = {
+                available: !!gl,
+                version: gl ? (gl instanceof WebGL2RenderingContext ? '2.0' : '1.0') : null,
+            };
+
+            return platform;
+        }
+
+        // Run benchmark for specific backend
+        async function benchmarkBackend(backend, model, iterations = 3) {
+            const times = [];
+            let errors = 0;
+
+            try {
+                // Load model
+                console.log(`[${backend}] Loading ${model.name}...`);
+                const generator = await pipeline('text-generation', model.source, {
+                    dtype: 'q4f16',
+                    device: backend === 'webgpu' ? 'webgpu' : 'cpu',
+                });
+
+                // Warmup
+                console.log(`[${backend}] Warming up...`);
+                await generator('warmup', { max_new_tokens: 5 });
+
+                // Benchmark runs
+                for (let i = 0; i < iterations; i++) {
+                    const start = performance.now();
+                    try {
+                        await generator('Soil analysis: moisture 28%, temperature 18C.', {
+                            max_new_tokens: 20,
+                            temperature: 0.7,
+                        });
+                        times.push(performance.now() - start);
+                    } catch (e) {
+                        errors++;
+                        console.error(`[${backend}] Run ${i} failed:`, e);
+                    }
+                }
+
+                return {
+                    success: times.length > 0,
+                    times: times,
+                    median: times.length > 0 ? times.sort((a,b) => a-b)[Math.floor(times.length/2)] : null,
+                    min: times.length > 0 ? Math.min(...times) : null,
+                    max: times.length > 0 ? Math.max(...times) : null,
+                    errors: errors,
+                };
+            } catch (e) {
+                return {
+                    success: false,
+                    error: e.message,
+                    times: [],
+                };
+            }
+        }
+
+        // Run full cross-platform test
+        async function runCrossPlatformTest() {
+            const results = {
+                timestamp: new Date().toISOString(),
+                platform: null,
+                tests: [],
+            };
+
+            document.getElementById('status').textContent = 'Detecting platform...';
+            results.platform = await detectPlatform();
+            displayPlatformInfo(results.platform);
+
+            // Test each model on each backend
+            for (const model of TEST_CONFIG.models) {
+                document.getElementById('status').textContent = `Testing ${model.name}...`;
+
+                // Test WebGPU if available
+                if (results.platform.webgpu.available) {
+                    document.getElementById('status').textContent = `Testing ${model.name} on WebGPU...`;
+                    const webgpuResult = await benchmarkBackend('webgpu', model, TEST_CONFIG.iterations);
+                    results.tests.push({
+                        model: model.name,
+                        backend: 'WebGPU',
+                        ...webgpuResult,
+                    });
+                    addResultRow(model.name, 'WebGPU', webgpuResult);
+                }
+
+                // Always test WASM
+                document.getElementById('status').textContent = `Testing ${model.name} on WASM...`;
+                const wasmResult = await benchmarkBackend('wasm', model, TEST_CONFIG.iterations);
+                results.tests.push({
+                    model: model.name,
+                    backend: 'WASM',
+                    ...wasmResult,
+                });
+                addResultRow(model.name, 'WASM', wasmResult);
+            }
+
+            document.getElementById('status').textContent = 'Complete!';
+            showSummary(results);
+            enableExport(results);
+        }
+
+        function displayPlatformInfo(platform) {
+            const div = document.getElementById('platform-info');
+            div.innerHTML = `
+                <h3>Platform Detected</h3>
+                <table>
+                    <tr><td><strong>OS</strong></td><td>${platform.platform}</td></tr>
+                    <tr><td><strong>Browser</strong></td><td>${platform.browser} ${platform.browserVersion}</td></tr>
+                    <tr><td><strong>CPU Cores</strong></td><td>${platform.cores}</td></tr>
+                    <tr><td><strong>RAM (GB)</strong></td><td>${platform.memory}</td></tr>
+                    <tr><td><strong>WebGPU</strong></td><td>${platform.webgpu.available ? '✅ Available' : '❌ Not Available'}</td></tr>
+                    <tr><td><strong>WebGL</strong></td><td>${platform.webgl.available ? `✅ ${platform.webgl.version}` : '❌ Not Available'}</td></tr>
+                </table>
+            `;
+        }
+
+        function addResultRow(model, backend, result) {
+            const tbody = document.getElementById('results-body');
+            const row = tbody.insertRow();
+            
+            if (!result.success) {
+                row.innerHTML = `
+                    <td>${model}</td>
+                    <td>${backend}</td>
+                    <td colspan="4" style="color:red">❌ ${result.error || 'Failed'}</td>
+                `;
+                return;
+            }
+
+            const meetsSLA = result.median <= 100;
+            row.innerHTML = `
+                <td>${model}</td>
+                <td>${backend}</td>
+                <td>${Math.round(result.median)}ms</td>
+                <td>${Math.round(result.min)}ms / ${Math.round(result.max)}ms</td>
+                <td style="color:${meetsSLA ? 'green' : 'orange'}">
+                    ${meetsSLA ? '✅ <100ms' : '⚠️ >100ms'}
+                </td>
+                <td>${result.errors > 0 ? `⚠️ ${result.errors} errors` : '✅'}</td>
+            `;
+        }
+
+        function showSummary(results) {
+            const div = document.getElementById('summary');
+            const successes = results.tests.filter(t => t.success);
+            const under100ms = successes.filter(t => t.median <= 100);
+            
+            div.innerHTML = `
+                <h3>Test Summary</h3>
+                <p><strong>Successful Tests:</strong> ${successes.length}/${results.tests.length}</p>
+                <p><strong>Meeting <100ms SLA:</strong> ${under100ms.length} configurations</p>
+                
+                ${under100ms.length === 0 ? `
+                    <p style="color:orange"><strong>⚠️ No configuration meets <100ms target on this platform</strong></p>
+                    <p>Recommend: Use Cloud API backend for real-time features</p>
+                ` : `
+                    <p style="color:green"><strong>✅ Fastest: ${under100ms[0].model} + ${under100ms[0].backend} @ ${Math.round(under100ms[0].median)}ms</strong></p>
+                `}
+            `;
+            div.style.display = 'block';
+        }
+
+        function enableExport(results) {
+            const btn = document.getElementById('export-btn');
+            btn.disabled = false;
+            btn.onclick = () => {
+                const dataStr = JSON.stringify(results, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `llm-perf-${results.platform.platform}-${Date.now()}.json`;
+                link.click();
+            };
+        }
+
+        window.runCrossPlatformTest = runCrossPlatformTest;
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 { color: #2c5530; }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover:not(:disabled) { background: #45a049; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        th { background: #f0f0f0; font-weight: bold; }
+        #status {
+            margin: 15px 0;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 4px;
+        }
+        #summary {
+            display: none;
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .platform-item {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌱 SoilSidekick Pro</h1>
+    <h2>Cross-Platform LLM Performance Test</h2>
+    
+    <div class="card">
+        <h3>Test Coverage</h3>
+        <div class="platform-grid">
+            <div class="platform-item"><strong>OS:</strong> Windows, macOS, Linux, iOS, Android</div>
+            <div class="platform-item"><strong>Browsers:</strong> Chrome, Edge, Firefox, Safari</div>
+            <div class="platform-item"><strong>Backends:</strong> WebGPU, WASM, WebGL</div>
+            <div class="platform-item"><strong>Models:</strong> DistilGPT2 (88MB), TinyGPT2 (40MB)</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <button onclick="runCrossPlatformTest()">Run Cross-Platform Test</button>
+        <button id="export-btn" disabled>Export Results (JSON)</button>
+        <div id="status">Click "Run Cross-Platform Test" to begin</div>
+        
+        <div id="platform-info"></div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>Backend</th>
+                    <th>Median</th>
+                    <th>Min/Max</th>
+                    <th>SLA</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="results-body"></tbody>
+        </table>
+        
+        <div id="summary"></div>
+    </div>
+
+    <div class="card">
+        <h3>Testing Matrix</h3>
+        <p>Test on these platforms for comprehensive coverage:</p>
+        <table>
+            <thead>
+                <tr><th>Priority</th><th>Platform</th><th>Expected WebGPU</th><th>Notes</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>🔴 High</td><td>Windows + Chrome</td><td>✅ Best</td><td>NVIDIA/AMD GPU acceleration</td></tr>
+                <tr><td>🔴 High</td><td>macOS + Chrome</td><td>⚠️ Moderate</td><td>Apple Silicon, Metal backend</td></tr>
+                <tr><td>🟡 Medium</td><td>Windows + Edge</td><td>✅ Good</td><td>Same engine as Chrome</td></tr>
+                <tr><td>🟡 Medium</td><td>Linux + Chrome</td><td>✅ Good</td><td>Vulkan backend</td></tr>
+                <tr><td>🟢 Low</td><td>iOS + Safari</td><td>⚠️ Limited</td><td>WebGPU support minimal</td></tr>
+                <tr><td>🟢 Low</td><td>Android + Chrome</td><td>⚠️ Emerging</td><td>Mobile GPU varies</td></tr>
+                <tr><td>🔵 Backup</td><td>Firefox (any)</td><td>❌ No</td><td>WebGPU not yet enabled</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>How to Test Multiple Platforms</h3>
+        <ol>
+            <li><strong>On each device/browser:</strong> Open this file</li>
+            <li><strong>Click "Run Cross-Platform Test"</strong></li>
+            <li><strong>Wait for completion</strong> (~2-5 minutes)</li>
+            <li><strong>Click "Export Results"</strong> to save JSON</li>
+            <li><strong>Send all JSON files</strong> for analysis</li>
+        </ol>
+    </div>
+</body>
+</html>

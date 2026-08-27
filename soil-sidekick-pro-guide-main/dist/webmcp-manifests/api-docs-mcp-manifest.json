@@ -1,0 +1,151 @@
+{
+  "mcp_version": "1.0",
+  "server_name": "leafengines-api-docs",
+  "base_url": "https://app.soilsidekickpro.com",
+  "description": "Interactive API documentation for LeafEngines / SoilSidekick Pro. Browse endpoints, test live queries, and generate SDK code.",
+  "tools": [
+    {
+      "name": "list_endpoints",
+      "description": "List all available API endpoints with their methods, paths, and brief descriptions.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "soil",
+              "water",
+              "plant",
+              "carbon",
+              "location",
+              "all"
+            ],
+            "description": "Filter by API category. Default: all"
+          }
+        }
+      },
+      "endpoint": "/api-endpoints.json"
+    },
+    {
+      "name": "get_endpoint_schema",
+      "description": "Return the full OpenAPI schema for a specific endpoint including request params, body, and response shapes.",
+      "parameters": {
+        "type": "object",
+        "required": [
+          "endpoint_id"
+        ],
+        "properties": {
+          "endpoint_id": {
+            "type": "string",
+            "description": "Endpoint identifier, e.g. 'get-soil-data' or 'agricultural-intelligence'"
+          }
+        }
+      },
+      "endpoint": "/api-endpoints.json"
+    },
+    {
+      "name": "test_endpoint",
+      "description": "Execute a live test call against the sandbox environment with provided parameters. Returns real response data.",
+      "parameters": {
+        "type": "object",
+        "required": [
+          "endpoint_id",
+          "method"
+        ],
+        "properties": {
+          "endpoint_id": {
+            "type": "string",
+            "description": "Endpoint to test"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "GET",
+              "POST"
+            ],
+            "description": "HTTP method"
+          },
+          "params": {
+            "type": "object",
+            "description": "Query or body parameters for the test call"
+          },
+          "use_trial_key": {
+            "type": "boolean",
+            "description": "If true, automatically injects a trial API key. Default: true"
+          }
+        }
+      },
+      "endpoint": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/webmcp-api-docs"
+    },
+    {
+      "name": "generate_code_snippet",
+      "description": "Generate a copy-paste code snippet for calling an endpoint in the requested language.",
+      "parameters": {
+        "type": "object",
+        "required": [
+          "endpoint_id",
+          "language"
+        ],
+        "properties": {
+          "endpoint_id": {
+            "type": "string",
+            "description": "Target endpoint"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "curl",
+              "javascript",
+              "typescript",
+              "python",
+              "go",
+              "ruby"
+            ],
+            "description": "Language for the generated snippet"
+          },
+          "include_auth": {
+            "type": "boolean",
+            "description": "Include API key placeholder in snippet. Default: true"
+          }
+        }
+      },
+      "endpoint": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/webmcp-api-docs"
+    },
+    {
+      "name": "compare_versions",
+      "description": "Compare API schema differences between two versions (e.g. v1 vs v2).",
+      "parameters": {
+        "type": "object",
+        "required": [
+          "from_version",
+          "to_version"
+        ],
+        "properties": {
+          "from_version": {
+            "type": "string",
+            "description": "Base version, e.g. 'v1'"
+          },
+          "to_version": {
+            "type": "string",
+            "description": "Target version, e.g. 'v2'"
+          }
+        }
+      },
+      "endpoint": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/webmcp-api-docs"
+    }
+  ],
+  "resources": [
+    {
+      "name": "openapi_spec",
+      "uri": "https://app.soilsidekickpro.com/api-docs/openapi.json",
+      "mimeType": "application/json",
+      "description": "Full OpenAPI 3.1 specification for the LeafEngines API"
+    },
+    {
+      "name": "postman_collection",
+      "uri": "https://app.soilsidekickpro.com/api-docs/leafengines.postman_collection.json",
+      "mimeType": "application/json",
+      "description": "Ready-to-import Postman collection"
+    }
+  ]
+}

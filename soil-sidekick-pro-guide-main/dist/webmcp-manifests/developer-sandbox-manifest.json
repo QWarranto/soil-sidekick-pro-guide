@@ -1,0 +1,122 @@
+{
+  "mcp_version": "1.0",
+  "server_name": "leafengines-developer-sandbox",
+  "base_url": "https://sandbox.leafengines.com",
+  "description": "Live developer sandbox for testing LeafEngines API calls without production credentials. Execute real queries against sanitized data.",
+  "tools": [
+    {
+      "name": "run_sandbox_query",
+      "description": "Execute an API call in the sandbox environment. Returns live data from sanitized USDA/EPA sources.",
+      "parameters": {
+        "type": "object",
+        "required": [
+          "endpoint",
+          "params"
+        ],
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "enum": [
+              "get-soil-data",
+              "get-water-quality",
+              "resolve-location",
+              "agricultural-intelligence",
+              "environmental-impact",
+              "plant-identify",
+              "carbon-credit-calculator"
+            ],
+            "description": "Sandbox endpoint to call"
+          },
+          "params": {
+            "type": "object",
+            "description": "Endpoint-specific parameters. Example: {fips: '48453'} or {county: 'Travis', state: 'TX'}"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "json",
+              "geojson",
+              "csv"
+            ],
+            "description": "Response format. Default: json"
+          }
+        }
+      },
+      "endpoint": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/sandbox-demo"
+    },
+    {
+      "name": "get_sandbox_quota",
+      "description": "Check remaining sandbox quota (calls per hour, per day) and rate limit status.",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      },
+      "endpoint": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/webmcp-sandbox"
+    },
+    {
+      "name": "view_recent_requests",
+      "description": "Retrieve a log of recent sandbox requests with timestamps, endpoints, and response summaries.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "number",
+            "description": "Number of recent requests to return. Default: 10, max: 50"
+          }
+        }
+      },
+      "endpoint": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/webmcp-sandbox"
+    },
+    {
+      "name": "validate_api_key",
+      "description": "Check if a provided API key is valid, active, and which tier it belongs to.",
+      "parameters": {
+        "type": "object",
+        "required": [
+          "api_key"
+        ],
+        "properties": {
+          "api_key": {
+            "type": "string",
+            "description": "API key to validate (prefix 'ak_' for production, 'tk_' for trial)"
+          }
+        }
+      },
+      "endpoint": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/webmcp-sandbox"
+    },
+    {
+      "name": "compare_response_versions",
+      "description": "Run the same query against v1 and v2 APIs and return a diff of responses.",
+      "parameters": {
+        "type": "object",
+        "required": [
+          "endpoint",
+          "params"
+        ],
+        "properties": {
+          "endpoint": {
+            "type": "string"
+          },
+          "params": {
+            "type": "object"
+          }
+        }
+      },
+      "endpoint": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/webmcp-sandbox"
+    }
+  ],
+  "resources": [
+    {
+      "name": "sandbox_sample_data",
+      "uri": "https://sandbox.leafengines.com/developer-sandbox/samples",
+      "mimeType": "application/json",
+      "description": "Sample request/response pairs for all sandbox endpoints"
+    },
+    {
+      "name": "sdk_quickstart",
+      "uri": "https://app.soilsidekickpro.com/docs/sdk-quickstart",
+      "mimeType": "text/markdown",
+      "description": "Copy-paste SDK integration guide for Node, Python, Go, Ruby"
+    }
+  ]
+}
