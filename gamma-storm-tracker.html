@@ -1,0 +1,2915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ GAMMA STORM TRACKER</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --text-primary: #e0e0e0;
+            --text-secondary: #8b949e;
+            --accent-green: #00ff88;
+            --accent-red: #ff4444;
+            --accent-orange: #ff8800;
+            --accent-yellow: #ffcc00;
+            --accent-blue: #00ccff;
+            --accent-purple: #cc00ff;
+            --border: #2d2d3d;
+        }
+        
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .title h1 {
+            font-size: 24px;
+            letter-spacing: 2px;
+        }
+        
+        .storm-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .storm-calm { background: rgba(0, 255, 136, 0.2); color: var(--accent-green); }
+        .storm-watch { background: rgba(255, 204, 0, 0.2); color: var(--accent-yellow); }
+        .storm-alert { background: rgba(255, 136, 0, 0.2); color: var(--accent-orange); }
+        .storm-major { background: rgba(255, 68, 68, 0.2); color: var(--accent-red); animation: pulse 1s infinite; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .dot-online { background: var(--accent-green); }
+        .dot-delayed { background: var(--accent-yellow); }
+        
+        /* Control Panel */
+        .control-panel {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .ticker-input {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 10px 16px;
+            font-family: inherit;
+            font-size: 14px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            width: 120px;
+        }
+        
+        .ticker-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        .btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 10px 20px;
+            font-family: inherit;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            background: var(--border);
+            border-color: var(--accent-blue);
+        }
+        
+        .btn-primary {
+            background: rgba(0, 204, 255, 0.2);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+        
+        .btn-primary:hover {
+            background: rgba(0, 204, 255, 0.3);
+        }
+        
+        .expiration-select {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 4px 8px;
+            font-family: inherit;
+            font-size: 11px;
+            border-radius: 3px;
+            cursor: pointer;
+            width: 140px;
+        }
+        
+        .expiration-select:hover {
+            border-color: var(--accent-blue);
+        }
+        
+        .expiration-select option {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 11px;
+        }
+        
+        .quick-tickers {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+        
+        .ticker-chip {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .ticker-chip:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+        
+        /* Main Grid */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 1000px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Panel */
+        .panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .panel-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-blue);
+        }
+        
+        .panel-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .panel-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 4px 10px;
+            font-family: inherit;
+            font-size: 11px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .panel-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+        
+        .panel-content {
+            padding: 16px;
+        }
+        
+        /* Gamma Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .metric-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
+        }
+        
+        .metric-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .metric-delta {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        .positive { color: var(--accent-green); }
+        .negative { color: var(--accent-red); }
+        .neutral { color: var(--text-secondary); }
+        
+        /* Options Chain */
+        .options-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        
+        .options-table th {
+            background: var(--bg-tertiary);
+            padding: 10px;
+            text-align: left;
+            color: var(--text-secondary);
+            font-weight: normal;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .options-table td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .options-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        .strike-price {
+            font-weight: bold;
+            color: var(--accent-blue);
+        }
+        
+        .call-data { color: var(--accent-green); }
+        .put-data { color: var(--accent-red); }
+        
+        /* Storm Log */
+        .storm-log {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+        }
+        
+        .log-time {
+            color: var(--text-secondary);
+            font-size: 11px;
+            min-width: 70px;
+        }
+        
+        .log-icon {
+            font-size: 14px;
+        }
+        
+        .log-message {
+            flex: 1;
+        }
+        
+        .log-ticker {
+            color: var(--accent-blue);
+            font-weight: bold;
+        }
+        
+        /* Terminal Output */
+        .terminal-output {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .terminal-line {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        
+        .terminal-prompt {
+            color: var(--accent-green);
+        }
+        
+        .terminal-command {
+            color: var(--text-primary);
+        }
+        
+        .terminal-response {
+            color: var(--text-secondary);
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+        
+        .terminal-error {
+            color: var(--accent-red);
+        }
+        
+        .terminal-success {
+            color: var(--accent-green);
+        }
+        
+        /* Loader */
+        .loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            gap: 8px;
+        }
+        
+        .loader-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        
+        .loader-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loader-dot:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
+        
+        /* Multi-Symbol Dashboard */
+        .watchlist-grid {
+            width: 100%;
+        }
+        
+        .watchlist-grid th {
+            background: var(--bg-tertiary);
+            padding: 12px 8px;
+            text-align: left;
+            color: var(--text-secondary);
+            font-weight: normal;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .watchlist-grid td {
+            padding: 12px 8px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+        
+        .watchlist-grid tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+        
+        .watchlist-grid tr[style*="background"] {
+            border-left: 3px solid var(--accent-red);
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+        
+        .hidden { display: none !important; }
+        
+        /* Ticker List Panel */
+        .ticker-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .ticker-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+        }
+        
+        .ticker-panel-header:hover {
+            background: var(--border);
+        }
+        
+        .ticker-panel-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ticker-panel-toggle {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+        
+        .ticker-list-container {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 12px;
+        }
+        
+        .ticker-category {
+            margin-bottom: 16px;
+        }
+        
+        .ticker-category-title {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            padding-left: 4px;
+        }
+        
+        .ticker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 8px;
+        }
+        
+        .ticker-item {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .ticker-item:hover {
+            border-color: var(--accent-blue);
+            background: rgba(0, 204, 255, 0.1);
+        }
+        
+        .ticker-item.active {
+            border-color: var(--accent-green);
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--accent-green);
+        }
+        
+        .ticker-search {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            font-family: inherit;
+            font-size: 12px;
+            border-radius: 4px;
+            width: 200px;
+            margin-bottom: 12px;
+        }
+        
+        .ticker-search:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        .collapsed { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="title">
+                <span style="font-size: 32px;">⚡</span>
+                <h1>GAMMA STORM TRACKER</h1>
+            </div>
+            <div class="storm-indicator storm-calm" id="stormStatus">
+                <span>◉</span>
+                <span>SYSTEM READY</span>
+            </div>
+            <div class="status-bar">
+                <div class="status-item">
+                    <div class="status-dot dot-online"></div>
+                    <span>ORATS API: <span id="apiKeyStatus" style="color: var(--accent-red);">Not set</span></span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot dot-delayed"></div>
+                    <span>15-MIN DELAYED</span>
+                </div>
+                <div class="status-item" id="apiConnectionStatus" style="padding: 2px 8px; border-radius: 4px;">
+                    <span id="apiConnectionText" style="font-weight: bold;">🔌 API: --</span>
+                </div>
+                <div class="status-item" id="dataSourceIndicator" style="background: rgba(0,255,136,0.1); padding: 2px 8px; border-radius: 4px;">
+                    <span style="color: var(--accent-green); font-weight: bold;">📡 LIVE DATA</span>
+                </div>
+                <div class="status-item">
+                    <span id="lastUpdate">--:--:--</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test Mode Panel (Hidden by default, shown when mocking) -->
+        <div class="panel" id="testModePanel" style="display: none; margin-bottom: 20px; border: 2px solid var(--accent-purple);">
+            <div class="panel-header" style="background: linear-gradient(90deg, var(--bg-tertiary) 0%, rgba(204,0,255,0.1) 100%);">
+                <span class="panel-title" style="color: var(--accent-purple);">🧪 TEST MODE - MOCK DATA</span>
+                <div class="panel-actions">
+                    <span id="testScenarioName" style="font-size: 12px; color: var(--text-secondary); margin-right: 10px;">No scenario loaded</span>
+                    <button class="panel-btn" onclick="loadPreviousScenario()">◀ Prev</button>
+                    <button class="panel-btn" onclick="loadNextScenario()">Next ▶</button>
+                    <button class="panel-btn" onclick="toggleTestMode()" style="color: var(--accent-red);">✕ Exit</button>
+                </div>
+            </div>
+            <div class="panel-content">
+                <div id="testScenarioDetails" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+                    Use test mode to validate playbook rules with predefined scenarios
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn" onclick="loadScenarioById('perfect-call')" style="font-size: 12px; padding: 6px 12px;">✅ Perfect CALL</button>
+                    <button class="btn" onclick="loadScenarioById('perfect-put')" style="font-size: 12px; padding: 6px 12px;">✅ Perfect PUT</button>
+                    <button class="btn" onclick="loadScenarioById('failed-confluence')" style="font-size: 12px; padding: 6px 12px;">⚠️ Failed Confluence</button>
+                    <button class="btn" onclick="loadScenarioById('no-gamma-regime')" style="font-size: 12px; padding: 6px 12px;">⚠️ No Gamma Regime</button>
+                    <button class="btn" onclick="loadScenarioById('illiquid-options')" style="font-size: 12px; padding: 6px 12px;">❌ Illiquid</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <input type="text" class="ticker-input" id="tickerInput" placeholder="TICKER" value="SPY" maxlength="5">
+            <button class="btn btn-primary" onclick="loadGammaData()">⏎ LOAD DATA</button>
+            <button class="btn" onclick="refreshData()">↻ REFRESH</button>
+            <button class="btn" onclick="toggleMultiView()">📊 MULTI-VIEW</button>
+            <button class="btn" onclick="requestNotificationPermission()">🔔 ALERTS</button>
+            <button class="btn" onclick="startAutoRefresh()">⏵ AUTO</button>
+            <button class="btn" onclick="stopAutoRefresh()">⏹ STOP</button>
+            <button class="btn" onclick="toggleTestMode()" style="background: rgba(204,0,255,0.2); border-color: var(--accent-purple); color: var(--accent-purple);">🧪 TEST</button>
+            <button class="btn btn-primary" onclick="runPlaybookEvaluation()" style="background: rgba(0,255,136,0.2); border-color: var(--accent-green); color: var(--accent-green);">🎯 EVALUATE</button>
+            <button class="btn" onclick="showApiKeyModal()" style="background: rgba(255,204,0,0.2); border-color: var(--accent-yellow); color: var(--accent-yellow);">🔑 API Key</button>
+            <button class="btn" onclick="toggleRedactMode()" style="background: rgba(139,148,158,0.2); border-color: var(--text-secondary); color: var(--text-secondary);">👁️ Redact</button>
+            <div class="quick-tickers">
+                <span class="ticker-chip" onclick="setTicker('SPY')">SPY</span>
+                <span class="ticker-chip" onclick="setTicker('QQQ')">QQQ</span>
+                <span class="ticker-chip" onclick="setTicker('IWM')">IWM</span>
+                <span class="ticker-chip" onclick="setTicker('AAPL')">AAPL</span>
+                <span class="ticker-chip" onclick="setTicker('NVDA')">NVDA</span>
+                <span class="ticker-chip" onclick="setTicker('TSLA')">TSLA</span>
+                <span class="ticker-chip" onclick="setTicker('AMD')">AMD</span>
+                <span class="ticker-chip" onclick="setTicker('AMZN')">AMZN</span>
+                <span class="ticker-chip" onclick="setTicker('IBIT')" style="background: rgba(255,140,0,0.2); border-color: #ff8c00; color: #ff8c00;">🟠 IBIT</span>
+            </div>
+        </div>
+        
+        <!-- Multi-Symbol Watchlist Panel -->
+        <div class="panel" id="multiSymbolPanel" style="display: none; margin-bottom: 20px;">
+            <div class="panel-header">
+                <span class="panel-title">📊 MULTI-SYMBOL GAMMA DASHBOARD</span>
+                <div class="panel-actions">
+                    <input type="text" class="ticker-input" id="watchlistInput" placeholder="ADD TICKER" maxlength="5" style="width: 100px; font-size: 12px; padding: 6px 10px;">
+                    <button class="panel-btn" onclick="addToWatchlist()">+ ADD</button>
+                    <button class="panel-btn" onclick="clearWatchlist()">CLEAR</button>
+                    <button class="panel-btn" onclick="refreshAllSymbols()">↻ REFRESH ALL</button>
+                </div>
+            </div>
+            <div class="panel-content">
+                <div id="watchlistContainer">
+                    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                        No symbols in watchlist. Add tickers above to track multiple symbols simultaneously.
+                    </div>
+                </div>
+                <div class="loader hidden" id="multiLoader">
+                    <div class="loader-dot"></div>
+                    <div class="loader-dot"></div>
+                    <div class="loader-dot"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ticker Selector Panel -->
+        <div class="ticker-panel">
+            <div class="ticker-panel-header" onclick="toggleTickerPanel()">
+                <span class="ticker-panel-title">📋 SYMBOL DIRECTORY</span>
+                <span class="ticker-panel-toggle" id="panelToggle">▼ COLLAPSE</span>
+            </div>
+            <div class="ticker-list-container" id="tickerListContainer">
+                <input type="text" class="ticker-search" id="tickerSearch" placeholder="🔍 Search symbols..." onkeyup="filterTickers()">
+                
+                <div class="ticker-category">
+                    <div class="ticker-category-title">Indices & ETFs</div>
+                    <div class="ticker-grid" id="indicesList">
+                        <div class="ticker-item" onclick="setTicker('SPY')">SPY</div>
+                        <div class="ticker-item" onclick="setTicker('QQQ')">QQQ</div>
+                        <div class="ticker-item" onclick="setTicker('IWM')">IWM</div>
+                        <div class="ticker-item" onclick="setTicker('DIA')">DIA</div>
+                        <div class="ticker-item" onclick="setTicker('VIX')">VIX</div>
+                        <div class="ticker-item" onclick="setTicker('UVXY')">UVXY</div>
+                        <div class="ticker-item" onclick="setTicker('XLF')">XLF</div>
+                        <div class="ticker-item" onclick="setTicker('XLK')">XLK</div>
+                        <div class="ticker-item" onclick="setTicker('XLE')">XLE</div>
+                        <div class="ticker-item" onclick="setTicker('XLI')">XLI</div>
+                        <div class="ticker-item" onclick="setTicker('XLU')">XLU</div>
+                        <div class="ticker-item" onclick="setTicker('ARKK')">ARKK</div>
+                        <div class="ticker-item" onclick="setTicker('TLT')">TLT</div>
+                        <div class="ticker-item" onclick="setTicker('GLD')">GLD</div>
+                        <div class="ticker-item" onclick="setTicker('USO')">USO</div>
+                    </div>
+                </div>
+                
+                <div class="ticker-category">
+                    <div class="ticker-category-title">Magnificent 7 + Tech</div>
+                    <div class="ticker-grid" id="techList">
+                        <div class="ticker-item" onclick="setTicker('AAPL')">AAPL</div>
+                        <div class="ticker-item" onclick="setTicker('MSFT')">MSFT</div>
+                        <div class="ticker-item" onclick="setTicker('GOOGL')">GOOGL</div>
+                        <div class="ticker-item" onclick="setTicker('AMZN')">AMZN</div>
+                        <div class="ticker-item" onclick="setTicker('NVDA')">NVDA</div>
+                        <div class="ticker-item" onclick="setTicker('META')">META</div>
+                        <div class="ticker-item" onclick="setTicker('TSLA')">TSLA</div>
+                        <div class="ticker-item" onclick="setTicker('NFLX')">NFLX</div>
+                        <div class="ticker-item" onclick="setTicker('AMD')">AMD</div>
+                        <div class="ticker-item" onclick="setTicker('INTC')">INTC</div>
+                        <div class="ticker-item" onclick="setTicker('AVGO')">AVGO</div>
+                        <div class="ticker-item" onclick="setTicker('QCOM')">QCOM</div>
+                        <div class="ticker-item" onclick="setTicker('CRM')">CRM</div>
+                        <div class="ticker-item" onclick="setTicker('ADBE')">ADBE</div>
+                        <div class="ticker-item" onclick="setTicker('ORCL')">ORCL</div>
+                    </div>
+                </div>
+                
+                <div class="ticker-category">
+                    <div class="ticker-category-title">Semiconductors</div>
+                    <div class="ticker-grid" id="semiList">
+                        <div class="ticker-item" onclick="setTicker('NVDA')">NVDA</div>
+                        <div class="ticker-item" onclick="setTicker('AMD')">AMD</div>
+                        <div class="ticker-item" onclick="setTicker('INTC')">INTC</div>
+                        <div class="ticker-item" onclick="setTicker('AVGO')">AVGO</div>
+                        <div class="ticker-item" onclick="setTicker('QCOM')">QCOM</div>
+                        <div class="ticker-item" onclick="setTicker('TSM')">TSM</div>
+                        <div class="ticker-item" onclick="setTicker('ASML')">ASML</div>
+                        <div class="ticker-item" onclick="setTicker('AMAT')">AMAT</div>
+                        <div class="ticker-item" onclick="setTicker('LRCX')">LRCX</div>
+                        <div class="ticker-item" onclick="setTicker('KLAC')">KLAC</div>
+                        <div class="ticker-item" onclick="setTicker('MRVL')">MRVL</div>
+                        <div class="ticker-item" onclick="setTicker('MU')">MU</div>
+                        <div class="ticker-item" onclick="setTicker('NXPI')">NXPI</div>
+                        <div class="ticker-item" onclick="setTicker('ON')">ON</div>
+                        <div class="ticker-item" onclick="setTicker('SMCI')">SMCI</div>
+                    </div>
+                </div>
+                
+                <div class="ticker-category">
+                    <div class="ticker-category-title">Financials</div>
+                    <div class="ticker-grid" id="financeList">
+                        <div class="ticker-item" onclick="setTicker('JPM')">JPM</div>
+                        <div class="ticker-item" onclick="setTicker('BAC')">BAC</div>
+                        <div class="ticker-item" onclick="setTicker('WFC')">WFC</div>
+                        <div class="ticker-item" onclick="setTicker('GS')">GS</div>
+                        <div class="ticker-item" onclick="setTicker('MS')">MS</div>
+                        <div class="ticker-item" onclick="setTicker('BLK')">BLK</div>
+                        <div class="ticker-item" onclick="setTicker('C')">C</div>
+                        <div class="ticker-item" onclick="setTicker('AXP')">AXP</div>
+                        <div class="ticker-item" onclick="setTicker('USB')">USB</div>
+                        <div class="ticker-item" onclick="setTicker('PNC')">PNC</div>
+                    </div>
+                </div>
+                
+                <div class="ticker-category">
+                    <div class="ticker-category-title">Energy & Industrial</div>
+                    <div class="ticker-grid" id="energyList">
+                        <div class="ticker-item" onclick="setTicker('XOM')">XOM</div>
+                        <div class="ticker-item" onclick="setTicker('CVX')">CVX</div>
+                        <div class="ticker-item" onclick="setTicker('COP')">COP</div>
+                        <div class="ticker-item" onclick="setTicker('EOG')">EOG</div>
+                        <div class="ticker-item" onclick="setTicker('SLB')">SLB</div>
+                        <div class="ticker-item" onclick="setTicker('OXY')">OXY</div>
+                        <div class="ticker-item" onclick="setTicker('GE')">GE</div>
+                        <div class="ticker-item" onclick="setTicker('CAT')">CAT</div>
+                        <div class="ticker-item" onclick="setTicker('BA')">BA</div>
+                        <div class="ticker-item" onclick="setTicker('HON')">HON</div>
+                        <div class="ticker-item" onclick="setTicker('UPS')">UPS</div>
+                        <div class="ticker-item" onclick="setTicker('RTX')">RTX</div>
+                        <div class="ticker-item" onclick="setTicker('LMT')">LMT</div>
+                        <div class="ticker-item" onclick="setTicker('NOC')">NOC</div>
+                        <div class="ticker-item" onclick="setTicker('MMM')">MMM</div>
+                    </div>
+                </div>
+                
+                <div class="ticker-category">
+                    <div class="ticker-category-title">Consumer & Retail</div>
+                    <div class="ticker-grid" id="consumerList">
+                        <div class="ticker-item" onclick="setTicker('AMZN')">AMZN</div>
+                        <div class="ticker-item" onclick="setTicker('WMT')">WMT</div>
+                        <div class="ticker-item" onclick="setTicker('TGT')">TGT</div>
+                        <div class="ticker-item" onclick="setTicker('COST')">COST</div>
+                        <div class="ticker-item" onclick="setTicker('HD')">HD</div>
+                        <div class="ticker-item" onclick="setTicker('LOW')">LOW</div>
+                        <div class="ticker-item" onclick="setTicker('MCD')">MCD</div>
+                        <div class="ticker-item" onclick="setTicker('SBUX')">SBUX</div>
+                        <div class="ticker-item" onclick="setTicker('NKE')">NKE</div>
+                        <div class="ticker-item" onclick="setTicker('LULU')">LULU</div>
+                        <div class="ticker-item" onclick="setTicker('TJX')">TJX</div>
+                        <div class="ticker-item" onclick="setTicker('DG')">DG</div>
+                        <div class="ticker-item" onclick="setTicker('DLTR')">DLTR</div>
+                        <div class="ticker-item" onclick="setTicker('KO')">KO</div>
+                        <div class="ticker-item" onclick="setTicker('PEP')">PEP</div>
+                    </div>
+                </div>
+                
+                <div class="ticker-category">
+                    <div class="ticker-category-title">Healthcare</div>
+                    <div class="ticker-grid" id="healthList">
+                        <div class="ticker-item" onclick="setTicker('LLY')">LLY</div>
+                        <div class="ticker-item" onclick="setTicker('JNJ')">JNJ</div>
+                        <div class="ticker-item" onclick="setTicker('UNH')">UNH</div>
+                        <div class="ticker-item" onclick="setTicker('PFE')">PFE</div>
+                        <div class="ticker-item" onclick="setTicker('MRK')">MRK</div>
+                        <div class="ticker-item" onclick="setTicker('ABBV')">ABBV</div>
+                        <div class="ticker-item" onclick="setTicker('TMO')">TMO</div>
+                        <div class="ticker-item" onclick="setTicker('ABT')">ABT</div>
+                        <div class="ticker-item" onclick="setTicker('DHR')">DHR</div>
+                        <div class="ticker-item" onclick="setTicker('BMY')">BMY</div>
+                        <div class="ticker-item" onclick="setTicker('AMGN')">AMGN</div>
+                        <div class="ticker-item" onclick="setTicker('GILD')">GILD</div>
+                        <div class="ticker-item" onclick="setTicker('VRTX')">VRTX</div>
+                        <div class="ticker-item" onclick="setTicker('REGN')">REGN</div>
+                        <div class="ticker-item" onclick="setTicker('ISRG')">ISRG</div>
+                    </div>
+                </div>
+                
+                <div class="ticker-category">
+                    <div class="ticker-category-title">Crypto & Speculative</div>
+                    <div class="ticker-grid" id="cryptoList">
+                        <div class="ticker-item" onclick="setTicker('COIN')">COIN</div>
+                        <div class="ticker-item" onclick="setTicker('MSTR')">MSTR</div>
+                        <div class="ticker-item" onclick="setTicker('HOOD')">HOOD</div>
+                        <div class="ticker-item" onclick="setTicker('RIOT')">RIOT</div>
+                        <div class="ticker-item" onclick="setTicker('MARA')">MARA</div>
+                        <div class="ticker-item" onclick="setTicker('CLSK')">CLSK</div>
+                        <div class="ticker-item" onclick="setTicker('PLTR')">PLTR</div>
+                        <div class="ticker-item" onclick="setTicker('SOFI')">SOFI</div>
+                        <div class="ticker-item" onclick="setTicker('AFRM')">AFRM</div>
+                        <div class="ticker-item" onclick="setTicker('SNOW')">SNOW</div>
+                        <div class="ticker-item" onclick="setTicker('ROKU')">ROKU</div>
+                        <div class="ticker-item" onclick="setTicker('ZM')">ZM</div>
+                        <div class="ticker-item" onclick="setTicker('UBER')">UBER</div>
+                        <div class="ticker-item" onclick="setTicker('LYFT')">LYFT</div>
+                        <div class="ticker-item" onclick="setTicker('DASH')">DASH</div>
+                    </div>
+                </div>
+                
+                <div class="ticker-category">
+                    <div class="ticker-category-title">Bitcoin ETFs 🟠</div>
+                    <div class="ticker-grid" id="bitcoinETFList">
+                        <div class="ticker-item" onclick="setTicker('IBIT')">IBIT</div>
+                        <div class="ticker-item" onclick="setTicker('FBTC')">FBTC</div>
+                        <div class="ticker-item" onclick="setTicker('ARKB')">ARKB</div>
+                        <div class="ticker-item" onclick="setTicker('BITB')">BITB</div>
+                        <div class="ticker-item" onclick="setTicker('GBTC')">GBTC</div>
+                        <div class="ticker-item" onclick="setTicker('HODL')">HODL</div>
+                        <div class="ticker-item" onclick="setTicker('BRRR')">BRRR</div>
+                        <div class="ticker-item" onclick="setTicker('BTCO')">BTCO</div>
+                        <div class="ticker-item" onclick="setTicker('EZBC')">EZBC</div>
+                        <div class="ticker-item" onclick="setTicker('BTCW')">BTCW</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dashboard -->
+        <div class="dashboard">
+            <!-- Gamma Metrics Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">⚡ GAMMA METRICS</span>
+                    <div class="panel-actions">
+                        <button class="panel-btn" onclick="toggleView('simplified')">SIMPLIFIED</button>
+                        <button class="panel-btn" onclick="toggleView('detailed')">DETAILED</button>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <div class="metrics-grid" id="metricsGrid">
+                        <div class="metric-card">
+                            <div class="metric-label">⚡ GAMMA FLIP</div>
+                            <div class="metric-value" id="gammaFlip">--.--</div>
+                            <div class="metric-delta neutral" id="gammaFlipDelta">Awaiting data...</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">🔴 CALL WALL</div>
+                            <div class="metric-value" id="callWall">--.--</div>
+                            <div class="metric-delta neutral" id="callWallDelta">Awaiting data...</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">🟢 PUT SUPPORT</div>
+                            <div class="metric-value" id="putSupport">--.--</div>
+                            <div class="metric-delta neutral" id="putSupportDelta">Awaiting data...</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">🎯 REGIME</div>
+                            <div class="metric-value" id="regime" style="font-size: 18px;">--</div>
+                            <div class="metric-delta neutral" id="regimeDelta">--</div>
+                        </div>
+                        <div class="metric-card" id="zoneWidthCard">
+                            <div class="metric-label">📍 ZONE WIDTH</div>
+                            <div class="metric-value" id="zoneWidth">--.-%</div>
+                            <div class="metric-delta neutral" id="zoneWidthDelta">--</div>
+                        </div>
+                        <div class="metric-card" id="spotPriceCard">
+                            <div class="metric-label">📊 SPOT PRICE</div>
+                            <div class="metric-value" id="spotPrice">--.--</div>
+                            <div class="metric-delta neutral" id="spotPriceDelta">--</div>
+                        </div>
+                    </div>
+                    <div class="loader" id="metricsLoader">
+                        <div class="loader-dot"></div>
+                        <div class="loader-dot"></div>
+                        <div class="loader-dot"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Options Chain Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title" id="chainPanelTitle">📈 OPTIONS ANALYSIS SUITE (6 FEATURES)</span>
+                    <div class="panel-actions">
+                        <select class="expiration-select" id="expirationSelect" onchange="changeExpiration()">
+                            <option value="">Auto-Select</option>
+                        </select>
+                        <button class="panel-btn" onclick="loadChain()">REFRESH</button>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <div id="chainContent">
+                        <table class="options-table">
+                            <thead>
+                                <tr>
+                                    <th>📋 CHAIN</th>
+                                    <th>📊 GAMMA</th>
+                                    <th>📈 SKEW</th>
+                                    <th>🚨 ACTIVITY</th>
+                                    <th>🎯 MAX PAIN</th>
+                                    <th>📅 TERM</th>
+                                </tr>
+                            </thead>
+                            <tbody id="chainBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 40px;">
+                                        <div style="font-size: 14px; margin-bottom: 10px;">⚡ ENHANCED OPTIONS ANALYSIS SUITE</div>
+                                        <div style="font-size: 12px; opacity: 0.8;">
+                                            📋 Options Chain with Greeks | 📊 Gamma by Strike | 📈 Skew Analysis<br>
+                                            🚨 Unusual Activity | 🎯 Max Pain | 📅 IV Term Structure
+                                        </div>
+                                        <div style="margin-top: 15px; font-size: 11px;">
+                                            Enter a ticker and press LOAD DATA to begin
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="loader hidden" id="chainLoader">
+                        <div class="loader-dot"></div>
+                        <div class="loader-dot"></div>
+                        <div class="loader-dot"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Storm Log Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">🌩️ STORM LOG</span>
+                    <div class="panel-actions">
+                        <button class="panel-btn" onclick="clearLog()">CLEAR</button>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <div class="storm-log" id="stormLog">
+                        <div class="log-entry">
+                            <span class="log-time">--:--</span>
+                            <span class="log-icon">🔭</span>
+                            <span class="log-message">Gamma Storm Tracker initialized</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">--:--</span>
+                            <span class="log-icon">📡</span>
+                            <span class="log-message">ORATS API connected (15-min delayed)</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">--:--</span>
+                            <span class="log-icon">⚡</span>
+                            <span class="log-message">Enhanced Options Suite loaded (6 features)</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">--:--</span>
+                            <span class="log-icon">🧪</span>
+                            <span class="log-message">Mock Data ready - 5 test scenarios available</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">--:--</span>
+                            <span class="log-icon">⏳</span>
+                            <span class="log-message">Ready for command input</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Decision Trace Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">🎯 DECISION TRACE</span>
+                    <div class="panel-actions">
+                        <button class="panel-btn" onclick="runPlaybookEvaluation()">EVALUATE</button>
+                        <button class="panel-btn" onclick="exportDecisionTrace()">EXPORT</button>
+                    </div>
+                </div>
+                <div class="panel-content" id="decisionTraceContainer" style="padding: 0;">
+                    <div style="padding: 40px; text-align: center; color: var(--text-secondary);">
+                        <div style="font-size: 24px; margin-bottom: 10px;">🎯</div>
+                        <div>Decision Trace v1.2 Ready</div>
+                        <div style="font-size: 11px; margin-top: 10px; opacity: 0.7;">
+                            Load data and click EVALUATE to see rule analysis
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Terminal Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">💻 TERMINAL</span>
+                    <div class="panel-actions">
+                        <button class="panel-btn" onclick="clearTerminal()">CLEAR</button>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <div class="terminal-output" id="terminalOutput">
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">kepler@gamma-tracker:~$</span>
+                            <span class="terminal-command">./init-orats.sh</span>
+                        </div>
+                        <div class="terminal-response terminal-success">
+                            ✓ ORATS Data Feed initialized<br>
+                            ✓ API Token validated<br>
+                            ✓ Delayed quotes enabled (15-min)<br>
+                            ✓ Storm detection algorithms loaded<br>
+                            ✓ Enhanced Options Analysis Suite loaded<br>
+                            &nbsp;&nbsp;&nbsp;📋 Options Chain with Greeks<br>
+                            &nbsp;&nbsp;&nbsp;📊 Gamma by Strike Visualization<br>
+                            &nbsp;&nbsp;&nbsp;📈 Put/Call Skew Analysis<br>
+                            &nbsp;&nbsp;&nbsp;🚨 Unusual Activity Detector<br>
+                            &nbsp;&nbsp;&nbsp;🎯 Max Pain Calculation<br>
+                            &nbsp;&nbsp;&nbsp;📅 IV Term Structure<br>
+                            ✓ Mock Data Module loaded<br>
+                            &nbsp;&nbsp;&nbsp;🧪 5 Test Scenarios Available<br>
+                            &nbsp;&nbsp;&nbsp;Click "🧪 TEST" button to use mock data<br>
+                            <br>
+                            Ready to track gamma storms...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- GST Core Components -->
+    <script src="gst-loader.js"></script>
+    
+    <!-- Legacy Components (v1.x) -->
+    <script src="gamma-options-analyzer.js"></script>
+    <script src="gamma-enhanced-integration.js"></script>
+    <script src="gamma-mock-data.js"></script>
+    
+    <!-- Playbook Verification -->
+    <script src="playbook-verification.js"></script>
+    
+    <script>
+        // ORATS API Configuration
+        const ORATS_BASE_URL = 'https://api.orats.io/datav2';
+        
+        // API Key Management (session-only, never persisted to disk)
+        const ApiKeyManager = {
+            getKey() {
+                try {
+                    return sessionStorage.getItem('orats_api_key');
+                } catch (e) {
+                    return null;
+                }
+            },
+            
+            setKey(key) {
+                try {
+                    if (key && key.trim()) {
+                        sessionStorage.setItem('orats_api_key', key.trim());
+                        return true;
+                    }
+                    return false;
+                } catch (e) {
+                    console.error('Failed to store API key:', e);
+                    return false;
+                }
+            },
+            
+            clearKey() {
+                try {
+                    sessionStorage.removeItem('orats_api_key');
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            },
+            
+            hasKey() {
+                return !!this.getKey();
+            },
+            
+            getMaskedKey() {
+                const key = this.getKey();
+                if (!key) return null;
+                if (key.length <= 8) return '***';
+                return key.substring(0, 4) + '...' + key.substring(key.length - 4);
+            },
+            
+            promptForKey() {
+                const key = prompt('Enter your ORATS API key:\n\n(This will be stored only for this browser session and cleared when you close the tab)');
+                if (key && key.trim()) {
+                    this.setKey(key.trim());
+                    return true;
+                }
+                return false;
+            }
+        };
+        
+        // Redact mode for screen sharing
+        let redactMode = false;
+        
+        function toggleRedactMode() {
+            redactMode = !redactMode;
+            const apiStatusEl = document.getElementById('apiKeyStatus');
+            if (apiStatusEl) {
+                apiStatusEl.textContent = redactMode ? '●●●●●●●●●●' : (ApiKeyManager.getMaskedKey() || 'Not set');
+            }
+            logToTerminal('api', redactMode ? 'Redact mode enabled' : 'Redact mode disabled');
+        }
+        
+        function showApiKeyModal() {
+            const hasKey = ApiKeyManager.hasKey();
+            const maskedKey = ApiKeyManager.getMaskedKey();
+            
+            const action = hasKey 
+                ? confirm(`API Key Status:\n\nCurrent: ${maskedKey}\n\nClick OK to enter a new key, or Cancel to keep the current one.`)
+                : true;
+            
+            if (action) {
+                const success = ApiKeyManager.promptForKey();
+                if (success) {
+                    logToTerminal('api', '✓ API key stored for this session');
+                    updateApiKeyBadge();
+                    updateApiConnectionStatus();
+                }
+            }
+        }
+        
+        function clearApiKey() {
+            if (confirm('Clear API key?\n\nYou will need to re-enter it to fetch live data.')) {
+                ApiKeyManager.clearKey();
+                logToTerminal('api', '✓ API key cleared');
+                updateApiKeyBadge();
+                updateApiConnectionStatus();
+            }
+        }
+        
+        function updateApiKeyBadge() {
+            const badge = document.getElementById('apiKeyStatus');
+            const hasKey = ApiKeyManager.hasKey();
+            if (badge) {
+                if (hasKey) {
+                    badge.textContent = redactMode ? '●●●●●●●●●●' : ApiKeyManager.getMaskedKey();
+                    badge.style.color = 'var(--accent-green)';
+                } else {
+                    badge.textContent = 'Not set';
+                    badge.style.color = 'var(--accent-red)';
+                }
+            }
+        }
+        
+        // Focus ticker input for live data loading
+        function focusTickerForLiveData() {
+            const hasKey = ApiKeyManager.hasKey();
+            if (!hasKey) {
+                // No API key - show prompt first
+                const success = ApiKeyManager.promptForKey();
+                if (!success) return; // User cancelled
+            }
+            // Focus ticker input
+            const tickerInput = document.getElementById('tickerInput');
+            if (tickerInput) {
+                tickerInput.focus();
+                tickerInput.select();
+            }
+        }
+        
+        // API Connection Status Indicator
+        function updateApiConnectionStatus() {
+            const container = document.getElementById('apiConnectionStatus');
+            const text = document.getElementById('apiConnectionText');
+            if (!container || !text) return;
+            
+            const hasKey = ApiKeyManager.hasKey();
+            const isMockMode = document.getElementById('testModePanel')?.style.display === 'block';
+            
+            if (!hasKey) {
+                // No API key at all
+                text.textContent = '🔌 API: DISCONNECTED';
+                text.style.color = 'var(--accent-red)';
+                container.style.background = 'rgba(255,68,68,0.1)';
+            } else if (isMockMode) {
+                // Have key but in mock mode (key stored but not being used)
+                text.textContent = '🔌 API: STANDBY';
+                text.style.color = 'var(--accent-yellow)';
+                container.style.background = 'rgba(255,204,0,0.1)';
+            } else {
+                // Have key and in live mode (key being used)
+                text.textContent = '🔌 API: CONNECTED';
+                text.style.color = 'var(--accent-green)';
+                container.style.background = 'rgba(0,255,136,0.1)';
+            }
+        }
+        
+        // Data Source Indicator
+        function setDataSourceIndicator(mode) {
+            const indicator = document.getElementById('dataSourceIndicator');
+            if (!indicator) return;
+            
+            if (mode === 'mock') {
+                indicator.innerHTML = '<span style="color: var(--accent-purple); font-weight: bold;">🧪 MOCK DATA</span>';
+                indicator.style.background = 'rgba(204,0,255,0.2)';
+                indicator.style.border = '1px solid var(--accent-purple)';
+            } else {
+                indicator.innerHTML = '<span style="color: var(--accent-green); font-weight: bold;">📡 LIVE DATA</span>';
+                indicator.style.background = 'rgba(0,255,136,0.1)';
+                indicator.style.border = 'none';
+            }
+            
+            // Also update API connection status
+            updateApiConnectionStatus();
+        }
+        
+        // State
+        window.currentTicker = 'SPY';
+        let allExpirations = {};
+        let currentExpiration = null;
+        let currentView = 'detailed'; // 'simplified' or 'detailed'
+        let watchlist = ['SPY', 'QQQ', 'IWM', 'AAPL', 'NVDA'];
+        let watchlistData = {};
+        let previousRegimes = {}; // Track previous gamma states for flip detection
+        let multiViewActive = false;
+        let autoRefreshInterval = null;
+        let notificationsEnabled = false;
+        
+        // ═══════════════════════════════════════════════════════════════
+        // INLINE MOCK DATA (Works without GST modules)
+        // ═══════════════════════════════════════════════════════════════
+        const InlineMockData = {
+            currentScenario: null,
+            
+            scenarios: [
+                {
+                    id: 'perfect-call',
+                    name: 'Perfect CALL Setup',
+                    description: 'All 6 rules pass - ideal mean reversion long',
+                    ticker: 'SPY',
+                    spotPrice: 478.50,
+                    data: {
+                        gammaMetrics: {
+                            netGammaExposure: 1.4,
+                            gammaFlip: 476.25,
+                            callWall: 480.00,
+                            putSupport: 475.00,
+                            regime: 'NEGATIVE_GAMMA',
+                            zoneWidth: 1.05,
+                            expiration: '2025-02-21',
+                            dte: 37
+                        },
+                        confluence: {
+                            flipDistance: 1.2,
+                            wallSeparation: 2.1,
+                            ivSkew: 6.5,
+                            unusualActivity: true,
+                            maxPainDistance: 1.2,
+                            score: 4
+                        },
+                        ohlcv: {
+                            history: [
+                                { time: '09:30', open: 475.50, high: 476.20, low: 475.00, close: 476.00, volume: 2500000 },  // Below flip
+                                { time: '10:00', open: 476.00, high: 477.50, low: 475.75, close: 476.20, volume: 1800000 }, // Still below
+                                { time: '10:30', open: 476.20, high: 479.00, low: 476.00, close: 478.50, volume: 2100000 }  // Cross above flip!
+                            ]
+                        },
+                        flow: {
+                            darkPoolSentiment: 'neutral',
+                            optionsFlowDelta: 0.3,
+                            blockTrades: 'balanced'
+                        },
+                        activity: {
+                            callUnusual: true,
+                            putUnusual: false,
+                            callVolume: 45000,
+                            putVolume: 12000
+                        }
+                    },
+                    expected: { signal: 'CALL', confidence: 92 }
+                },
+                {
+                    id: 'perfect-put',
+                    name: 'Perfect PUT Setup',
+                    description: 'All 6 rules pass - ideal mean reversion short',
+                    ticker: 'QQQ',
+                    spotPrice: 412.50,
+                    data: {
+                        gammaMetrics: {
+                            netGammaExposure: -1.3,
+                            gammaFlip: 414.75,
+                            callWall: 416.00,
+                            putSupport: 410.00,
+                            regime: 'POSITIVE_GAMMA',
+                            zoneWidth: 1.46,
+                            expiration: '2025-02-21',
+                            dte: 37
+                        },
+                        confluence: {
+                            flipDistance: 1.1,
+                            wallSeparation: 2.3,
+                            ivSkew: 5.8,
+                            unusualActivity: true,
+                            maxPainDistance: -1.1,
+                            score: 4
+                        },
+                        ohlcv: {
+                            history: [
+                                { time: '13:30', open: 415.50, high: 416.00, low: 414.50, close: 415.50, volume: 1500000 }, // Above flip
+                                { time: '14:00', open: 415.50, high: 415.50, low: 413.50, close: 414.80, volume: 1200000 }, // Still above
+                                { time: '14:30', open: 414.80, high: 414.80, low: 411.50, close: 412.50, volume: 1800000 }  // Cross below flip!
+                            ]
+                        },
+                        flow: {
+                            darkPoolSentiment: 'bearish',
+                            optionsFlowDelta: -0.4,
+                            blockTrades: 'sellHeavy'
+                        },
+                        activity: {
+                            callUnusual: false,
+                            putUnusual: true,
+                            callVolume: 8000,
+                            putVolume: 38000
+                        }
+                    },
+                    expected: { signal: 'PUT', confidence: 88 }
+                },
+                {
+                    id: 'failed-confluence',
+                    name: 'Failed Confluence',
+                    description: 'Good gamma regime but only 2/5 indicators align',
+                    ticker: 'IWM',
+                    spotPrice: 215.25,
+                    data: {
+                        gammaMetrics: {
+                            netGammaExposure: 1.1,
+                            gammaFlip: 214.50,
+                            callWall: 217.00,
+                            putSupport: 213.00,
+                            regime: 'NEGATIVE_GAMMA',
+                            zoneWidth: 1.86,
+                            expiration: '2025-02-21',
+                            dte: 37
+                        },
+                        confluence: {
+                            flipDistance: 0.4,
+                            wallSeparation: 1.2,
+                            ivSkew: 2.1,
+                            unusualActivity: false,
+                            maxPainDistance: 0.3,
+                            score: 2
+                        },
+                        ohlcv: {
+                            history: [
+                                { time: '10:00', open: 214.75, high: 215.50, low: 214.25, close: 214.80, volume: 800000 },
+                                { time: '10:30', open: 214.80, high: 215.75, low: 214.60, close: 215.10, volume: 750000 },
+                                { time: '11:00', open: 215.10, high: 215.50, low: 214.90, close: 215.25, volume: 600000 }
+                            ]
+                        },
+                        flow: {
+                            darkPoolSentiment: 'mixed',
+                            optionsFlowDelta: 0.1,
+                            blockTrades: 'balanced'
+                        },
+                        activity: {
+                            callUnusual: false,
+                            putUnusual: false,
+                            callVolume: 5000,
+                            putVolume: 4500
+                        }
+                    },
+                    expected: { signal: 'NONE', confidence: 0 }
+                }
+            ],
+            
+            getById(id) {
+                return this.scenarios.find(s => s.id === id);
+            },
+            
+            getCurrent() {
+                return this.currentScenario;
+            },
+            
+            applyScenario(scenario) {
+                this.currentScenario = scenario;
+                window.currentTicker = scenario.ticker;
+                
+                // Update UI
+                const tickerInput = document.getElementById('tickerInput');
+                if (tickerInput) tickerInput.value = scenario.ticker;
+                
+                const testName = document.getElementById('testScenarioName');
+                if (testName) testName.textContent = scenario.name;
+                
+                const testDetails = document.getElementById('testScenarioDetails');
+                if (testDetails) {
+                    testDetails.innerHTML = `
+                        <strong style="color: var(--accent-blue);">${scenario.name}</strong> - ${scenario.description}<br>
+                        Expected Signal: <span style="color: ${scenario.expected.signal === 'CALL' ? 'var(--accent-green)' : scenario.expected.signal === 'PUT' ? 'var(--accent-red)' : 'var(--text-secondary)'}">${scenario.expected.signal}</span> 
+                        (Confidence: ${scenario.expected.confidence}%)
+                    `;
+                }
+                
+                // Store for evaluation
+                window.lastData = { _mockScenario: scenario, _isMockData: true };
+                
+                return scenario;
+            }
+        };
+        
+        // ═══════════════════════════════════════════════════════════════
+        // FALLBACK PLAYBOOK ENGINE (Inline - works even if GST fails to load)
+        // ═══════════════════════════════════════════════════════════════
+        const FallbackPlaybook = {
+            VERSION: '1.2.0-fallback',
+            
+            evaluateV12MR(context) {
+                const { ticker, spotPrice, gammaMetrics, ohlcv, confluence, flow, activity } = context;
+                
+                const result = {
+                    timestamp: Date.now(),
+                    ticker,
+                    signal: 'NONE',
+                    confidence: 0,
+                    levels: null,
+                    trace: []
+                };
+                
+                const atrValue = 1.2; // Mock ATR
+                
+                // Rule 1: Gamma Regime
+                const gammaExposure = Math.abs(gammaMetrics?.netGammaExposure || 0);
+                const gammaRegimePass = gammaExposure >= 1.0;
+                result.trace.push({
+                    ruleId: 'gammaRegime',
+                    name: 'Gamma Regime',
+                    pass: gammaRegimePass,
+                    value: gammaExposure,
+                    threshold: 1.0,
+                    note: `Net gamma exposure: ${(gammaExposure * 100).toFixed(1)}% ${gammaRegimePass ? '≥' : '<'} 1.0% threshold`
+                });
+                
+                // Rule 2: Confluence (simplified)
+                const confluenceScore = confluence?.score || 0;
+                const confluencePass = confluenceScore >= 3;
+                result.trace.push({
+                    ruleId: 'confluence',
+                    name: 'Confluence',
+                    pass: confluencePass,
+                    value: confluenceScore,
+                    threshold: 3,
+                    note: `${confluenceScore}/5 indicators aligned`
+                });
+                
+                // Rule 3: Flow Sanity
+                const flowConflict = flow?.darkPoolSentiment === 'bearish' || flow?.optionsFlowDelta < -0.3;
+                const flowPass = !flowConflict;
+                result.trace.push({
+                    ruleId: 'flowSanity',
+                    name: 'Flow Sanity',
+                    pass: flowPass,
+                    value: flow?.optionsFlowDelta || 0,
+                    threshold: -0.3,
+                    note: flowConflict ? 'Conflicting flow detected' : 'Flow aligned or neutral'
+                });
+                
+                // Rule 4: 30m Close Cross (simplified)
+                let closeCrossPass = false;
+                let crossDirection = null;
+                if (ohlcv?.history?.length >= 2) {
+                    const current = ohlcv.history[ohlcv.history.length - 1];
+                    const previous = ohlcv.history[ohlcv.history.length - 2];
+                    const flip = gammaMetrics?.gammaFlip;
+                    
+                    if (previous.close <= flip && current.close > flip) {
+                        closeCrossPass = true;
+                        crossDirection = 'CALL';
+                    } else if (previous.close >= flip && current.close < flip) {
+                        closeCrossPass = true;
+                        crossDirection = 'PUT';
+                    }
+                }
+                result.trace.push({
+                    ruleId: '30mClose',
+                    name: '30m Close Cross',
+                    pass: closeCrossPass,
+                    value: crossDirection || 'none',
+                    threshold: 'cross',
+                    note: closeCrossPass ? `${crossDirection} signal: price crossed flip` : 'No cross detected'
+                });
+                
+                // Rule 5: Gap Rule (simplified)
+                const gapRulePass = closeCrossPass; // Simplified
+                result.trace.push({
+                    ruleId: 'gapRule',
+                    name: 'Gap Rule',
+                    pass: gapRulePass,
+                    value: gapRulePass ? 'confirmed' : 'pending',
+                    threshold: 'pullback or 2nd close',
+                    note: gapRulePass ? 'Confirmation detected' : 'Awaiting confirmation'
+                });
+                
+                // Rule 6: Activity Alignment
+                let activityPass = false;
+                let activityNote = '';
+                if (closeCrossPass) {
+                    if (crossDirection === 'CALL' && activity?.callUnusual) {
+                        activityPass = true;
+                        activityNote = 'Call activity elevated';
+                    } else if (crossDirection === 'PUT' && activity?.putUnusual) {
+                        activityPass = true;
+                        activityNote = 'Put activity elevated';
+                    }
+                }
+                result.trace.push({
+                    ruleId: 'activity',
+                    name: 'Activity Alignment',
+                    pass: activityPass,
+                    value: crossDirection || 'none',
+                    threshold: 'aligned',
+                    note: activityNote || 'Activity not aligned with signal'
+                });
+                
+                // Calculate final signal
+                const allRules = result.trace;
+                const passedRules = allRules.filter(r => r.pass).length;
+                const totalRules = allRules.length;
+                
+                if (passedRules === totalRules && closeCrossPass) {
+                    result.signal = crossDirection;
+                    result.confidence = Math.round((passedRules / totalRules) * 100);
+                    
+                    // Calculate levels
+                    const stopDistance = atrValue * 1.0;
+                    const targetDistance = atrValue * 1.5;
+                    if (crossDirection === 'CALL') {
+                        result.levels = {
+                            entry: spotPrice,
+                            stop: spotPrice - stopDistance,
+                            target1: spotPrice + targetDistance,
+                            riskReward: targetDistance / stopDistance
+                        };
+                    } else {
+                        result.levels = {
+                            entry: spotPrice,
+                            stop: spotPrice + stopDistance,
+                            target1: spotPrice - targetDistance,
+                            riskReward: targetDistance / stopDistance
+                        };
+                    }
+                }
+                
+                return result;
+            }
+        };
+        
+        // Utility functions
+        function logToTerminal(command, response, isError = false) {
+            const terminal = document.getElementById('terminalOutput');
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+            
+            const cmdLine = document.createElement('div');
+            cmdLine.className = 'terminal-line';
+            cmdLine.innerHTML = `
+                <span class="terminal-prompt">kepler@gamma-tracker:~$</span>
+                <span class="terminal-command">${command}</span>
+            `;
+            terminal.appendChild(cmdLine);
+            
+            const respLine = document.createElement('div');
+            respLine.className = `terminal-response ${isError ? 'terminal-error' : 'terminal-success'}`;
+            respLine.innerHTML = response;
+            terminal.appendChild(respLine);
+            
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+        
+        function addStormLog(icon, message, ticker = null) {
+            const log = document.getElementById('stormLog');
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+            
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `
+                <span class="log-time">${time}</span>
+                <span class="log-icon">${icon}</span>
+                <span class="log-message">${ticker ? `<span class="log-ticker">${ticker}</span> - ` : ''}${message}</span>
+            `;
+            log.insertBefore(entry, log.firstChild);
+        }
+        
+        function setTicker(ticker) {
+            document.getElementById('tickerInput').value = ticker;
+            window.currentTicker = ticker;
+            logToTerminal(`ticker ${ticker}`, `Ticker set to: ${ticker}`);
+        }
+        
+        async function fetchORATS(endpoint, params = {}) {
+            // Check for API key
+            const apiKey = ApiKeyManager.getKey();
+            if (!apiKey) {
+                throw new Error('ORATS API key not set. Click "🔑 API Key" button to enter your key.');
+            }
+            
+            const queryParams = new URLSearchParams({ ...params, token: apiKey });
+            const url = `${ORATS_BASE_URL}/${endpoint}?${queryParams}`;
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('API key invalid or expired. Please check your key.');
+                    }
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                throw new Error(`ORATS API Error: ${error.message}`);
+            }
+        }
+        
+        function calculateGammaMetrics(data, specificExp = null) {
+            if (!data || !data.data || data.data.length === 0) return null;
+            
+            const allData = data.data;
+            const spotPrice = allData[0].stockPrice;
+            
+            // Group by expiration date
+            const byExpiration = {};
+            allData.forEach(item => {
+                if (!byExpiration[item.expirDate]) {
+                    byExpiration[item.expirDate] = [];
+                }
+                byExpiration[item.expirDate].push(item);
+            });
+            
+            // Store all expirations for selector
+            allExpirations = byExpiration;
+            
+            // Use specific expiration if provided, otherwise find best
+            let bestExp = specificExp;
+            
+            if (!bestExp || !byExpiration[bestExp]) {
+                // Find best expiration with good strike coverage around spot
+                const expirations = Object.keys(byExpiration).sort((a, b) => {
+                    const dteA = byExpiration[a][0].dte;
+                    const dteB = byExpiration[b][0].dte;
+                    return dteA - dteB;
+                });
+                
+                // Score each expiration by strike coverage around spot
+                let bestScore = -1;
+                
+                for (const exp of expirations.slice(0, 7)) { // Check first 7 expirations
+                    const expStrikes = byExpiration[exp];
+                    const uniqueStrikes = [...new Set(expStrikes.map(s => s.strike))].sort((a, b) => a - b);
+                    
+                    const hasBelow = uniqueStrikes.some(s => s < spotPrice);
+                    const hasAbove = uniqueStrikes.some(s => s > spotPrice);
+                    const belowCount = uniqueStrikes.filter(s => s < spotPrice && s >= spotPrice * 0.85).length;
+                    const aboveCount = uniqueStrikes.filter(s => s > spotPrice && s <= spotPrice * 1.15).length;
+                    const expDte = expStrikes[0].dte;
+                    
+                    // Score: balanced coverage is best, but prefer nearer expirations
+                    // Score = (strikes below spot in range) + (strikes above spot in range) - (DTE penalty)
+                    let score = belowCount + aboveCount;
+                    if (hasBelow && hasAbove) score += 5; // Bonus for balanced
+                    score -= expDte * 0.1; // Small penalty for far expirations
+                    
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestExp = exp;
+                    }
+                }
+                
+                // Fallback to nearest if nothing scored well
+                if (!bestExp) {
+                    bestExp = expirations[0];
+                }
+            }
+            
+            // Get strikes for selected expiration
+            let strikes = byExpiration[bestExp];
+            let dte = strikes[0].dte;
+            const nearestExp = bestExp;
+            
+            // Find ATM strike
+            const atmStrike = strikes.reduce((prev, curr) => {
+                return Math.abs(curr.strike - spotPrice) < Math.abs(prev.strike - spotPrice) ? curr : prev;
+            });
+            
+            // Calculate call wall (highest call OI above spot)
+            const callsAboveSpot = strikes.filter(s => s.strike >= spotPrice);
+            const callWall = callsAboveSpot.length > 0 
+                ? callsAboveSpot.reduce((max, s) => (s.callOpenInterest > max.callOpenInterest) ? s : max, callsAboveSpot[0])
+                : { strike: spotPrice * 1.1 };
+            
+            // Calculate put support (highest put OI below spot)
+            const putsBelowSpot = strikes.filter(s => s.strike <= spotPrice);
+            const putSupport = putsBelowSpot.length > 0
+                ? putsBelowSpot.reduce((max, s) => (s.putOpenInterest > max.putOpenInterest) ? s : max, putsBelowSpot[0])
+                : { strike: spotPrice * 0.9 };
+            
+            // Estimate gamma flip
+            const totalCallGamma = strikes.reduce((sum, s) => sum + (s.callOpenInterest * s.gamma || 0), 0);
+            const totalPutGamma = strikes.reduce((sum, s) => sum + (s.putOpenInterest * s.gamma || 0), 0);
+            const gammaFlip = spotPrice * (1 + (totalCallGamma - totalPutGamma) / 1000000);
+            
+            // Zone width
+            const zoneWidth = ((callWall.strike - putSupport.strike) / spotPrice * 100).toFixed(1);
+            
+            // Regime
+            const netGamma = totalCallGamma - totalPutGamma;
+            const regime = netGamma > 0 ? 'NEGATIVE GAMMA' : 'POSITIVE GAMMA';
+            
+            // Get all unique strikes for this expiration
+            const allStrikes = [...new Set(strikes.map(s => s.strike))].sort((a, b) => a - b);
+            const maxAvailableStrike = Math.max(...allStrikes);
+            const minAvailableStrike = Math.min(...allStrikes);
+            
+            // Check if we have strikes above spot - if not, this expiration is problematic
+            const hasStrikesAboveSpot = maxAvailableStrike > spotPrice;
+            const hasStrikesBelowSpot = minAvailableStrike < spotPrice;
+            
+            // Filter strikes near spot price (±15% range, expand if needed) for the selected expiration
+            let strikeRange = 0.15;
+            let minStrike = spotPrice * (1 - strikeRange);
+            let maxStrike = spotPrice * (1 + strikeRange);
+            
+            // If we don't have strikes above spot, expand range aggressively
+            if (!hasStrikesAboveSpot) {
+                strikeRange = 0.30; // Expand to 30% to try to find strikes
+                maxStrike = spotPrice * (1 + strikeRange);
+            }
+            
+            let nearbyStrikes = strikes
+                .filter(s => s.strike >= minStrike && s.strike <= maxStrike)
+                .sort((a, b) => a.strike - b.strike);
+            
+            // If still too few strikes or no strikes above spot, expand range more
+            if (nearbyStrikes.length < 5 || !hasStrikesAboveSpot) {
+                strikeRange = 0.40; // Expand to 40%
+                minStrike = spotPrice * (1 - strikeRange);
+                maxStrike = spotPrice * (1 + strikeRange);
+                nearbyStrikes = strikes
+                    .filter(s => s.strike >= minStrike && s.strike <= maxStrike)
+                    .sort((a, b) => a.strike - b.strike);
+            }
+            
+            // Remove duplicate strikes (same strike price)
+            const uniqueStrikes = [];
+            const seenStrikes = new Set();
+            
+            for (const s of nearbyStrikes) {
+                const key = s.strike.toFixed(2);
+                if (!seenStrikes.has(key)) {
+                    seenStrikes.add(key);
+                    uniqueStrikes.push(s);
+                }
+            }
+            
+            // Center strikes around ATM - take 10 below and 10 above ATM when possible
+            const atmIndex = uniqueStrikes.findIndex(s => s.strike === atmStrike.strike);
+            let centeredStrikes;
+            
+            if (atmIndex >= 0) {
+                // Found exact ATM, center around it
+                const startIdx = Math.max(0, atmIndex - 10);
+                const endIdx = Math.min(uniqueStrikes.length, atmIndex + 11);
+                centeredStrikes = uniqueStrikes.slice(startIdx, endIdx);
+            } else {
+                // No exact ATM match, find closest and center
+                let closestIdx = 0;
+                let minDiff = Math.abs(uniqueStrikes[0].strike - spotPrice);
+                for (let i = 1; i < uniqueStrikes.length; i++) {
+                    const diff = Math.abs(uniqueStrikes[i].strike - spotPrice);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        closestIdx = i;
+                    }
+                }
+                const startIdx = Math.max(0, closestIdx - 10);
+                const endIdx = Math.min(uniqueStrikes.length, closestIdx + 11);
+                centeredStrikes = uniqueStrikes.slice(startIdx, endIdx);
+            }
+            
+            // Check if we have good coverage
+            const maxShownStrike = centeredStrikes.length > 0 ? Math.max(...centeredStrikes.map(s => s.strike)) : 0;
+            const minShownStrike = centeredStrikes.length > 0 ? Math.min(...centeredStrikes.map(s => s.strike)) : 0;
+            const hasCoverageAbove = maxShownStrike > spotPrice;
+            const hasCoverageBelow = minShownStrike < spotPrice;
+            
+            return {
+                spotPrice,
+                gammaFlip: gammaFlip.toFixed(2),
+                callWall: callWall.strike.toFixed(2),
+                putSupport: putSupport.strike.toFixed(2),
+                zoneWidth: zoneWidth + '%',
+                regime,
+                netGamma,
+                strikes: centeredStrikes,
+                atmStrike: atmStrike.strike,
+                expiration: nearestExp,
+                dte: dte,
+                hasCoverageAbove,
+                hasCoverageBelow,
+                maxShownStrike,
+                minShownStrike
+            };
+        }
+        
+        async function loadGammaData() {
+            const ticker = document.getElementById('tickerInput').value.toUpperCase();
+            if (!ticker) {
+                logToTerminal('load', 'Error: No ticker specified', true);
+                return;
+            }
+            
+            window.currentTicker = ticker;
+            
+            // Show loaders
+            document.getElementById('metricsLoader').classList.remove('hidden');
+            document.getElementById('chainLoader').classList.remove('hidden');
+            document.getElementById('metricsGrid').classList.add('hidden');
+            
+            logToTerminal(`fetch strikes ${ticker}`, `Fetching options data for ${ticker}...`);
+            addStormLog('📡', `Requesting options chain`, ticker);
+            
+            try {
+                // Get today's date for most current data
+                const today = new Date().toISOString().split('T')[0];
+                const data = await fetchORATS('strikes.json', { ticker, tradeDate: today });
+                
+                // Clear any mock data flags and store live data
+                window.lastData = data;
+                window.lastData._isMockData = false;
+                window.lastData._mockScenario = null;
+                
+                // Also clear InlineMockData current scenario
+                if (InlineMockData) {
+                    InlineMockData.currentScenario = null;
+                }
+                
+                const metrics = calculateGammaMetrics(data);
+                if (!metrics) throw new Error('No data available');
+                
+                // Store current expiration
+                currentExpiration = metrics.expiration;
+                
+                // Populate expiration selector
+                const expSelect = document.getElementById('expirationSelect');
+                expSelect.innerHTML = '<option value="">Auto-Select</option>';
+                Object.keys(allExpirations).sort((a, b) => {
+                    return allExpirations[a][0].dte - allExpirations[b][0].dte;
+                }).forEach(exp => {
+                    const dte = allExpirations[exp][0].dte;
+                    const option = document.createElement('option');
+                    option.value = exp;
+                    option.textContent = `${exp} (${dte}D)`;
+                    option.selected = (exp === currentExpiration);
+                    expSelect.appendChild(option);
+                });
+                
+                // Update metrics display
+                document.getElementById('gammaFlip').textContent = metrics.gammaFlip;
+                document.getElementById('gammaFlipDelta').textContent = 'Gamma flip level';
+                document.getElementById('callWall').textContent = metrics.callWall;
+                document.getElementById('callWallDelta').textContent = 'Highest call OI';
+                document.getElementById('putSupport').textContent = metrics.putSupport;
+                document.getElementById('putSupportDelta').textContent = 'Highest put OI';
+                document.getElementById('regime').textContent = metrics.regime;
+                document.getElementById('regimeDelta').textContent = metrics.dte + ' DTE';
+                document.getElementById('zoneWidth').textContent = metrics.zoneWidth;
+                document.getElementById('zoneWidthDelta').textContent = 'Call wall - Put support';
+                document.getElementById('spotPrice').textContent = metrics.spotPrice.toFixed(2);
+                document.getElementById('spotPriceDelta').textContent = 'Current price';
+                
+                // Update colors based on regime
+                const regimeEl = document.getElementById('regime');
+                if (metrics.regime === 'NEGATIVE GAMMA') {
+                    regimeEl.className = 'metric-value negative';
+                    document.getElementById('stormStatus').className = 'storm-indicator storm-alert';
+                    document.getElementById('stormStatus').innerHTML = '<span>⚡</span><span>NEGATIVE GAMMA</span>';
+                } else {
+                    regimeEl.className = 'metric-value positive';
+                    document.getElementById('stormStatus').className = 'storm-indicator storm-calm';
+                    document.getElementById('stormStatus').innerHTML = '<span>◉</span><span>POSITIVE GAMMA</span>';
+                }
+                
+                // Update chain table - show strikes near ATM
+                const chainBody = document.getElementById('chainBody');
+                if (metrics.strikes.length === 0) {
+                    chainBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 40px;">
+                                No strikes found within ±15% of spot price for this expiration.<br>
+                                <span style="font-size: 11px;">Try a different ticker or expiration.</span>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    chainBody.innerHTML = metrics.strikes.map(s => {
+                        const isATM = Math.abs(s.strike - metrics.atmStrike) < 0.01;
+                        const rowStyle = isATM ? 'style="background: rgba(0, 204, 255, 0.15); border-left: 3px solid #00ccff;"' : '';
+                        const atmLabel = isATM ? ' <span style="color:#00ccff;font-size:10px;">ATM</span>' : '';
+                        return `
+                        <tr ${rowStyle}>
+                            <td class="strike-price">${s.strike.toFixed(2)}${atmLabel}</td>
+                            <td class="call-data">${(s.callMidIv * 100).toFixed(1)}%</td>
+                            <td class="call-data">${s.callOpenInterest.toLocaleString()}</td>
+                            <td class="put-data">${(s.putMidIv * 100).toFixed(1)}%</td>
+                            <td class="put-data">${s.putOpenInterest.toLocaleString()}</td>
+                            <td class="${(s.callOpenInterest - s.putOpenInterest) > 0 ? 'positive' : 'negative'}">
+                                ${((s.callOpenInterest - s.putOpenInterest) / 1000).toFixed(1)}K
+                            </td>
+                        </tr>
+                    `}).join('');
+                }
+                
+                // Update timestamp and chain panel title
+                document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+                document.getElementById('chainPanelTitle').textContent = `📈 OPTIONS CHAIN | ${metrics.expiration} (${metrics.dte} DTE) | ±15% FROM $${metrics.spotPrice.toFixed(2)}`;
+                
+                const strikeMin = metrics.strikes.length > 0 ? metrics.strikes[0].strike : 0;
+                const strikeMax = metrics.strikes.length > 0 ? metrics.strikes[metrics.strikes.length - 1].strike : 0;
+                
+                const strikeRangeText = metrics.strikes.length > 0 
+                    ? `$${strikeMin.toFixed(2)} - $${strikeMax.toFixed(2)}`
+                    : 'No strikes in range';
+                
+                // Warning if coverage is poor
+                let coverageWarning = '';
+                if (!metrics.hasCoverageAbove) {
+                    const gap = ((metrics.spotPrice - metrics.maxShownStrike) / metrics.spotPrice * 100).toFixed(1);
+                    coverageWarning = `<br>⚠️ WARNING: No strikes above spot! Highest is ${gap}% below.`;
+                }
+                
+                logToTerminal(`analyze ${ticker}`, 
+                    `✓ Gamma metrics calculated<br>` +
+                    `✓ Spot Price: $${metrics.spotPrice.toFixed(2)}<br>` +
+                    `✓ Expiration: ${metrics.expiration} (${metrics.dte} DTE)<br>` +
+                    `✓ Strike range: ${strikeRangeText} (${metrics.strikes.length} strikes)${coverageWarning}<br>` +
+                    `✓ Gamma Flip: $${metrics.gammaFlip}<br>` +
+                    `✓ Regime: ${metrics.regime}`
+                );
+                
+                addStormLog('✓', `Data loaded successfully`, ticker);
+                
+                // Mark as live data
+                setDataSourceIndicator('live');
+                
+            } catch (error) {
+                logToTerminal(`fetch ${ticker}`, `Error: ${error.message}`, true);
+                addStormLog('✗', `Failed to load: ${error.message}`, ticker);
+            } finally {
+                document.getElementById('metricsLoader').classList.add('hidden');
+                document.getElementById('chainLoader').classList.add('hidden');
+                document.getElementById('metricsGrid').classList.remove('hidden');
+            }
+        }
+        
+        function refreshData() {
+            if (currentTicker) {
+                loadGammaData();
+            } else {
+                logToTerminal('refresh', 'No active ticker. Use LOAD DATA first.', true);
+            }
+        }
+        
+        function loadChain() {
+            if (currentTicker) {
+                loadGammaData();
+            }
+        }
+        
+        function changeExpiration() {
+            const selectedExp = document.getElementById('expirationSelect').value;
+            if (!selectedExp || !window.lastData) return;
+            
+            currentExpiration = selectedExp;
+            const metrics = calculateGammaMetrics(window.lastData, selectedExp);
+            if (!metrics) {
+                logToTerminal('expiration', 'Error calculating metrics for selected expiration', true);
+                return;
+            }
+            
+            // Update chain table only
+            const chainBody = document.getElementById('chainBody');
+            if (metrics.strikes.length === 0) {
+                chainBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 40px;">
+                            No strikes found within ±15% of spot price for this expiration.<br>
+                            <span style="font-size: 11px;">Try a different expiration.</span>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                chainBody.innerHTML = metrics.strikes.map(s => {
+                    const isATM = Math.abs(s.strike - metrics.atmStrike) < 0.01;
+                    const rowStyle = isATM ? 'style="background: rgba(0, 204, 255, 0.15); border-left: 3px solid #00ccff;"' : '';
+                    const atmLabel = isATM ? ' <span style="color:#00ccff;font-size:10px;">ATM</span>' : '';
+                    return `
+                    <tr ${rowStyle}>
+                        <td class="strike-price">${s.strike.toFixed(2)}${atmLabel}</td>
+                        <td class="call-data">${(s.callMidIv * 100).toFixed(1)}%</td>
+                        <td class="call-data">${s.callOpenInterest.toLocaleString()}</td>
+                        <td class="put-data">${(s.putMidIv * 100).toFixed(1)}%</td>
+                        <td class="put-data">${s.putOpenInterest.toLocaleString()}</td>
+                        <td class="${(s.callOpenInterest - s.putOpenInterest) > 0 ? 'positive' : 'negative'}">
+                            ${((s.callOpenInterest - s.putOpenInterest) / 1000).toFixed(1)}K
+                        </td>
+                    </tr>
+                `}).join('');
+            }
+            
+            // Update panel title
+            document.getElementById('chainPanelTitle').textContent = `📈 OPTIONS CHAIN | ${metrics.expiration} (${metrics.dte} DTE) | ±15% FROM $${metrics.spotPrice.toFixed(2)}`;
+            
+            const strikeMin = metrics.strikes.length > 0 ? metrics.strikes[0].strike : 0;
+            const strikeMax = metrics.strikes.length > 0 ? metrics.strikes[metrics.strikes.length - 1].strike : 0;
+            
+            logToTerminal('expiration', `Switched to expiration: ${selectedExp} (${metrics.dte} DTE)<br>Strike range: $${strikeMin.toFixed(2)} - $${strikeMax.toFixed(2)} (${metrics.strikes.length} strikes)`);
+            addStormLog('📅', `Expiration changed to ${selectedExp}`, currentTicker);
+        }
+        
+        function toggleView(view) {
+            currentView = view;
+            const zoneCard = document.getElementById('zoneWidthCard');
+            const spotCard = document.getElementById('spotPriceCard');
+            
+            if (view === 'simplified') {
+                zoneCard.style.display = 'none';
+                spotCard.style.display = 'none';
+                logToTerminal('view simplified', 'Switched to SIMPLIFIED view (4 core metrics)');
+            } else {
+                zoneCard.style.display = '';
+                spotCard.style.display = '';
+                logToTerminal('view detailed', 'Switched to DETAILED view (6 metrics)');
+            }
+        }
+        
+        function clearLog() {
+            document.getElementById('stormLog').innerHTML = '';
+            addStormLog('🧹', 'Log cleared');
+        }
+        
+        function clearTerminal() {
+            document.getElementById('terminalOutput').innerHTML = '';
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && document.activeElement === document.getElementById('tickerInput')) {
+                loadGammaData();
+            }
+            if (e.key === 'Enter' && document.activeElement === document.getElementById('watchlistInput')) {
+                addToWatchlist();
+            }
+        });
+        
+        // Ticker Panel Functions
+        function toggleTickerPanel() {
+            const container = document.getElementById('tickerListContainer');
+            const toggle = document.getElementById('panelToggle');
+            container.classList.toggle('collapsed');
+            toggle.textContent = container.classList.contains('collapsed') ? '▼ EXPAND' : '▲ COLLAPSE';
+        }
+        
+        function filterTickers() {
+            const searchTerm = document.getElementById('tickerSearch').value.toUpperCase();
+            const items = document.querySelectorAll('.ticker-item');
+            
+            items.forEach(item => {
+                const ticker = item.textContent;
+                if (ticker.includes(searchTerm)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Hide empty categories
+            document.querySelectorAll('.ticker-category').forEach(cat => {
+                const visibleItems = cat.querySelectorAll('.ticker-item:not([style*="none"])');
+                cat.style.display = visibleItems.length > 0 ? '' : 'none';
+            });
+        }
+        
+        // Override setTicker to highlight active
+        const originalSetTicker = setTicker;
+        setTicker = function(ticker) {
+            document.getElementById('tickerInput').value = ticker;
+            window.currentTicker = ticker;
+            logToTerminal(`ticker ${ticker}`, `Ticker set to: ${ticker}`);
+            
+            // Update active state
+            document.querySelectorAll('.ticker-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.textContent === ticker) {
+                    item.classList.add('active');
+                }
+            });
+        };
+        
+        // Notification & Alert Functions
+        async function requestNotificationPermission() {
+            if (!('Notification' in window)) {
+                logToTerminal('notify', 'Browser notifications not supported', true);
+                return false;
+            }
+            
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                notificationsEnabled = true;
+                logToTerminal('notify', '✓ Desktop notifications enabled');
+                addStormLog('🔔', 'Notifications enabled');
+                return true;
+            } else {
+                logToTerminal('notify', 'Notification permission denied', true);
+                return false;
+            }
+        }
+        
+        function sendNotification(title, body, icon = '⚡') {
+            if (!notificationsEnabled || Notification.permission !== 'granted') return;
+            
+            try {
+                new Notification(title, {
+                    body: body,
+                    icon: '🌪️',
+                    badge: '⚡',
+                    tag: 'gamma-storm',
+                    requireInteraction: true
+                });
+            } catch (e) {
+                console.error('Notification failed:', e);
+            }
+        }
+        
+        function checkGammaFlips() {
+            const flips = [];
+            
+            for (const [ticker, data] of Object.entries(watchlistData)) {
+                if (!data) continue;
+                
+                const currentRegime = data.regime;
+                const previousRegime = previousRegimes[ticker];
+                
+                // Detect negative gamma flip (positive -> negative)
+                if (previousRegime && previousRegime !== 'NEGATIVE GAMMA' && currentRegime === 'NEGATIVE GAMMA') {
+                    flips.push({
+                        ticker,
+                        type: 'NEGATIVE_FLIP',
+                        price: data.spotPrice,
+                        flip: data.gammaFlip,
+                        zone: data.zoneWidth
+                    });
+                    
+                    // Send desktop notification
+                    sendNotification(
+                        `🌪️ GAMMA STORM: ${ticker}`,
+                        `${ticker} flipped to NEGATIVE GAMMA at $${data.spotPrice.toFixed(2)}. Zone: ${data.zoneWidth}. Storm conditions developing!`
+                    );
+                    
+                    // Add to storm log
+                    addStormLog('🌪️', `NEGATIVE GAMMA FLIP at $${data.spotPrice.toFixed(2)} | Flip: $${data.gammaFlip} | Zone: ${data.zoneWidth}`, ticker);
+                    
+                    // Log to terminal
+                    logToTerminal('storm-alert', 
+                        `🌪️ NEGATIVE GAMMA FLIP: ${ticker}<br>` +
+                        `Price: $${data.spotPrice.toFixed(2)} | Flip: $${data.gammaFlip} | Zone: ${data.zoneWidth}<br>` +
+                        `Storm conditions detected!`
+                    );
+                }
+                
+                // Detect return to positive (negative -> positive) - less urgent
+                if (previousRegime && previousRegime === 'NEGATIVE GAMMA' && currentRegime === 'POSITIVE GAMMA') {
+                    addStormLog('✅', `Returned to positive gamma at $${data.spotPrice.toFixed(2)}`, ticker);
+                    logToTerminal('storm-clear', `${ticker} returned to positive gamma at $${data.spotPrice.toFixed(2)}`);
+                }
+                
+                // Update previous state
+                previousRegimes[ticker] = currentRegime;
+            }
+            
+            return flips;
+        }
+        
+        function showAlertBanner(ticker, message, type = 'storm') {
+            const banner = document.createElement('div');
+            banner.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'storm' ? 'rgba(255, 68, 68, 0.95)' : 'rgba(0, 255, 136, 0.95)'};
+                color: white;
+                padding: 16px 24px;
+                border-radius: 8px;
+                font-weight: bold;
+                z-index: 9999;
+                animation: slideIn 0.3s ease;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+                max-width: 400px;
+            `;
+            banner.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">${type === 'storm' ? '🌪️' : '✅'}</span>
+                    <div>
+                        <div style="font-size: 14px; margin-bottom: 4px;">${ticker}</div>
+                        <div style="font-size: 12px; opacity: 0.9;">${message}</div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(banner);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                banner.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => banner.remove(), 300);
+            }, 10000);
+        }
+        
+        // Multi-Symbol Tracking Functions
+        function toggleMultiView() {
+            multiViewActive = !multiViewActive;
+            const panel = document.getElementById('multiSymbolPanel');
+            if (multiViewActive) {
+                panel.style.display = '';
+                renderWatchlist();
+                logToTerminal('multi-view', 'Multi-symbol dashboard activated');
+                addStormLog('📊', 'Multi-symbol view enabled');
+                // Auto-refresh if no data exists
+                if (Object.keys(watchlistData).length === 0) {
+                    refreshAllSymbols();
+                }
+            } else {
+                panel.style.display = 'none';
+                logToTerminal('multi-view', 'Multi-symbol dashboard hidden');
+            }
+        }
+        
+        function addToWatchlist() {
+            const input = document.getElementById('watchlistInput');
+            const ticker = input.value.toUpperCase().trim();
+            if (ticker && !watchlist.includes(ticker)) {
+                watchlist.push(ticker);
+                input.value = '';
+                renderWatchlist();
+                logToTerminal('watchlist', `Added ${ticker} to watchlist`);
+                addStormLog('➕', `${ticker} added to watchlist`);
+            }
+        }
+        
+        function removeFromWatchlist(ticker) {
+            watchlist = watchlist.filter(t => t !== ticker);
+            delete watchlistData[ticker];
+            renderWatchlist();
+            logToTerminal('watchlist', `Removed ${ticker} from watchlist`);
+            addStormLog('➖', `${ticker} removed from watchlist`);
+        }
+        
+        function clearWatchlist() {
+            watchlist = [];
+            watchlistData = {};
+            renderWatchlist();
+            logToTerminal('watchlist', 'Watchlist cleared');
+            addStormLog('🧹', 'Watchlist cleared');
+        }
+        
+        async function refreshAllSymbols() {
+            if (watchlist.length === 0) return;
+            
+            document.getElementById('multiLoader').classList.remove('hidden');
+            logToTerminal('multi-refresh', `Fetching data for ${watchlist.length} symbols...`);
+            addStormLog('📡', `Refreshing ${watchlist.length} symbols`);
+            
+            const today = new Date().toISOString().split('T')[0];
+            const promises = watchlist.map(async (ticker) => {
+                try {
+                    const data = await fetchORATS('strikes.json', { ticker, tradeDate: today });
+                    const metrics = calculateGammaMetrics(data);
+                    if (metrics) {
+                        watchlistData[ticker] = metrics;
+                    }
+                } catch (error) {
+                    console.error(`Error fetching ${ticker}:`, error);
+                }
+            });
+            
+            await Promise.all(promises);
+            document.getElementById('multiLoader').classList.add('hidden');
+            renderWatchlist();
+            
+            // Check for gamma flips
+            const flips = checkGammaFlips();
+            
+            // Show visual alerts for flips
+            flips.forEach(flip => {
+                showAlertBanner(
+                    flip.ticker,
+                    `Flipped to NEGATIVE GAMMA at $${flip.price.toFixed(2)}<br>Zone: ${flip.zone} | Flip: $${flip.flip}`,
+                    'storm'
+                );
+            });
+            
+            const stormCount = Object.values(watchlistData).filter(m => m.regime === 'NEGATIVE GAMMA').length;
+            logToTerminal('multi-refresh', `✓ Loaded ${Object.keys(watchlistData).length} symbols<br>⚡ ${stormCount} in negative gamma${flips.length > 0 ? '<br>🌪️ ' + flips.length + ' NEW STORM(S) DETECTED!' : ''}`);
+            addStormLog('✓', `Data refreshed - ${stormCount} storm conditions detected${flips.length > 0 ? ' - ' + flips.length + ' NEW FLIPS!' : ''}`);
+        }
+        
+        function renderWatchlist() {
+            const container = document.getElementById('watchlistContainer');
+            
+            if (watchlist.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                        No symbols in watchlist. Add tickers above to track multiple symbols simultaneously.
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort: negative gamma first, then by zone width
+            const sortedTickers = [...watchlist].sort((a, b) => {
+                const dataA = watchlistData[a];
+                const dataB = watchlistData[b];
+                if (!dataA || !dataB) return 0;
+                
+                // Negative gamma first
+                if (dataA.regime === 'NEGATIVE GAMMA' && dataB.regime !== 'NEGATIVE GAMMA') return -1;
+                if (dataB.regime === 'NEGATIVE GAMMA' && dataA.regime !== 'NEGATIVE GAMMA') return 1;
+                
+                // Then by zone width (narrower = higher priority)
+                return parseFloat(dataA.zoneWidth) - parseFloat(dataB.zoneWidth);
+            });
+            
+            const rows = sortedTickers.map(ticker => {
+                const data = watchlistData[ticker];
+                if (!data) {
+                    return `
+                        <tr>
+                            <td style="font-weight: bold; color: var(--accent-blue);">${ticker}</td>
+                            <td colspan="6" style="color: var(--text-secondary);">Loading...</td>
+                            <td><button class="panel-btn" onclick="removeFromWatchlist('${ticker}')">✕</button></td>
+                        </tr>
+                    `;
+                }
+                
+                const isNegative = data.regime === 'NEGATIVE GAMMA';
+                const rowStyle = isNegative ? 'style="background: rgba(255, 68, 68, 0.1);"' : '';
+                const stormIcon = isNegative ? '⚡' : '◉';
+                const regimeClass = isNegative ? 'negative' : 'positive';
+                
+                return `
+                    <tr ${rowStyle}>
+                        <td style="font-weight: bold; color: var(--accent-blue);">${stormIcon} ${ticker}</td>
+                        <td>$${data.spotPrice.toFixed(2)}</td>
+                        <td class="${regimeClass}">${data.regime}</td>
+                        <td>$${data.gammaFlip}</td>
+                        <td>$${data.callWall}</td>
+                        <td>$${data.putSupport}</td>
+                        <td>${data.zoneWidth}</td>
+                        <td><button class="panel-btn" onclick="removeFromWatchlist('${ticker}')">✕</button></td>
+                    </tr>
+                `;
+            }).join('');
+            
+            container.innerHTML = `
+                <table class="options-table watchlist-grid">
+                    <thead>
+                        <tr>
+                            <th style="width: 12%;">TICKER</th>
+                            <th style="width: 12%;">PRICE</th>
+                            <th style="width: 18%;">REGIME</th>
+                            <th style="width: 14%;">GAMMA FLIP</th>
+                            <th style="width: 14%;">CALL WALL</th>
+                            <th style="width: 14%;">PUT SUPPORT</th>
+                            <th style="width: 10%;">ZONE</th>
+                            <th style="width: 6%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows}
+                    </tbody>
+                </table>
+            `;
+        }
+        
+        function startAutoRefresh() {
+            if (autoRefreshInterval) {
+                logToTerminal('auto', 'Auto-refresh already running');
+                return;
+            }
+            
+            if (!multiViewActive) {
+                toggleMultiView();
+            }
+            
+            refreshAllSymbols();
+            autoRefreshInterval = setInterval(refreshAllSymbols, 60000); // Every 60 seconds
+            logToTerminal('auto', 'Auto-refresh started (60s interval)');
+            addStormLog('⏵', 'Auto-refresh enabled');
+        }
+        
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+                logToTerminal('auto', 'Auto-refresh stopped');
+                addStormLog('⏹', 'Auto-refresh disabled');
+            }
+        }
+        
+        // Test Mode Functions
+        let testModeActive = false;
+        
+        function toggleTestMode() {
+            console.log('DEBUG toggleTestMode called');
+            testModeActive = !testModeActive;
+            const panel = document.getElementById('testModePanel');
+            
+            if (testModeActive) {
+                console.log('DEBUG: Activating test mode');
+                panel.style.display = 'block';
+                setDataSourceIndicator('mock');
+                logToTerminal('test', '🧪 Test mode activated - Mock data enabled');
+                addStormLog('🧪', 'Test mode enabled - Using mock data');
+                
+                // Load first scenario
+                console.log('DEBUG: About to call loadScenarioById');
+                loadScenarioById('perfect-call');
+                console.log('DEBUG: loadScenarioById returned');
+            } else {
+                console.log('DEBUG: Deactivating test mode');
+                panel.style.display = 'none';
+                setDataSourceIndicator('live');
+                logToTerminal('test', '🧪 Test mode deactivated - Using live data');
+                addStormLog('📡', 'Test mode disabled - Returning to live data');
+                window.lastData = null; // Clear mock data
+            }
+        }
+        
+        function loadScenarioById(id) {
+            console.log('DEBUG loadScenarioById:', id);
+            
+            // Try GST.MockData first, fall back to InlineMockData
+            const mockData = (window.GST && window.GST.MockData) ? window.GST.MockData : InlineMockData;
+            console.log('DEBUG: Using mockData:', mockData === InlineMockData ? 'InlineMockData' : 'GST.MockData');
+            
+            const scenario = mockData.getById(id);
+            console.log('DEBUG: Found scenario:', scenario ? scenario.name : 'null');
+            
+            if (!scenario) {
+                logToTerminal('test', `Error: Scenario ${id} not found`, true);
+                return;
+            }
+            
+            // Apply the scenario
+            mockData.applyScenario(scenario);
+            console.log('DEBUG: Scenario applied. lastData:', window.lastData);
+            
+            // Mark as mock data
+            setDataSourceIndicator('mock');
+            
+            // Log it
+            logToTerminal('test', `Loaded scenario: ${scenario.name} (${scenario.ticker})`);
+            logToTerminal('test', `Expected: ${scenario.expected.signal} (${scenario.expected.confidence}% confidence)`);
+        }
+        
+        // Scenario cycling for InlineMockData
+        let currentScenarioIndex = 0;
+        const scenarioIds = ['perfect-call', 'perfect-put', 'failed-confluence', 'no-gamma-regime', 'illiquid-options'];
+        
+        function loadNextScenario() {
+            currentScenarioIndex = (currentScenarioIndex + 1) % scenarioIds.length;
+            loadScenarioById(scenarioIds[currentScenarioIndex]);
+        }
+        
+        function loadPreviousScenario() {
+            currentScenarioIndex = (currentScenarioIndex - 1 + scenarioIds.length) % scenarioIds.length;
+            loadScenarioById(scenarioIds[currentScenarioIndex]);
+        }
+        
+        function updateMetricsUI(metrics) {
+            // Update the metrics display with mock data
+            document.getElementById('gammaFlip').textContent = metrics.gammaFlip;
+            document.getElementById('callWall').textContent = metrics.callWall;
+            document.getElementById('putSupport').textContent = metrics.putSupport;
+            document.getElementById('zoneWidth').textContent = metrics.zoneWidth;
+            document.getElementById('spotPrice').textContent = metrics.spotPrice.toFixed(2);
+            document.getElementById('regime').textContent = metrics.regime;
+            
+            // Update colors based on regime
+            const regimeEl = document.getElementById('regime');
+            if (metrics.regime === 'NEGATIVE_GAMMA') {
+                regimeEl.style.color = 'var(--accent-red)';
+            } else if (metrics.regime === 'POSITIVE_GAMMA') {
+                regimeEl.style.color = 'var(--accent-green)';
+            }
+            
+            // Show metrics, hide loader
+            document.getElementById('metricsLoader').classList.add('hidden');
+            document.getElementById('metricsGrid').classList.remove('hidden');
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            logToTerminal('init', 'Gamma Storm Tracker v1.0 ready');
+            addStormLog('🔭', 'Session initialized');
+            addStormLog('📋', 'Symbol directory loaded - 100+ tickers available');
+            
+            // Check if mock data is available
+            if (window.GST && window.GST.MockData) {
+                addStormLog('🧪', 'Mock data module loaded - 5 test scenarios available');
+                logToTerminal('init', '🧪 Mock data ready: 5 test scenarios');
+            }
+            
+            // Initialize API key badge and connection status
+            updateApiKeyBadge();
+            updateApiConnectionStatus();
+            const hasKey = ApiKeyManager.hasKey();
+            if (hasKey) {
+                logToTerminal('init', '✓ API key loaded from session');
+                addStormLog('🔑', 'API key active for this session');
+            } else {
+                logToTerminal('init', '⚠ No API key set. Click 🔑 API Key button to enter your ORATS key.');
+                addStormLog('🔑', 'No API key - click 🔑 button to enter (mock data available)');
+            }
+            
+            // Load initial watchlist data if in multi-view
+            if (multiViewActive) {
+                refreshAllSymbols();
+            }
+        });
+        
+        // ═══════════════════════════════════════════════════════════════
+        // PLAYBOOK EVALUATION FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════
+        
+        function runPlaybookEvaluation() {
+            logToTerminal('playbook', 'Running v1.2 Mean Reversion evaluation...');
+            
+            // Check if we have ANY data loaded
+            const hasLiveData = window.lastData && !window.lastData._isMockData;
+            const hasMockData = (window.lastData && window.lastData._isMockData) || 
+                               (InlineMockData && InlineMockData.getCurrent());
+            
+            if (!hasLiveData && !hasMockData) {
+                // Show warning in Decision Trace
+                const container = document.getElementById('decisionTraceContainer');
+                if (container) {
+                    container.innerHTML = `
+                        <div style="padding: 40px; text-align: center; color: var(--accent-yellow);">
+                            <div style="font-size: 32px; margin-bottom: 15px;">⚠️</div>
+                            <div style="font-size: 14px; font-weight: bold; margin-bottom: 10px;">No Data Loaded</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px;">
+                                You need to load data before running evaluation.<br>
+                                Choose one of the options below:
+                            </div>
+                            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                                <button class="btn btn-primary" onclick="focusTickerForLiveData();" style="font-size: 12px;">
+                                    📡 LOAD LIVE DATA
+                                </button>
+                                <button class="btn" onclick="toggleTestMode();" style="background: rgba(204,0,255,0.2); border-color: var(--accent-purple); color: var(--accent-purple); font-size: 12px;">
+                                    🧪 USE MOCK DATA
+                                </button>
+                            </div>
+                            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 20px;">
+                                <strong>Live Data:</strong> Real ORATS market data (requires API key)<br>
+                                <strong>Mock Data:</strong> Test scenarios for strategy validation
+                            </div>
+                        </div>
+                    `;
+                }
+                logToTerminal('playbook', '⚠️ No data loaded. Click "📡 LOAD DATA" for live or "🧪 TEST" for mock.', true);
+                addStormLog('⚠️', 'Evaluation failed: No data loaded');
+                return;
+            }
+            
+            // Check if GST playbook engine is loaded - if not, we'll use fallback
+            if (!window.GST || !window.GST.playbook) {
+                logToTerminal('playbook', 'GST modules not loaded, using fallback engine...');
+                addStormLog('⚠️', 'Using fallback playbook engine');
+            }
+            
+            // DEBUG: Log current state
+            console.log('DEBUG runPlaybookEvaluation:');
+            console.log('  window.lastData:', window.lastData ? 'exists' : 'null');
+            console.log('  window.lastData._mockScenario:', window.lastData?._mockScenario ? 'exists' : 'null');
+            console.log('  window.currentTicker:', window.currentTicker);
+            console.log('  GST.MockData.getCurrent():', window.GST?.MockData?.getCurrent?.());
+            
+            // Check if we have data (either live or mock)
+            let scenario = null;
+            let context = null;
+            
+            // Check for mock data first (test mode) - but only if explicitly marked as mock
+            if (window.lastData && window.lastData._isMockData && window.lastData._mockScenario) {
+                scenario = window.lastData._mockScenario;
+                console.log('DEBUG: Using scenario from lastData._mockScenario:', scenario.name);
+            }
+            // Fallback to InlineMockData
+            else if (InlineMockData && InlineMockData.getCurrent()) {
+                scenario = InlineMockData.getCurrent();
+                console.log('DEBUG: Using scenario from InlineMockData:', scenario?.name);
+            }
+            // Fallback to GST.MockData
+            else if (window.GST && window.GST.MockData && window.GST.MockData.getCurrent) {
+                scenario = window.GST.MockData.getCurrent();
+                console.log('DEBUG: Using scenario from GST.MockData:', scenario?.name);
+            }
+            
+            if (scenario) {
+                // Build context from mock scenario
+                context = {
+                    ticker: scenario.ticker,
+                    spotPrice: scenario.spotPrice,
+                    timestamp: scenario.timestamp,
+                    gammaMetrics: scenario.data.gammaMetrics,
+                    ohlcv: scenario.data.ohlcv,
+                    confluence: scenario.data.confluence,
+                    flow: scenario.data.flow,
+                    activity: scenario.data.activity,
+                    optionsChain: null,
+                    atr: 1.2 // Mock ATR
+                };
+                
+                logToTerminal('playbook', `Evaluating mock scenario: ${scenario.name}`);
+            } else if (window.lastData && window.currentTicker) {
+                // Build context from live data
+                const metrics = calculateGammaMetrics(window.lastData, window.currentExpiration);
+                if (!metrics) {
+                    logToTerminal('playbook', 'Error: Unable to calculate gamma metrics from live data', true);
+                    return;
+                }
+                
+                context = {
+                    ticker: window.currentTicker,
+                    spotPrice: metrics.spotPrice,
+                    timestamp: Date.now(),
+                    gammaMetrics: {
+                        netGammaExposure: metrics.netGamma / 1000000,
+                        gammaFlip: parseFloat(metrics.gammaFlip),
+                        callWall: parseFloat(metrics.callWall),
+                        putSupport: parseFloat(metrics.putSupport),
+                        regime: metrics.regime,
+                        zoneWidth: parseFloat(metrics.zoneWidth),
+                        expiration: metrics.expiration,
+                        dte: metrics.dte
+                    },
+                    ohlcv: { history: [] }, // No OHLCV from ORATS strikes endpoint
+                    confluence: {
+                        score: 3,
+                        ivSkew: 5.5,
+                        maxPainDistance: 1.0
+                    },
+                    flow: {
+                        darkPoolSentiment: 'neutral',
+                        optionsFlowDelta: 0
+                    },
+                    activity: {
+                        callUnusual: false,
+                        putUnusual: false
+                    },
+                    optionsChain: null,
+                    atr: 1.0
+                };
+                
+                logToTerminal('playbook', `Evaluating live data for: ${window.currentTicker}`);
+            } else {
+                logToTerminal('playbook', 'Error: No data available. Load a ticker or activate test mode.', true);
+                addStormLog('✗', 'No data available for evaluation');
+                return;
+            }
+            
+            // Run the evaluation (use GST if available, fallback if not)
+            const startTime = performance.now();
+            let result;
+            if (window.GST && window.GST.playbook) {
+                result = window.GST.playbook.evaluateV12MR(context);
+                console.log('DEBUG: Using GST playbook engine');
+            } else {
+                result = FallbackPlaybook.evaluateV12MR(context);
+                console.log('DEBUG: Using fallback playbook engine');
+            }
+            const evalTime = Math.round(performance.now() - startTime);
+            
+            // Update decision trace UI
+            console.log('DEBUG: Updating decision trace, GST.decisionTrace:', window.GST?.decisionTrace ? 'exists' : 'null');
+            if (window.GST && window.GST.decisionTrace) {
+                // Initialize if not already done
+                if (!window.GST.decisionTrace.container) {
+                    window.GST.decisionTrace.init('decisionTraceContainer');
+                }
+                window.GST.decisionTrace.update(result);
+            } else {
+                // Fallback: render directly to container
+                console.log('DEBUG: Using fallback renderer');
+                renderDecisionTraceFallback(result);
+            }
+            
+            // Scroll to decision trace panel
+            const decisionPanel = document.getElementById('decisionTraceContainer');
+            if (decisionPanel) {
+                decisionPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            // Log results
+            const passedRules = result.trace.filter(r => r.pass).length;
+            const totalRules = result.trace.length;
+            
+            logToTerminal('playbook', 
+                `✓ Evaluation complete in ${evalTime}ms<br>` +
+                `Signal: ${result.signal}<br>` +
+                `Confidence: ${result.confidence}%<br>` +
+                `Rules: ${passedRules}/${totalRules} passed`
+            );
+            
+            if (result.signal !== 'NONE') {
+                addStormLog('🎯', `${result.signal} SIGNAL | ${result.confidence}% confidence | ${passedRules}/${totalRules} rules`, context.ticker);
+            } else {
+                addStormLog('✗', `NO SIGNAL | ${passedRules}/${totalRules} rules passed`, context.ticker);
+            }
+            
+            // Update the decision trace container timestamp
+            const timestampEl = document.getElementById('trace-evaluation-time');
+            if (timestampEl) {
+                timestampEl.textContent = `Evaluated in ${evalTime}ms`;
+            }
+        }
+        
+        function exportDecisionTrace() {
+            if (!window.GST || !window.GST.decisionTrace) {
+                logToTerminal('export', 'Error: Decision Trace not initialized', true);
+                return;
+            }
+            
+            const evaluation = window.GST.decisionTrace.getCurrent();
+            if (!evaluation) {
+                logToTerminal('export', 'Error: No evaluation to export. Run EVALUATE first.', true);
+                addStormLog('✗', 'No evaluation data to export');
+                return;
+            }
+            
+            const json = window.GST.decisionTrace.export();
+            if (!json) {
+                logToTerminal('export', 'Error: Export failed', true);
+                return;
+            }
+            
+            // Create download
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `gamma-trace-${evaluation.ticker}-${Date.now()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            logToTerminal('export', `✓ Decision trace exported: ${a.download}`);
+            addStormLog('📤', `Trace exported: ${evaluation.ticker} ${evaluation.signal}`);
+        }
+        
+        // Fallback renderer if GST decision trace UI isn't loaded
+        function renderDecisionTraceFallback(result) {
+            const container = document.getElementById('decisionTraceContainer');
+            if (!container) return;
+            
+            const passedRules = result.trace.filter(r => r.pass).length;
+            const totalRules = result.trace.length;
+            const signalColor = result.signal === 'CALL' ? 'var(--accent-green)' : 
+                               result.signal === 'PUT' ? 'var(--accent-red)' : 
+                               'var(--text-secondary)';
+            
+            let html = `
+                <div class="decision-trace-panel" style="background: var(--bg-secondary);">
+                    <div style="padding: 16px; border-bottom: 1px solid var(--border);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <span style="font-size: 14px; font-weight: bold; color: var(--accent-blue);">🎯 Decision Trace</span>
+                            <span style="padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; background: rgba(0,0,0,0.3); color: ${signalColor};">
+                                ${result.signal === 'NONE' ? '✗ NO SIGNAL' : '✓ ' + result.signal + ' SIGNAL'}
+                            </span>
+                        </div>
+                        <div style="display: flex; gap: 20px;">
+                            <div><div style="font-size: 10px; color: var(--text-secondary);">TICKER</div><div style="font-weight: bold;">${result.ticker}</div></div>
+                            <div><div style="font-size: 10px; color: var(--text-secondary);">CONFIDENCE</div><div style="font-weight: bold; color: ${result.confidence >= 80 ? 'var(--accent-green)' : 'var(--text-secondary)'}">${result.confidence}%</div></div>
+                            <div><div style="font-size: 10px; color: var(--text-secondary);">RULES</div><div style="font-weight: bold; color: ${passedRules === totalRules ? 'var(--accent-green)' : 'var(--accent-yellow)'}">${passedRules}/${totalRules}</div></div>
+                        </div>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse;">
+            `;
+            
+            for (const rule of result.trace) {
+                const statusColor = rule.pass ? 'var(--accent-green)' : 'var(--accent-red)';
+                html += `
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 12px 16px; width: 40px; text-align: center; color: ${statusColor}; font-weight: bold;">${rule.pass ? '✓' : '✗'}</td>
+                        <td style="padding: 12px 0;">
+                            <div style="font-size: 13px; font-weight: bold;">${rule.name}</div>
+                            <div style="font-size: 11px; color: var(--text-secondary);">${rule.note}</div>
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            html += '</table></div>';
+            container.innerHTML = html;
+        }
+        
+        // ═══════════════════════════════════════════════════════════════
+        // QUICK TEST FUNCTION - Call from console: quickTest()
+        // ═══════════════════════════════════════════════════════════════
+        function quickTest() {
+            console.log('Running quick test...');
+            
+            // Step 1: Load scenario directly
+            const scenario = InlineMockData.getById('perfect-call');
+            if (!scenario) {
+                console.error('Failed to load scenario');
+                return;
+            }
+            console.log('Loaded scenario:', scenario.name);
+            
+            // Step 2: Apply it
+            InlineMockData.applyScenario(scenario);
+            console.log('Scenario applied, lastData:', window.lastData);
+            
+            // Step 3: Run evaluation
+            console.log('Running evaluation...');
+            runPlaybookEvaluation();
+            
+            console.log('Quick test complete!');
+        }
+        
+        // Make it globally accessible
+        window.quickTest = quickTest;
+        console.log('quickTest() function available - type quickTest() in console to run');
+    </script>
+</body>
+</html>

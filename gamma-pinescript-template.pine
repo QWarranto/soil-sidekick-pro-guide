@@ -1,0 +1,69 @@
+// @version=5
+// @title Gamma Storm Monitor
+// @description Monitors gamma-like conditions across watchlists
+// @author Kepler
+
+// === CONFIGURATION ===
+group "Storm Detection Settings"
+gammaThreshold = input.float(-0.1, "Negative Gamma Threshold", minval=-1.0, maxval=0.0, group="Storm Detection")
+narrowZoneThreshold = input.float(10.0, "Narrow Zone Threshold (%)", minval=1.0, maxval=50.0, group="Storm Detection")
+volumeThreshold = input.float(1.2, "Volume Spike Threshold", minval=0.5, maxval=5.0, group="Storm Detection")
+
+// === GAMMA STORM DETECTION ===
+// Approximate gamma conditions using available TradingView data
+isNegativeGamma() =>
+    // Use volatility and volume as proxies for gamma conditions
+    volatility = ta.atr(14) / close * 100
+    volumeSpike = volume > ta.sma(volume, 20) * volumeThreshold
+    putCallRatio = 0.5 // Would need real options data
+    volatility > 15 and volumeSpike and putCallRatio > 0.6
+
+isNarrowZone() =>
+    // Use ATR as percentage of price to approximate narrow trading ranges
+    atrPercent = ta.atr(14) / close * 100
+    atrPercent < narrowZoneThreshold
+
+isBelowFlip() =>
+    // Use price relative to VWAP as proxy for gamma flip
+    priceBelowVWAP = close < ta.vwap
+    rsiBelow50 = ta.rsi(14) < 50
+    priceBelowVWAP and rsiBelow50
+
+// === VISUAL INDICATORS ===
+// Background coloring for storm conditions
+bgColor = isNegativeGamma() ? color.new(color.red, 80) : 
+          isNarrowZone() ? color.new(color.yellow, 80) : 
+          isBelowFlip() ? color.new(color.blue, 80) : 
+          color.new(color.green, 90)
+
+// Storm intensity indicator
+stormIntensity = isNegativeGamma() ? 3 : isNarrowZone() ? 2 : isBelowFlip() ? 1 : 0
+
+// === ALERTS ===
+if isNegativeGamma()
+    alert("🌪️ NEGATIVE GAMMA STORM DETECTED: " + syminfo.ticker, alert.freq_once_per_bar)
+
+if isNarrowZone()
+    alert("⚡ NARROW ZONE - HIGH VOLATILITY RISK: " + syminfo.ticker, alert.freq_once_per_bar)
+
+if isBelowFlip()
+    alert("🔄 BELOW GAMMA FLIP - POTENTIAL BREAKDOWN: " + syminfo.ticker, alert.freq_once_per_bar)
+
+// === PLOTTING ===
+plot(stormIntensity, title="Storm Intensity", color=color.red, linewidth=2)
+plotshape(isNegativeGamma(), title="Negative Gamma Storm", location=location.top, color=color.red, style=shape.triangledown, size=size.normal)
+plotshape(isNarrowZone(), title="Narrow Zone", location=location.top, color=color.yellow, style=shape.diamond, size=size.small)
+plotshape(isBelowFlip(), title="Below Gamma Flip", location=location.top, color=color.blue, style=shape.triangleup, size=size.small)
+
+// === INFO PANEL ===
+if barstate.islast
+    label.new(bar_index, high, text="🌪️ Gamma Storm Monitor\n" + 
+             "Intensity: " + str.tostring(stormIntensity) + "/3\n" +
+             "Conditions: " + 
+             (isNegativeGamma() ? "NEGATIVE GAMMA" : isNarrowZone() ? "NARROW ZONE" : isBelowFlip() ? "BELOW FLIP" : "NORMAL"),
+             color=color.black, textcolor=color.white, size=size.normal, style=label.style_label_up)
+
+// @description 
+// This indicator approximates gamma conditions using available TradingView data.
+// For real gamma data, integrate with options data providers or use external APIs.
+// The goal is to identify high-volatility conditions similar to negative gamma environments.

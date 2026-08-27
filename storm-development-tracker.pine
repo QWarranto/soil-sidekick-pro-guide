@@ -1,0 +1,110 @@
+// @version=6
+// @title Storm Development Tracker
+// @description Tracks storm development and progression across your universe
+// @author Kepler
+
+// === STORM DEVELOPMENT TRACKING ===
+// Tracks when storms are developing vs just present
+
+// === DEVELOPMENT TRACKING CONFIGURATION ===
+developmentWindow = input.int(5, "Development Window (bars)", minval=3, maxval=20, tooltip="Window for tracking storm development")
+developmentThreshold = input.float(0.5, "Development Threshold", minval=0.1, maxval=2.0, step=0.1, tooltip="Minimum change to track development")
+
+// === STORM DETECTION (Same as your calibrated system) ===
+volatility = ta.atr(14) / close * 100
+volumeRatio = volume / ta.sma(volume, 20)
+rsiValue = ta.rsi(close, 14)
+
+// Calibrated storm intensity
+stormIntensity = 0.0
+if volatility > 4.0 and volumeRatio > 1.2
+    stormIntensity := 3.0  // Major storm
+else if volatility > 2.5 and volumeRatio > 1.15  
+    stormIntensity := 2.0  // Moderate storm
+else if volatility > 1.5 and volumeRatio > 1.1
+    stormIntensity := 1.0  // Minor storm
+else if volatility > 1.0
+    stormIntensity := 0.5  // Watch condition
+else
+    stormIntensity := 0.0  // Calm conditions
+
+// === STORM DEVELOPMENT TRACKING ===
+// Track storm development over time window
+stormDevelopment = stormIntensity - stormIntensity[developmentWindow]
+developmentRate = (stormIntensity - stormIntensity[1]) / math.max(stormIntensity[1], 0.1)
+
+// Development classification
+developmentStatus = "STABLE"
+if stormIntensity >= 2.0 and developmentRate > 0.2
+    developmentStatus := "RAPIDLY DEVELOPING"
+else if stormIntensity >= 1.0 and developmentRate > 0.1
+    developmentStatus := "DEVELOPING"
+else if stormIntensity >= 0.5 and developmentRate > 0.05
+    developmentStatus := "BUILDING"
+else if developmentRate > 0.02
+    developmentStatus := "SUBTLE CHANGE"
+else if developmentRate < -0.1 and stormIntensity < 1.0
+    developmentStatus := "DISSIPATING"
+else
+    developmentStatus := "STABLE"
+
+// === DEVELOPMENT VISUALIZATION ===
+// Development progression tracking
+developmentColor = developmentStatus == "RAPIDLY DEVELOPING" ? color.new(color.red, 60) :
+                   developmentStatus == "DEVELOPING" ? color.new(color.orange, 65) :
+                   developmentStatus == "BUILDING" ? color.new(color.yellow, 70) :
+                   developmentStatus == "SUBTLE CHANGE" ? color.new(color.blue, 80) :
+                   developmentStatus == "DISSIPATING" ? color.new(color.gray, 85) :
+                   color.new(color.green, 90)
+
+// Development tracking plot
+plot(stormIntensity, title="Storm Intensity", color=color.new(color.gray, 70), linewidth=3, style=plot.style_columns)
+plot(developmentRate * 10, title="Development Rate", color=developmentColor, linewidth=2, style=plot.style_line)
+
+// Development status markers
+plotshape(developmentStatus == "RAPIDLY DEVELOPING", title="Rapidly Developing", location=location.top, color=color.red, style=shape.triangledown, size=size.large, text="RAPID")
+plotshape(developmentStatus == "DEVELOPING", title="Developing", location=location.top, color=color.orange, style=shape.diamond, size=size.normal, text="DEV")
+plotshape(developmentStatus == "BUILDING", title="Building", location=location.top, color=color.yellow, style=shape.triangleup, size=size.normal, text="BUILD")
+plotshape(developmentStatus == "SUBTLE CHANGE", title="Subtle Change", location=location.top, color=color.blue, style=shape.circle, size=size.small, text="SUBTLE")
+plotshape(developmentStatus == "DISSIPATING", title="Dissipating", location=location.top, color=color.gray, style=shape.circle, size=size.small, text="DISSIP")
+
+// === DEVELOPMENT ALERTS ===
+// Development progression alerts
+if developmentStatus == "RAPIDLY DEVELOPING" and developmentStatus[1] != "RAPIDLY DEVELOPING"
+    alert("RAPID STORM DEVELOPMENT: " + syminfo.ticker + " - Rate: " + str.tostring(developmentRate, "#.2f"), alert.freq_once_per_bar)
+
+if developmentStatus == "DEVELOPING" and developmentStatus[1] != "DEVELOPING"
+    alert("STORM DEVELOPING: " + syminfo.ticker + " - Rate: " + str.tostring(developmentRate, "#.2f"), alert.freq_once_per_bar)
+
+if developmentStatus == "BUILDING" and developmentStatus[1] != "BUILDING"
+    alert("STORM BUILDING: " + syminfo.ticker + " - Rate: " + str.tostring(developmentRate, "#.2f"), alert.freq_once_per_bar)
+
+if developmentStatus == "SUBTLE CHANGE" and developmentStatus[1] != "SUBTLE CHANGE"
+    alert("SUBTLE STORM CHANGE: " + syminfo.ticker + " - Rate: " + str.tostring(developmentRate, "#.2f"), alert.freq_once_per_bar)
+
+// === DEVELOPMENT DASHBOARD ===
+// Development tracking information
+if barstate.islast
+    developmentText = "STORM DEVELOPMENT TRACKER\n"
+    developmentText := developmentText + "Symbol: " + syminfo.ticker + "\n"
+    developmentText := developmentText + "Storm Intensity: " + str.tostring(stormIntensity, "#.1f") + "/3\n"
+    developmentText := developmentText + "Development Status: " + developmentStatus + "\n"
+    developmentText := developmentText + "Development Rate: " + str.tostring(developmentRate, "#.3f") + "\n"
+    
+    if developmentRate > 0.1
+        developmentText := developmentText + "Trend: BUILDING/DEVELOPING"
+    else if developmentRate < -0.05
+        developmentText := developmentText + "Trend: DISSIPATING"
+    else
+        developmentText := developmentText + "Trend: STABLE"
+    
+    label.new(bar_index, high * 1.02, text=developmentText, 
+             color=color.black, textcolor=color.white, 
+             size=size.normal, style=label.style_label_up)
+
+// @description 
+// Storm Development Tracker that monitors when storms are developing vs just present.
+// Perfect for identifying early warning signals and storm progression in low-volatility environments.
+// Tracks storm development over time windows to identify building, developing, and dissipating conditions.
+// 
+// Perfect for systematic traders who want to identify storm development before major conditions develop.

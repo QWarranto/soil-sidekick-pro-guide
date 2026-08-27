@@ -1,0 +1,151 @@
+{
+  "openapi_version": "3.0.3",
+  "api_version": "1.2.0",
+  "base_url": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1",
+  "endpoints": [
+    {
+      "id": "getAgriculturalIntelligence",
+      "method": "POST",
+      "path": "/agricultural-intelligence",
+      "summary": "Get AI-powered agricultural insights",
+      "description": "Agricultural intelligence with AI recommendations",
+      "category": "AI Services"
+    },
+    {
+      "id": "getSeasonalPlanningAssistant",
+      "method": "POST",
+      "path": "/seasonal-planning-assistant",
+      "summary": "Get seasonal planning recommendations",
+      "description": "AI-powered seasonal planning with weather integration",
+      "category": "AI Services"
+    },
+    {
+      "id": "generateSmartReportSummary",
+      "method": "POST",
+      "path": "/smart-report-summary",
+      "summary": "Generate AI report summary",
+      "description": "Generate AI-powered summaries for soil or water quality reports",
+      "category": "AI Services"
+    },
+    {
+      "id": "visualCropAnalysis",
+      "method": "POST",
+      "path": "/visual-crop-analysis",
+      "summary": "Analyze crop images",
+      "description": "AI-powered visual crop analysis for pest detection, health assessment, and disease screening",
+      "category": "AI Services"
+    },
+    {
+      "id": "calculateCarbonCredits",
+      "method": "POST",
+      "path": "/carbon-credit-calculator",
+      "summary": "Calculate carbon credits",
+      "description": "Calculate carbon credits based on field data and soil organic matter",
+      "category": "Carbon"
+    },
+    {
+      "id": "beginnerGuidance",
+      "method": "POST",
+      "path": "/beginner-guidance",
+      "summary": "Beginner-friendly plant guidance without jargon",
+      "description": "Judgment-free, accessible plant guidance that solves community gatekeeping issues.\nThis endpoint:\n- Translates scientific jargon into plain language\n- Never makes users feel stupid for asking about common plants\n- Uses progressive disclosure (simple answer first, details on request)\n- Provides encouraging, supportive tone\n- Offers practical \"what do I do right now\" guidance\n",
+      "category": "Consumer Plant Care"
+    },
+    {
+      "id": "dynamicCare",
+      "method": "POST",
+      "path": "/dynamic-care",
+      "summary": "Hyper-localized dynamic plant care recommendations",
+      "description": "Real-time, environment-aware care recommendations that solve the \"generic advice\" problem.\nUnlike static \"water every 7 days\" recommendations, this endpoint:\n- Adjusts watering based on current humidity, temperature, and recent rainfall\n- Considers container type, soil composition, and drainage\n- Factors in seasonal changes and indoor environment conditions\n- Accounts for plant maturity and growth phase\n- Provides actionable guidance, not rigid schedules\n",
+      "category": "Consumer Plant Care"
+    },
+    {
+      "id": "safeIdentification",
+      "method": "POST",
+      "path": "/safe-identification",
+      "summary": "Safe plant identification with toxic lookalike warnings",
+      "description": "Environmentally-contextualized plant identification that addresses misidentification concerns.\nUnlike generic plant ID, this endpoint:\n- Checks against a toxic lookalike database with visual similarity scores\n- Uses environmental context (soil, climate, regional flora) to weight identification probability\n- Provides confidence breakdowns showing why alternatives were considered\n- Issues explicit warnings for dangerous lookalikes (Poison Hemlock vs Wild Carrot)\n- Accounts for plant growth stage (seedling identification challenges)\n",
+      "category": "Consumer Plant Care"
+    },
+    {
+      "id": "calculateEnvironmentalImpact",
+      "method": "POST",
+      "path": "/environmental-impact-engine",
+      "summary": "Calculate environmental impact",
+      "description": "Assess environmental impact including runoff risk, contamination, and eco-friendly alternatives",
+      "category": "Environmental"
+    },
+    {
+      "id": "countyLookup",
+      "method": "POST",
+      "path": "/county-lookup",
+      "summary": "Search for counties",
+      "description": "Search counties by name, state, or FIPS code",
+      "category": "Geographic"
+    },
+    {
+      "id": "leafenginesQuery",
+      "method": "POST",
+      "path": "/leafengines-query",
+      "summary": "Query plant-environment compatibility",
+      "description": "LeafEngines API for plant compatibility scoring with environmental factors",
+      "category": "LeafEngines"
+    },
+    {
+      "id": "getSatelliteData",
+      "method": "POST",
+      "path": "/alpha-earth-environmental-enhancement",
+      "summary": "Get satellite environmental data",
+      "description": "AlphaEarth satellite intelligence integration",
+      "category": "Satellite Data"
+    },
+    {
+      "id": "getSoilData",
+      "method": "POST",
+      "path": "/get-soil-data",
+      "summary": "Get soil analysis data",
+      "description": "Retrieve comprehensive soil analysis for a specific county",
+      "category": "Soil Analysis"
+    },
+    {
+      "id": "getLiveAgriculturalData",
+      "method": "POST",
+      "path": "/live-agricultural-data",
+      "summary": "Get live agricultural data",
+      "description": "Fetch real-time agricultural data from multiple federal sources (NOAA, USDA, EPA)",
+      "category": "Soil Analysis"
+    },
+    {
+      "id": "getPlantingCalendar",
+      "method": "POST",
+      "path": "/multi-parameter-planting-calendar",
+      "summary": "Get planting calendar recommendations",
+      "description": "Multi-parameter planting calendar with climate and soil factors",
+      "category": "Soil Analysis"
+    },
+    {
+      "id": "generateVRTPrescription",
+      "method": "POST",
+      "path": "/generate-vrt-prescription",
+      "summary": "Generate VRT prescription map",
+      "description": "Generate variable rate technology prescription maps",
+      "category": "VRT"
+    },
+    {
+      "id": "getTerritorialWaterAnalytics",
+      "method": "POST",
+      "path": "/territorial-water-analytics",
+      "summary": "Get territorial water analytics",
+      "description": "Generate territorial water quality analytics across regions",
+      "category": "Water Quality"
+    },
+    {
+      "id": "getWaterQuality",
+      "method": "POST",
+      "path": "/territorial-water-quality",
+      "summary": "Get water quality data",
+      "description": "Retrieve water quality metrics for a specific county",
+      "category": "Water Quality"
+    }
+  ]
+}

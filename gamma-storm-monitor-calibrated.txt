@@ -1,0 +1,99 @@
+// @version=6
+indicator('Gamma Storm Monitor', shorttitle='GSM', overlay=true, precision=0, max_lines_count=500, max_labels_count=500, max_bars_back=500)
+// @title Gamma Storm Monitor - Core Symbols  
+// @title Gamma Storm Monitor - Calibrated for Current Market
+// @description Calibrated gamma monitoring for low-volatility environments
+// @author Kepler
+
+// === CALIBRATED CONFIGURATION ===
+// Adjusted thresholds for current low-volatility market conditions
+gammaThreshold = input.float(-0.05, "Gamma Threshold", minval=-1.0, maxval=0.0, step=0.01, tooltip="Calibrated for current market")
+volatilityThreshold1 = input.float(1.5, "Minor Storm Volatility (%)", minval=0.5, maxval=10.0, step=0.1, tooltip="Minor storm threshold")
+volatilityThreshold2 = input.float(2.5, "Moderate Storm Volatility (%)", minval=1.0, maxval=15.0, step=0.1, tooltip="Moderate storm threshold") 
+volatilityThreshold3 = input.float(4.0, "Major Storm Volatility (%)", minval=2.0, maxval=20.0, step=0.1, tooltip="Major storm threshold")
+volumeSpikeThreshold = input.float(1.2, "Volume Spike Threshold", minval=1.0, maxval=5.0, step=0.1, tooltip="Volume spike multiplier")
+
+// === ENHANCED STORM DETECTION ===
+// More sensitive detection for current market conditions
+volatility = ta.atr(14) / close * 100
+volumeRatio = volume / ta.sma(volume, 20)
+rsiValue = ta.rsi(close, 14)
+vwapDistance = math.abs(close - ta.vwap) / close * 100
+
+// Enhanced storm intensity with more granular detection
+stormIntensity = 0.0
+
+// Fine-tuned thresholds for current low-vol environment
+if volatility > volatilityThreshold3 and volumeRatio > volumeSpikeThreshold
+    stormIntensity := 3.0  // Major storm (4%+ volatility)
+else if volatility > volatilityThreshold2 and volumeRatio > 1.15  
+    stormIntensity := 2.0  // Moderate storm (2.5%+ volatility)
+else if volatility > volatilityThreshold1 and volumeRatio > 1.1
+    stormIntensity := 1.0  // Minor storm (1.5%+ volatility)
+else if volatility > 1.0  // Always show some activity
+    stormIntensity := 0.5  // Watch condition (1%+ volatility)
+else
+    stormIntensity := 0.0  // Calm conditions
+
+// === ENHANCED VISUALIZATION ===
+// More granular color coding
+stormColor = stormIntensity >= 3 ? color.new(color.red, 60) : 
+             stormIntensity >= 2 ? color.new(color.orange, 65) : 
+             stormIntensity >= 1 ? color.new(color.yellow, 70) : 
+             stormIntensity >= 0.5 ? color.new(color.blue, 80) :
+             color.new(color.green, 90)
+
+// Enhanced storm plot with more sensitivity
+plot(stormIntensity, title="Storm Intensity (Calibrated)", color=stormColor, linewidth=4, style=plot.style_columns)
+
+// Enhanced storm markers
+plotshape(stormIntensity >= 3, title="Major Storm", location=location.top, color=color.red, style=shape.triangledown, size=size.large, text="MAJOR")
+plotshape(stormIntensity >= 2 and stormIntensity < 3, title="Moderate Storm", location=location.top, color=color.orange, style=shape.diamond, size=size.normal, text="MODERATE")
+plotshape(stormIntensity >= 1 and stormIntensity < 2, title="Minor Storm", location=location.top, color=color.yellow, style=shape.triangleup, size=size.normal, text="MINOR")
+plotshape(stormIntensity >= 0.5 and stormIntensity < 1, title="Watch Condition", location=location.top, color=color.blue, style=shape.circle, size=size.small, text="WATCH")
+
+// === ENHANCED ALERTS ===
+// More sensitive alert system
+if stormIntensity >= 3 and stormIntensity[1] < 3
+    alert("MAJOR GAMMA STORM: " + syminfo.ticker + " - Volatility: " + str.tostring(volatility, "#.2f") + "%", alert.freq_once_per_bar)
+
+if stormIntensity >= 2 and stormIntensity[1] < 2
+    alert("MODERATE GAMMA STORM: " + syminfo.ticker + " - Volatility: " + str.tostring(volatility, "#.2f") + "%", alert.freq_once_per_bar)
+
+if stormIntensity >= 1 and stormIntensity[1] < 1
+    alert("MINOR GAMMA STORM: " + syminfo.ticker + " - Volatility: " + str.tostring(volatility, "#.2f") + "%", alert.freq_once_per_bar)
+
+if stormIntensity >= 0.5 and stormIntensity[1] < 0.5
+    alert("GAMMA WATCH: " + syminfo.ticker + " - Volatility: " + str.tostring(volatility, "#.2f") + "%", alert.freq_once_per_bar)
+
+// === ENHANCED DASHBOARD ===
+// More detailed storm information
+if barstate.islast
+    labelText = "Gamma Storm Monitor (Calibrated)\n"
+    labelText := labelText + "Symbol: " + syminfo.ticker + "\n"
+    labelText := labelText + "Intensity: " + str.tostring(stormIntensity, "#.1f") + "/3\n"
+    labelText := labelText + "Volatility: " + str.tostring(volatility, "#.2f") + "%\n"
+    labelText := labelText + "Volume Ratio: " + str.tostring(volumeRatio, "#.2f") + "x\n"
+    labelText := labelText + "RSI: " + str.tostring(rsiValue, "#.1f") + "\n"
+    
+    if stormIntensity >= 3
+        labelText := labelText + "Condition: MAJOR STORM"
+    else if stormIntensity >= 2
+        labelText := labelText + "Condition: MODERATE STORM"
+    else if stormIntensity >= 1
+        labelText := labelText + "Condition: MINOR STORM"
+    else if stormIntensity >= 0.5
+        labelText := labelText + "Condition: WATCH"
+    else
+        labelText := labelText + "Condition: CALM"
+    
+    label.new(bar_index, high * 1.02, text=labelText, 
+             color=color.black, textcolor=color.white, 
+             size=size.normal, style=label.style_label_up)
+
+// @description 
+// This calibrated version of the Gamma Storm Monitor is tuned for current low-volatility market conditions.
+// It uses more sensitive thresholds to detect gamma-like conditions even in calm markets.
+// Perfect for identifying subtle changes in market dynamics that might indicate developing storm conditions.
+// 
+// Install on multiple charts to monitor your entire universe for both major storms and developing watch conditions.

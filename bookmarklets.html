@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Kepler Bookmarklets</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 { color: #58a6ff; }
+        .bookmarklet {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .bookmarklet a {
+            display: inline-block;
+            background: #238636;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .bookmarklet a:hover { background: #2ea043; }
+        .instructions {
+            color: #8b949e;
+            margin-top: 10px;
+        }
+        code {
+            background: #21262d;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔭 Kepler Bookmarklets</h1>
+    <p>Drag these to your bookmarks bar for instant access:</p>
+
+    <div class="bookmarklet">
+        <a href="http://127.0.0.1:18789/?token=36cebea5cf6feb001006068c0daff6c7bc90482b505342bf">🔭 Kepler Dashboard</a>
+        <div class="instructions">Opens authenticated dashboard directly</div>
+    </div>
+
+    <div class="bookmarklet">
+        <a href="javascript:(function(){window.open('http://127.0.0.1:18789/?token=36cebea5cf6feb001006068c0daff6c7bc90482b505342bf','kepler','width=1200,height=800');})();">🔭 Kepler Popup</a>
+        <div class="instructions">Opens in popup window (good for side-by-side)</div>
+    </div>
+
+    <div class="bookmarklet">
+        <a href="https://www.tradingview.com">📈 TradingView</a>
+        <div class="instructions">Quick access to charts</div>
+    </div>
+
+    <div class="bookmarklet">
+        <a href="https://github.com/QWarranto">🐙 GitHub QWarranto</a>
+        <div class="instructions">Your agricultural software repo</div>
+    </div>
+
+    <h2>Setup Instructions</h2>
+    <ol>
+        <li>Drag the green buttons above to your browser's bookmarks bar</li>
+        <li>Or right-click → "Add to bookmarks"</li>
+        <li>Use <code>Cmd+Shift+B</code> (Mac) to show/hide bookmarks bar</li>
+    </ol>
+
+    <h2>Keyboard Shortcuts</h2>
+    <p>After installing terminal shortcuts with <code>./install-shortcuts.sh</code>:</p>
+    <ul>
+        <li><code>kepler</code> - Open dashboard</li>
+        <li><code>kstatus</code> - Check system status</li>
+        <li><code>krestart</code> - Restart gateway</li>
+        <li><code>kstart</code> - Launch day setup</li>
+    </ul>
+
+    <p style="margin-top: 40px; color: #8b949e; font-size: 0.9em;">
+        Reference: <code>~/clawd/OUTAGE_REFERENCE.txt</code>
+    </p>
+</body>
+</html>

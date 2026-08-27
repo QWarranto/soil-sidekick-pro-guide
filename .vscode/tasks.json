@@ -1,0 +1,92 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Kepler: Open Dashboard",
+      "type": "shell",
+      "command": "open http://127.0.0.1:18789/?token=36cebea5cf6feb001006068c0daff6c7bc90482b505342bf",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "never"
+      }
+    },
+    {
+      "label": "Kepler: Status Check",
+      "type": "shell",
+      "command": "openclaw status",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Kepler: Restart Gateway",
+      "type": "shell",
+      "command": "~/clawd/gateway-control.sh restart",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Kepler: View Logs",
+      "type": "shell",
+      "command": "tail -f /tmp/openclaw/openclaw-$(date +%Y-%m-%d).log",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Kepler: Outage Reference",
+      "type": "shell",
+      "command": "cat ~/clawd/OUTAGE_REFERENCE.txt",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Git: Status",
+      "type": "shell",
+      "command": "git -C ~/clawd status",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Git: Commit All",
+      "type": "shell",
+      "command": "cd ~/clawd && git add -A && git commit -m \"$(date '+Update %Y-%m-%d %H:%M')\"",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Trading: Open TradingView",
+      "type": "shell",
+      "command": "open https://www.tradingview.com",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "never"
+      }
+    },
+    {
+      "label": "GitHub: Open QWarranto",
+      "type": "shell",
+      "command": "open https://github.com/QWarranto",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "never"
+      }
+    }
+  ]
+}

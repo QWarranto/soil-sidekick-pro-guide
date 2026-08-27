@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>⚡ GST Mobile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --text-primary: #e0e0e0;
+            --text-secondary: #8b949e;
+            --accent-green: #00ff88;
+            --accent-red: #ff4444;
+            --accent-yellow: #ffcc00;
+            --accent-blue: #00ccff;
+            --accent-purple: #cc00ff;
+            --border: #2d2d3d;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', 'Helvetica Neue', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 16px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+        
+        .header .subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+        
+        /* Status Cards */
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .status-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .status-card.api-connected {
+            border-color: var(--accent-green);
+            background: rgba(0, 255, 136, 0.1);
+        }
+        
+        .status-card.api-standby {
+            border-color: var(--accent-yellow);
+            background: rgba(255, 204, 0, 0.1);
+        }
+        
+        .status-card.live-mode {
+            border-color: var(--accent-green);
+            background: rgba(0, 255, 136, 0.1);
+        }
+        
+        .status-card.mock-mode {
+            border-color: var(--accent-purple);
+            background: rgba(204, 0, 255, 0.1);
+        }
+        
+        .status-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        
+        .status-value {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        /* Ticker Input */
+        .ticker-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .ticker-input {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            color: var(--text-primary);
+            padding: 16px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+        }
+        
+        .ticker-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        /* Action Buttons */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-primary {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+        }
+        
+        .btn-evaluate {
+            background: var(--accent-green);
+            color: var(--bg-primary);
+        }
+        
+        .btn-test {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        
+        /* Signal Display */
+        .signal-display {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .signal-display.no-signal {
+            border-color: var(--text-secondary);
+        }
+        
+        .signal-display.call {
+            border-color: var(--accent-green);
+            background: rgba(0, 255, 136, 0.1);
+        }
+        
+        .signal-display.put {
+            border-color: var(--accent-red);
+            background: rgba(255, 68, 68, 0.1);
+        }
+        
+        .signal-icon {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+        
+        .signal-text {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .signal-confidence {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        /* Rules Summary */
+        .rules-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .rules-header {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .rules-score {
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+        
+        .rule-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .rule-item:last-child {
+            border-bottom: none;
+        }
+        
+        .rule-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 14px;
+        }
+        
+        .rule-icon.pass {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--accent-green);
+        }
+        
+        .rule-icon.fail {
+            background: rgba(255, 68, 68, 0.2);
+            color: var(--accent-red);
+        }
+        
+        .rule-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .rule-detail {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        
+        /* Key Metrics */
+        .metrics-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .metrics-header {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+        
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .metric-value {
+            font-size: 13px;
+            font-weight: bold;
+        }
+        
+        /* Loader */
+        .loader {
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+            gap: 8px;
+        }
+        
+        .loader-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        
+        .loader-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loader-dot:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        /* Hidden */
+        .hidden { display: none !important; }
+        
+        /* Bottom Actions */
+        .bottom-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: 12px 16px;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .bottom-actions .btn {
+            flex: 1;
+            margin-bottom: 0;
+            padding: 14px;
+            font-size: 14px;
+        }
+        
+        body.with-bottom-actions {
+            padding-bottom: 80px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>⚡ GST MOBILE</h1>
+        <div class="subtitle">Gamma Storm Tracker • Playbook v1.2</div>
+        <div style="font-size: 11px; color: var(--accent-yellow); margin-top: 8px; padding: 8px; background: rgba(255,204,0,0.1); border-radius: 6px;">
+            📱 Companion View • Use Desktop for Live Data
+        </div>
+    </div>
+    
+    <!-- Status Cards -->
+    <div class="status-grid">
+        <div class="status-card" id="apiStatusCard">
+            <div class="status-label">API Status</div>
+            <div class="status-value" id="apiStatusText">Checking...</div>
+        </div>
+        <div class="status-card" id="dataSourceCard">
+            <div class="status-label">Data Source</div>
+            <div class="status-value" id="dataSourceText">--</div>
+        </div>
+    </div>
+    
+    <!-- Ticker Input -->
+    <div class="ticker-section">
+        <input type="text" class="ticker-input" id="tickerInput" placeholder="SPY" maxlength="5" value="SPY">
+        <button class="btn btn-primary" onclick="loadData()">📡 Load Data</button>
+    </div>
+    
+    <!-- Signal Display -->
+    <div class="signal-display hidden" id="signalDisplay">
+        <div class="signal-icon" id="signalIcon">⏳</div>
+        <div class="signal-text" id="signalText">Waiting...</div>
+        <div class="signal-confidence" id="signalConfidence">--</div>
+    </div>
+    
+    <!-- Rules Summary -->
+    <div class="rules-section hidden" id="rulesSection">
+        <div class="rules-header">
+            <span>Playbook Rules</span>
+            <span class="rules-score" id="rulesScore">--</span>
+        </div>
+        <div id="rulesList">
+            <!-- Rules populated by JS -->
+        </div>
+    </div>
+    
+    <!-- Key Metrics -->
+    <div class="metrics-section hidden" id="metricsSection">
+        <div class="metrics-header">Key Metrics</div>
+        <div class="metric-row">
+            <span class="metric-label">Net Gamma Exposure</span>
+            <span class="metric-value" id="gammaExposure">--</span>
+        </div>
+        <div class="metric-row">
+            <span class="metric-label">Gamma Flip</span>
+            <span class="metric-value" id="gammaFlip">--</span>
+        </div>
+        <div class="metric-row">
+            <span class="metric-label">Call Wall</span>
+            <span class="metric-value" id="callWall">--</span>
+        </div>
+        <div class="metric-row">
+            <span class="metric-label">Put Support</span>
+            <span class="metric-value" id="putSupport">--</span>
+        </div>
+    </div>
+    
+    <!-- Evaluate Button (if data loaded) -->
+    <button class="btn btn-evaluate hidden" id="evaluateBtn" onclick="evaluate()">🎯 Evaluate</button>
+    
+    <!-- Test Mode Button -->
+    <button class="btn btn-test" id="testBtn" onclick="loadMockData()">🧪 Load Mock Data</button>
+    
+    <!-- Loader -->
+    <div class="loader hidden" id="loader">
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+    </div>
+    
+    <!-- API Key Modal -->
+    <div id="apiKeyModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 1000; padding: 20px;">
+        <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-top: 40px;">
+            <h2 style="margin-bottom: 16px;">🔑 API Key Required</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 14px;">
+                Enter your ORATS API key to load live market data. This will be stored only for this session.
+            </p>
+            <input type="password" id="apiKeyInput" style="width: 100%; padding: 16px; font-size: 16px; background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary); border-radius: 8px; margin-bottom: 16px;" placeholder="Enter API key...">
+            <button class="btn btn-primary" onclick="saveApiKey()" style="margin-bottom: 12px;">Save Key</button>
+            <button class="btn btn-secondary" onclick="closeApiKeyModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // API Key Management
+        const ApiKeyManager = {
+            getKey() {
+                try { return sessionStorage.getItem('orats_api_key'); } catch (e) { return null; }
+            },
+            setKey(key) {
+                try {
+                    if (key && key.trim()) {
+                        sessionStorage.setItem('orats_api_key', key.trim());
+                        return true;
+                    }
+                    return false;
+                } catch (e) { return false; }
+            },
+            hasKey() { return !!this.getKey(); }
+        };
+        
+        // State
+        let currentData = null;
+        let isMockData = false;
+        
+        // Initialize
+        function init() {
+            updateStatus();
+            
+            // Check for API key
+            if (!ApiKeyManager.hasKey()) {
+                showApiKeyModal();
+            }
+        }
+        
+        function updateStatus() {
+            const hasKey = ApiKeyManager.hasKey();
+            const apiCard = document.getElementById('apiStatusCard');
+            const apiText = document.getElementById('apiStatusText');
+            const sourceCard = document.getElementById('dataSourceCard');
+            const sourceText = document.getElementById('dataSourceText');
+            
+            if (hasKey) {
+                apiCard.className = 'status-card api-connected';
+                apiText.textContent = '✓ Connected';
+                apiText.style.color = 'var(--accent-green)';
+            } else {
+                apiCard.className = 'status-card';
+                apiText.textContent = '✗ No Key';
+                apiText.style.color = 'var(--accent-red)';
+            }
+            
+            if (isMockData) {
+                sourceCard.className = 'status-card mock-mode';
+                sourceText.textContent = '🧪 Mock';
+                sourceText.style.color = 'var(--accent-purple)';
+            } else if (currentData) {
+                sourceCard.className = 'status-card live-mode';
+                sourceText.textContent = '📡 Live';
+                sourceText.style.color = 'var(--accent-green)';
+            } else {
+                sourceCard.className = 'status-card';
+                sourceText.textContent = '--';
+                sourceText.style.color = 'var(--text-secondary)';
+            }
+        }
+        
+        function showApiKeyModal() {
+            document.getElementById('apiKeyModal').style.display = 'block';
+        }
+        
+        function closeApiKeyModal() {
+            document.getElementById('apiKeyModal').style.display = 'none';
+        }
+        
+        function saveApiKey() {
+            const key = document.getElementById('apiKeyInput').value;
+            if (ApiKeyManager.setKey(key)) {
+                closeApiKeyModal();
+                updateStatus();
+                alert('✓ API key saved for this session');
+            } else {
+                alert('✗ Please enter a valid API key');
+            }
+        }
+        
+        // Mock Data
+        const mockScenarios = {
+            'perfect-call': {
+                ticker: 'SPY',
+                signal: 'CALL',
+                confidence: 100,
+                rulesPassed: 6,
+                rulesTotal: 6,
+                gammaExposure: 1.4,
+                gammaFlip: 476.25,
+                callWall: 480.00,
+                putSupport: 475.00,
+                rules: [
+                    { name: 'Gamma Regime', pass: true, detail: '1.4% ≥ 1.0%' },
+                    { name: 'Confluence', pass: true, detail: '4/5 indicators' },
+                    { name: 'Flow Sanity', pass: true, detail: 'Aligned' },
+                    { name: '30m Close Cross', pass: true, detail: 'Cross detected' },
+                    { name: 'Gap Rule', pass: true, detail: 'Confirmed' },
+                    { name: 'Activity', pass: true, detail: 'Call volume elevated' }
+                ]
+            },
+            'no-signal': {
+                ticker: 'SPY',
+                signal: 'NONE',
+                confidence: 0,
+                rulesPassed: 2,
+                rulesTotal: 6,
+                gammaExposure: 0.1,
+                gammaFlip: 476.25,
+                callWall: 480.00,
+                putSupport: 475.00,
+                rules: [
+                    { name: 'Gamma Regime', pass: false, detail: '0.1% < 1.0%' },
+                    { name: 'Confluence', pass: true, detail: '3/5 indicators' },
+                    { name: 'Flow Sanity', pass: true, detail: 'Aligned' },
+                    { name: '30m Close Cross', pass: false, detail: 'No cross' },
+                    { name: 'Gap Rule', pass: false, detail: 'Awaiting' },
+                    { name: 'Activity', pass: false, detail: 'Not aligned' }
+                ]
+            }
+        };
+        
+        function loadMockData() {
+            const scenario = mockScenarios['perfect-call'];
+            currentData = scenario;
+            isMockData = true;
+            updateStatus();
+            displayResults(scenario);
+            document.getElementById('evaluateBtn').classList.remove('hidden');
+            document.getElementById('testBtn').textContent = '🔄 Switch to No Signal';
+            document.getElementById('testBtn').onclick = () => loadMockScenario('no-signal');
+        }
+        
+        function loadMockScenario(scenarioKey) {
+            const scenario = mockScenarios[scenarioKey];
+            currentData = scenario;
+            isMockData = true;
+            updateStatus();
+            displayResults(scenario);
+        }
+        
+        // Live Data - For full functionality, use desktop version
+        async function loadData() {
+            const ticker = document.getElementById('tickerInput').value.toUpperCase() || 'SPY';
+            
+            if (!ApiKeyManager.hasKey()) {
+                showApiKeyModal();
+                return;
+            }
+            
+            // Show message that mobile version uses simplified data
+            const signalDisplay = document.getElementById('signalDisplay');
+            signalDisplay.classList.remove('hidden');
+            signalDisplay.innerHTML = `
+                <div style="padding: 20px; text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 10px;">📱</div>
+                    <div style="font-size: 16px; font-weight: bold; margin-bottom: 10px; color: var(--accent-yellow);">
+                        Mobile Version Limited
+                    </div>
+                    <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 15px;">
+                        For full live data and playbook evaluation,<br>
+                        please use the desktop version:
+                    </div>
+                    <a href="http://192.168.1.151:8888/gamma-storm-tracker.html" 
+                       style="color: var(--accent-blue); text-decoration: none; font-weight: bold;">
+                        Open Full GST →
+                    </a>
+                    <div style="margin-top: 15px; font-size: 12px; color: var(--text-secondary);">
+                        Use 🧪 Load Mock Data below for testing
+                    </div>
+                </div>
+            `;
+            document.getElementById('rulesSection').classList.add('hidden');
+            document.getElementById('metricsSection').classList.add('hidden');
+            document.getElementById('evaluateBtn').classList.add('hidden');
+        }
+        
+        function evaluate() {
+            if (!currentData) {
+                alert('Please load data first');
+                return;
+            }
+            displayResults(currentData);
+        }
+        
+        function displayResults(data) {
+            // Signal Display
+            const signalDisplay = document.getElementById('signalDisplay');
+            const signalIcon = document.getElementById('signalIcon');
+            const signalText = document.getElementById('signalText');
+            const signalConf = document.getElementById('signalConfidence');
+            
+            signalDisplay.classList.remove('hidden', 'no-signal', 'call', 'put');
+            
+            if (data.signal === 'CALL') {
+                signalDisplay.classList.add('call');
+                signalIcon.textContent = '📈';
+                signalText.textContent = '✓ CALL SIGNAL';
+                signalText.style.color = 'var(--accent-green)';
+            } else if (data.signal === 'PUT') {
+                signalDisplay.classList.add('put');
+                signalIcon.textContent = '📉';
+                signalText.textContent = '✓ PUT SIGNAL';
+                signalText.style.color = 'var(--accent-red)';
+            } else {
+                signalDisplay.classList.add('no-signal');
+                signalIcon.textContent = '⏸️';
+                signalText.textContent = '✗ NO SIGNAL';
+                signalText.style.color = 'var(--text-secondary)';
+            }
+            
+            signalConf.textContent = `${data.confidence}% confidence • ${data.rulesPassed}/${data.rulesTotal} rules passed`;
+            
+            // Rules
+            const rulesSection = document.getElementById('rulesSection');
+            const rulesList = document.getElementById('rulesList');
+            const rulesScore = document.getElementById('rulesScore');
+            
+            rulesSection.classList.remove('hidden');
+            rulesScore.textContent = `${data.rulesPassed}/${data.rulesTotal}`;
+            rulesScore.style.color = data.rulesPassed === data.rulesTotal ? 'var(--accent-green)' : 
+                                     data.rulesPassed >= 3 ? 'var(--accent-yellow)' : 'var(--accent-red)';
+            
+            rulesList.innerHTML = data.rules.map(rule => `
+                <div class="rule-item">
+                    <div class="rule-icon ${rule.pass ? 'pass' : 'fail'}">
+                        ${rule.pass ? '✓' : '✗'}
+                    </div>
+                    <div>
+                        <div class="rule-name">${rule.name}</div>
+                        <div class="rule-detail">${rule.detail}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Metrics
+            const metricsSection = document.getElementById('metricsSection');
+            metricsSection.classList.remove('hidden');
+            document.getElementById('gammaExposure').textContent = `${(data.gammaExposure * 100).toFixed(1)}%`;
+            document.getElementById('gammaExposure').style.color = data.gammaExposure >= 1.0 ? 'var(--accent-green)' : 'var(--accent-red)';
+            document.getElementById('gammaFlip').textContent = `$${data.gammaFlip.toFixed(2)}`;
+            document.getElementById('callWall').textContent = `$${data.callWall.toFixed(2)}`;
+            document.getElementById('putSupport').textContent = `$${data.putSupport.toFixed(2)}`;
+        }
+        
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
