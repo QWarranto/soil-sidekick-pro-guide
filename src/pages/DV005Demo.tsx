@@ -19,7 +19,9 @@ import {
 } from '@/lib/dead-reckoning/uncertainty-model';
 import { Shield, Crosshair, Waves, BarChart3, Download, FileVideo } from 'lucide-react';
 import { downloadStandaloneHTML } from '@/utils/dv005HtmlExport';
-import dv005Video from '@/assets/dv005-demo-circulation.mp4';
+import dv005VideoAsset from '@/assets/dv005-demo-circulation.mp4.asset.json';
+
+const dv005Video = dv005VideoAsset.url;
 
 // ─── TYPES ───────────────────────────────────────────────
 interface GridPoint {
