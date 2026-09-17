@@ -1,0 +1,31 @@
+{
+  "name": "@soilsidekick/sdk",
+  "version": "3.1.0",
+  "description": "SoilSidekick Pro SDK — Agricultural Intelligence Platform API client",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/QWarranto/soil-sidekick-pro-guide.git",
+    "directory": "sdks/generated-typescript"
+  },
+  "homepage": "https://app.soilsidekickpro.com",
+  "bugs": "https://github.com/QWarranto/soil-sidekick-pro-guide/issues",
+  "author": "Reginald Rice <visionassocllc@gmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "agriculture",
+    "soil-analysis",
+    "gis",
+    "wfs",
+    "api",
+    "sdk"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}

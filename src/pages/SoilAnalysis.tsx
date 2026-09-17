@@ -1,0 +1,564 @@
+
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { useAuth } from '@/hooks/useAuth';
+import { ArrowLeft, Leaf, Plus, MapPin, AlertTriangle } from 'lucide-react';
+import { CountyLookup } from '@/components/CountyLookup';
+import { CountyMenuLookup } from '@/components/CountyMenuLookup';
+import { SoilAnalysisResults } from '@/components/SoilAnalysisResults';
+import { EnhancedPDFExport } from '@/components/EnhancedPDFExport';
+import { QuickAccessSuggestion } from '@/components/QuickAccessSuggestion';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+
+interface County {
+  id: string;
+  county_name: string;
+  state_name: string;
+  state_code: string;
+  fips_code: string;
+}
+
+interface SoilData {
+  id: string;
+  county_name: string;
+  state_code: string;
+  ph_level: number | null;
+  organic_matter: number | null;
+  nitrogen_level: string | null;
+  phosphorus_level: string | null;
+  potassium_level: string | null;
+  recommendations: string | null;
+  analysis_data: any;
+  created_at: string;
+}
+
+const SoilAnalysis = () => {
+  const { user, trialUser } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+
+  // All state hooks must be before any early return
+  const [selectedCounty, setSelectedCounty] = useState<County | null>(null);
+  const [soilData, setSoilData] = useState<SoilData | null>(null);
+  const [soilDataList, setSoilDataList] = useState<SoilData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'search' | 'database'>('search');
+  const [applicationType, setApplicationType] = useState<string>('');
+
+  // Read field context from URL params (passed from Field Mapping)
+  const fieldNameFromParam = searchParams.get('fieldName');
+  const latFromParam = searchParams.get('lat');
+  const lngFromParam = searchParams.get('lng');
+
+  if (!user && !trialUser) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-background to-green-50 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="flex items-center justify-center gap-2">
+              <Leaf className="h-6 w-6 text-primary" />
+              Authentication Required
+            </CardTitle>
+            <CardDescription>
+              Please sign in to access soil analysis reports
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button 
+              onClick={() => navigate('/auth')}
+              className="w-full"
+            >
+              Sign In
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/')}
+              className="w-full"
+            >
+              Back to Home
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const handleBackHome = () => {
+    navigate('/');
+  };
+
+  const getCurrentLocation = (): Promise<{lat: number, lng: number}> => {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject(new Error('Geolocation not supported'));
+        return;
+      }
+      
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        (error) => {
+          // Fallback to approximate county center if geolocation fails
+          resolve({ lat: 39.8283, lng: -98.5795 }); // Center of US
+        }
+      );
+    });
+  };
+
+  const handleCountySelect = async (county: County) => {
+    setSelectedCounty(county);
+    setLoading(true);
+    
+    try {
+      // Get the current session to ensure we have a valid token
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('No active session found. Please sign in again.');
+      }
+
+      // Call edge function to get soil data with proper authentication
+      const { data, error } = await supabase.functions.invoke('get-soil-data', {
+        body: { 
+          county_fips: county.fips_code,
+          county_name: county.county_name,
+          state_code: county.state_code 
+        }
+      });
+
+      if (error) {
+        console.error('Edge function error:', error);
+        throw new Error(error.message || 'Failed to fetch soil data');
+      }
+
+      if (data?.soilAnalysis) {
+        setSoilData(data.soilAnalysis);
+        
+        // Get user's location for satellite enhancement
+        try {
+          const coordinates = await getCurrentLocation();
+          
+          // Enhance with satellite data
+          await supabase.functions.invoke('alpha-earth-environmental-enhancement', {
+            body: {
+              analysis_id: data.soilAnalysis.id,
+              county_fips: county.fips_code,
+              lat: coordinates.lat,
+              lng: coordinates.lng,
+              soil_data: data.soilAnalysis.analysis_data,
+              water_body_data: data.soilAnalysis.water_body_data
+            }
+          });
+        } catch (enhancementError) {
+          console.log('Satellite enhancement failed, continuing with basic analysis:', enhancementError);
+        }
+        
+        // Track usage
+        await supabase.from('subscription_usages').insert({
+          user_id: user?.id,
+          action_type: 'county_lookup',
+          county_fips: county.fips_code
+        });
+        
+        toast({
+          title: "Analysis Complete",
+          description: `Enhanced soil data retrieved for ${county.county_name}, ${county.state_code}`,
+        });
+      }
+    } catch (error: any) {
+      console.error('Error getting soil data:', error);
+      
+      // Provide detailed error messages
+      let errorMessage = "Unable to retrieve soil data. ";
+      if (error.message?.includes('session')) {
+        errorMessage += "Your session has expired. Please sign in again.";
+      } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+        errorMessage += "Network error. Please check your connection and try again.";
+      } else if (error.message) {
+        errorMessage += error.message;
+      } else {
+        errorMessage += "Please try again later.";
+      }
+      
+      toast({
+        title: "Soil Analysis Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDataFound = (data: SoilData[]) => {
+    setSoilDataList(data);
+    setSoilData(null); // Clear single soil data when showing list
+  };
+
+  const handleNoDataFound = () => {
+    setSoilDataList([]);
+    setSoilData(null);
+  };
+
+  const handleSelectFromList = (data: SoilData) => {
+    setSoilData(data);
+    setSoilDataList([]);
+  };
+
+  const handlePopulateCounties = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('populate-counties', {
+        body: {}
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Counties Populated",
+        description: `Successfully populated counties: ${data.message}`,
+      });
+    } catch (error) {
+      console.error('Error populating counties:', error);
+      toast({
+        title: "Population Failed",
+        description: "Unable to populate counties. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExport = () => {
+    if (!soilData) return;
+    
+    // Create a simple text export for now
+    const exportData = `
+Soil Analysis Report
+County: ${soilData.county_name}, ${soilData.state_code}
+Date: ${new Date(soilData.created_at).toLocaleDateString()}
+
+pH Level: ${soilData.ph_level || 'Not available'}
+Organic Matter: ${soilData.organic_matter ? soilData.organic_matter + '%' : 'Not available'}
+Nitrogen: ${soilData.nitrogen_level || 'Not available'}
+Phosphorus: ${soilData.phosphorus_level || 'Not available'}
+Potassium: ${soilData.potassium_level || 'Not available'}
+
+Recommendations:
+${soilData.recommendations || 'No recommendations available'}
+    `;
+    
+    const blob = new Blob([exportData], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `soil-analysis-${soilData.county_name}-${soilData.state_code}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Report Exported",
+      description: "Soil analysis report has been downloaded.",
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-hero parallax-scroll">
+      {/* Header */}
+      <header className="border-b glass-effect sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="sm" onClick={handleBackHome}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            <div className="flex items-center gap-2">
+              <Leaf className="h-6 w-6 text-primary" />
+              <span className="text-xl font-bold text-primary">SoilSidekick Pro</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto space-y-6 slide-in-up">
+
+          {/* Field Context Banner — shown when navigated from Field Mapping */}
+          {fieldNameFromParam && (
+            <Card className="border-primary/30 bg-primary/5">
+              <CardContent className="pt-4 pb-3">
+                <div className="flex items-center gap-3">
+                  <MapPin className="h-5 w-5 text-primary shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground">
+                      Running soil analysis for: <strong>{fieldNameFromParam}</strong>
+                    </p>
+                    {latFromParam && lngFromParam && (
+                      <p className="text-xs text-muted-foreground">
+                        Coordinates: {parseFloat(latFromParam).toFixed(5)}°, {parseFloat(lngFromParam).toFixed(5)}°
+                        {' — '}Search for the county that contains this location below.
+                      </p>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => navigate('/field-mapping')}
+                    className="shrink-0 text-xs"
+                  >
+                    <ArrowLeft className="h-3 w-3 mr-1" />
+                    Back to Fields
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* County Population Button */}
+          <Card className="card-elevated">
+            <CardHeader>
+              <CardTitle>County Database Management</CardTitle>
+              <CardDescription>
+                Populate the database with all counties from the US Census Bureau
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={handlePopulateCounties}
+                variant="default" 
+                disabled={loading}
+                className="w-full"
+              >
+                {loading ? "Populating..." : "Populate Counties from Census API"}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Tab Selection */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Soil Data Lookup Options</CardTitle>
+              <CardDescription>
+                Choose how you want to search for soil analysis data
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-2 mb-4">
+                <Button 
+                  variant={activeTab === 'search' ? 'default' : 'outline'}
+                  onClick={() => setActiveTab('search')}
+                  size="sm"
+                >
+                  External Search
+                </Button>
+                <Button 
+                  variant={activeTab === 'database' ? 'default' : 'outline'}
+                  onClick={() => setActiveTab('database')}
+                  size="sm"
+                >
+                  Database Lookup
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Sample Form — Application Type (Workflow 2, Step 4) */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Soil Sample Form</CardTitle>
+              <CardDescription>Set the application type before running analysis</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="application-type">Application Type</Label>
+                <Select value={applicationType} onValueChange={setApplicationType}>
+                  <SelectTrigger id="application-type" className="w-full max-w-xs">
+                    <SelectValue placeholder="Select application type…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="chemical_application">Chemical Application</SelectItem>
+                    <SelectItem value="organic_amendment">Organic Amendment</SelectItem>
+                    <SelectItem value="fertilizer">Fertilizer</SelectItem>
+                    <SelectItem value="irrigation">Irrigation</SelectItem>
+                    <SelectItem value="soil_sampling">Soil Sampling Only</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Compliance alert triggered by Chemical Application selection */}
+              {applicationType === 'chemical_application' && (
+                <div className="flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/5 px-4 py-3">
+                  <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                  <div className="text-sm">
+                    <p className="font-semibold text-destructive">
+                      ⚠️ Compliance Warning: Chemical Application Selected
+                    </p>
+                    <p className="text-muted-foreground mt-0.5">
+                      You are in <strong>{selectedCounty?.county_name ?? 'this county'}, {selectedCounty?.state_code ?? 'your state'}</strong>.
+                      This county requires a <strong>50 ft buffer zone</strong> for chemical applications near water bodies.
+                      Buffer zone acknowledgement will be embedded in your exported report.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Lookup Section */}
+          <div className="grid lg:grid-cols-2 gap-6">
+            {activeTab === 'search' ? (
+              <CountyLookup onCountySelect={handleCountySelect} />
+            ) : (
+              <CountyMenuLookup 
+                onDataFound={handleDataFound}
+                onNoDataFound={handleNoDataFound}
+              />
+            )}
+            
+            {/* Quick Stats or Recent Analyses */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Plus className="h-5 w-5 text-primary" />
+                  Getting Started
+                </CardTitle>
+                <CardDescription>
+                  Start by selecting a county to analyze
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
+                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <div className="text-sm">
+                      <p className="font-medium">Search for a county</p>
+                      <p className="text-muted-foreground">Use the search box to find your area</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+                    <div className="w-2 h-2 bg-muted-foreground rounded-full"></div>
+                    <div className="text-sm">
+                      <p className="font-medium">Get soil analysis</p>
+                      <p className="text-muted-foreground">Receive detailed soil composition data</p>
+                    </div>
+                  </div>
+                   <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+                     <div className="w-2 h-2 bg-muted-foreground rounded-full"></div>
+                     <div className="text-sm">
+                       <p className="font-medium">View recommendations</p>
+                       <p className="text-muted-foreground">Get agricultural guidance</p>
+                     </div>
+                   </div>
+                   <div className="pt-4 border-t">
+                     <Button 
+                       onClick={handlePopulateCounties}
+                       variant="outline" 
+                       size="sm"
+                       disabled={loading}
+                       className="w-full"
+                     >
+                       Populate Counties from Census API
+                     </Button>
+                   </div>
+                 </div>
+               </CardContent>
+             </Card>
+          </div>
+
+          {/* Loading State */}
+          {loading && (
+            <Card>
+              <CardContent className="flex items-center justify-center py-12">
+                <div className="text-center space-y-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                  <p className="text-muted-foreground">
+                    Analyzing soil data for {selectedCounty?.county_name}...
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Database Results List */}
+          {soilDataList.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Available Soil Analysis Data</CardTitle>
+                <CardDescription>
+                  Found {soilDataList.length} soil analysis record(s). Click to view details.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {soilDataList.map((data, index) => (
+                    <div
+                      key={data.id}
+                      className="p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                      onClick={() => handleSelectFromList(data)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium">{data.county_name}, {data.state_code}</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Analyzed on {new Date(data.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          {data.ph_level && <Badge variant="outline">pH: {data.ph_level}</Badge>}
+                          {data.organic_matter && <Badge variant="outline">OM: {data.organic_matter}%</Badge>}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Quick Access Suggestion for Advanced Features */}
+          {selectedCounty && !soilData && !loading && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <QuickAccessSuggestion
+                feature="soil_analysis"
+                title="Enhanced AI Soil Analysis"
+                description="Get detailed AI-powered recommendations and advanced soil insights"
+                usageContext="Perfect for getting detailed fertilizer recommendations and soil health scoring"
+              />
+              <QuickAccessSuggestion
+                feature="environmental_impact"
+                title="Environmental Impact Analysis"
+                description="Assess environmental impacts and get sustainability recommendations"
+                usageContext="Understand water quality impacts and get eco-friendly alternatives"
+              />
+            </div>
+          )}
+
+          {/* Results Section */}
+          {soilData && !loading && (
+            <div className="space-y-6">
+              <SoilAnalysisResults soilData={soilData} onExport={handleExport} />
+              <EnhancedPDFExport soilData={soilData} userTier="pro" />
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default SoilAnalysis;

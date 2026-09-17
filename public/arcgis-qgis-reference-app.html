@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeafEngines — Soil GeoJSON for ArcGIS &amp; QGIS</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.28/esri/themes/light/main.css">
+  <script src="https://js.arcgis.com/4.28/"></script>
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --text: #1a1a2e;
+      --accent: #2d6a4f;
+      --accent-light: #40916c;
+      --border: #dee2e6;
+      --code-bg: #f4f4f4;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    header h1 { font-size: 1.25rem; color: var(--accent); }
+    header .badges { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      background: var(--code-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .badge.qgis { background: #589632; color: #fff; border-color: #589632; }
+    .badge.arcgis { background: #0079c1; color: #fff; border-color: #0079c1; }
+    .badge.geojson { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    .hero h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .hero p { color: #495057; max-width: 700px; }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .card-header h3 { font-size: 1.1rem; }
+    .card-body { padding: 1.5rem; }
+
+    #mapViewDiv, #sceneViewDiv { height: 320px; width: 100%; }
+
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.85rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    .code-block .comment { color: #6c757d; }
+    .code-block .keyword { color: #d63384; }
+    .code-block .string { color: #198754; }
+
+    .steps { list-style: none; counter-reset: step; }
+    .steps li {
+      position: relative;
+      padding-left: 2.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .steps li::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1.75rem;
+      height: 1.75rem;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      padding: 0.75rem 1.25rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    .tab.active { border-bottom-color: var(--accent); color: var(--accent); }
+    .tab:hover { background: var(--bg); }
+
+    .tab-content { display: none; padding: 1.5rem; }
+    .tab-content.active { display: block; }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #6c757d;
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    .highlight-box {
+      background: #e8f5e9;
+      border-left: 4px solid var(--accent);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1rem 0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🌱 LeafEngines — Soil GeoJSON Reference App</h1>
+  <div class="badges">
+    <span class="badge qgis">QGIS Ready</span>
+    <span class="badge arcgis">ArcGIS Ready</span>
+    <span class="badge geojson">RFC 7946 GeoJSON</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="hero">
+    <h2>Parcel-Level Soil Data for GIS Workflows</h2>
+    <p>
+      Generate GeoJSON soil reports for any U.S. county by FIPS code. Drop the output directly into
+      <strong>QGIS</strong>, <strong>ArcGIS Pro</strong>, <strong>PostGIS</strong>, or any RFC 7946-compliant
+      geospatial environment. U.S. coverage uses USDA NRCS SSURGO; global fallback uses ISRIC SoilGrids.
+    </p>
+  </div>
+
+  <div class="grid">
+
+    <!-- ARCGIS JS MAP -->
+    <div class="card">
+      <div class="card-header">
+        <span class="badge arcgis">ArcGIS JS API</span>
+        <h3>Interactive Map Preview</h3>
+      </div>
+      <div id="mapViewDiv"></div>
+      <div class="card-body">
+        <p style="font-size: 0.9rem; color: #495057;">
+          FIPS <strong>13247</strong> (Rockdale County, GA) — click a parcel to query soil data.
+        </p>
+        <div class="code-block">
+<span class="comment">// ArcGIS FeatureLayer from GeoJSON endpoint</span><br>
+<span class="keyword">const</span> layer = <span class="keyword">new</span> FeatureLayer({<br>
+&nbsp;&nbsp;url: <span class="string">"https://your-endpoint.com/arcgis-geojson?fips=13247&amp;type=soil"</span>,<br>
+&nbsp;&nbsp;popupTemplate: soilPopup<br>
+});<br>
+map.add(layer);
+        </div>
+      </div>
+    </div>
+
+    <!-- QGIS WORKFLOW -->
+    <div class="card">
+      <div class="card-header">
+        <span class="badge qgis">QGIS</span>
+        <h3>QGIS Integration</h3>
+      </div>
+      <div class="card-body">
+        <div class="highlight-box">
+          <strong>Verified by pilot users:</strong> GeoJSON loads via drag-and-drop with correct CRS and field mapping.
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" onclick="showTab('qgis-load')">Load Data</div>
+          <div class="tab" onclick="showTab('qgis-style')">Style &amp; Join</div>
+          <div class="tab" onclick="showTab('qgis-export')">Export</div>
+        </div>
+
+        <div id="qgis-load" class="tab-content active">
+          <ol class="steps">
+            <li>Download the GeoJSON for your target FIPS code:<br>
+              <code>curl "https://your-endpoint.com/arcgis-geojson?fips=13247&amp;type=soil" -o rockdale_soils.geojson</code>
+            </li>
+            <li>In QGIS, go to <strong>Layer → Add Layer → Add Vector Layer</strong></li>
+            <li>Set Source Type to <strong>GeoJSON</strong> and browse to your file</li>
+            <li>Click <strong>Add</strong> — the layer appears in your project with EPSG:4326 (WGS 84)</li>
+          </ol>
+        </div>
+
+        <div id="qgis-style" class="tab-content">
+          <ol class="steps">
+            <li>Right-click the soil layer → <strong>Properties → Symbology</strong></li>
+            <li>Choose <strong>Categorized</strong> and select <code>hydrologicGroup</code> as the value column</li>
+            <li>Click <strong>Classify</strong> to generate color-coded soil groups (A, B, C, D)</li>
+            <li>Use <strong>Joins</strong> to attach local parcel data by map unit key</li>
+          </ol>
+          <div class="code-block">
+<span class="comment"># PyQGIS: programmatically load and style</span><br>
+layer = QgsVectorLayer(<span class="string">"rockdale_soils.geojson"</span>, <span class="string">"Soils"</span>, <span class="string">"ogr"</span>)<br>
+QgsProject.instance().addMapLayer(layer)<br>
+<span class="comment"># Set categorized symbology by hydrologic group</span><br>
+renderer = QgsCategorizedSymbolRenderer(<span class="string">"hydrologicGroup"</span>, categories)<br>
+layer.setRenderer(renderer)
+          </div>
+        </div>
+
+        <div id="qgis-export" class="tab-content">
+          <ol class="steps">
+            <li>Right-click the soil layer → <strong>Export → Save Features As...</strong></li>
+            <li>Choose <strong>GeoPackage</strong>, <strong>Shapefile</strong>, or <strong>PostGIS</strong></li>
+            <li>Reproject to your local CRS if needed (e.g., EPSG:26917 for Georgia)</li>
+            <li>Use the output as a static reference layer in engineering or planning deliverables</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- API REFERENCE -->
+  <div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+      <span class="badge geojson">API</span>
+      <h3>Endpoint Reference</h3>
+    </div>
+    <div class="card-body">
+      <div class="code-block">
+GET /arcgis-geojson?fips={fips_code}&amp;type={soil|water|crop}<br><br>
+<span class="comment"># Example: Rockdale County, GA soils</span><br>
+curl -s <span class="string">"https://your-endpoint.com/arcgis-geojson?fips=13247&amp;type=soil"</span> \<br>
+&nbsp;&nbsp;| jq <span class="string">'.features[0].properties'</span>
+      </div>
+      <p style="font-size: 0.9rem; color: #495057; margin-top: 0.5rem;">
+        Returns RFC 7946 GeoJSON with <code>FeatureCollection</code> of soil map units. Each feature includes
+        <code>mukey</code>, <code>muname</code>, <code>hydrologicGroup</code>, <code>drainageClass</code>,
+        <code>farmlandClass</code>, and source coverage metadata.
+      </p>
+    </div>
+  </div>
+
+  <!-- COVERAGE TABLE -->
+  <div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+      <span class="badge">Coverage</span>
+      <h3>Data Sources &amp; Resolution</h3>
+    </div>
+    <div class="card-body">
+      <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border);">
+            <th style="text-align:left;padding:0.5rem;">Region</th>
+            <th style="text-align:left;padding:0.5rem;">Source</th>
+            <th style="text-align:left;padding:0.5rem;">Resolution</th>
+            <th style="text-align:left;padding:0.5rem;">Best For</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:0.5rem;">United States</td>
+            <td style="padding:0.5rem;">USDA NRCS SSURGO</td>
+            <td style="padding:0.5rem;">1:12,000 – 1:63,360</td>
+            <td style="padding:0.5rem;">Parcel-level screening</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:0.5rem;">Global</td>
+            <td style="padding:0.5rem;">ISRIC SoilGrids</td>
+            <td style="padding:0.5rem;">250 m</td>
+            <td style="padding:0.5rem;">Regional context only</td>
+          </tr>
+          <tr>
+            <td style="padding:0.5rem;">Great Britain</td>
+            <td style="padding:0.5rem;">BGS + Environment Agency</td>
+            <td style="padding:0.5rem;">Variable</td>
+            <td style="padding:0.5rem;">Flood + geology context</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>
+    LeafEngines × SoilCertify —
+    <a href="#">Documentation</a> ·
+    <a href="#">API Reference</a> ·
+    <a href="#">GitHub</a>
+  </p>
+  <p style="margin-top:0.5rem;font-size:0.75rem;">
+    Screening-level data only. Not a substitute for geotechnical investigation, survey, or licensed review.
+  </p>
+</footer>
+
+<script>
+  require([
+    "esri/Map",
+    "esri/views/MapView",
+    "esri/layers/GeoJSONLayer",
+    "esri/widgets/Legend"
+  ], function(Map, MapView, GeoJSONLayer, Legend) {
+
+    const map = new Map({
+      basemap: "topo-vector"
+    });
+
+    const view = new MapView({
+      container: "mapViewDiv",
+      map: map,
+      center: [-84.02, 33.66],
+      zoom: 12
+    });
+
+    // Demo GeoJSON layer
+    const geojsonLayer = new GeoJSONLayer({
+      url: "https://your-endpoint.com/arcgis-geojson?fips=13247&type=soil",
+      popupTemplate: {
+        title: "{muname}",
+        content: [
+          { type: "text", text: "<b>Map Unit Key:</b> {mukey}" },
+          { type: "text", text: "<b>Hydrologic Group:</b> {hydrologicGroup}" },
+          { type: "text", text: "<b>Drainage:</b> {drainageClass}" },
+          { type: "text", text: "<b>Farmland:</b> {farmlandClass}" }
+        ]
+      },
+      renderer: {
+        type: "unique-value",
+        field: "hydrologicGroup",
+        uniqueValueInfos: [
+          { value: "A", symbol: { type: "simple-fill", color: "#2d6a4f", outline: { width: 0.5 } }, label: "Group A" },
+          { value: "B", symbol: { type: "simple-fill", color: "#40916c", outline: { width: 0.5 } }, label: "Group B" },
+          { value: "C", symbol: { type: "simple-fill", color: "#74c69d", outline: { width: 0.5 } }, label: "Group C" },
+          { value: "D", symbol: { type: "simple-fill", color: "#b7e4c7", outline: { width: 0.5 } }, label: "Group D" }
+        ]
+      }
+    });
+
+    map.add(geojsonLayer);
+
+    view.when(() => {
+      const legend = new Legend({ view: view });
+      view.ui.add(legend, "bottom-right");
+    });
+  });
+
+  function showTab(id) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+  }
+</script>
+
+</body>
+</html>

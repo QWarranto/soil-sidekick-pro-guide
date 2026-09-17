@@ -1,0 +1,314 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "generator": "SoilCertify Sample Report GeoJSON Export",
+    "standard": "RFC 7946",
+    "sample": true,
+    "report_id": "SAMPLE-AU-FULL-001",
+    "report_type": null,
+    "report_tier": "full",
+    "geojson_tier": "shared",
+    "tier_contract": "GeoJSON content is identical across Summary and Detailed report tiers; tier-specific analysis is contained in the PDF, not the GIS export.",
+    "property_address": "1 Sample Wharf, Sydney NSW 2000, Australia",
+    "country": "AU",
+    "jurisdiction": "AU",
+    "exported_at": "2026-08-04T02:45:57.087Z",
+    "geometry_approximated": true,
+    "geometry_source": "geocoded_point_buffer",
+    "geometry_method": "100m x 100m centroid AOI",
+    "geometry_use_constraints": "Screening AOI only; not cadastral, survey-grade, or evidence of legal parcel certainty.",
+    "approximation_warning": "SAMPLE DATA. This polygon is a preliminary AOI approximated as a 100 m x 100 m square centred on the geocoded point. It is NOT a cadastral parcel boundary. Do not use for legal, planning, or engineering purposes.",
+    "sources": [
+      "ISRIC SoilGrids v2 (250 m, CC-BY 4.0)",
+      "Sentinel-2 L2A (10 m)",
+      "SLGA (CSIRO/TERN) — not currently integrated",
+      "Geoscience Australia surface geology — not currently integrated"
+    ],
+    "coverage_notes": null,
+    "field_definitions": {
+      "ndvi_sentinel2": {
+        "label": "NDVI (Sentinel-2)",
+        "type": "number",
+        "unit": "unitless",
+        "range": [
+          -1,
+          1
+        ],
+        "source": "Sentinel-2 L2A (10 m) via Google Earth Engine",
+        "interpretation": "Vegetation-condition proxy. NOT direct evidence of biodiversity, productivity, land disturbance, or environmental clearance.",
+        "null_meaning": "No cloud-free scene available for AOI",
+        "class": "raw",
+        "jurisdiction": "global"
+      },
+      "soil_moisture_index": {
+        "label": "Soil Moisture Index (NDMI-derived)",
+        "type": "number",
+        "unit": "unitless",
+        "range": [
+          0,
+          1
+        ],
+        "source": "Sentinel-2 derived (NDMI)",
+        "interpretation": "Relative surface moisture proxy, NOT a calibrated volumetric soil-moisture reading.",
+        "null_meaning": "No cloud-free scene available for AOI",
+        "class": "derived",
+        "jurisdiction": "global"
+      },
+      "soil_component": {
+        "label": "Soil component / profile name",
+        "type": "string",
+        "source": "ISRIC SoilGrids v2",
+        "class": "raw",
+        "jurisdiction": "AU",
+        "null_meaning": "Map unit lookup returned no component"
+      },
+      "drainage_class": {
+        "label": "Drainage class",
+        "type": "string",
+        "source": "ISRIC SoilGrids (screening)",
+        "class": "derived",
+        "jurisdiction": "AU",
+        "note": "Screening classification; NOT equivalent to an NRCS drainage class."
+      },
+      "mukey": {
+        "label": "Map unit identifier (non-US placeholder)",
+        "type": "string",
+        "source": "SoilCertify internal identifier",
+        "class": "raw",
+        "jurisdiction": "AU",
+        "note": "No national join key exists for this jurisdiction; value is an internal identifier and will not join to a national parcel/soil table."
+      },
+      "map_unit_name": {
+        "label": "Map unit name",
+        "type": "string",
+        "source": "ISRIC SoilGrids",
+        "class": "raw",
+        "jurisdiction": "AU"
+      },
+      "slope_pct": {
+        "label": "Slope",
+        "type": "number",
+        "unit": "percent",
+        "source": "ISRIC SoilGrids (screening)",
+        "class": "raw",
+        "jurisdiction": "AU"
+      },
+      "soil_ph": {
+        "label": "Soil pH (1:1 H2O)",
+        "type": "number",
+        "unit": "pH",
+        "range": [
+          3,
+          10
+        ],
+        "source": "ISRIC SoilGrids v2",
+        "class": "raw",
+        "jurisdiction": "AU",
+        "null_meaning": "Source did not report a plausible pH"
+      },
+      "soil_sand_pct": {
+        "label": "Sand fraction",
+        "type": "number",
+        "unit": "percent",
+        "source": "ISRIC SoilGrids v2",
+        "class": "raw",
+        "jurisdiction": "AU"
+      },
+      "soil_silt_pct": {
+        "label": "Silt fraction",
+        "type": "number",
+        "unit": "percent",
+        "source": "ISRIC SoilGrids v2",
+        "class": "raw",
+        "jurisdiction": "AU"
+      },
+      "soil_clay_pct": {
+        "label": "Clay fraction",
+        "type": "number",
+        "unit": "percent",
+        "source": "ISRIC SoilGrids v2",
+        "class": "raw",
+        "jurisdiction": "AU"
+      },
+      "organic_matter_pct": {
+        "label": "Organic matter",
+        "type": "number",
+        "unit": "percent",
+        "source": "ISRIC SoilGrids v2 (organic carbon derived)",
+        "class": "derived",
+        "jurisdiction": "AU"
+      },
+      "ksat_um_s": {
+        "label": "Saturated hydraulic conductivity (Ksat)",
+        "type": "number",
+        "unit": "µm/s",
+        "source": "USDA NRCS SSURGO",
+        "class": "raw",
+        "jurisdiction": "US",
+        "null_meaning": "Not assessed — the source for this jurisdiction does not publish calibrated Ksat. Null must never be substituted with a value from another region."
+      },
+      "soil_component_source_shape": {
+        "label": "Provenance of the parsed soil component record",
+        "type": "string",
+        "vocabulary": [
+          "components_array",
+          "ssurgo_table_row"
+        ],
+        "class": "derived",
+        "jurisdiction": "global"
+      },
+      "land_change": {
+        "label": "Land-change screening note",
+        "type": "string",
+        "source": "Sentinel-2 multi-date comparison",
+        "class": "derived",
+        "jurisdiction": "global"
+      },
+      "satellite_resolution": {
+        "label": "Satellite pixel resolution",
+        "type": "string",
+        "source": "Sentinel-2 L2A",
+        "class": "raw",
+        "jurisdiction": "global"
+      },
+      "satellite_acquisition_date": {
+        "label": "Satellite scene acquisition date",
+        "type": "string",
+        "format": "ISO 8601",
+        "source": "Sentinel-2 L2A",
+        "class": "raw",
+        "jurisdiction": "global"
+      },
+      "map_unit": {
+        "deprecated": true,
+        "deprecated_by": "map_unit_name / mukey",
+        "note": "Nested object retained one release; consumers should read the flattened fields."
+      },
+      "ndvi": {
+        "deprecated": true,
+        "deprecated_by": "ndvi_sentinel2"
+      },
+      "moisture": {
+        "deprecated": true,
+        "deprecated_by": "soil_moisture_index"
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "id": "SAMPLE-AU-FULL-001:aoi",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              151.2087591,
+              -33.8692492
+            ],
+            [
+              151.2098409,
+              -33.8692492
+            ],
+            [
+              151.2098409,
+              -33.8683508
+            ],
+            [
+              151.2087591,
+              -33.8683508
+            ],
+            [
+              151.2087591,
+              -33.8692492
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "report_id": "SAMPLE-AU-FULL-001",
+        "report_type": null,
+        "report_tier": "full",
+        "property_address": "1 Sample Wharf, Sydney NSW 2000, Australia",
+        "country": "AU",
+        "jurisdiction": "AU",
+        "map_unit_name": "SoilGrids 250 m — regional AU layers (SLGA) not currently integrated",
+        "mukey": "N/A (AU)",
+        "map_unit": {
+          "mukey": "N/A (AU)",
+          "name": "SoilGrids 250 m — regional AU layers (SLGA) not currently integrated"
+        },
+        "soil_component": "ISRIC SoilGrids v2 (modeled)",
+        "drainage_class": null,
+        "slope_pct": 10,
+        "soil_ph": 6.2,
+        "soil_sand_pct": 55,
+        "soil_silt_pct": 25,
+        "soil_clay_pct": 20,
+        "organic_matter_pct": 3.2,
+        "ksat_um_s": null,
+        "soil_component_source_shape": "ssurgo_table_row",
+        "ndvi_sentinel2": 0.58,
+        "soil_moisture_index": 0.41,
+        "ndvi": 0.58,
+        "moisture": 0.41,
+        "land_change": "Stable (0%)",
+        "satellite_resolution": "10m",
+        "satellite_acquisition_date": "2026-08-04T02:43:52.831Z",
+        "generated_at": "2026-08-04T02:45:57.087Z",
+        "feature_role": "parcel_aoi",
+        "geometry_approximated": true,
+        "geometry_source": "geocoded_point_buffer",
+        "geometry_method": "100m x 100m centroid AOI",
+        "geometry_use_constraints": "Screening AOI only; not cadastral, survey-grade, or evidence of legal parcel certainty.",
+        "target_area_m2": 10000,
+        "approximation_warning": "SAMPLE DATA. This polygon is a preliminary AOI approximated as a 100 m x 100 m square centred on the geocoded point. It is NOT a cadastral parcel boundary. Do not use for legal, planning, or engineering purposes."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "SAMPLE-AU-FULL-001:centroid",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          151.2093,
+          -33.8688
+        ]
+      },
+      "properties": {
+        "report_id": "SAMPLE-AU-FULL-001",
+        "report_type": null,
+        "report_tier": "full",
+        "property_address": "1 Sample Wharf, Sydney NSW 2000, Australia",
+        "country": "AU",
+        "jurisdiction": "AU",
+        "map_unit_name": "SoilGrids 250 m — regional AU layers (SLGA) not currently integrated",
+        "mukey": "N/A (AU)",
+        "map_unit": {
+          "mukey": "N/A (AU)",
+          "name": "SoilGrids 250 m — regional AU layers (SLGA) not currently integrated"
+        },
+        "soil_component": "ISRIC SoilGrids v2 (modeled)",
+        "drainage_class": null,
+        "slope_pct": 10,
+        "soil_ph": 6.2,
+        "soil_sand_pct": 55,
+        "soil_silt_pct": 25,
+        "soil_clay_pct": 20,
+        "organic_matter_pct": 3.2,
+        "ksat_um_s": null,
+        "soil_component_source_shape": "ssurgo_table_row",
+        "ndvi_sentinel2": 0.58,
+        "soil_moisture_index": 0.41,
+        "ndvi": 0.58,
+        "moisture": 0.41,
+        "land_change": "Stable (0%)",
+        "satellite_resolution": "10m",
+        "satellite_acquisition_date": "2026-08-04T02:43:52.831Z",
+        "generated_at": "2026-08-04T02:45:57.087Z",
+        "feature_role": "parcel_centroid",
+        "centroid_relationship": "geocoded_address_point"
+      }
+    }
+  ]
+}

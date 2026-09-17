@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline - SoilSidekick Pro</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 500px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      padding: 48px 32px;
+      text-align: center;
+    }
+    
+    .icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      background: #f1f5f9;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .icon svg {
+      width: 40px;
+      height: 40px;
+      stroke: #64748b;
+      stroke-width: 2;
+      fill: none;
+    }
+    
+    h1 {
+      font-size: 28px;
+      color: #1e293b;
+      margin-bottom: 12px;
+    }
+    
+    p {
+      color: #64748b;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    
+    .features {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 24px 0;
+      text-align: left;
+    }
+    
+    .features h3 {
+      font-size: 14px;
+      color: #1e293b;
+      margin-bottom: 12px;
+    }
+    
+    .features ul {
+      list-style: none;
+    }
+    
+    .features li {
+      color: #64748b;
+      font-size: 14px;
+      padding: 4px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+    
+    .features li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #22c55e;
+    }
+    
+    .button {
+      display: inline-block;
+      background: #22c55e;
+      color: white;
+      padding: 14px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.2s;
+      margin-top: 8px;
+    }
+    
+    .button:hover {
+      background: #16a34a;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 8px 16px;
+      background: #fef3c7;
+      color: #92400e;
+      border-radius: 20px;
+      font-size: 14px;
+      margin-top: 16px;
+    }
+    
+    .online .status {
+      background: #d1fae5;
+      color: #065f46;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="container">
+    <div class="icon">
+      <svg viewBox="0 0 24 24">
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+        <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+        <line x1="12" y1="20" x2="12.01" y2="20"></line>
+      </svg>
+    </div>
+    
+    <h1>You're Offline</h1>
+    <p>This page requires an internet connection to load. Check your connection and try again.</p>
+    
+    <div class="features">
+      <h3>While offline, you can:</h3>
+      <ul>
+        <li>View previously loaded pages</li>
+        <li>Access saved soil analysis reports</li>
+        <li>Review your dashboard data</li>
+        <li>Work with offline data sync</li>
+      </ul>
+    </div>
+    
+    <a href="/" class="button" onclick="window.location.reload(); return false;">Try Again</a>
+    
+    <div class="status" id="status">
+      Waiting for connection...
+    </div>
+  </div>
+
+  <script>
+    // Check online status
+    function updateStatus() {
+      const container = document.getElementById('container');
+      const status = document.getElementById('status');
+      
+      if (navigator.onLine) {
+        container.classList.add('online');
+        status.textContent = '✓ Connection restored! Refreshing...';
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        container.classList.remove('online');
+        status.textContent = 'Waiting for connection...';
+      }
+    }
+    
+    // Listen for online/offline events
+    window.addEventListener('online', updateStatus);
+    window.addEventListener('offline', updateStatus);
+    
+    // Initial check
+    updateStatus();
+  </script>
+</body>
+</html>

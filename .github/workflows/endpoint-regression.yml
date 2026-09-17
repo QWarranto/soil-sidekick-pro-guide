@@ -1,0 +1,82 @@
+name: Endpoint Regression Suite
+
+# Keyless + auth-gated regression tests for the public free-tier tools:
+#   /soil      -> get-soil-data
+#   /water     -> territorial-water-quality
+#   /planning-calendar -> multi-parameter-planting-calendar
+#
+# Runs on every deploy-bearing push, on PRs touching the functions,
+# and nightly against the live project.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "supabase/functions/**"
+      - "supabase/config.toml"
+      - ".github/workflows/endpoint-regression.yml"
+  pull_request:
+    paths:
+      - "supabase/functions/**"
+      - "supabase/config.toml"
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: endpoint-regression-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regression:
+    name: Edge function regression (${{ matrix.suite }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - suite: soil
+            path: supabase/functions/get-soil-data
+          - suite: water
+            path: supabase/functions/territorial-water-quality
+          - suite: planning-calendar
+            path: supabase/functions/multi-parameter-planting-calendar
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      # Optional: an `ak_` key. When absent, auth-gated tests self-skip.
+      REGRESSION_API_KEY: ${{ secrets.REGRESSION_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Verify required config
+        run: |
+          if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "::error::VITE_SUPABASE_URL / VITE_SUPABASE_PUBLISHABLE_KEY repo secrets are required"
+            exit 1
+          fi
+          if [ -z "$REGRESSION_API_KEY" ]; then
+            echo "::warning::REGRESSION_API_KEY not set — auth-gated (ak_) tests will be skipped"
+          fi
+
+      - name: Run ${{ matrix.suite }} regression tests
+        run: deno test --allow-net --allow-env --allow-read ${{ matrix.path }}
+
+  summary:
+    name: Regression summary
+    runs-on: ubuntu-latest
+    needs: regression
+    if: always()
+    steps:
+      - name: Report
+        run: |
+          echo "### Endpoint regression suite" >> $GITHUB_STEP_SUMMARY
+          echo "Result: **${{ needs.regression.result }}**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Covers keyless (Telegram/MCP free tier), anon-key, invalid \`ak_\` key rejection, param-contract guards and CORS for /soil, /water and /planning-calendar." >> $GITHUB_STEP_SUMMARY
+          [ "${{ needs.regression.result }}" = "success" ] || exit 1

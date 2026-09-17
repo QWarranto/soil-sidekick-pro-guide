@@ -1,0 +1,359 @@
+# LeafEngines™ × Node-RED Deep Dive
+
+> **Audience:** Node-RED flow authors, IIoT integrators, ag-equipment OEMs, on-prem automation engineers
+> **Repository target:** `node-red-contrib-leafengines` (npm) and the Node-RED flow library
+> **Last updated:** 2026-05-07
+
+---
+
+## ⚡ Get Started Now
+
+**Free tier — no signup, no credit card:**
+- **Test key:** `leaf-test-370df0a2e62e` (works immediately)
+- **Free header:** `x-free-tier: true` (no key needed)
+
+**Ready for production? Founder pricing ends June 1, 2026:**
+- [Starter — $10/mo → lifetime $49/mo lock →](https://buy.stripe.com/5kQ6oHcB88bR93s8MSaMU04)
+- [Pro — $49/mo → lifetime $149/mo lock →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05)
+
+**Get a professional soil report (no coding required):** [soilcertify.com →](https://soilcertify.com)
+
+**Preliminary Site Scan - SoilCertify**
+Quick geotechnical overview with essential soil data and basic risk indicators.
+https://buy.stripe.com/fZu00j44C0Jp4Nc3syaMU0f
+---
+
+## Why LeafEngines + Node-RED
+
+Node-RED dominates the **edge and on-prem automation** space — irrigation controllers, weather stations, MQTT sensor fleets, SCADA bridges, and ISOBUS gateways. LeafEngines fills the **decision-intelligence gap** these flows usually outsource to brittle Python scripts: ground truth soil/water data, AI crop recommendations, ISOBUS-compliant prescription generation, and offline-capable plant ID via TurboQuant-quantized Gemma.
+
+If your flow already speaks MQTT, Modbus, or OPC-UA, dropping in a LeafEngines node turns raw telemetry into actionable agronomy — without leaving the network perimeter for the analysis logic.
+
+---
+
+## Installation
+
+### Option 1: Palette Manager (recommended)
+
+1. Open Node-RED → **Menu → Manage palette → Install**
+2. Search `node-red-contrib-leafengines`
+3. Install
+4. Restart not required
+
+### Option 2: CLI
+
+```bash
+cd ~/.node-red
+npm install node-red-contrib-leafengines
+node-red-restart
+```
+
+### Option 3: Pure HTTP Request nodes (no install)
+
+Every LeafEngines tool is a plain JSON POST — you can use the built-in `http request` node with zero dependencies. The contrib package just adds typed nodes, autocompletion, and credential management.
+
+---
+
+## Nodes Provided by `node-red-contrib-leafengines`
+
+| Node | Category | Purpose |
+|------|----------|---------|
+| `leafengines-config` | config | Holds API key + tier; one per deployment |
+| `leafengines-soil` | function | Get USDA soil profile by FIPS |
+| `leafengines-water` | function | EPA territorial water quality |
+| `leafengines-county` | function | Resolve name/lat-lon → FIPS |
+| `leafengines-crop-ai` | function | AI crop recommendation (live) |
+| `leafengines-carbon` | function | Carbon credit estimator |
+| `leafengines-vrt` | function | Generate ISOBUS-compliant VRT export |
+| `leafengines-plant-id` | function | Plant ID with toxic-lookalike warnings |
+| `leafengines-mcp` | function | Generic MCP tool-call passthrough |
+
+Every node accepts `msg.payload` overrides so you can drive parameters from upstream nodes (MQTT, dashboard, function).
+
+---
+
+## Quick Start: Soil Lookup Flow
+
+Import this JSON via **Menu → Import**:
+
+```json
+[
+  {"id":"trig","type":"inject","props":[{"p":"payload"}],"payload":"13121","payloadType":"str","topic":"fips","wires":[["soil"]]},
+  {"id":"soil","type":"leafengines-soil","creds":"le-cfg","wires":[["dbg"]]},
+  {"id":"dbg","type":"debug","name":"soil result","active":true},
+  {"id":"le-cfg","type":"leafengines-config","tier":"starter","keyPrefix":"ak_starter"}
+]
+```
+
+Click the inject button — you'll see Fulton County, GA soil data (pH 5.8, OM 2.1%, sandy loam) in the debug panel within 200ms.
+
+---
+
+## Reference Flows
+
+### Flow 1: Irrigation Decision Engine
+
+```
+[MQTT in: soil/moisture/+] 
+    → [function: extract field_id, moisture]
+    → [leafengines-soil: get baseline AWC for field FIPS]
+    → [function: compute deficit = AWC - moisture]
+    → [switch: deficit > threshold]
+        → [MQTT out: irrigation/zone/N/start]
+    → [InfluxDB: log decision]
+```
+
+**Why this matters:** Generic moisture thresholds over-irrigate sandy soils and under-irrigate clay. Pulling LeafEngines' soil profile per zone gives you site-specific Available Water Capacity, typically cutting water use 20–35%.
+
+### Flow 2: ISOBUS VRT Generation from SCADA
+
+```
+[OPC-UA: read field boundary + selected crop]
+    → [leafengines-crop-ai: get N-P-K targets]
+    → [leafengines-vrt: generate prescription map]
+    → [function: extract ISO XML payload]
+    → [file out: /var/lib/isobus/exports/]
+    → [MQTT out: tractor/sync/ready]
+```
+
+Output is **ISO 11783 Part 10 compliant**, drag-and-drop ready for John Deere GS3/G4, Case IH AFS, AGCO Fendt One, and Trimble GFX displays.
+
+### Flow 3: Foraging Safety Gate (offline-capable)
+
+```
+[Dashboard: image upload]
+    → [leafengines-plant-id: mode='offline-first']
+    → [switch: result.toxic_lookalikes.length > 0]
+        → [Dashboard: red banner + lookalike images]
+        → [Dashboard: green confirm + edibility notes]
+    → [SQLite: log query]
+```
+
+When the LAN loses upstream connectivity, the offline-first node falls back to **Gemma-quantized local inference** (TurboQuant 3-bit KV cache) — meaning forager safety doesn't depend on cell signal in the woods.
+
+### Flow 4: Multi-Tenant Carbon Reporting (agency pattern)
+
+```
+[Cron: weekly]
+    → [Postgres: SELECT field_id, acres, fips, organic_matter FROM customer_fields]
+        → [split]
+            → [leafengines-carbon: per row]
+        → [join: array]
+    → [function: format ESG report]
+    → [HTTP request: POST to client portal]
+```
+
+Pro tier handles ~25k credit calcs/day comfortably.
+
+---
+
+## Credential Configuration
+
+The `leafengines-config` node stores the API key in Node-RED's encrypted credential store (never the flow JSON). Editor view:
+
+| Field | Notes |
+|-------|-------|
+| API Key | Paste full key (`ak_starter_xxx...`) |
+| Tier | Free / Starter / Pro / Enterprise — drives rate-limit hints |
+| Endpoint Override | Leave blank for SaaS; set to private cloud URL for Enterprise on-prem |
+| Default Timeout (ms) | 8000 recommended for AI nodes, 3000 for soil/water |
+| Retry on 429 | ON (uses `Retry-After`) |
+
+For Enterprise on-prem deployments, point `Endpoint Override` at your private cluster (e.g., `https://leafengines.internal.acme.farm`) — node behavior is otherwise identical.
+
+---
+
+## MQTT-First Patterns
+
+Node-RED users typically have an MQTT broker as their backbone. Recommended topic conventions when bridging to LeafEngines:
+
+```
+leafengines/request/<correlation_id>      → outbound (your flow → broker)
+leafengines/response/<correlation_id>     → inbound (LeafEngines node → broker)
+leafengines/error/<correlation_id>        → error fanout
+leafengines/audit/<tenant>/<tool>         → for compliance logging
+```
+
+The `leafengines-mcp` node automatically populates `msg.headers['x-correlation-id']` so end-to-end tracing through brokers, gateways, and tractor displays just works.
+
+---
+
+## Edge / Offline Considerations
+
+Many Node-RED deployments run on Raspberry Pi, IoT2050, Moxa UC-8112, or industrial PCs with intermittent connectivity. The contrib package supports:
+
+- **Local cache** — soil/county/water responses cached in flow context for `cacheTtl` ms (default 24h)
+- **Queue-on-disconnect** — POSTs spool to disk while offline, drain on reconnect
+- **Offline plant ID** — Gemma-quantized model bundled (~85MB) for `leafengines-plant-id` when `mode: 'offline-first'`
+- **Dead-reckoning hook** — for moving equipment, the patented inertial positioning engine (US patent app #19/544,827) can be bridged in via the SDK; ask your account manager about the Embedded OS license
+
+---
+
+## Performance Notes
+
+Tested on Raspberry Pi 4 (4GB), 100 Mbps WAN:
+
+| Node | p50 | p95 | Notes |
+|------|-----|-----|-------|
+| `leafengines-soil` | 95ms | 220ms | FIPS cache hit ~30ms |
+| `leafengines-county` | 110ms | 280ms | pg_trgm fuzzy match |
+| `leafengines-crop-ai` | 1.2s | 3.4s | live LLM (GPT-5 router) |
+| `leafengines-vrt` | 600ms | 1.8s | grows with field complexity |
+| `leafengines-plant-id` (cloud) | 800ms | 2.1s | |
+| `leafengines-plant-id` (offline) | 2.4s | 6.8s | Gemma-3B 3-bit on Pi 4 |
+
+For sub-100ms inference on edge hardware, see the **OEM Embedded OS** doc — requires WebGPU-class accelerator (Jetson Orin, Coral TPU, Hailo-8).
+
+---
+
+## Security & Audit
+
+- API key never appears in exported flow JSON (stored in `~/.node-red/flows_cred.json`, AES-encrypted)
+- Every call logged to `mcp_tool_call_log` server-side with `tenant_id`, `correlation_id`, `tool_name`, `response_time_ms`, `success`
+- Enterprise tier: 7-year audit retention, tamper-evident hash chain, SOC 2 Type II evidence package
+- For air-gapped deployments, the Embedded OS variant ships with local audit-log shipping over MQTT/OPC-UA
+
+---
+
+## Common Pitfalls
+
+1. **Forgetting `Accept: application/json, text/event-stream` on raw `http request` nodes calling `/mcp-server`** — you'll get HTTP 406. The contrib nodes set this automatically.
+2. **Driving the AI nodes from a tight `inject` loop** — burns budget fast. Use `delay` node with rate limiting (e.g., 1 msg/sec).
+3. **Storing the API key in `msg.payload`** — visible in debug nodes. Always use the credential field on the config node.
+4. **Assuming offline plant ID matches cloud accuracy** — local Gemma is ~92% top-3 accuracy vs ~98% for the cloud ensemble. Use `confidence` field to gate.
+
+---
+
+## Roadmap (Q2–Q3 2026)
+
+- Native **Modbus → LeafEngines** bridge node (read sensor → enrich with soil → write back to PLC tag)
+- **OPC-UA Companion Spec** for AGRI/ISOBUS metadata
+- **Kepware/Ignition** sample gateway flows
+- Per-flow **cost preview** (estimated $/run before deploy)
+
+---
+
+## API Reference & Troubleshooting
+
+### Standardized API Endpoints
+The Node-RED nodes use LeafEngines' primary API for all agricultural intelligence:
+
+**Base URL:** `https://leafengines-emergency-api-1.onrender.com`
+
+| Endpoint | Method | Parameters | Authentication |
+|----------|--------|------------|----------------|
+| `/v1/soil/analyze` | POST | `{"county_fips": "01001"}` | `x-api-key` header |
+| `/v1/crop/recommend` | POST | `{"crop": "corn", "county_fips": "01001"}` | `x-api-key` header |
+| `/v1/health` | GET | None | None required |
+| `/v1/auth/validate` | POST | `{"api_key": "your-key"}` | None required |
+
+### Authentication
+- **Header:** `x-api-key: your-api-key` (configured in node settings)
+- **Test Key:** `leaf-test-370df0a2e62e` (limited functionality)
+- **Free Tier:** Add `x-free-tier: true` header (no API key required)
+
+### Common Parameters
+- **`county_fips`:** 5-digit FIPS code (e.g., `01001` for Autauga County, AL)
+- **`crop`:** Crop name (e.g., `"corn"`, `"soybeans"`, `"wheat"`)
+
+### Troubleshooting
+
+#### Connection Issues
+1. **Check API Key:** Verify key is saved in node configuration
+2. **Test API Directly:** Use `curl` to test:
+   ```bash
+   curl -X POST https://leafengines-emergency-api-1.onrender.com/v1/soil/analyze \
+     -H "x-api-key: leaf-test-370df0a2e62e" \
+     -H "Content-Type: application/json" \
+     -d '{"county_fips":"01001"}'
+   ```
+3. **Check Node-RED Logs:** View debug messages for API responses
+
+#### MQTT Integration Issues
+1. **Verify Broker Connection:** Test MQTT broker separately
+2. **Check Topic Structure:** Ensure correct topic hierarchy
+3. **Validate Payload Format:** JSON payload must match expected schema
+
+### Complete API Reference
+For full endpoint documentation and parameter details, see:  
+[API Endpoint Reference](../API_ENDPOINT_REFERENCE.md)
+
+## Support
+
+- **npm:** `node-red-contrib-leafengines`
+- **GitHub:** github.com/leafengines/node-red-contrib-leafengines
+- **Issues:** edge@leafengines.com
+- **Flow library:** flows.nodered.org/search?term=leafengines
+- **API Reference:** [API Endpoint Reference](../API_ENDPOINT_REFERENCE.md)
+
+---
+
+© 2026 SoilSidekick Pro™ / LeafEngines™. Node-RED is a trademark of OpenJS Foundation.
+
+## 🌐 Global IoT & Automation Pricing
+
+Node-RED users deploy automation worldwide. Our pricing supports your global IoT deployments:
+
+**Subscription Plans (Monthly):**
+
+| Region | Starter | Pro | Local Payment Options |
+|--------|---------|-----|----------------------|
+| **United States** | $49 | $149 | Card, Apple Pay, Google Pay |
+| **European Union** | €45 | €135 | Klarna, iDEAL, EPS, Apple/Google Pay |
+| **United Kingdom** | £38 | £115 | Afterpay/Clearpay, Apple/Google Pay |
+| **Australia** | AU$75 | AU$225 | Afterpay, Apple/Google Pay |
+| **International** | $49* | $149* | Credit Cards, Apple/Google Pay |
+
+*Equivalent local currency at checkout
+
+**Why Local Pricing Matters for IoT:**
+- Deploy sensors globally with predictable local costs
+- Local payment methods reduce friction for team purchases
+- Tax-inclusive pricing simplifies budgeting
+- Currency stability for long-term automation projects
+- Compliance with regional financial regulations
+
+**Test Before Buying:** Use free tier (`x-free-tier: true`) or test key `leaf-test-370df0a2e62e`
+
+## 💰 Pricing
+
+### Free Tier — No Credit Card
+- **Test key:** `leaf-test-370df0a2e62e`
+- **Free header:** `x-free-tier: true`
+- **Includes:** Basic soil analysis, county lookup, TurboQuant check
+- **Try it:** [soilcertify.com →](https://soilcertify.com)
+
+### Pay-As-You-Go
+
+| Tier | Price | Per-Call Rate | What You Get | Buy |
+|------|-------|--------------|--------------|-----|
+| Commoditized | $0.50/bundle | $0.001/call | Basic soil/weather, county lookup | [Buy →](https://buy.stripe.com/bJe3cvfNk77N5RgfbgaMU0e) |
+| Enhanced | $1.50/bundle | $0.003/call | Environmental impact, crop suitability | [Buy →](https://buy.stripe.com/cNi9AT1Wu0Jp93s8MSaMU0c) |
+| Proprietary | $5.00/bundle | $0.010/call | Planting optimization, carbon credits | [Buy →](https://buy.stripe.com/28EeVd9oWeAf2F48MSaMU0d) |
+| Exclusive | $10.00/bundle | $0.020/call | Patent-pending env compatibility scoring | [Buy →](https://buy.stripe.com/6oU4gzbx40Jp6Vk1kqaMU0a) |
+
+### Monthly Subscriptions
+
+| Plan | Price | Included Calls | Best For | Subscribe |
+|------|-------|---------------|----------|-----------|
+| **Founder Starter** | $10/mo → lifetime $49/mo | 10,000/mo | Solo developers | [Subscribe →](https://buy.stripe.com/5kQ6oHcB88bR93s8MSaMU04) |
+| **Founder Pro** | $49/mo → lifetime $149/mo | 35,000/mo | Production apps | [Subscribe →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05) |
+| Starter | $149/mo | 10,000/mo | Solo developers | [Subscribe →](https://buy.stripe.com/5kQ6oHcB88bR93s8MSaMU04) |
+| Pro | $499/mo | 35,000/mo | Production apps, teams | [Subscribe →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05) |
+| Enterprise | $1,999/mo | 175,000+/mo | White-label, SLA, OEM | [Subscribe →](https://buy.stripe.com/14A6oH7gO3VBcfE1kqaMU05) |
+
+> ⏰ **Founder pricing expires June 1, 2026.** First 100 customers lock lifetime rates.
+
+### International Pricing
+
+| Region | Starter | Pro | Local Payment Methods |
+|--------|---------|-----|----------------------|
+| **United States** | $49/mo | $149/mo | Card, Apple Pay, Google Pay, Affirm |
+| **European Union** | €45/mo (VAT incl.) | €135/mo (VAT incl.) | Klarna, iDEAL, EPS, Apple/Google Pay |
+| **United Kingdom** | £38/mo (VAT incl.) | £115/mo (VAT incl.) | Afterpay/Clearpay, Apple/Google Pay |
+| **Australia** | AU$75/mo (GST incl.) | AU$225/mo (GST incl.) | Afterpay, Apple/Google Pay |
+
+---
+
+🌱 **LeafEngines™** | SoilSidekick Pro® | SoilCertify | SoilTech Suite, Inc.
+*Space gives the picture. We give the truth.*

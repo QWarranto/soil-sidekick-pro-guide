@@ -1,0 +1,412 @@
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Calendar, Sprout, CloudRain, TrendingUp, Leaf, AlertCircle, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import DOMPurify from 'dompurify';
+import { withSmartRetry, classifyError } from '@/lib/error-handling';
+
+type PlanningState = 
+  | { status: 'idle' }
+  | { status: 'validating' }
+  | { status: 'loading'; stage: 'authenticating' | 'fetching' | 'generating' }
+  | { status: 'error'; error: string; retryable: boolean; actionHint?: string }
+  | { status: 'success'; plan: any };
+
+interface SeasonalPlanningAssistantProps {
+  location?: {
+    county_name: string;
+    state_code: string;
+    fips_code: string;
+  };
+  soilData?: any;
+}
+
+export const SeasonalPlanningAssistant: React.FC<SeasonalPlanningAssistantProps> = ({
+  location,
+  soilData
+}) => {
+  const [planningType, setPlanningType] = useState<string>('');
+  const [timeframe, setTimeframe] = useState<string>('');
+  const [cropPreferences, setCropPreferences] = useState<string[]>([]);
+  const [recommendations, setRecommendations] = useState<string>('');
+  const [weatherData, setWeatherData] = useState<any>(null);
+  const [modelUsed, setModelUsed] = useState<string>('');
+  const [planState, setPlanState] = useState<PlanningState>({ status: 'idle' });
+  const { toast } = useToast();
+
+  // Derived convenience flags for the template
+  const isLoading = planState.status === 'loading';
+  const error = planState.status === 'error' ? planState.error : '';
+
+  const planningTypes = [
+    { value: 'crop_rotation', label: 'Crop Rotation Planning' },
+    { value: 'seasonal_calendar', label: 'Seasonal Planting Calendar' },
+    { value: 'soil_improvement', label: 'Soil Health Improvement' },
+    { value: 'market_timing', label: 'Market-Optimized Planning' },
+    { value: 'sustainable_farming', label: 'Sustainable Practices' }
+  ];
+
+  const timeframes = [
+    { value: '1_year', label: 'Next 12 Months' },
+    { value: '3_years', label: '3-Year Plan' },
+    { value: '5_years', label: '5-Year Strategy' }
+  ];
+
+  const cropOptions = [
+    'Corn', 'Soybeans', 'Wheat', 'Oats', 'Barley', 'Alfalfa', 'Clover',
+    'Tomatoes', 'Peppers', 'Lettuce', 'Carrots', 'Potatoes', 'Onions',
+    'Cover Crops', 'Pasture Grasses', 'Fruit Trees', 'Vegetable Gardens'
+  ];
+
+  const handleCropToggle = (crop: string) => {
+    setCropPreferences(prev => 
+      prev.includes(crop) 
+        ? prev.filter(c => c !== crop)
+        : [...prev, crop]
+    );
+  };
+
+  // Reset error state when user changes inputs
+  useEffect(() => {
+    if (planState.status === 'error') {
+      setPlanState({ status: 'idle' });
+    }
+  }, [location, planningType, timeframe, cropPreferences]);
+
+  const generatePlan = async () => {
+    // Validation state
+    setPlanState({ status: 'validating' });
+
+    if (!location) {
+      setPlanState({ status: 'error', error: 'Please select a county first', retryable: false });
+      return;
+    }
+
+    if (!planningType || !timeframe) {
+      setPlanState({ status: 'error', error: 'Please select planning type and timeframe', retryable: false });
+      return;
+    }
+
+    setPlanState({ status: 'loading', stage: 'authenticating' });
+
+    try {
+      const result = await withSmartRetry(
+        async () => {
+          setPlanState({ status: 'loading', stage: 'fetching' });
+
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session) throw new Error('Authentication required. Please sign in to use seasonal planning.');
+
+          setPlanState({ status: 'loading', stage: 'generating' });
+
+          const response = await supabase.functions.invoke('seasonal-planning-assistant', {
+            body: {
+              location,
+              soilData,
+              planningType,
+              cropPreferences,
+              timeframe
+            }
+          });
+
+          if (response.error) {
+            console.warn('Edge function error:', response.error);
+            throw new Error(response.error.message || 'Failed to generate seasonal plan');
+          }
+
+          if (!response.data?.success) {
+            throw new Error(response.data?.error || 'Failed to generate plan');
+          }
+
+          return response.data;
+        },
+        3,
+        (statusMsg) => {
+          toast({ title: statusMsg, duration: 3000 });
+        }
+      );
+
+      setRecommendations(result.recommendations.content);
+      setWeatherData(result.weatherData);
+      setModelUsed(result.modelUsed);
+      setPlanState({ status: 'success', plan: result });
+      toast({
+        title: "Planning Complete",
+        description: `Seasonal plan generated using ${result.modelUsed.toUpperCase()}`,
+      });
+
+    } catch (err) {
+      const classified = classifyError(err);
+      setPlanState({
+        status: 'error',
+        error: classified.message,
+        retryable: classified.retryable,
+        actionHint: classified.actionHint,
+      });
+
+      toast({
+        title: classified.category === 'auth' ? 'Sign-in required' : 'Plan generation failed',
+        description: classified.actionHint,
+        variant: 'destructive',
+        duration: 8000,
+      });
+    }
+  };
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <Card className="border-green-200 bg-gradient-to-r from-green-50 to-blue-50 card-elevated">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 flex-wrap">
+            <Calendar className="h-5 w-5 text-green-600" />
+            <span>Seasonal Planning Assistant</span>
+            <Badge variant="outline" className="ml-2">
+              GPT-5 Enhanced
+            </Badge>
+          </CardTitle>
+          <CardDescription>
+            AI-powered crop rotation and seasonal planning with weather integration
+          </CardDescription>
+        </CardHeader>
+      </Card>
+
+      {/* Location & Soil Context */}
+      {location && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Planning Context</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <strong>Location:</strong> {location.county_name}, {location.state_code}
+              </div>
+              {soilData && (
+                <div>
+                  <strong>Soil pH:</strong> {soilData.ph_level || 'Unknown'}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Planning Configuration */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Planning Parameters</CardTitle>
+          <CardDescription>
+            Configure your seasonal planning preferences
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Planning Type */}
+          <div className="space-y-2">
+            <Label>Planning Focus</Label>
+            <Select value={planningType} onValueChange={setPlanningType}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select planning type" />
+              </SelectTrigger>
+              <SelectContent>
+                {planningTypes.map(type => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Timeframe */}
+          <div className="space-y-2">
+            <Label>Planning Timeframe</Label>
+            <Select value={timeframe} onValueChange={setTimeframe}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select timeframe" />
+              </SelectTrigger>
+              <SelectContent>
+                {timeframes.map(tf => (
+                  <SelectItem key={tf.value} value={tf.value}>
+                    {tf.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Crop Preferences */}
+          <div className="space-y-3">
+            <Label>Crop Preferences (Optional)</Label>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {cropOptions.map(crop => (
+                <div key={crop} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={crop}
+                    checked={cropPreferences.includes(crop)}
+                    onCheckedChange={() => handleCropToggle(crop)}
+                  />
+                  <Label htmlFor={crop} className="text-sm">
+                    {crop}
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Button 
+              onClick={generatePlan} 
+              disabled={isLoading || !location}
+              className="w-full"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                'Generate Seasonal Plan'
+              )}
+            </Button>
+
+            {/* Location context helper */}
+            {!location && (
+              <p className="text-sm text-amber-600 flex items-center gap-1">
+                <AlertCircle className="h-4 w-4" />
+                Select a county first to enable planning
+              </p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Weather Context */}
+      {weatherData && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CloudRain className="h-5 w-5 text-blue-500" />
+              Weather Context
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div>
+                <strong>Current Season:</strong><br />
+                {weatherData.currentSeason}
+              </div>
+              <div>
+                <strong>USDA Zone:</strong><br />
+                {weatherData.zone}
+              </div>
+              <div>
+                <strong>Growing Season:</strong><br />
+                {weatherData.growingSeason}
+              </div>
+              <div>
+                <strong>Annual Rainfall:</strong><br />
+                {weatherData.rainfall}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Loading State */}
+      {isLoading && (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="space-y-3">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+              <div className="flex items-center gap-2 mt-4">
+                <div className="h-2 w-2 bg-primary rounded-full animate-pulse" />
+                <div className="h-2 w-2 bg-primary rounded-full animate-pulse delay-75" />
+                <div className="h-2 w-2 bg-primary rounded-full animate-pulse delay-150" />
+                <span className="text-xs text-muted-foreground ml-2">
+                  {planState.status === 'loading' && planState.stage === 'authenticating' && 'Authenticating…'}
+                  {planState.status === 'loading' && planState.stage === 'fetching' && 'Fetching data…'}
+                  {planState.status === 'loading' && planState.stage === 'generating' && 'AI analyzing seasonal factors…'}
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <Card className="border-destructive/20">
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+              <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+              <div className="flex-1 space-y-2">
+                <p className="text-sm font-semibold text-destructive">Plan Generation Failed</p>
+                <p className="text-sm text-foreground">{error}</p>
+                {planState.status === 'error' && planState.actionHint && (
+                  <div className="mt-2 p-3 bg-background border border-border rounded-md">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">What to do</p>
+                    <p className="text-sm text-foreground">{planState.actionHint}</p>
+                  </div>
+                )}
+              </div>
+              {planState.status === 'error' && planState.retryable && (
+                <Button variant="outline" size="sm" onClick={generatePlan} className="flex-shrink-0">
+                  Retry
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      {/* Recommendations */}
+      {recommendations && !isLoading && (
+        <Card className="border-green-200">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-green-600" />
+                  Seasonal Planning Recommendations
+                  {modelUsed && (
+                    <Badge variant={modelUsed.includes('gpt-5') ? 'default' : 'secondary'}>
+                      {modelUsed.toUpperCase()}
+                    </Badge>
+                  )}
+                </CardTitle>
+                <CardDescription>
+                  AI-generated seasonal strategy tailored to your location and conditions
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="prose prose-sm max-w-none">
+              <div 
+                className="text-sm leading-relaxed whitespace-pre-line"
+                dangerouslySetInnerHTML={{ 
+                  __html: DOMPurify.sanitize(
+                    recommendations
+                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                      .replace(/#{1,6}\s*(.*?)$/gm, '<h3 class="text-base font-semibold mt-4 mb-2 text-green-700">$1</h3>')
+                      .replace(/•/g, '•')
+                      .replace(/- /g, '• ')
+                  )
+                }} 
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+};

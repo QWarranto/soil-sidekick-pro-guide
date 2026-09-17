@@ -1,0 +1,26 @@
+name: Public Docs Exposure Guard
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - "docs/**"
+      - "internal-docs/**"
+      - "src/**"
+      - "scripts/docs-allowlist.mjs"
+      - "scripts/generate-public-docs.mjs"
+      - "scripts/check-docs-allowlist.mjs"
+      - ".github/workflows/docs-allowlist.yml"
+
+jobs:
+  allowlist:
+    name: Verify docs allowlist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Check public docs exposure
+        run: bun scripts/check-docs-allowlist.mjs

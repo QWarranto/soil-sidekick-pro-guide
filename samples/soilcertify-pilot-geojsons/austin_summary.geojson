@@ -1,0 +1,377 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "generator": "SoilCertify Sample Report GeoJSON Export",
+    "standard": "RFC 7946",
+    "sample": true,
+    "report_id": "SAMPLE-PRELIM-001",
+    "report_type": null,
+    "report_tier": "preliminary",
+    "geojson_tier": "shared",
+    "tier_contract": "GeoJSON content is identical across Summary and Detailed report tiers; tier-specific analysis is contained in the PDF, not the GIS export.",
+    "property_address": "123 Sample Street, Anytown, TX 00000",
+    "country": "US",
+    "jurisdiction": "US",
+    "exported_at": "2026-08-04T02:22:25.226Z",
+    "geometry_approximated": true,
+    "geometry_source": "geocoded_point_buffer",
+    "geometry_method": "100m x 100m centroid AOI",
+    "geometry_use_constraints": "Screening AOI only; not cadastral, survey-grade, or evidence of legal parcel certainty.",
+    "approximation_warning": "SAMPLE DATA. This polygon is a preliminary AOI approximated as a 100 m x 100 m square centred on the geocoded point. It is NOT a cadastral parcel boundary. Do not use for legal, planning, or engineering purposes.",
+    "sources": [
+      "USDA NRCS SSURGO",
+      "FEMA NFHL",
+      "Sentinel-2 L2A (10 m)"
+    ],
+    "coverage_notes": null,
+    "field_definitions": {
+      "ndvi_sentinel2": {
+        "label": "NDVI (Sentinel-2)",
+        "type": "number",
+        "unit": "unitless",
+        "range": [
+          -1,
+          1
+        ],
+        "source": "Sentinel-2 L2A (10 m) via Google Earth Engine",
+        "interpretation": "Vegetation-condition proxy. NOT direct evidence of biodiversity, productivity, land disturbance, or environmental clearance.",
+        "null_meaning": "No cloud-free scene available for AOI",
+        "class": "raw",
+        "jurisdiction": "global"
+      },
+      "soil_moisture_index": {
+        "label": "Soil Moisture Index (NDMI-derived)",
+        "type": "number",
+        "unit": "unitless",
+        "range": [
+          0,
+          1
+        ],
+        "source": "Sentinel-2 derived (NDMI)",
+        "interpretation": "Relative surface moisture proxy, NOT a calibrated volumetric soil-moisture reading.",
+        "null_meaning": "No cloud-free scene available for AOI",
+        "class": "derived",
+        "jurisdiction": "global"
+      },
+      "soil_component": {
+        "label": "Soil component / profile name",
+        "type": "string",
+        "source": "USDA NRCS SSURGO chorizon",
+        "class": "raw",
+        "jurisdiction": "US",
+        "null_meaning": "Map unit lookup returned no component"
+      },
+      "drainage_class": {
+        "label": "Drainage class",
+        "type": "string",
+        "source": "USDA NRCS SSURGO",
+        "class": "raw",
+        "jurisdiction": "US"
+      },
+      "mukey": {
+        "label": "SSURGO Map Unit Key",
+        "type": "string",
+        "source": "USDA NRCS SSURGO",
+        "class": "raw",
+        "jurisdiction": "US"
+      },
+      "map_unit_name": {
+        "label": "Map unit name",
+        "type": "string",
+        "source": "USDA NRCS SSURGO",
+        "class": "raw",
+        "jurisdiction": "US"
+      },
+      "slope_pct": {
+        "label": "Slope",
+        "type": "number",
+        "unit": "percent",
+        "source": "USDA NRCS SSURGO",
+        "class": "raw",
+        "jurisdiction": "US"
+      },
+      "soil_ph": {
+        "label": "Soil pH (1:1 H2O)",
+        "type": "number",
+        "unit": "pH",
+        "range": [
+          3,
+          10
+        ],
+        "source": "USDA NRCS SSURGO",
+        "class": "raw",
+        "jurisdiction": "US",
+        "null_meaning": "Source did not report a plausible pH"
+      },
+      "soil_sand_pct": {
+        "label": "Sand fraction",
+        "type": "number",
+        "unit": "percent",
+        "source": "USDA NRCS SSURGO",
+        "class": "raw",
+        "jurisdiction": "US"
+      },
+      "soil_silt_pct": {
+        "label": "Silt fraction",
+        "type": "number",
+        "unit": "percent",
+        "source": "USDA NRCS SSURGO",
+        "class": "raw",
+        "jurisdiction": "US"
+      },
+      "soil_clay_pct": {
+        "label": "Clay fraction",
+        "type": "number",
+        "unit": "percent",
+        "source": "USDA NRCS SSURGO",
+        "class": "raw",
+        "jurisdiction": "US"
+      },
+      "organic_matter_pct": {
+        "label": "Organic matter",
+        "type": "number",
+        "unit": "percent",
+        "source": "USDA NRCS SSURGO",
+        "class": "raw",
+        "jurisdiction": "US"
+      },
+      "ksat_um_s": {
+        "label": "Saturated hydraulic conductivity (Ksat)",
+        "type": "number",
+        "unit": "µm/s",
+        "source": "USDA NRCS SSURGO",
+        "class": "raw",
+        "jurisdiction": "US",
+        "null_meaning": "Not assessed — the source for this jurisdiction does not publish calibrated Ksat. Null must never be substituted with a value from another region."
+      },
+      "soil_component_source_shape": {
+        "label": "Provenance of the parsed soil component record",
+        "type": "string",
+        "vocabulary": [
+          "components_array",
+          "ssurgo_table_row"
+        ],
+        "class": "derived",
+        "jurisdiction": "global"
+      },
+      "land_change": {
+        "label": "Land-change screening note",
+        "type": "string",
+        "source": "Sentinel-2 multi-date comparison",
+        "class": "derived",
+        "jurisdiction": "global"
+      },
+      "satellite_resolution": {
+        "label": "Satellite pixel resolution",
+        "type": "string",
+        "source": "Sentinel-2 L2A",
+        "class": "raw",
+        "jurisdiction": "global"
+      },
+      "satellite_acquisition_date": {
+        "label": "Satellite scene acquisition date",
+        "type": "string",
+        "format": "ISO 8601",
+        "source": "Sentinel-2 L2A",
+        "class": "raw",
+        "jurisdiction": "global"
+      },
+      "map_unit": {
+        "deprecated": true,
+        "deprecated_by": "map_unit_name / mukey",
+        "note": "Nested object retained one release; consumers should read the flattened fields."
+      },
+      "ndvi": {
+        "deprecated": true,
+        "deprecated_by": "ndvi_sentinel2"
+      },
+      "moisture": {
+        "deprecated": true,
+        "deprecated_by": "soil_moisture_index"
+      },
+      "flood_zone_fema_centroid": {
+        "label": "FEMA flood zone at the report centre point",
+        "type": "string",
+        "source": "FEMA NFHL",
+        "class": "raw",
+        "jurisdiction": "US",
+        "geometry_scope": "point",
+        "note": "Point sample only. Does NOT describe the AOI polygon."
+      },
+      "flood_zone_fema_aoi": {
+        "label": "FEMA flood zone intersecting the 100 m x 100 m AOI",
+        "type": "string",
+        "source": "FEMA NFHL",
+        "class": "derived",
+        "jurisdiction": "US",
+        "geometry_scope": "polygon",
+        "null_meaning": "AOI intersection not evaluated for this report",
+        "note": "Where the point and area answers differ, the area answer governs screening decisions."
+      },
+      "hydro_group": {
+        "label": "NRCS Hydrologic Soil Group",
+        "type": "string",
+        "vocabulary": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "A/D",
+          "B/D",
+          "C/D"
+        ],
+        "source": "USDA NRCS SSURGO",
+        "class": "raw",
+        "jurisdiction": "US"
+      },
+      "foundation_risk": {
+        "label": "Foundation screening rating",
+        "type": "string",
+        "source": "SSURGO derived screening",
+        "class": "scored",
+        "jurisdiction": "US"
+      },
+      "septic_screening": {
+        "label": "Septic system screening (limitation category)",
+        "type": "string",
+        "source": "SSURGO derived screening",
+        "class": "scored",
+        "jurisdiction": "US",
+        "note": "Value describes LIMITATION severity; higher = more constrained."
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "id": "SAMPLE-PRELIM-001:aoi",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -97.74362,
+              30.2667508
+            ],
+            [
+              -97.74258,
+              30.2667508
+            ],
+            [
+              -97.74258,
+              30.2676492
+            ],
+            [
+              -97.74362,
+              30.2676492
+            ],
+            [
+              -97.74362,
+              30.2667508
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "report_id": "SAMPLE-PRELIM-001",
+        "report_type": null,
+        "report_tier": "preliminary",
+        "property_address": "123 Sample Street, Anytown, TX 00000",
+        "country": "US",
+        "jurisdiction": "US",
+        "map_unit_name": "Bergstrom Clay Loam, 0 to 1 percent slopes",
+        "mukey": "SAMPLE",
+        "map_unit": {
+          "mukey": "SAMPLE",
+          "name": "Bergstrom Clay Loam, 0 to 1 percent slopes"
+        },
+        "soil_component": "Bergstrom clay loam",
+        "drainage_class": "Well drained",
+        "slope_pct": 1,
+        "soil_ph": 6.8,
+        "soil_sand_pct": 28,
+        "soil_silt_pct": 42,
+        "soil_clay_pct": 30,
+        "organic_matter_pct": 2.8,
+        "ksat_um_s": 4.2,
+        "soil_component_source_shape": "ssurgo_table_row",
+        "ndvi_sentinel2": 0.72,
+        "soil_moisture_index": 0.45,
+        "ndvi": 0.72,
+        "moisture": 0.45,
+        "land_change": "Stable (0%)",
+        "satellite_resolution": "10m",
+        "satellite_acquisition_date": "2026-08-04T01:40:01.282Z",
+        "generated_at": "2026-08-04T02:22:25.226Z",
+        "flood_zone_fema_centroid": "Zone X — outside the 0.2% annual-chance floodplain (FEMA NFHL)",
+        "flood_zone_fema_aoi": "Zone X across the full 100 m × 100 m AOI; no SFHA polygon intersected",
+        "hydro_group": "C",
+        "foundation_risk": "Low",
+        "septic_screening": "Slight",
+        "corrosion_steel": "Moderate",
+        "corrosion_concrete": "Low",
+        "shrink_swell": "Low",
+        "feature_role": "parcel_aoi",
+        "geometry_approximated": true,
+        "geometry_source": "geocoded_point_buffer",
+        "geometry_method": "100m x 100m centroid AOI",
+        "geometry_use_constraints": "Screening AOI only; not cadastral, survey-grade, or evidence of legal parcel certainty.",
+        "target_area_m2": 10000,
+        "approximation_warning": "SAMPLE DATA. This polygon is a preliminary AOI approximated as a 100 m x 100 m square centred on the geocoded point. It is NOT a cadastral parcel boundary. Do not use for legal, planning, or engineering purposes."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "SAMPLE-PRELIM-001:centroid",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -97.7431,
+          30.2672
+        ]
+      },
+      "properties": {
+        "report_id": "SAMPLE-PRELIM-001",
+        "report_type": null,
+        "report_tier": "preliminary",
+        "property_address": "123 Sample Street, Anytown, TX 00000",
+        "country": "US",
+        "jurisdiction": "US",
+        "map_unit_name": "Bergstrom Clay Loam, 0 to 1 percent slopes",
+        "mukey": "SAMPLE",
+        "map_unit": {
+          "mukey": "SAMPLE",
+          "name": "Bergstrom Clay Loam, 0 to 1 percent slopes"
+        },
+        "soil_component": "Bergstrom clay loam",
+        "drainage_class": "Well drained",
+        "slope_pct": 1,
+        "soil_ph": 6.8,
+        "soil_sand_pct": 28,
+        "soil_silt_pct": 42,
+        "soil_clay_pct": 30,
+        "organic_matter_pct": 2.8,
+        "ksat_um_s": 4.2,
+        "soil_component_source_shape": "ssurgo_table_row",
+        "ndvi_sentinel2": 0.72,
+        "soil_moisture_index": 0.45,
+        "ndvi": 0.72,
+        "moisture": 0.45,
+        "land_change": "Stable (0%)",
+        "satellite_resolution": "10m",
+        "satellite_acquisition_date": "2026-08-04T01:40:01.282Z",
+        "generated_at": "2026-08-04T02:22:25.226Z",
+        "flood_zone_fema_centroid": "Zone X — outside the 0.2% annual-chance floodplain (FEMA NFHL)",
+        "flood_zone_fema_aoi": "Zone X across the full 100 m × 100 m AOI; no SFHA polygon intersected",
+        "hydro_group": "C",
+        "foundation_risk": "Low",
+        "septic_screening": "Slight",
+        "corrosion_steel": "Moderate",
+        "corrosion_concrete": "Low",
+        "shrink_swell": "Low",
+        "feature_role": "parcel_centroid",
+        "centroid_relationship": "geocoded_address_point"
+      }
+    }
+  ]
+}

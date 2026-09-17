@@ -1,0 +1,17 @@
+Contact: security@soilsidekickpro.com
+Expires: 2025-12-31T23:59:59.000Z
+Acknowledgments: https://soilsidekickpro.com/security-acknowledgments
+Preferred-Languages: en
+Canonical: https://soilsidekickpro.com/security.txt
+Policy: https://soilsidekickpro.com/security-policy
+
+# Security Policy for SoilSidekick Pro
+#
+# If you discover a security vulnerability in SoilSidekick Pro,
+# please report it to our security team at security@soilsidekickpro.com
+#
+# We appreciate responsible disclosure and will work with you to
+# address any legitimate security concerns promptly.
+#
+# Please do not publicly disclose security issues until we have
+# had a chance to investigate and address them.

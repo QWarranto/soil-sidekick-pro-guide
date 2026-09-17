@@ -1,0 +1,487 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { authenticateApiKey, logSecurityEvent, createSecureResponse } from "../_shared/security-utils.ts";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+interface ComparisonResult {
+  baseline: {
+    identification: string;
+    confidence: number;
+    response_time_ms: number;
+    details: string;
+  };
+  enhanced: {
+    identification: string;
+    confidence: number;
+    response_time_ms: number;
+    details: string;
+    environmental_context: any;
+  };
+  comparison_metrics: {
+    confidence_improvement: number;
+    response_time_difference_ms: number;
+    additional_data_points: number;
+    match_agreement: boolean;
+  };
+}
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+  try {
+    // Authenticate using API key
+    const authResult = await authenticateApiKey(supabase, req);
+    
+    if (authResult.error) {
+      await logSecurityEvent(supabase, {
+        event_type: "plant_id_comparison_auth_failed",
+        details: { error: authResult.error },
+      }, req);
+      
+      return new Response(JSON.stringify({ error: authResult.error }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const userId = authResult.user?.id;
+    console.log("Authenticated plant-id-comparison request", { userId });
+
+    const { image, description, location } = await req.json();
+    console.log("Request payload:", { hasImage: !!image, hasDescription: !!description, location });
+
+    if (!image && !description) {
+      return new Response(JSON.stringify({ error: "Image or description required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) {
+      console.error("LOVABLE_API_KEY not configured");
+      return new Response(JSON.stringify({ error: "AI configuration missing" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Validate image URL if provided
+    let validImageUrl: string | null = null;
+    let imageWarning: string | null = null;
+    
+    if (image) {
+      const imageUrlLower = image.toLowerCase();
+      const isDirectImageUrl = 
+        imageUrlLower.includes('.jpg') || 
+        imageUrlLower.includes('.jpeg') || 
+        imageUrlLower.includes('.png') || 
+        imageUrlLower.includes('.gif') || 
+        imageUrlLower.includes('.webp') ||
+        imageUrlLower.includes('images.unsplash') ||
+        imageUrlLower.includes('upload.wikimedia') ||
+        imageUrlLower.includes('i.imgur') ||
+        image.startsWith('data:image/');
+      
+      if (isDirectImageUrl) {
+        validImageUrl = image;
+        console.log("Valid image URL detected");
+      } else {
+        validImageUrl = image;
+        imageWarning = "Image URL may not be accessible. If identification fails, use a direct image URL ending in .jpg, .png, etc.";
+        console.warn("Image URL may not be direct, will attempt anyway:", image);
+      }
+    }
+    
+    const effectiveDescription = description || (image ? `Identify the plant in this image: ${image}` : null);
+    
+    if (!effectiveDescription && !validImageUrl) {
+      return new Response(JSON.stringify({ error: "Please provide a plant description or a direct image URL" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // BASELINE: Simple plant identification without environmental context
+    console.log("Starting baseline identification...");
+    const baselineStart = performance.now();
+    
+    const baselineMessages: any[] = [
+      {
+        role: "system",
+        content: `You are a plant identification assistant. Identify the plant and provide your response as a JSON object.
+Your response must be ONLY valid JSON with no additional text before or after:
+{
+  "plant_name": "Common name of the plant",
+  "scientific_name": "Scientific name",
+  "confidence": 0.85,
+  "basic_info": "Brief description of the plant"
+}
+Use a confidence value between 0.5 and 0.95 based on how certain you are.`
+      }
+    ];
+
+    if (validImageUrl) {
+      baselineMessages.push({
+        role: "user",
+        content: [
+          { type: "text", text: `Identify this plant${effectiveDescription ? `. Additional context: ${effectiveDescription}` : ""}` },
+          { type: "image_url", image_url: { url: validImageUrl } }
+        ]
+      });
+    } else if (effectiveDescription) {
+      baselineMessages.push({
+        role: "user",
+        content: `Identify this plant: ${effectiveDescription}`
+      });
+    }
+
+    const baselineResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: baselineMessages,
+      }),
+    });
+    const baselineTime = performance.now() - baselineStart;
+    
+    let baselineResult = { plant_name: "Unknown", scientific_name: "", confidence: 0, basic_info: "" };
+    
+    if (!baselineResponse.ok) {
+      const errorText = await baselineResponse.text();
+      console.error("Baseline API error:", baselineResponse.status, errorText);
+    } else {
+      const baselineData = await baselineResponse.json();
+      const content = baselineData.choices?.[0]?.message?.content || "";
+      console.log("Baseline raw response:", content.substring(0, 500));
+      
+      try {
+        let jsonContent = content.trim();
+        if (jsonContent.startsWith("```json")) {
+          jsonContent = jsonContent.replace(/^```json\s*/, "").replace(/\s*```$/, "");
+        } else if (jsonContent.startsWith("```")) {
+          jsonContent = jsonContent.replace(/^```\s*/, "").replace(/\s*```$/, "");
+        }
+        
+        const jsonMatch = jsonContent.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          baselineResult = {
+            plant_name: parsed.plant_name || "Unknown",
+            scientific_name: parsed.scientific_name || "",
+            confidence: typeof parsed.confidence === "number" ? parsed.confidence : 0.5,
+            basic_info: parsed.basic_info || parsed.description || ""
+          };
+          console.log("Baseline parsed result:", baselineResult);
+        } else {
+          console.error("No JSON found in baseline response");
+        }
+      } catch (e) {
+        console.error("Baseline parse error:", e);
+      }
+    }
+
+    // ENHANCED: LeafEngines-style identification with environmental context
+    console.log("Starting enhanced identification...");
+    const enhancedStart = performance.now();
+    
+    let environmentalContext: any = null;
+    if (location?.latitude && location?.longitude) {
+      console.log("Fetching environmental data for location:", location);
+      try {
+        const geocodeResponse = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${location.latitude}&lon=${location.longitude}&format=json`,
+          {
+            headers: {
+              "User-Agent": "LeafEngines/1.0 (plant identification service)"
+            }
+          }
+        );
+        
+        if (geocodeResponse.ok) {
+          const geocodeData = await geocodeResponse.json();
+          console.log("Geocode response:", geocodeData.address);
+          
+          const county = geocodeData.address?.county || geocodeData.address?.city || "Unknown";
+          const state = geocodeData.address?.state || "Unknown";
+          const country = geocodeData.address?.country || "USA";
+          
+          let countyFips = null;
+          if (county && state) {
+            const { data: countyData } = await supabase
+              .from("counties")
+              .select("fips_code, county_name, state_code")
+              .ilike("county_name", `%${county.replace(" County", "")}%`)
+              .ilike("state_name", `%${state}%`)
+              .limit(1)
+              .maybeSingle();
+            
+            if (countyData) {
+              countyFips = countyData.fips_code;
+              console.log("Found county FIPS:", countyFips);
+            }
+          }
+          
+          let soilData = null;
+          if (countyFips) {
+            const soilResponse = await supabase.functions.invoke("get-soil-data", {
+              body: { county_fips: countyFips }
+            });
+            soilData = soilResponse.data;
+            console.log("Soil data:", soilData);
+          }
+          
+          environmentalContext = {
+            county: {
+              county_name: county,
+              state_code: state,
+              fips_code: countyFips,
+            },
+            soil: soilData,
+            location: {
+              latitude: location.latitude,
+              longitude: location.longitude,
+              country: country,
+            },
+          };
+          console.log("Environmental context built:", environmentalContext);
+        } else {
+          console.error("Geocode API error:", geocodeResponse.status);
+        }
+      } catch (e) {
+        console.error("Environmental data fetch error:", e);
+      }
+    }
+
+    const enhancedSystemPrompt = `You are LeafEngines, an advanced botanical identification system with environmental context integration.
+
+${environmentalContext ? `ENVIRONMENTAL CONTEXT:
+- Location: ${environmentalContext.location?.latitude?.toFixed(4)}, ${environmentalContext.location?.longitude?.toFixed(4)}
+- County: ${environmentalContext.county?.county_name || "Unknown"}, ${environmentalContext.county?.state_code || "Unknown"}
+- Country: ${environmentalContext.location?.country || "USA"}
+${environmentalContext.soil ? `- Soil pH: ${environmentalContext.soil?.ph_level || "Not available"}
+- Soil Organic Matter: ${environmentalContext.soil?.organic_matter || "Not available"}%
+- Climate Zone: ${environmentalContext.soil?.usda_zone || "Not available"}` : "- Soil data: Not available for this location"}` : "No location data provided - using general analysis."}
+
+Provide comprehensive plant identification with environmental compatibility analysis.
+
+IMPORTANT: The "confidence" field represents IDENTIFICATION confidence only - how certain you are about WHAT THE PLANT IS based on visual features. This should be the same or higher than a basic identification since you have MORE context (environmental data) to confirm the identification.
+
+The "environmental_compatibility" fields are SEPARATE from identification confidence - they represent how well the plant suits the location.
+
+Your response must be ONLY valid JSON with no additional text before or after:
+{
+  "plant_name": "Common name",
+  "scientific_name": "Scientific name", 
+  "confidence": 0.90,
+  "family": "Plant family",
+  "native_region": "Origin region",
+  "environmental_compatibility": {
+    "soil_match": 0.75,
+    "climate_match": 0.80,
+    "water_needs_match": 0.70,
+    "overall_suitability": 0.75
+  },
+  "care_recommendations": ["recommendation1", "recommendation2"],
+  "pest_disease_risks": ["risk1", "risk2"],
+  "growth_predictions": {
+    "expected_height": "X feet",
+    "growth_rate": "medium",
+    "optimal_planting_season": "spring"
+  },
+  "detailed_analysis": "Comprehensive botanical analysis including how well this plant suits the location"
+}
+IDENTIFICATION confidence should be 0.85-0.98 when the plant is clearly visible. Environmental compatibility values should be 0.5-0.95 based on location match.`;
+
+    const enhancedMessages: any[] = [
+      { role: "system", content: enhancedSystemPrompt }
+    ];
+
+    if (validImageUrl) {
+      enhancedMessages.push({
+        role: "user",
+        content: [
+          { type: "text", text: `Identify this plant with full environmental analysis${effectiveDescription ? `. Additional context: ${effectiveDescription}` : ""}` },
+          { type: "image_url", image_url: { url: validImageUrl } }
+        ]
+      });
+    } else if (effectiveDescription) {
+      enhancedMessages.push({
+        role: "user",
+        content: `Identify this plant with full environmental analysis: ${effectiveDescription}`
+      });
+    }
+
+    const enhancedResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: enhancedMessages,
+      }),
+    });
+    const enhancedTime = performance.now() - enhancedStart;
+
+    let enhancedResult: any = { 
+      plant_name: "Unknown", 
+      scientific_name: "", 
+      confidence: 0, 
+      environmental_compatibility: {
+        soil_match: 0,
+        climate_match: 0,
+        water_needs_match: 0,
+        overall_suitability: 0
+      },
+      care_recommendations: [],
+      pest_disease_risks: [],
+      growth_predictions: {},
+      detailed_analysis: ""
+    };
+    
+    if (!enhancedResponse.ok) {
+      const errorText = await enhancedResponse.text();
+      console.error("Enhanced API error:", enhancedResponse.status, errorText);
+    } else {
+      const enhancedData = await enhancedResponse.json();
+      const content = enhancedData.choices?.[0]?.message?.content || "";
+      console.log("Enhanced raw response:", content.substring(0, 500));
+      
+      try {
+        let jsonContent = content.trim();
+        if (jsonContent.startsWith("```json")) {
+          jsonContent = jsonContent.replace(/^```json\s*/, "").replace(/\s*```$/, "");
+        } else if (jsonContent.startsWith("```")) {
+          jsonContent = jsonContent.replace(/^```\s*/, "").replace(/\s*```$/, "");
+        }
+        
+        const jsonMatch = jsonContent.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          enhancedResult = {
+            plant_name: parsed.plant_name || "Unknown",
+            scientific_name: parsed.scientific_name || "",
+            confidence: typeof parsed.confidence === "number" ? parsed.confidence : 0.5,
+            family: parsed.family || "",
+            native_region: parsed.native_region || "",
+            environmental_compatibility: {
+              soil_match: parsed.environmental_compatibility?.soil_match || 0.5,
+              climate_match: parsed.environmental_compatibility?.climate_match || 0.5,
+              water_needs_match: parsed.environmental_compatibility?.water_needs_match || 0.5,
+              overall_suitability: parsed.environmental_compatibility?.overall_suitability || 0.5,
+            },
+            care_recommendations: parsed.care_recommendations || [],
+            pest_disease_risks: parsed.pest_disease_risks || [],
+            growth_predictions: parsed.growth_predictions || {},
+            detailed_analysis: parsed.detailed_analysis || ""
+          };
+          console.log("Enhanced parsed result:", enhancedResult);
+        } else {
+          console.error("No JSON found in enhanced response");
+        }
+      } catch (e) {
+        console.error("Enhanced parse error:", e);
+      }
+    }
+
+    // Calculate comparison metrics
+    const baselineDataPoints = Object.keys(baselineResult).length;
+    const enhancedDataPoints = Object.keys(enhancedResult).length + 
+      Object.keys(enhancedResult.environmental_compatibility || {}).length +
+      (enhancedResult.care_recommendations?.length || 0) +
+      (enhancedResult.pest_disease_risks?.length || 0) +
+      Object.keys(enhancedResult.growth_predictions || {}).length;
+
+    const comparison: ComparisonResult = {
+      baseline: {
+        identification: baselineResult.plant_name,
+        confidence: baselineResult.confidence || 0,
+        response_time_ms: Math.round(baselineTime),
+        details: baselineResult.basic_info || "",
+      },
+      enhanced: {
+        identification: enhancedResult.plant_name,
+        confidence: enhancedResult.confidence || 0,
+        response_time_ms: Math.round(enhancedTime),
+        details: enhancedResult.detailed_analysis || "",
+        environmental_context: environmentalContext,
+      },
+      comparison_metrics: {
+        confidence_improvement: ((enhancedResult.confidence || 0) - (baselineResult.confidence || 0)) * 100,
+        response_time_difference_ms: Math.round(enhancedTime - baselineTime),
+        additional_data_points: enhancedDataPoints - baselineDataPoints,
+        match_agreement: baselineResult.plant_name?.toLowerCase() === enhancedResult.plant_name?.toLowerCase(),
+      },
+    };
+
+    console.log("Final comparison:", comparison);
+
+    // Log comparison for analytics with authenticated user
+    await supabase.from("cost_tracking").insert({
+      service_provider: "lovable_ai",
+      service_type: "plant_id_comparison",
+      feature_name: "authenticated_comparison",
+      cost_usd: 0.002,
+      usage_count: 1,
+      user_id: userId,
+      request_details: {
+        baseline_result: baselineResult,
+        enhanced_result: enhancedResult,
+        comparison_metrics: comparison.comparison_metrics,
+      },
+    });
+
+    // Log successful API access
+    await logSecurityEvent(supabase, {
+      event_type: "plant_id_comparison_success",
+      details: { 
+        userId,
+        hasImage: !!validImageUrl,
+        hasLocation: !!location,
+        baselineConfidence: baselineResult.confidence,
+        enhancedConfidence: enhancedResult.confidence,
+      },
+    }, req);
+
+    return new Response(JSON.stringify({
+      comparison,
+      baseline_full: baselineResult,
+      enhanced_full: enhancedResult,
+      warning: imageWarning,
+    }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+
+  } catch (error) {
+    console.error("Plant ID comparison error:", error);
+    
+    await logSecurityEvent(supabase, {
+      event_type: "plant_id_comparison_error",
+      details: { error: error.message },
+    }, req);
+    
+    return new Response(JSON.stringify({ 
+      error: "Comparison failed",
+      details: error.message 
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+});

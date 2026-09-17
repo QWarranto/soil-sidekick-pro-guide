@@ -1,0 +1,578 @@
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ArrowRight, Shield, Zap, TrendingDown, Check, Code, Database, Satellite, BookOpen, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { LeafEnginesNav } from "@/components/LeafEnginesNav";
+import { OptimizedImage } from "@/components/OptimizedImage";
+import { DeveloperBenefitsInfographic } from "@/components/DeveloperBenefitsInfographic";
+import { supabase } from "@/integrations/supabase/client";
+import gdprCertified from "@/assets/gdpr-certified.png";
+import leafEnginesHeroVideo from "@/assets/leafengines-hero.mp4";
+
+export default function B2BLanding() {
+  useEffect(() => {
+    const ua = navigator.userAgent || "";
+    const isQgis = /QGIS/i.test(ua);
+    supabase.from("pwa_analytics").insert({
+      event_type: isQgis ? "qgis_banner_view_qgis_ua" : "qgis_banner_view_web",
+      platform: isQgis ? "qgis" : "web",
+      user_agent: ua,
+    }).then(() => {}, () => {});
+  }, []);
+
+  const trackBannerClick = () => {
+    const ua = navigator.userAgent || "";
+    supabase.from("pwa_analytics").insert({
+      event_type: "qgis_banner_click_github_docs",
+      platform: /QGIS/i.test(ua) ? "qgis" : "web",
+      user_agent: ua,
+    }).then(() => {}, () => {});
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <LeafEnginesNav />
+      {/* Hero Section */}
+      <section className="relative overflow-hidden border-b border-border">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background" />
+        <div className="container relative mx-auto px-4 py-20 md:py-32">
+          <div className="mx-auto max-w-4xl text-center">
+            <div className="flex justify-center mb-8">
+              <div className="rounded-2xl shadow-2xl overflow-hidden">
+                <video
+                  src={leafEnginesHeroVideo}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-80 h-auto"
+                />
+              </div>
+            </div>
+            <Badge className="mb-4" variant="secondary">
+              <Shield className="mr-2 h-3 w-3" />
+              Patent-Protected Technology
+            </Badge>
+            <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground md:text-6xl">
+              LeafEngines™ <span className="text-2xl md:text-3xl font-medium text-muted-foreground">by SoilSidekick Pro</span>
+            </h1>
+            <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground md:text-xl">
+              LeafEngines™ from SoilSidekick Pro is the world's first offline environmental/geospatial intelligence layer that transforms raw environmental data into actionable, regulatory-grade truth — deployable anywhere, integrated everywhere.
+            </p>
+            <p className="mx-auto mb-8 max-w-2xl text-base text-foreground/90 md:text-lg">
+              If you arrived from QGIS, the next rung is SoilCertify: turn a parcel or county analysis into a client-ready soil report instead of stopping at raw data.
+            </p>
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Button size="lg" className="gap-2" asChild>
+                <Link to="/leafengines-api">
+                  View API Documentation
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link to="/privacy-advantage">Privacy Advantage</Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <a href="https://soilcertify.com" target="_blank" rel="noopener noreferrer">
+                  SoilCertify Reports
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* QGIS Plugin Visitor Banner */}
+      <section className="border-b border-border bg-primary/5 py-6">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto flex max-w-5xl flex-col items-start gap-4 rounded-lg border border-primary/20 bg-background p-5 shadow-sm md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="rounded-md bg-primary/10 p-2">
+                <BookOpen className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">
+                  Arrived from the QGIS plugin?
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Jump straight to the workflow guides, then move into <span className="font-medium text-foreground">SoilCertify reports</span> when you need a finished deliverable.
+                </p>
+              </div>
+            </div>
+            <Button variant="default" size="sm" className="gap-2 shrink-0" asChild>
+              <a
+                href="/docs/workflows/qgis-implementation-guide"
+                onClick={trackBannerClick}
+              >
+                Open Workflow Docs
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </Button>
+            <Button variant="outline" size="sm" className="gap-2 shrink-0" asChild>
+              <a href="https://soilcertify.com" target="_blank" rel="noopener noreferrer">
+                See SoilCertify
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Problem Statement */}
+      <section className="border-b border-border bg-muted/30 py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-4xl">
+            <div className="flex items-start gap-6">
+              <div className="rounded-full bg-primary/10 p-3">
+                <TrendingDown className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h2 className="mb-4 text-3xl font-bold text-foreground">
+                  LeafEngines™: The "Survival Layer" for Autonomous Hardware
+                </h2>
+                <p className="mb-4 text-lg text-muted-foreground">
+                  LeafEngines is not another cloud application. It is an embedded, patent-protected SDK that functions as a "survival layer" for autonomous systems, ensuring they continue to operate safely and effectively when disconnected.
+                </p>
+                <p className="text-lg font-semibold text-foreground">
+                  Our core value proposition is a physics-based solution to a physics-based problem: &lt;10ms offline inference.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* GDPR/Privacy Hook */}
+      <section className="border-b border-border bg-gradient-to-br from-primary/5 via-background to-background py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-5xl">
+            <div className="grid items-center gap-8 md:grid-cols-2">
+              <div>
+                <Badge className="mb-4" variant="default">
+                  <Shield className="mr-2 h-3 w-3" />
+                  Patent-Protected Technology
+                </Badge>
+                <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl">
+                  Privacy-Preserving AI Processing
+                </h2>
+                <p className="mb-4 text-lg text-muted-foreground">
+                  The intelligence platform with <strong className="text-foreground">on-device WebGPU AI</strong> that keeps user data private while delivering real-time environmental analysis powered by federal data authority.
+                </p>
+                <p className="mb-6 text-lg font-semibold text-foreground">
+                  Trusted by America's leading agricultural technology companies — privacy-first, audit-ready, and built on USDA/EPA standards.
+                </p>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="rounded-full bg-primary/10 p-2">
+                      <Check className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">GDPR Compliant by Design</p>
+                      <p className="text-sm text-muted-foreground">Zero PII transmission. All AI processing happens on-device via WebGPU.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="rounded-full bg-primary/10 p-2">
+                      <Check className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">Federal Data Authority</p>
+                      <p className="text-sm text-muted-foreground">Direct access to USDA, EPA, and NOAA data for regulatory-grade insights.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="rounded-full bg-primary/10 p-2">
+                      <Check className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">Offline-First Architecture</p>
+                      <p className="text-sm text-muted-foreground">Works without internet. Perfect for remote US agricultural regions.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="rounded-full bg-primary/10 p-2">
+                      <Check className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">No Cloud Hosting Costs</p>
+                      <p className="text-sm text-muted-foreground">Reduce infrastructure spend. AI inference runs on user devices.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-6">
+                <Card className="p-6">
+                  <div className="mb-4 rounded-lg bg-muted p-4">
+                    <Code className="mb-2 h-8 w-8 text-primary" />
+                    <h3 className="text-lg font-semibold text-foreground">WebGPU Integration</h3>
+                  </div>
+                  <pre className="overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs text-green-400">
+{`// On-device AI processing
+import { pipeline } from "@huggingface/transformers";
+
+const analyzer = await pipeline(
+  "feature-extraction",
+  "plant-health-model",
+  { device: "webgpu" }
+);
+
+// All processing happens locally
+const result = await analyzer(imageData);
+// No data leaves the device`}
+                  </pre>
+                  <p className="mt-4 text-xs text-muted-foreground">
+                    Users' plant photos never leave their device. GDPR compliance built-in.
+                  </p>
+                </Card>
+                
+                <div className="flex justify-center">
+                  <OptimizedImage
+                    src={gdprCertified}
+                    alt="GDPR Certified - Data Protection Compliance"
+                    width={300}
+                    height={150}
+                    className="max-w-full w-auto h-auto"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* US Federal Data Advantage */}
+      <section className="border-b border-border py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-5xl">
+            <div className="mb-12 text-center">
+              <Badge className="mb-4" variant="outline">
+                Serving America's Agricultural Technology Leaders
+              </Badge>
+              <h2 className="mb-6 text-3xl font-bold text-foreground md:text-4xl">
+                Federal Data Authority
+              </h2>
+              <p className="mx-auto max-w-3xl text-lg text-muted-foreground">
+                LeafEngines™ leverages the most comprehensive US agricultural data sources — USDA, EPA, and NOAA — to deliver regulatory-grade environmental intelligence across all 50 states.
+              </p>
+            </div>
+
+            <div className="mb-12 grid gap-6 md:grid-cols-3">
+              <Card className="p-6">
+                <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
+                  <Database className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="mb-3 text-xl font-semibold text-foreground">USDA SSURGO Integration</h3>
+                <p className="mb-4 text-muted-foreground">
+                  The gold standard for US soil data, covering every county with unmatched detail:
+                </p>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>County-level soil composition analysis</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>pH, organic matter, nutrient levels</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>USDA soil taxonomy classifications</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>Agricultural productivity ratings</span>
+                  </li>
+                </ul>
+              </Card>
+
+              <Card className="p-6">
+                <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
+                  <Shield className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="mb-3 text-xl font-semibold text-foreground">EPA Water Quality</h3>
+                <p className="mb-4 text-muted-foreground">
+                  Real-time contamination monitoring and environmental compliance:
+                </p>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>PFAS contamination alerts</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>Nitrate and heavy metal testing</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>Agricultural runoff risk assessment</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>Environmental compliance reporting</span>
+                  </li>
+                </ul>
+              </Card>
+
+              <Card className="p-6">
+                <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
+                  <Satellite className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="mb-3 text-xl font-semibold text-foreground">NOAA Climate Intelligence</h3>
+                <p className="mb-4 text-muted-foreground">
+                  Real-time weather and climate data for agricultural decision-making:
+                </p>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>Precipitation and temperature trends</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>Growing season predictions</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>Drought and flood risk monitoring</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>Regional climate zone data</span>
+                  </li>
+                </ul>
+              </Card>
+            </div>
+
+            <div className="rounded-lg border border-primary/20 bg-primary/5 p-6 text-center">
+              <p className="text-lg font-semibold text-foreground">
+                Purpose-built for the US agricultural market with direct access to federal data sources — delivering the most accurate environmental intelligence for American growers and agricultural technology platforms.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Solution */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-4xl text-center">
+            <Badge className="mb-4" variant="outline">
+              The Complete Solution
+            </Badge>
+            <h2 className="mb-6 text-3xl font-bold text-foreground md:text-4xl">
+              Churn Reduction as a Service
+            </h2>
+            <p className="mb-12 text-lg text-muted-foreground">
+              LeafEngines provides the "How" (maintenance & location-specific care) after the "What" (identification). Powered by patent-protected multi-agency data integration + privacy-preserving on-device AI.
+            </p>
+
+            <div className="grid gap-8 md:grid-cols-3">
+              <Card className="p-6 text-left">
+                <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
+                  <Satellite className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="mb-2 text-xl font-semibold text-foreground">Real-Time Satellite Intelligence</h3>
+                <p className="text-muted-foreground">
+                  AlphaEarth integration provides live NDVI, soil moisture, and thermal data for precise plant health monitoring.
+                </p>
+              </Card>
+
+              <Card className="p-6 text-left">
+                <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
+                  <Shield className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="mb-2 text-xl font-semibold text-foreground">EPA Water Quality API</h3>
+                <p className="text-muted-foreground">
+                  Location-specific environmental warnings and contamination alerts protect your users' gardens.
+                </p>
+              </Card>
+
+              <Card className="p-6 text-left">
+                <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
+                  <Database className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="mb-2 text-xl font-semibold text-foreground">Federal FIPS Location Intelligence</h3>
+                <p className="text-muted-foreground">
+                  Hyper-local soil composition, climate patterns, and growing conditions 24x more precise than county level data with 10M precision.
+                </p>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why License vs. Build */}
+      <section className="border-y border-border bg-muted/30 py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-4xl">
+            <h2 className="mb-12 text-center text-3xl font-bold text-foreground md:text-4xl">
+              Why License Instead of Build?
+            </h2>
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="p-6">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="rounded-full bg-primary/10 p-2">
+                    <Zap className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground">Save 18-24 Months</h3>
+                </div>
+                <p className="text-muted-foreground">
+                  Our serverless microservices layer is production-ready. Skip the R&D phase and launch differentiated features this quarter.
+                </p>
+              </Card>
+
+              <Card className="p-6">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="rounded-full bg-primary/10 p-2">
+                    <Shield className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground">Patent Protection + Privacy</h3>
+                </div>
+                <p className="text-muted-foreground">
+                  Our Environmental Compatibility Score methodology is patent-protected, and our WebGPU on-device AI gives you a GDPR compliance advantage competitors can't match.
+                </p>
+              </Card>
+
+              <Card className="p-6">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="rounded-full bg-primary/10 p-2">
+                    <Code className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground">Zero Maintenance</h3>
+                </div>
+                <p className="text-muted-foreground">
+                  We handle API versioning, data source updates, and infrastructure scaling. You focus on your core product.
+                </p>
+              </Card>
+
+              <Card className="p-6">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="rounded-full bg-primary/10 p-2">
+                    <Check className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground">SOC 2 Type 1 Compliant</h3>
+                </div>
+                <p className="text-muted-foreground">
+                  Enterprise-grade security and compliance built-in. Meet regulatory requirements without additional engineering effort.
+                </p>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Developer Benefits Infographic */}
+      <DeveloperBenefitsInfographic />
+
+      {/* Pricing Preview */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-4xl text-center">
+            <h2 className="mb-6 text-3xl font-bold text-foreground md:text-4xl">
+              Simple, Transparent Pricing
+            </h2>
+            <p className="mb-12 text-lg text-muted-foreground">
+              From pay-as-you-go API calls to white-label enterprise solutions
+            </p>
+
+            <div className="mb-8 grid gap-6 md:grid-cols-3">
+              <Card className="p-6 text-left">
+                <h3 className="mb-2 text-xl font-semibold text-foreground">Developer</h3>
+                <p className="mb-4 text-3xl font-bold text-foreground">$149<span className="text-lg text-muted-foreground">/mo</span></p>
+                <ul className="space-y-2 text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>Environmental Intelligence API</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>25,000 API calls/month</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>Core environmental data</span>
+                  </li>
+                </ul>
+              </Card>
+
+              <Card className="border-primary p-6 text-left shadow-lg">
+                <Badge className="mb-2">Most Popular</Badge>
+                <h3 className="mb-2 text-xl font-semibold text-foreground">Professional</h3>
+                <p className="mb-4 text-3xl font-bold text-foreground">$499<span className="text-lg text-muted-foreground">/mo</span></p>
+                <ul className="space-y-2 text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>Everything in Developer</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>EPA Water Quality + Satellite (AlphaEarth)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>100,000 API calls/month</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>Priority support</span>
+                  </li>
+                </ul>
+              </Card>
+
+              <Card className="p-6 text-left">
+                <h3 className="mb-2 text-xl font-semibold text-foreground">Enterprise</h3>
+                <p className="mb-4 text-3xl font-bold text-foreground">$1,999<span className="text-lg text-muted-foreground">/mo</span></p>
+                <ul className="space-y-2 text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>Everything in Professional</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>EPA + Satellite included</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>500,000 API calls/month</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>White-label + dedicated support</span>
+                  </li>
+                </ul>
+              </Card>
+            </div>
+
+            <Button size="lg" asChild>
+              <Link to="/pricing">View Full Pricing Details</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="border-t border-border bg-primary/5 py-16">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-3xl text-center">
+            <h2 className="mb-6 text-3xl font-bold text-foreground md:text-4xl">
+              Ready to Reduce Churn and Increase Retention?
+            </h2>
+            <p className="mb-8 text-lg text-muted-foreground">
+              Join the plant identification apps transforming user identification into long-term plant care success.
+            </p>
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Button size="lg" asChild>
+                <Link to="/api-docs">
+                  Explore API Documentation
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
