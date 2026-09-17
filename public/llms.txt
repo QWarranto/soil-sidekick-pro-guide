@@ -1,0 +1,35 @@
+# SoilSidekick Pro / LeafEngines
+
+> Agricultural intelligence platform providing USDA soil data, EPA water quality, AI crop recommendations, carbon credit estimation, satellite vegetation monitoring, and a developer API (LeafEngines) for any US county.
+
+SoilSidekick Pro is the consumer/grower product. LeafEngines is the underlying API and SDK suite used by enterprise, OEM, and agtech partners. The platform supports offline operation via WebGPU local LLMs and a QGIS plugin for GIS workflows.
+
+## Pages
+
+- [Home](/): Platform overview and entry point.
+- [LeafEngines B2B](/leafengines): Enterprise agricultural intelligence platform.
+- [LeafEngines API](/leafengines-api): Developer API documentation.
+- [API Docs](/api-docs): REST endpoint reference.
+- [Docs Hub](/docs): Central documentation portal.
+- [Pricing](/pricing): Subscription tiers and API quotas.
+- [Features](/features): Product capabilities overview.
+- [FAQ](/faq): Frequently asked questions.
+- [User Guide](/user-guide): How to use SoilSidekick Pro.
+- [Client Integration Guide](/client-integration-guide): SDK integration walkthrough.
+- [Impact Simulator](/impact-simulator): Model ROI of LeafEngines integration.
+- [Business Case](/business-case): Enterprise value proposition.
+- [Seasonal Planning](/seasonal-planning): AI-driven seasonal farm strategy.
+- [Soil Analysis](/soil-analysis): USDA soil composition lookup.
+- [Water Quality](/water-quality): EPA water quality data.
+- [Planting Calendar](/planting-calendar): Region-aware planting schedule.
+- [Fertilizer Footprint](/fertilizer-footprint): Environmental impact analysis.
+- [Offline Plant ID](/offline-plant-id): Privacy-first WebGPU plant identification.
+- [MCP Integration](/mcp): Model Context Protocol server for AI agents.
+- [Founders Program](/founders): Early adopter program.
+
+## Optional
+
+- [Affiliate Dashboard](/affiliate): Partner referral tracking.
+- [Privacy Advantage](/privacy-advantage): Privacy positioning.
+- [Privacy Policy](/privacy-policy): Legal.
+- [Disclaimer](/disclaimer): Legal.

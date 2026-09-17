@@ -1,0 +1,160 @@
+classification,path,title,bytes,served_at
+public,docs/AGENT_INTEGRATION_GUIDE.md,LeafEngines™ Agent Integration Guide,10929,/docs/agent-integration-guide
+public,docs/B2B_PITCH_DECK_CONTENT.md,LeafEngines B2B API — Marketing Overview,8152,/docs/b2b-pitch-deck-content
+public,docs/CONSUMER_PAIN_POINT_SOLUTIONS.md,LeafEngines: Consumer Plant ID Pain Point Solutions,50160,/docs/consumer-pain-point-solutions
+public,docs/ENTERPRISE_CLIENT_QUESTIONNAIRE.md,LeafEngines Enterprise Client Questionnaire,21191,/docs/enterprise-client-questionnaire
+public,docs/MCP_SERVER_SPECIFICATION.md,LeafEngines™ MCP Server — Technical Specification,17556,/docs/mcp-server-specification
+public,docs/MIGRATION_GUIDE_v2.1_to_v2.2.md,Migration Guide: v2.1 → v2.2,4766,/docs/migration-guide-v2.1-to-v2.2
+public,docs/OFFLINE_USAGE_MONITORING.md,Offline Usage Monitoring,4354,/docs/offline-usage-monitoring
+public,docs/PUSH_NOTIFICATIONS.md,Push Notifications Implementation Guide,7221,/docs/push-notifications
+public,docs/SDK_GENERATION_GUIDE.md,SoilSidekick Pro SDK Generation Guide,8933,/docs/sdk-generation-guide
+public,docs/SDK_INTEGRATION_GUIDE.md,LeafEngines™ SDK Integration Guide,10843,/docs/sdk-integration-guide
+public,docs/SDK_QUICKSTART.md,LeafEngines™ SDK — 5-Minute Quickstart,6002,/docs/sdk-quickstart
+public,docs/api/API_DOCUMENTATION.md,API Documentation,4938,/docs/api/api-documentation
+public,docs/case-studies/SDK_Integration_Under_4_Hours.md,LeafEngines™ SDK Integration Case Study,13702,/docs/case-studies/sdk-integration-under-4-hours
+public,docs/compliance/COMPLIANCE_LEGAL.md,Compliance & Legal Documentation,4187,/docs/compliance/compliance-legal
+public,docs/enterprise-solutions/COMPLIANCE_CERTIFICATION_PACKAGE.md,Compliance & Certification Package,11244,/docs/enterprise-solutions/compliance-certification-package
+public,docs/enterprise-solutions/CUSTOM_MODEL_FINE_TUNING.md,Custom Model Fine-Tuning,9707,/docs/enterprise-solutions/custom-model-fine-tuning
+public,docs/enterprise-solutions/OEM_EMBEDDED_LICENSING.md,OEM Embedded Licensing,6734,/docs/enterprise-solutions/oem-embedded-licensing
+public,docs/enterprise-solutions/PRIVATE_5G_TELECOM_PARTNERSHIP.md,Private 5G Telecom Partnership,8417,/docs/enterprise-solutions/private-5g-telecom-partnership
+public,docs/enterprise-solutions/PRIVATE_CLOUD_DEPLOYMENT.md,Private Cloud & On-Premises Deployment,7987,/docs/enterprise-solutions/private-cloud-deployment
+public,docs/enterprise-solutions/REALTIME_EVENT_STREAMING.md,Real-Time Event Streaming & Webhooks,12974,/docs/enterprise-solutions/realtime-event-streaming
+public,docs/get-started/QUICK_START.md,Quick Start,4792,/docs/get-started/quick-start
+public,docs/open-source/CONTRIBUTING.md,Contributing to LeafEngines Open Source Components,3325,/docs/open-source/contributing
+public,docs/partnerships/CLAUDE_MCP_DEEP_DIVE.md,LeafEngines™ × Claude MCP Server Deep Dive,16571,/docs/partnerships/claude-mcp-deep-dive
+public,docs/partnerships/CLAWHUB_OPENCLAW_DEEP_DIVE.md,LeafEngines™ × ClawHub / OpenClaw Deep Dive,16504,/docs/partnerships/clawhub-openclaw-deep-dive
+public,docs/partnerships/COMPOSIO_ENTERPRISE_ONBOARDING.md,Composio Enterprise Onboarding Playbook,6785,/docs/partnerships/composio-enterprise-onboarding
+public,docs/partnerships/LEAFENGINES_MCP_10_USE_CASES.md,LeafEngines MCP Server — 10 Use Cases,13787,/docs/partnerships/leafengines-mcp-10-use-cases
+public,docs/partnerships/N8N_10_USE_CASES.md,LeafEngines™ + n8n — 10 Use Cases by Tier,19566,/docs/partnerships/n8n-10-use-cases
+public,docs/partnerships/N8N_DEEP_DIVE.md,LeafEngines n8n Deep Dive,7073,/docs/partnerships/n8n-deep-dive
+public,docs/partnerships/NODE_RED_10_USE_CASES.md,Node-RED × LeafEngines SDK — 10 Use Cases by Tier,11987,/docs/partnerships/node-red-10-use-cases
+public,docs/partnerships/NODE_RED_DEEP_DIVE.md,LeafEngines™ × Node-RED Deep Dive,15437,/docs/partnerships/node-red-deep-dive
+public,docs/partnerships/QGIS_10_USE_CASES.md,LeafEngines™ + QGIS — 10 Use Cases by Tier,19594,/docs/partnerships/qgis-10-use-cases
+public,docs/partnerships/SKYLINE_SENSOR_FUSION_ONE_PAGER.md,Precision Agriculture Sensor Fusion,5309,/docs/partnerships/skyline-sensor-fusion-one-pager
+public,docs/qgis/FEATURE_MATRIX.md,FEATURE_MATRIX.md,4891,/docs/qgis/feature-matrix
+public,docs/qgis/LEAFENGINES_CROSS_PLATFORM.md,LeafEngines Cross-Platform Enhancement — Telegram + n8n / Node-RED / MCP,15062,/docs/qgis/leafengines-cross-platform
+public,docs/qgis/ROADMAP.md,Roadmap,8104,/docs/qgis/roadmap
+public,docs/sdk/CLIENT_CONFIGURATIONS.md,LeafEngines™ SDK Client Configurations,6815,/docs/sdk/client-configurations
+public,docs/sdk/DEVELOPER_SPECIFICATIONS.md,Developer Specifications,6998,/docs/sdk/developer-specifications
+public,docs/sdk/SDK_v3_GENERATION_GUIDE.md,SoilSidekick Pro SDK Generation Guide,8933,/docs/sdk/sdk-v3-generation-guide
+public,docs/telegram/LEAFENGINES_BOT_ARCHITECTURE.md,LeafEngines Telegram Bot — Technical Architecture,19293,/docs/telegram/leafengines-bot-architecture
+public,docs/telegram/LEAFENGINES_BOT_SUPPORT.md,LeafEngines Bot — Support Operations,14416,/docs/telegram/leafengines-bot-support
+public,docs/telegram/LEAFENGINES_TELEGRAM_ONBOARDING_PATHWAY.md,LeafEngines Telegram — Trial User Onboarding Pathway,16155,/docs/telegram/leafengines-telegram-onboarding-pathway
+public,docs/telegram/TELEGRAM_10_USE_CASES.md,Telegram Bot — 10 Use Cases,6558,/docs/telegram/telegram-10-use-cases
+public,docs/telegram/TELEGRAM_BOT_ARCHITECTURE.md,Telegram Bot Architecture,7159,/docs/telegram/telegram-bot-architecture
+public,docs/telegram/TELEGRAM_COMMAND_REFERENCE.md,Telegram Command Reference,6442,/docs/telegram/telegram-command-reference
+public,docs/telegram/TELEGRAM_QUICK_START.md,Telegram Bot Quick Start,2553,/docs/telegram/telegram-quick-start
+public,docs/user/USER_DOCUMENTATION.md,User Documentation,6964,/docs/user/user-documentation
+public,docs/workflows/01_FIRST_TIME_SETUP.md,Workflow 1: First-Time Setup & Soil Analysis,5787,/docs/workflows/first-time-setup
+public,docs/workflows/02_SATELLITE_FIELD_MONITORING.md,Workflow 2: Satellite Intelligence & Field Monitoring,6379,/docs/workflows/satellite-field-monitoring
+public,docs/workflows/03_ENVIRONMENTAL_ASSESSMENT.md,Workflow 3: Environmental & Water Quality Assessment,5306,/docs/workflows/environmental-assessment
+public,docs/workflows/04_SEASONAL_PLANNING.md,Workflow 4: Seasonal Planning & Task Management,5452,/docs/workflows/seasonal-planning
+public,docs/workflows/05_VRT_PRESCRIPTIONS.md,Workflow 5: Variable Rate Technology (VRT) Prescriptions,6858,/docs/workflows/vrt-prescriptions
+public,docs/workflows/06_OFFLINE_AI.md,Workflow 6: Offline AI & Privacy-First Analysis,6652,/docs/workflows/offline-ai
+public,docs/workflows/07_CARBON_CREDITS.md,Workflow 7: Carbon Credits & Sustainability Scoring,4829,/docs/workflows/carbon-credits
+public,docs/workflows/08_SENSOR_INTEGRATION.md,Workflow 8: Sensor Integration & Live Monitoring,6763,/docs/workflows/sensor-integration
+public,docs/workflows/09_API_EQUIPMENT_INTEGRATION.md,Workflow 9: API & Equipment Integration,6308,/docs/workflows/api-equipment-integration
+public,docs/workflows/10_FULL_SEASON_WORKFLOW.md,Workflow 10: Full-Season Workflow — Planting to Harvest,9799,/docs/workflows/full-season-workflow
+public,docs/workflows/11_SATELLITE_DATA_COMPARISON.md,Satellite Field Data: The Traditional Way vs. SoilSidekick Pro,8338,/docs/workflows/satellite-data-comparison
+public,docs/workflows/12_QGIS_SDK_DEEP_DIVE.md,Workflow 12: QGIS SDK Deep Dive — Maximizing LeafEngines Inside QGIS,13663,/docs/workflows/qgis-sdk-deep-dive
+public,docs/workflows/13_QGIS_IMPLEMENTATION_GUIDE.md,LeafEngines for QGIS — Implementation Guide,19631,/docs/workflows/qgis-implementation-guide
+public,docs/workflows/14_QGIS_PLUGIN_CHANGELOG.md,LeafEngines QGIS Plugin — Release Notes & Capability Scorecard,9382,/docs/workflows/qgis-plugin-changelog
+public,docs/workflows/15_QGIS_DEVELOPER_LANDING.md,QGIS + LeafEngines — Developer Landing,5880,/docs/workflows/qgis-developer-landing
+public,docs/workflows/README.md,SoilSidekick Pro — Farmer Workflow Guides,2850,/docs/workflows/readme
+public,docs/workflows/soilcertify/DEVELOPER_LANDING.md,SoilSidekick Pro API — Developer Reference,6312,/docs/workflows/soilcertify/developer-landing
+public,docs/workflows/soilcertify/INFRASTRUCTURE_USE_CASE.md,Accelerating Land Suitability Screening in QGIS Using the SoilSidekick Pro API,4875,/docs/workflows/soilcertify/infrastructure-use-case
+public,docs/workflows/soilcertify/TECHNICAL_OVERVIEW.md,SoilSidekick Pro — Technical Overview,5365,/docs/workflows/soilcertify/technical-overview
+internal,internal-docs/README.md,Internal Documentation (Not Published),3962,
+internal,internal-docs/architecture/API_DOCUMENTATION.md,SoilSidekick Pro API Documentation,28634,
+internal,internal-docs/architecture/ARCHITECTURAL_WHITEPAPER_SKYLINE_2031.md,SoilSidekick Pro / LeafEngines™,26598,
+internal,internal-docs/architecture/ARCHITECTURE_IMPROVEMENTS.md,Architecture Improvements & Technical Debt,36367,
+internal,internal-docs/architecture/COMPREHENSIVE_IMPLEMENTATION_GUIDE.md,SoilSidekick Pro: Comprehensive Implementation Guide,42898,
+internal,internal-docs/architecture/GLOBAL_DATA_INTEGRATION_SPEC.md,Global Data Integration Technical Specification,14967,
+internal,internal-docs/architecture/LEAFENGINES_BOT_ARCHITECTURE_v0.2.md,LeafEngines™ Telegram & Bot Channel Architecture — v0.2,15682,
+internal,internal-docs/architecture/LEAFENGINES_CONFLICT_RESOLUTION_SUMMARY.md,LeafEngines™ — Conflict Resolution Summary (v0.2 / v0.2.1),11739,
+internal,internal-docs/architecture/SYSTEMS_ARCHITECTURE.md,Systems Architecture Document,8640,
+internal,internal-docs/architecture/TECHNICAL_ARCHITECTURE.md,SoilSidekick Pro - Technical Architecture Documentation,15351,
+internal,internal-docs/architecture/TECHNICAL_DESIGN.md,Technical Design Document (TDD),8272,
+internal,internal-docs/compliance-gdpr/GDPR_COMPLIANCE_DOCUMENTATION.md,GDPR Compliance Documentation,19860,
+internal,internal-docs/compliance-gdpr/GDPR_DATA_BREACH_PROCEDURE.md,Data Breach Response Procedure,22466,
+internal,internal-docs/compliance-gdpr/GDPR_DPIA_TEMPLATE.md,Data Protection Impact Assessment (DPIA) Template,17445,
+internal,internal-docs/compliance-gdpr/GDPR_ROPA_CONTROLLER.md,Records of Processing Activities (ROPA) - Data Controller,18894,
+internal,internal-docs/compliance-gdpr/GDPR_SAR_PROCEDURE.md,Subject Access Request (SAR) Procedure,16205,
+internal,internal-docs/engineering/BITNET_PHASE3_ENHANCEMENT.md,BitNet.cpp Integration - Phase 3 Enhancement Opportunity,8613,
+internal,internal-docs/engineering/BITNET_VS_GEMMA_ANALYSIS.md,BitNet vs Gemma: Offline LLM Selection Analysis,5643,
+internal,internal-docs/engineering/ERROR_LOG_INTERFACE_ISSUES.md,Interface Error Log — Soil Sidekick Pro,6065,
+internal,internal-docs/legal/CIP_COVER_LETTER.md,COVER LETTER — CONTINUATION-IN-PART APPLICATION,6610,
+internal,internal-docs/legal/CIP_DEAD_RECKONING_PATENT.md,CONTINUATION-IN-PART PATENT APPLICATION,24427,
+internal,internal-docs/legal/CIP_DECLARATION_POA.md,DECLARATION AND POWER OF ATTORNEY,6557,
+internal,internal-docs/operations/CHANGE_MANAGEMENT.md,Change Management Documentation,3648,
+internal,internal-docs/operations/OPERATIONAL_MAINTENANCE.md,SoilSidekick Pro - Operational & Maintenance Documentation,25570,
+internal,internal-docs/operations/OPERATIONAL_MONITORING.md,Operational Monitoring Guide,16229,
+internal,internal-docs/operations/OPERATIONS_MAINTENANCE.md,Operations & Maintenance Documentation,4070,
+internal,internal-docs/partnerships/LEAFENGINES_MCP_ROI_USE_CASES.md,LeafEngines MCP Server — 4 ROI-Maximizing Use Cases,6999,
+internal,internal-docs/partnerships/SKYLINE_TECHNICAL_INTEGRATION_PLAN.md,Skyline Instruments Technical Integration Plan,16095,
+internal,internal-docs/performance-ux/HAPTIC_FEEDBACK.md,Haptic Feedback Implementation,8719,
+internal,internal-docs/performance-ux/IMAGE_OPTIMIZATION.md,Image Optimization Implementation,3362,
+internal,internal-docs/performance-ux/LAZY_LOADING.md,Lazy Loading Implementation Guide,6300,
+internal,internal-docs/performance-ux/LAZY_LOADING_SUMMARY.md,Lazy Loading Implementation Summary,4708,
+internal,internal-docs/performance-ux/MOBILE_FORM_OPTIMIZATION.md,Mobile Form Optimization,9087,
+internal,internal-docs/performance-ux/PERFORMANCE_DOCUMENTATION.md,Performance Documentation,3802,
+internal,internal-docs/performance-ux/PWA_INSTALL_TRACKING.md,PWA Install Rate Tracking,9157,
+internal,internal-docs/performance-ux/SKELETON_LOADERS.md,Skeleton Loaders,6488,
+internal,internal-docs/performance-ux/TOUCH_TARGET_AUDIT.md,Touch Target Size Audit,7197,
+internal,internal-docs/product/FOCUS_GROUP_DISCUSSION_GUIDE.md,LeafEngines Focus Group Discussion Guide,8184,
+internal,internal-docs/product/PRODUCT_REQUIREMENTS.md,Product Requirements Document (PRD),7294,
+internal,internal-docs/product/PRODUCT_REQUIREMENTS_DOCUMENT.md,Product Requirements Document (PRD),18152,
+internal,internal-docs/product/STRIPE_PRODUCT_COPY_2026-06.md,Stripe Product Copy — LeafEngines API (June 2026 Refresh),6348,
+internal,internal-docs/product/SoilSidekick_Pro_User_Guide.md,SoilSidekick Pro User Guide,31374,
+internal,internal-docs/product/SoilSidekick_Pro_User_Guide_Enhanced.md,SoilSidekick Pro User Guide,34111,
+internal,internal-docs/product/TEAM_TRAINING_GUIDE.md,Team Training Guide: QC Framework Migration,14352,
+internal,internal-docs/program/DEVELOPMENT_COST_COMPARISON.md,SoilSidekick Pro → LeafEngines™ Development Cost Comparison,15804,
+internal,internal-docs/program/PROJECT_MANAGEMENT.md,Project Management Documentation,4204,
+internal,internal-docs/program/REEF_GAP_ANALYSIS_AND_STRATEGIC_TIMELINE.md,REEF Gap Analysis & Strategic Convergence Timeline,14466,
+internal,internal-docs/qgis/INFRA_TRACK.md,Infra Track,5062,
+internal,internal-docs/qgis/LEAFENGINES_LAUNCH_PLAN.md,LeafEngines Integration & Launch Plan — v2.0 (Telegram-Driven),22091,
+internal,internal-docs/qgis/PILOT_EVALUATOR_ONBOARDING.md,QGIS Plugin v1.0.10 × SoilCertify — Pilot Evaluator Onboarding,5543,
+internal,internal-docs/qgis/PROJECT_MANAGER_GUIDE.md,Project Manager Reference,6515,
+internal,internal-docs/qgis/QGIS_Promotional_Channels.md,QGIS Promotional Channels — Strategy & Tailored Posts,11587,
+internal,internal-docs/qgis/SDK_TRACK.md,SDK Track,4175,
+internal,internal-docs/quality/BETA_TEST_ISSUES_ANALYSIS.md,Beta Test Issues Analysis & Action Plan,3863,
+internal,internal-docs/quality/QUALITY_CONTROL_FRAMEWORK.md,Quality Control Framework Implementation,16444,
+internal,internal-docs/quality/QUALITY_CONTROL_IMPLEMENTATION_PLAN.md,Quality Control Implementation Plan,13286,
+internal,internal-docs/quality/TEST_DOCUMENTATION.md,SoilSidekick Pro - Test Documentation,18386,
+internal,internal-docs/quality/VALIDATION_SCHEMAS.md,Validation Schemas Reference,9746,
+internal,internal-docs/risk/RISK_ASSESSMENT.md,Risk Assessment & Mitigation,4355,
+internal,internal-docs/sales/Plant_Partner_Quick_Win_Pitches.md,LeafEngines Partnership Opportunities: Plant-Focused Consumer Brands,7577,
+internal,internal-docs/sales/Plantum_Quick_Win_Pitch.md,LeafEngines™ Partnership Proposal for Plantum,4925,
+internal,internal-docs/sales/SoilCertify_Environmental_Integrity_Statement.md,Environmental Integrity Statement,4683,
+internal,internal-docs/sdk/DEVELOPER_SPECIFICATION.md,SoilSidekick Pro - Comprehensive Developer Specification for IP Analysis,32203,
+internal,internal-docs/sdk/MIGRATION_GUIDE.md,Edge Function Migration Guide,11225,
+internal,internal-docs/sdk/SDK_API_GUIDELINES_COMPLIANCE.md,LeafEngines SDK/API Guidelines Compliance Assessment,11552,
+internal,internal-docs/sdk/SDK_CLIENT_ONBOARDING_PLAN.md,4-Week SDK/API Implementation Plan for New Clients,11883,
+internal,internal-docs/sdk/SDK_GLOBAL_EXPANSION_READINESS_ASSESSMENT.md,LeafEngines™ SDK Global Expansion Readiness Assessment,12199,
+internal,internal-docs/sdk/SDK_SETUP_COMPLETE.md,SDK Generation Setup - Complete ✓,5632,
+internal,internal-docs/sdk/SDK_v3_PROJECT_MANAGER_GUIDE.md,Project Manager Reference,6515,
+internal,internal-docs/sdk/SDK_v3_TRACK.md,SDK Track,4345,
+internal,internal-docs/security/POST_QC_SECURITY_SPRINT.md,Post-QC Security Sprint Schedule,19712,
+internal,internal-docs/security/SECURITY_CRITICAL_CORRECTIONS.md,🚨 CRITICAL SECURITY CORRECTIONS,26590,
+internal,internal-docs/security/SECURITY_DOCUMENTATION.md,Security Documentation,5009,
+internal,internal-docs/strategy/B2B_API_ENHANCEMENT_ROADMAP.md,LeafEngines B2B API Enhancement Roadmap,7160,
+internal,internal-docs/strategy/DEFERRED_GLOBAL_EXPANSION.md,Global Expansion - Deferred Due to Budget Constraints,7263,
+internal,internal-docs/strategy/GIS_INTEROPERABILITY_IMPLEMENTATION_SCHEDULE.md,GIS Interoperability Implementation Schedule,31249,
+internal,internal-docs/strategy/GLOBAL_INTEGRATION_SCHEDULE.md,LeafEngines™ Global Data Integration - Week-by-Week Schedule,19851,
+internal,internal-docs/strategy/LEAFENGINES_LAUNCH_PLAN.md,LeafEngines™ Launch Plan — v0.2,17494,
+internal,internal-docs/strategy/LEAFENGINES_LAUNCH_REGRESSION_CHECKLIST.md,LeafEngines™ Launch Regression Checklist,16122,
+internal,internal-docs/strategy/MASTER_TIMELINE.md,Master Timeline,7634,
+internal,internal-docs/strategy/MASTER_TIMELINE_v2.md,Master Timeline v2,12415,
+internal,internal-docs/strategy/MASTER_TIMELINE_v3.md,Master Timeline v3,13919,
+internal,internal-docs/strategy/PHASED_EUROPEAN_ROLLOUT.md,Phased European Rollout Strategy - Minimal Investment Approach,14023,
+internal,internal-docs/strategy/QC_CHANGE_LOG_AND_REVISED_SCHEDULE.md,Quality Control: Change Log & Revised Schedule,21859,
+internal,internal-docs/strategy/QUALITY_CONTROL_CALENDAR_SCHEDULE.md,Quality Control Implementation Calendar Schedule,36444,
+internal,internal-docs/strategy/REVISED_US_LAUNCH_STRATEGY.md,Revised US-First Launch Strategy,9213,
+internal,internal-docs/strategy/SDK_PHASE_1_2_READINESS_SCHEDULE.md,LeafEngines™ SDK Phase 1-2 Readiness Schedule,24184,
+internal,internal-docs/strategy/SDK_V3_ANNOUNCEMENT_SCHEDULE.md,SDK v3 Announcement Schedule,5869,
+internal,internal-docs/strategy/STATUS_REPORT_DECEMBER_2025.md,SoilSidekick Pro & LeafEngines Platform,22068,
+internal,internal-docs/telegram/LEAFENGINES_BOT_PRD.md,LeafEngines Telegram Bot — Product Requirements Document,9458,
+internal,internal-docs/testing/COMPREHENSIVE_TEST_REPORT_2026-02.md,Comprehensive Test Report,11154,
+internal,internal-docs/testing/TESTING_EXPANSION_PLAN.md,Testing Expansion Plan,5648,
+internal,internal-docs/testing/TEST_COVERAGE_REPORT.md,Test Coverage Report,5861,
+internal,internal-docs/testing/TEST_DOCUMENTATION.md,Test Documentation,5948,

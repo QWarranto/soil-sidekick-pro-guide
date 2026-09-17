@@ -1,0 +1,377 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "generator": "SoilCertify Sample Report GeoJSON Export",
+    "standard": "RFC 7946",
+    "sample": true,
+    "report_id": "SAMPLE-GB-FULL-001",
+    "report_type": null,
+    "report_tier": "full",
+    "geojson_tier": "shared",
+    "tier_contract": "GeoJSON content is identical across Summary and Detailed report tiers; tier-specific analysis is contained in the PDF, not the GIS export.",
+    "property_address": "10 Sample Mews, London SW1A 1AA, United Kingdom",
+    "country": "GB",
+    "jurisdiction": "GB",
+    "exported_at": "2026-08-04T02:46:07.356Z",
+    "geometry_approximated": true,
+    "geometry_source": "geocoded_point_buffer",
+    "geometry_method": "100m x 100m centroid AOI",
+    "geometry_use_constraints": "Screening AOI only; not cadastral, survey-grade, or evidence of legal parcel certainty.",
+    "approximation_warning": "SAMPLE DATA. This polygon is a preliminary AOI approximated as a 100 m x 100 m square centred on the geocoded point. It is NOT a cadastral parcel boundary. Do not use for legal, planning, or engineering purposes.",
+    "sources": [
+      "British Geological Survey — Soil Parent Material Model (OGL)",
+      "Environment Agency Flood Map for Planning (OGL)",
+      "ISRIC SoilGrids v2 (250 m, CC-BY 4.0)",
+      "Sentinel-2 L2A (10 m)"
+    ],
+    "coverage_notes": null,
+    "field_definitions": {
+      "ndvi_sentinel2": {
+        "label": "NDVI (Sentinel-2)",
+        "type": "number",
+        "unit": "unitless",
+        "range": [
+          -1,
+          1
+        ],
+        "source": "Sentinel-2 L2A (10 m) via Google Earth Engine",
+        "interpretation": "Vegetation-condition proxy. NOT direct evidence of biodiversity, productivity, land disturbance, or environmental clearance.",
+        "null_meaning": "No cloud-free scene available for AOI",
+        "class": "raw",
+        "jurisdiction": "global"
+      },
+      "soil_moisture_index": {
+        "label": "Soil Moisture Index (NDMI-derived)",
+        "type": "number",
+        "unit": "unitless",
+        "range": [
+          0,
+          1
+        ],
+        "source": "Sentinel-2 derived (NDMI)",
+        "interpretation": "Relative surface moisture proxy, NOT a calibrated volumetric soil-moisture reading.",
+        "null_meaning": "No cloud-free scene available for AOI",
+        "class": "derived",
+        "jurisdiction": "global"
+      },
+      "soil_component": {
+        "label": "Soil component / profile name",
+        "type": "string",
+        "source": "ISRIC SoilGrids v2 (BGS context)",
+        "class": "raw",
+        "jurisdiction": "GB",
+        "null_meaning": "Map unit lookup returned no component"
+      },
+      "drainage_class": {
+        "label": "Drainage class",
+        "type": "string",
+        "source": "BGS Soil Parent Material Model (screening)",
+        "class": "derived",
+        "jurisdiction": "GB",
+        "note": "Screening classification; NOT equivalent to an NRCS drainage class."
+      },
+      "mukey": {
+        "label": "Map unit identifier (non-US placeholder)",
+        "type": "string",
+        "source": "SoilCertify internal identifier",
+        "class": "raw",
+        "jurisdiction": "GB",
+        "note": "No national join key exists for this jurisdiction; value is an internal identifier and will not join to a national parcel/soil table."
+      },
+      "map_unit_name": {
+        "label": "Map unit name",
+        "type": "string",
+        "source": "BGS / ISRIC SoilGrids",
+        "class": "raw",
+        "jurisdiction": "GB"
+      },
+      "slope_pct": {
+        "label": "Slope",
+        "type": "number",
+        "unit": "percent",
+        "source": "ISRIC SoilGrids (screening)",
+        "class": "raw",
+        "jurisdiction": "GB"
+      },
+      "soil_ph": {
+        "label": "Soil pH (1:1 H2O)",
+        "type": "number",
+        "unit": "pH",
+        "range": [
+          3,
+          10
+        ],
+        "source": "ISRIC SoilGrids v2",
+        "class": "raw",
+        "jurisdiction": "GB",
+        "null_meaning": "Source did not report a plausible pH"
+      },
+      "soil_sand_pct": {
+        "label": "Sand fraction",
+        "type": "number",
+        "unit": "percent",
+        "source": "ISRIC SoilGrids v2",
+        "class": "raw",
+        "jurisdiction": "GB"
+      },
+      "soil_silt_pct": {
+        "label": "Silt fraction",
+        "type": "number",
+        "unit": "percent",
+        "source": "ISRIC SoilGrids v2",
+        "class": "raw",
+        "jurisdiction": "GB"
+      },
+      "soil_clay_pct": {
+        "label": "Clay fraction",
+        "type": "number",
+        "unit": "percent",
+        "source": "ISRIC SoilGrids v2",
+        "class": "raw",
+        "jurisdiction": "GB"
+      },
+      "organic_matter_pct": {
+        "label": "Organic matter",
+        "type": "number",
+        "unit": "percent",
+        "source": "ISRIC SoilGrids v2 (organic carbon derived)",
+        "class": "derived",
+        "jurisdiction": "GB"
+      },
+      "ksat_um_s": {
+        "label": "Saturated hydraulic conductivity (Ksat)",
+        "type": "number",
+        "unit": "µm/s",
+        "source": "USDA NRCS SSURGO",
+        "class": "raw",
+        "jurisdiction": "US",
+        "null_meaning": "Not assessed — the source for this jurisdiction does not publish calibrated Ksat. Null must never be substituted with a value from another region."
+      },
+      "soil_component_source_shape": {
+        "label": "Provenance of the parsed soil component record",
+        "type": "string",
+        "vocabulary": [
+          "components_array",
+          "ssurgo_table_row"
+        ],
+        "class": "derived",
+        "jurisdiction": "global"
+      },
+      "land_change": {
+        "label": "Land-change screening note",
+        "type": "string",
+        "source": "Sentinel-2 multi-date comparison",
+        "class": "derived",
+        "jurisdiction": "global"
+      },
+      "satellite_resolution": {
+        "label": "Satellite pixel resolution",
+        "type": "string",
+        "source": "Sentinel-2 L2A",
+        "class": "raw",
+        "jurisdiction": "global"
+      },
+      "satellite_acquisition_date": {
+        "label": "Satellite scene acquisition date",
+        "type": "string",
+        "format": "ISO 8601",
+        "source": "Sentinel-2 L2A",
+        "class": "raw",
+        "jurisdiction": "global"
+      },
+      "map_unit": {
+        "deprecated": true,
+        "deprecated_by": "map_unit_name / mukey",
+        "note": "Nested object retained one release; consumers should read the flattened fields."
+      },
+      "ndvi": {
+        "deprecated": true,
+        "deprecated_by": "ndvi_sentinel2"
+      },
+      "moisture": {
+        "deprecated": true,
+        "deprecated_by": "soil_moisture_index"
+      },
+      "uk_drainage_class": {
+        "label": "Drainage class (GB screening)",
+        "type": "string",
+        "source": "BGS Soil Parent Material Model (screening)",
+        "class": "derived",
+        "jurisdiction": "GB",
+        "note": "NOT equivalent to NRCS Hydrologic Soil Group."
+      },
+      "soil_parent_material": {
+        "label": "Soil parent material",
+        "type": "string",
+        "source": "BGS Soil Parent Material Model",
+        "class": "raw",
+        "jurisdiction": "GB"
+      },
+      "flood_zone_ea_centroid": {
+        "label": "EA Flood Zone at the report centre point",
+        "type": "string",
+        "source": "Environment Agency Flood Map for Planning",
+        "class": "raw",
+        "jurisdiction": "GB",
+        "geometry_scope": "point",
+        "note": "Point sample only. Does NOT describe the AOI polygon."
+      },
+      "flood_zone_ea_aoi": {
+        "label": "EA Flood Zone intersecting the 100 m x 100 m AOI",
+        "type": "string",
+        "source": "Environment Agency Flood Map for Planning",
+        "class": "derived",
+        "jurisdiction": "GB",
+        "geometry_scope": "polygon",
+        "null_meaning": "AOI intersection not evaluated for this report",
+        "note": "Where the point and area answers differ, the area answer governs screening decisions."
+      },
+      "flood_zone_ea": {
+        "deprecated": true,
+        "deprecated_by": "flood_zone_ea_centroid",
+        "label": "EA Flood Zone (Rivers & Sea) — centre point",
+        "type": "string",
+        "source": "Environment Agency Flood Map for Planning",
+        "class": "raw",
+        "jurisdiction": "GB",
+        "geometry_scope": "point"
+      },
+      "surface_water_flood_risk": {
+        "label": "Surface-water flood risk",
+        "type": "string",
+        "source": "Environment Agency",
+        "class": "raw",
+        "jurisdiction": "GB"
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "id": "SAMPLE-GB-FULL-001:aoi",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -0.1285216,
+              51.5069508
+            ],
+            [
+              -0.1270784,
+              51.5069508
+            ],
+            [
+              -0.1270784,
+              51.5078492
+            ],
+            [
+              -0.1285216,
+              51.5078492
+            ],
+            [
+              -0.1285216,
+              51.5069508
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "report_id": "SAMPLE-GB-FULL-001",
+        "report_type": null,
+        "report_tier": "full",
+        "property_address": "10 Sample Mews, London SW1A 1AA, United Kingdom",
+        "country": "GB",
+        "jurisdiction": "GB",
+        "map_unit_name": "Loamy soils over clayey river terrace deposits (BGS parent material)",
+        "mukey": "N/A (GB)",
+        "map_unit": {
+          "mukey": "N/A (GB)",
+          "name": "Loamy soils over clayey river terrace deposits (BGS parent material)"
+        },
+        "soil_component": "SoilGrids v2 topsoil (0–30 cm)",
+        "drainage_class": "Slightly impeded (BGS)",
+        "slope_pct": 3,
+        "soil_ph": 6.5,
+        "soil_sand_pct": 38,
+        "soil_silt_pct": 40,
+        "soil_clay_pct": 22,
+        "organic_matter_pct": 3.4,
+        "ksat_um_s": null,
+        "soil_component_source_shape": "gb_soilgrids_components",
+        "ndvi_sentinel2": 0.61,
+        "soil_moisture_index": 0.52,
+        "ndvi": 0.61,
+        "moisture": 0.52,
+        "land_change": "Stable (0%)",
+        "satellite_resolution": "10m",
+        "satellite_acquisition_date": "2026-08-04T02:43:52.831Z",
+        "generated_at": "2026-08-04T02:46:07.356Z",
+        "uk_drainage_class": "Slightly impeded",
+        "soil_parent_material": "River terrace deposits over London Clay (BGS 1:50k)",
+        "flood_zone_ea_centroid": "Outside Zone 2 and Zone 3 (EA Flood Map for Planning)",
+        "flood_zone_ea_aoi": "Touches Flood Zone 2 on the south-east edge of the 100 m × 100 m AOI",
+        "flood_zone_ea": "Outside Zone 2 and Zone 3 (EA Flood Map for Planning)",
+        "surface_water_flood_risk": "Not assessed from UK source in this sample",
+        "feature_role": "parcel_aoi",
+        "geometry_approximated": true,
+        "geometry_source": "geocoded_point_buffer",
+        "geometry_method": "100m x 100m centroid AOI",
+        "geometry_use_constraints": "Screening AOI only; not cadastral, survey-grade, or evidence of legal parcel certainty.",
+        "target_area_m2": 10000,
+        "approximation_warning": "SAMPLE DATA. This polygon is a preliminary AOI approximated as a 100 m x 100 m square centred on the geocoded point. It is NOT a cadastral parcel boundary. Do not use for legal, planning, or engineering purposes."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "SAMPLE-GB-FULL-001:centroid",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.1278,
+          51.5074
+        ]
+      },
+      "properties": {
+        "report_id": "SAMPLE-GB-FULL-001",
+        "report_type": null,
+        "report_tier": "full",
+        "property_address": "10 Sample Mews, London SW1A 1AA, United Kingdom",
+        "country": "GB",
+        "jurisdiction": "GB",
+        "map_unit_name": "Loamy soils over clayey river terrace deposits (BGS parent material)",
+        "mukey": "N/A (GB)",
+        "map_unit": {
+          "mukey": "N/A (GB)",
+          "name": "Loamy soils over clayey river terrace deposits (BGS parent material)"
+        },
+        "soil_component": "SoilGrids v2 topsoil (0–30 cm)",
+        "drainage_class": "Slightly impeded (BGS)",
+        "slope_pct": 3,
+        "soil_ph": 6.5,
+        "soil_sand_pct": 38,
+        "soil_silt_pct": 40,
+        "soil_clay_pct": 22,
+        "organic_matter_pct": 3.4,
+        "ksat_um_s": null,
+        "soil_component_source_shape": "gb_soilgrids_components",
+        "ndvi_sentinel2": 0.61,
+        "soil_moisture_index": 0.52,
+        "ndvi": 0.61,
+        "moisture": 0.52,
+        "land_change": "Stable (0%)",
+        "satellite_resolution": "10m",
+        "satellite_acquisition_date": "2026-08-04T02:43:52.831Z",
+        "generated_at": "2026-08-04T02:46:07.356Z",
+        "uk_drainage_class": "Slightly impeded",
+        "soil_parent_material": "River terrace deposits over London Clay (BGS 1:50k)",
+        "flood_zone_ea_centroid": "Outside Zone 2 and Zone 3 (EA Flood Map for Planning)",
+        "flood_zone_ea_aoi": "Touches Flood Zone 2 on the south-east edge of the 100 m × 100 m AOI",
+        "flood_zone_ea": "Outside Zone 2 and Zone 3 (EA Flood Map for Planning)",
+        "surface_water_flood_risk": "Not assessed from UK source in this sample",
+        "feature_role": "parcel_centroid",
+        "centroid_relationship": "geocoded_address_point"
+      }
+    }
+  ]
+}

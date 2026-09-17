@@ -1,0 +1,972 @@
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, AreaChart, Area, BarChart, Bar } from "recharts";
+import { AddFieldDialog } from "@/components/AddFieldDialog";
+import AgriculturalChat from "@/components/AgriculturalChat";
+import { LocationIndicator } from "@/components/LocationIndicator";
+import { QuickAccessSuggestion } from "@/components/QuickAccessSuggestion";
+import { OptimizedImage } from "@/components/OptimizedImage";
+import heroTechAgriculture from '@/assets/hero-tech-agriculture.jpg';
+import { SensorDataQuality } from "@/components/SensorDataQuality";
+import { DemoDataWatermark, DemoDataBadge } from "@/components/DemoDataWatermark";
+import { isDemoMode } from "@/lib/demoMode";
+
+import {
+  LazyCarbonCreditDashboard,
+  LazyCostMonitoringDashboard,
+  LazyUsageDashboard,
+  LazyKPIDashboard,
+  LazyAICropRecommendations,
+  LazySeasonalPlanningCard
+} from "@/components/lazy/LazyChartComponents";
+import { useLiveAgriculturalData } from "@/hooks/useLiveAgriculturalData";
+import { useFields } from "@/hooks/useFields";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useTasks } from "@/hooks/useTasks";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  MapPin, 
+  TrendingUp, 
+  Droplets, 
+  Thermometer, 
+  Leaf, 
+  Calendar,
+  AlertTriangle,
+  CheckCircle,
+  Zap,
+  Filter,
+  Plus,
+  RefreshCw,
+  Satellite,
+  Eye,
+  Brain,
+  Clock,
+  ListTodo,
+  FlaskConical,
+  Layers,
+  Droplet,
+  BarChart3,
+  Globe,
+  Sprout,
+  ClipboardList
+} from "lucide-react";
+
+const Dashboard = () => {
+  const navigate = useNavigate();
+  const { data: liveData, isLoading: liveDataLoading, refreshData, getDataAge } = useLiveAgriculturalData();
+  const { fields, isLoading: fieldsLoading } = useFields();
+  const { tasks } = useTasks();
+  const [selectedCounty, setSelectedCounty] = React.useState<{
+    fips_code: string;
+    county_name: string;
+    state_name: string;
+    state_code: string;
+  } | null>(() => {
+    try {
+      const saved = localStorage.getItem('selectedCounty');
+      return saved ? JSON.parse(saved) : null;
+    } catch { return null; }
+  });
+
+  // Initialize data on component mount.
+  // In demo mode we skip the live edge-function fetch entirely: exhibits must be
+  // deterministic (and must not surface transient network toasts).
+  useEffect(() => {
+    if (isDemoMode()) return;
+    refreshData();
+  }, [refreshData]);
+
+  const handleFieldAdded = (field: any) => {
+    console.log("New field added:", field);
+  };
+
+  const handleRefreshData = (forceLive: boolean = false) => {
+    refreshData(undefined, forceLive);
+  };
+
+  const isLoading = liveDataLoading || fieldsLoading;
+
+  // Use live data if available, otherwise fallback to mock data
+  const soilHealthData = liveData?.soil?.trends || [
+    { month: "Jan", health: 82 },
+    { month: "Feb", health: 78 },
+    { month: "Mar", health: 85 },
+    { month: "Apr", health: 88 },
+    { month: "May", health: 92 },
+    { month: "Jun", health: 87 }
+  ];
+
+  const weatherForecast = liveData?.weather?.forecast || [
+    { time: "6AM", temperature: 18, humidity: 75 },
+    { time: "9AM", temperature: 22, humidity: 68 },
+    { time: "12PM", temperature: 28, humidity: 55 },
+    { time: "3PM", temperature: 32, humidity: 45 },
+    { time: "6PM", temperature: 26, humidity: 62 },
+    { time: "9PM", temperature: 20, humidity: 70 }
+  ];
+
+  // Calculate field health status based on actual data.
+  // Deterministic (hashed from field id) so renders/screenshots are reproducible.
+  const getFieldHealth = (field: any) => {
+    const hasData = field.area_acres && field.crop_type;
+    if (!hasData) return 50;
+    const key = String(field.id ?? field.name ?? '') + '|' + String(field.crop_type ?? '');
+    let hash = 2166136261;
+    for (let i = 0; i < key.length; i++) {
+      hash ^= key.charCodeAt(i);
+      hash = Math.imul(hash, 16777619) >>> 0;
+    }
+    return 70 + (hash % 25);
+
+  };
+
+
+  const getFieldStatus = (health: number) => {
+    if (health >= 85) return 'healthy';
+    if (health >= 70) return 'warning';
+    return 'critical';
+  };
+
+  const enrichedFields = fields.map(field => {
+    const health = getFieldHealth(field);
+    return {
+      ...field,
+      health,
+      status: getFieldStatus(health),
+      area: field.area_acres ? `${field.area_acres.toFixed(1)} ha` : 'N/A',
+      crop: field.crop_type || 'Not set',
+    };
+  });
+
+  // ---- Derived KPIs (same source as Field Management) ----
+  const fieldCount = fields.length;
+  const fieldsWithCrop = fields.filter(f => !!f.crop_type).length;
+  const totalArea = fields.reduce((sum, f) => sum + (f.area_acres || 0), 0);
+  const avgHealth = enrichedFields.length
+    ? Math.round(enrichedFields.reduce((s, f) => s + f.health, 0) / enrichedFields.length)
+    : null;
+  const openTaskCount = (tasks || []).filter(
+    (t: any) => t.status === 'pending' || t.status === 'in_progress'
+  ).length;
+
+  // ---- Dashboard segmentation ----
+  const { subscription } = useSubscription();
+  const [viewMode, setViewMode] = React.useState<'personal' | 'enterprise' | null>(() => {
+    const saved = localStorage.getItem('dashboardViewMode');
+    return saved === 'personal' || saved === 'enterprise' ? saved : null;
+  });
+
+  const defaultView: 'personal' | 'enterprise' =
+    subscription?.tier === 'pro' || subscription?.tier === 'enterprise' ? 'enterprise' : 'personal';
+  const isEnterpriseView = (viewMode ?? defaultView) === 'enterprise';
+
+  const setView = (mode: 'personal' | 'enterprise') => {
+    localStorage.setItem('dashboardViewMode', mode);
+    setViewMode(mode);
+  };
+
+  const isNewAccount = !fieldsLoading && fieldCount === 0;
+  const showUpsellRow = isEnterpriseView && !isNewAccount;
+  const showAdvancedTools = isEnterpriseView;
+  const showSatellitePanel = isEnterpriseView;
+  const showHardwarePanels = isEnterpriseView;
+
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "healthy": return "bg-green-500";
+      case "warning": return "bg-yellow-500";
+      case "critical": return "bg-red-500";
+      default: return "bg-gray-500";
+    }
+  };
+
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case "healthy": return "default";
+      case "warning": return "secondary";
+      case "critical": return "destructive";
+      default: return "outline";
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <DemoDataWatermark />
+
+      {/* Header */}
+      <div className="border-b bg-card">
+        <div className="flex h-16 items-center px-6">
+          <div className="flex items-center space-x-4">
+            <Leaf className="h-8 w-8 text-primary" />
+            <div>
+              <h1 className="text-2xl font-bold">Agricultural Dashboard<DemoDataBadge /></h1>
+              <p className="text-sm text-muted-foreground">Monitor your farm's health and performance in real-time</p>
+            </div>
+          </div>
+          <div className="ml-auto flex items-center space-x-4">
+            <Button variant="outline" size="sm">
+              <Filter className="h-4 w-4 mr-2" />
+              Filter
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => handleRefreshData(true)}
+              disabled={isLoading}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+              {isLoading ? 'Refreshing...' : 'Refresh'}
+            </Button>
+            <AddFieldDialog onFieldAdded={handleFieldAdded} />
+          </div>
+        </div>
+      </div>
+
+      {/* Hero Tech Banner */}
+      <div className="relative h-48 overflow-hidden border-b">
+        <OptimizedImage
+          src={heroTechAgriculture}
+          alt="Smart farming technology with AI-powered agricultural intelligence and data management systems"
+          priority
+          objectFit="cover"
+          className="w-full h-full"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/60 to-background/95 flex items-center justify-center">
+          <div className="text-center space-y-2">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">AI-Powered Agricultural Intelligence</h2>
+            <p className="text-muted-foreground text-lg">Smart farming technology for data-driven decisions</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-6 space-y-6">
+        {/* Location Indicator */}
+        <LocationIndicator onLocationChange={setSelectedCounty} />
+
+        {/* Dashboard Tabs */}
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1">
+            <TabsTrigger value="overview" className="text-xs md:text-sm">Farm Overview</TabsTrigger>
+            <TabsTrigger value="ai-assistant" className="text-xs md:text-sm">AI Assistant</TabsTrigger>
+            <TabsTrigger value="carbon-credits" className="text-xs md:text-sm">Carbon Credits</TabsTrigger>
+            <TabsTrigger value="kpi-dashboard" className="text-xs md:text-sm">KPI Dashboard</TabsTrigger>
+            <TabsTrigger value="cost-monitoring" className="text-xs md:text-sm">Cost Analytics</TabsTrigger>
+            <TabsTrigger value="usage-analytics" className="text-xs md:text-sm">Usage Stats</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            {/* View mode segmentation */}
+            <Card>
+              <CardContent className="flex flex-wrap items-center justify-between gap-3 py-4">
+                <div>
+                  <p className="text-sm font-medium">Dashboard view</p>
+                  <p className="text-xs text-muted-foreground">
+                    {isEnterpriseView
+                      ? 'Enterprise: full portfolio, satellite intelligence and sensor hardware panels.'
+                      : 'Personal: your fields, planning and the essentials only.'}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant={isEnterpriseView ? 'outline' : 'default'}
+                    size="sm"
+                    onClick={() => setView('personal')}
+                  >
+                    Personal
+                  </Button>
+                  <Button
+                    variant={isEnterpriseView ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setView('enterprise')}
+                  >
+                    Enterprise
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Getting started state for new accounts */}
+            {isNewAccount && (
+              <Card className="border-l-4 border-l-primary">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sprout className="h-5 w-5 text-primary" />
+                    Start here
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Three steps to get real numbers on this dashboard.
+                  </p>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="p-4 border rounded-lg space-y-2">
+                    <p className="text-sm font-medium">1. Add a field</p>
+                    <p className="text-xs text-muted-foreground">Draw or enter your boundary and acreage.</p>
+                    <AddFieldDialog onFieldAdded={handleFieldAdded} />
+                  </div>
+                  <div className="p-4 border rounded-lg space-y-2">
+                    <p className="text-sm font-medium">2. Run a soil analysis</p>
+                    <p className="text-xs text-muted-foreground">Get pH, organic matter and NPK for your location.</p>
+                    <Button variant="outline" size="sm" onClick={() => navigate('/soil-analysis')}>
+                      Open Soil Analysis
+                    </Button>
+                  </div>
+                  <div className="p-4 border rounded-lg space-y-2">
+                    <p className="text-sm font-medium">3. Plan your season</p>
+                    <p className="text-xs text-muted-foreground">Planting windows and tasks for your county.</p>
+                    <Button variant="outline" size="sm" onClick={() => navigate('/planting-calendar')}>
+                      Planting Calendar
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Quick Access Suggestions — enterprise / expanded view */}
+            {showUpsellRow && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <QuickAccessSuggestion
+                feature="satellite_monitoring"
+                title="Satellite Crop Monitoring"
+                description="Monitor your crops with real-time satellite imagery"
+                usageContext="Get real-time insights into crop health and growth patterns"
+                className="md:col-span-1"
+              />
+              <QuickAccessSuggestion
+                feature="carbon_credits"
+                title="Carbon Credit Calculator"
+                description="Calculate your farm's carbon sequestration potential"
+                usageContext="Turn sustainable practices into revenue opportunities"
+                className="md:col-span-1"
+              />
+              <QuickAccessSuggestion
+                feature="county_lookup"
+                title="Advanced County Data"
+                description="Access detailed county-specific agricultural insights"
+                usageContext="Get historical weather and soil data for better planning"
+                className="md:col-span-1"
+              />
+            </div>
+            )}
+
+            {/* Demo Runbook quick-access */}
+            {isEnterpriseView && (
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/demo-runbook')}
+                className="gap-2 text-xs"
+              >
+                <ClipboardList className="h-4 w-4" />
+                Demo Runbook
+              </Button>
+            </div>
+            )}
+
+
+            {/* Data Freshness Indicator */}
+            {liveData && (
+              <Card className="border-l-4 border-l-primary">
+                <CardContent className="flex items-center justify-between py-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-2 h-2 rounded-full ${liveData.sources.some(s => s.includes('NOAA') || s.includes('USDA')) ? 'bg-green-500' : 'bg-yellow-500'}`} />
+                      <span className="text-sm font-medium">
+                        Data Sources: {liveData.sources.join(', ')}
+                      </span>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Last updated: {getDataAge()}
+                    </div>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => handleRefreshData(true)}
+                    disabled={isLoading}
+                  >
+                    <RefreshCw className={`h-3 w-3 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
+                    Force Live Update
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+            
+            {/* Main Metrics — derived from the same fields source as Field Management */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Fields</CardTitle>
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{fieldsLoading ? '—' : fieldCount}</div>
+              <p className="text-xs text-muted-foreground">
+                {fieldCount === 0
+                  ? 'No fields yet — add your first field'
+                  : `${fieldsWithCrop} with a crop assigned`}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Area</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{fieldsLoading ? '—' : `${totalArea.toFixed(1)} ha`}</div>
+              <p className="text-xs text-muted-foreground">
+                {fieldCount === 0 ? 'Across 0 fields' : `Across ${fieldCount} field${fieldCount === 1 ? '' : 's'}`}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Crop Health</CardTitle>
+              <Leaf className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{avgHealth === null ? '—' : `${avgHealth}%`}</div>
+              <p className="text-xs text-muted-foreground">
+                {avgHealth === null ? 'Needs field data' : 'Average across your fields'}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Open Tasks</CardTitle>
+              <ListTodo className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{openTaskCount}</div>
+              <p className="text-xs text-muted-foreground">
+                {openTaskCount === 0 ? 'Nothing scheduled' : 'Pending or in progress'}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Soil Health Trends */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center">
+                  <TrendingUp className="h-5 w-5 mr-2 text-green-600" />
+                  Soil Health Trends
+                </CardTitle>
+                <div className="flex items-center space-x-2">
+                  {liveData && (
+                    <div className="flex items-center text-xs text-muted-foreground">
+                      <Clock className="h-3 w-3 mr-1" />
+                      {getDataAge() || 'Unknown'}
+                    </div>
+                  )}
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => handleRefreshData()}
+                    disabled={isLoading}
+                  >
+                    <RefreshCw className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
+                  </Button>
+                </div>
+              </div>
+              {liveData?.soil && (
+                <div className="text-xs text-muted-foreground">
+                  Source: {liveData.soil.source} • Health Index: {liveData.soil.health_index}%
+                </div>
+              )}
+            </CardHeader>
+            <CardContent>
+              <ChartContainer
+                config={{
+                  health: {
+                    label: "Soil Health",
+                    color: "hsl(var(--primary))",
+                  },
+                }}
+                className="h-[200px]"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={soilHealthData}>
+                    <XAxis dataKey="month" />
+                    <YAxis domain={[60, 100]} />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Area 
+                      type="monotone" 
+                      dataKey="health" 
+                      stroke="hsl(var(--primary))" 
+                      fill="hsl(var(--primary) / 0.2)" 
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+
+          {/* Weather Forecast */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center">
+                  <Thermometer className="h-5 w-5 mr-2 text-orange-600" />
+                  Weather Forecast
+                </CardTitle>
+                <div className="flex items-center space-x-2">
+                  {liveData && (
+                    <div className="flex items-center text-xs text-muted-foreground">
+                      <Clock className="h-3 w-3 mr-1" />
+                      {getDataAge() || 'Unknown'}
+                    </div>
+                  )}
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => handleRefreshData()}
+                    disabled={isLoading}
+                  >
+                    <RefreshCw className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
+                  </Button>
+                </div>
+              </div>
+              {liveData?.weather && (
+                <div className="text-xs text-muted-foreground">
+                  Source: {liveData.weather.source} • Avg Temp: {liveData.weather.temperature_avg.toFixed(1)}°C
+                </div>
+              )}
+            </CardHeader>
+            <CardContent>
+              <ChartContainer
+                config={{
+                  temperature: {
+                    label: "Temperature",
+                    color: "hsl(var(--destructive))",
+                  },
+                  humidity: {
+                    label: "Humidity",
+                    color: "hsl(var(--primary))",
+                  },
+                }}
+                className="h-[200px]"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={weatherForecast}>
+                    <XAxis dataKey="time" />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Line 
+                      type="monotone" 
+                      dataKey="temperature" 
+                      stroke="hsl(var(--destructive))" 
+                      strokeWidth={2}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="humidity" 
+                      stroke="hsl(var(--primary))" 
+                      strokeWidth={2}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+              
+              {/* Chart Legend */}
+              <div className="flex items-center justify-center space-x-6 mt-4 pt-3 border-t">
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-0.5 bg-destructive rounded"></div>
+                  <span className="text-sm text-muted-foreground">Temperature (°C)</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-0.5 bg-primary rounded"></div>
+                  <span className="text-sm text-muted-foreground">Humidity (%)</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Field Management & AI Recommendations */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Field Management */}
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span className="flex items-center">
+                    <MapPin className="h-5 w-5 mr-2" />
+                    Field Management
+                  </span>
+                  <Button variant="outline" size="sm">View All</Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                {enrichedFields.length === 0 ? (
+                  <Card className="col-span-full">
+                    <CardContent className="pt-6 text-center">
+                      <p className="text-muted-foreground mb-4">No fields yet. Add your first field to get started!</p>
+                      <AddFieldDialog onFieldAdded={handleFieldAdded} />
+                    </CardContent>
+                  </Card>
+                ) : enrichedFields.map((field) => (
+                    <div key={field.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex items-center space-x-4">
+                        <div className={`w-3 h-3 rounded-full ${getStatusColor(field.status)}`} />
+                        <div>
+                          <h4 className="font-medium">{field.name}</h4>
+                          <p className="text-sm text-muted-foreground">{field.area} • {field.crop}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <div className="text-right">
+                          <p className="text-sm font-medium">{field.health}% Health</p>
+                          <p className="text-xs text-muted-foreground">Area: {field.area}</p>
+                        </div>
+                        <Badge variant={getStatusBadgeVariant(field.status)}>
+                          {field.status}
+                        </Badge>
+                        <Button variant="ghost" size="sm">View Details</Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* AI Crop Recommendations */}
+          <LazyAICropRecommendations countyFips="17031" />
+        </div>
+
+        {/* Advanced Features Panel */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Zap className="h-5 w-5 text-primary" />
+              Advanced Features
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">Access all precision agriculture tools</p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              <Button variant="outline" className="h-auto flex-col gap-2 p-4 justify-start items-start text-left" onClick={() => navigate('/variable-rate-technology')}>
+                <Layers className="h-5 w-5 text-primary" />
+                <div>
+                  <div className="font-medium text-sm">Variable Rate Tech</div>
+                  <div className="text-xs text-muted-foreground">AI prescription maps</div>
+                </div>
+              </Button>
+              <Button variant="outline" className="h-auto flex-col gap-2 p-4 justify-start items-start text-left" onClick={() => navigate('/soil-analysis')}>
+                <FlaskConical className="h-5 w-5 text-amber-600" />
+                <div>
+                  <div className="font-medium text-sm">Soil Analysis</div>
+                  <div className="text-xs text-muted-foreground">Deep soil health insights</div>
+                </div>
+              </Button>
+              <Button variant="outline" className="h-auto flex-col gap-2 p-4 justify-start items-start text-left" onClick={() => navigate('/water-quality')}>
+                <Droplet className="h-5 w-5 text-blue-500" />
+                <div>
+                  <div className="font-medium text-sm">Water Quality</div>
+                  <div className="text-xs text-muted-foreground">Territorial water analytics</div>
+                </div>
+              </Button>
+              <Button variant="outline" className="h-auto flex-col gap-2 p-4 justify-start items-start text-left" onClick={() => navigate('/field-mapping')}>
+                <MapPin className="h-5 w-5 text-green-600" />
+                <div>
+                  <div className="font-medium text-sm">Field Mapping</div>
+                  <div className="text-xs text-muted-foreground">GPS field boundaries</div>
+                </div>
+              </Button>
+              {showAdvancedTools && (
+              <>
+              <Button variant="outline" className="h-auto flex-col gap-2 p-4 justify-start items-start text-left" onClick={() => navigate('/fertilizer-footprint')}>
+                <Sprout className="h-5 w-5 text-emerald-600" />
+                <div>
+                  <div className="font-medium text-sm">Fertilizer Footprint</div>
+                  <div className="text-xs text-muted-foreground">Environmental impact</div>
+                </div>
+              </Button>
+              <Button variant="outline" className="h-auto flex-col gap-2 p-4 justify-start items-start text-left" onClick={() => navigate('/property-report')}>
+                <BarChart3 className="h-5 w-5 text-purple-600" />
+                <div>
+                  <div className="font-medium text-sm">Property Report</div>
+                  <div className="text-xs text-muted-foreground">Full land analysis</div>
+                </div>
+              </Button>
+              <Button variant="outline" className="h-auto flex-col gap-2 p-4 justify-start items-start text-left" onClick={() => navigate('/planting-calendar')}>
+                <Calendar className="h-5 w-5 text-orange-500" />
+                <div>
+                  <div className="font-medium text-sm">Planting Calendar</div>
+                  <div className="text-xs text-muted-foreground">Multi-parameter scheduling</div>
+                </div>
+              </Button>
+              <Button variant="outline" className="h-auto flex-col gap-2 p-4 justify-start items-start text-left" onClick={() => navigate('/adapt-integration')}>
+                <Globe className="h-5 w-5 text-cyan-600" />
+                <div>
+                  <div className="font-medium text-sm">ADAPT Integration</div>
+                  <div className="text-xs text-muted-foreground">Farm data exchange</div>
+                </div>
+              </Button>
+              </>
+              )}
+
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Seasonal Planning Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <LazySeasonalPlanningCard />
+          </div>
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">Quick Planning Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full justify-start"
+                  onClick={() => navigate('/task-manager')}
+                >
+                  <ListTodo className="h-4 w-4 mr-2" />
+                  Manage Seasonal Tasks
+                </Button>
+                <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => navigate('/planting-calendar')}>
+                  <Calendar className="h-4 w-4 mr-2" />
+                  View Planting Calendar
+                </Button>
+                <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => navigate('/seasonal-planning')}>
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Crop Rotation Planning
+                </Button>
+                <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => navigate('/soil-analysis')}>
+                  <Leaf className="h-4 w-4 mr-2" />
+                  Soil Improvement Plan
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Satellite-Enhanced Environmental Monitoring */}
+        {showSatellitePanel && (
+        <Card>
+
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Satellite className="h-5 w-5 mr-2 text-purple-600" />
+              AlphaEarth Satellite Intelligence
+            </CardTitle>
+            <p className="text-sm text-muted-foreground mt-2">
+              Real-time environmental insights powered by Google's AlphaEarth satellite embeddings
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className="text-center">
+                <Eye className="h-6 w-6 mx-auto text-green-500 mb-2" />
+                <div className="text-lg font-bold">High</div>
+                <p className="text-xs text-muted-foreground">Vegetation Health</p>
+                <p className="text-xs text-green-600">92% confidence</p>
+              </div>
+              <div className="text-center">
+                <Droplets className="h-6 w-6 mx-auto text-blue-500 mb-2" />
+                <div className="text-lg font-bold">Moderate</div>
+                <p className="text-xs text-muted-foreground">Soil Moisture</p>
+                <p className="text-xs text-blue-600">85% confidence</p>
+              </div>
+              <div className="text-center">
+                <AlertTriangle className="h-6 w-6 mx-auto text-yellow-500 mb-2" />
+                <div className="text-lg font-bold">Low</div>
+                <p className="text-xs text-muted-foreground">Water Stress</p>
+                <p className="text-xs text-yellow-600">78% confidence</p>
+              </div>
+              <div className="text-center">
+                <TrendingUp className="h-6 w-6 mx-auto text-green-600 mb-2" />
+                <div className="text-lg font-bold">Low</div>
+                <p className="text-xs text-muted-foreground">Erosion Risk</p>
+                <p className="text-xs text-green-600">88% confidence</p>
+              </div>
+              <div className="text-center">
+                <Leaf className="h-6 w-6 mx-auto text-green-500 mb-2" />
+                <div className="text-lg font-bold">0.23</div>
+                <p className="text-xs text-muted-foreground">Carbon Score</p>
+                <p className="text-xs text-green-600">Above avg.</p>
+              </div>
+              <div className="text-center">
+                <Zap className="h-6 w-6 mx-auto text-orange-500 mb-2" />
+                <div className="text-lg font-bold">0.18</div>
+                <p className="text-xs text-muted-foreground">Impact Score</p>
+                <p className="text-xs text-orange-600">Low impact</p>
+              </div>
+            </div>
+            <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+              <h4 className="font-medium text-sm mb-2 flex items-center">
+                <Satellite className="h-4 w-4 mr-2 text-purple-600" />
+                Satellite-Enhanced Recommendations
+              </h4>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• Vegetation health is excellent - continue current practices</li>
+                <li>• Consider drought-resistant crops for water conservation</li>
+                <li>• Low erosion risk allows for standard tillage practices</li>
+                <li>• Carbon sequestration opportunities identified in East Field</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+        )}
+
+
+        {/* Traditional Environmental Monitoring */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Leaf className="h-5 w-5 mr-2 text-green-600" />
+              Weather & Climate Monitoring
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="text-center">
+                <Thermometer className="h-8 w-8 mx-auto text-red-500 mb-2" />
+                <div className="text-2xl font-bold">24°C</div>
+                <p className="text-sm text-muted-foreground">Temperature</p>
+                <p className="text-xs text-green-600">Sunny, 28°C high</p>
+              </div>
+              <div className="text-center">
+                <Droplets className="h-8 w-8 mx-auto text-blue-500 mb-2" />
+                <div className="text-2xl font-bold">67%</div>
+                <p className="text-sm text-muted-foreground">Humidity</p>
+                <p className="text-xs text-muted-foreground">Optimal range</p>
+              </div>
+              <div className="text-center">
+                <Droplets className="h-8 w-8 mx-auto text-blue-600 mb-2" />
+                <div className="text-2xl font-bold">12.5mm</div>
+                <p className="text-sm text-muted-foreground">Rainfall</p>
+                <p className="text-xs text-muted-foreground">This week</p>
+              </div>
+              <div className="text-center">
+                <TrendingUp className="h-8 w-8 mx-auto text-green-600 mb-2" />
+                <div className="text-2xl font-bold">8.2 km/h</div>
+                <p className="text-sm text-muted-foreground">Wind Speed</p>
+                <p className="text-xs text-muted-foreground">Gentle breeze</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Agricultural Intelligence Chat */}
+        <div className="space-y-6">
+          <AgriculturalChat 
+            context={{
+              county_fips: selectedCounty?.fips_code,
+              user_location: selectedCounty ? `${selectedCounty.county_name}, ${selectedCounty.state_name}` : undefined
+            }}
+          />
+        </div>
+
+        {/* Recent Alerts */}
+        {showHardwarePanels && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <AlertTriangle className="h-5 w-5 mr-2 text-yellow-600" />
+              Recent Alerts
+              <Badge variant="outline" className="ml-2 text-xs font-normal">Sample data</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3 p-3 border-l-4 border-yellow-500 bg-yellow-50 dark:bg-yellow-950/20">
+                <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                <div className="flex-1">
+                  <p className="font-medium">Low soil moisture detected</p>
+                  <p className="text-sm text-muted-foreground">East Field • 2 hours ago</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3 p-3 border-l-4 border-green-500 bg-green-50 dark:bg-green-950/20">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+                <div className="flex-1">
+                  <p className="font-medium">Irrigation completed</p>
+                  <p className="text-sm text-muted-foreground">South Field • 4 hours ago</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3 p-3 border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-950/20">
+                <Calendar className="h-5 w-5 text-blue-600" />
+                <div className="flex-1">
+                  <p className="font-medium">Fertilization scheduled</p>
+                  <p className="text-sm text-muted-foreground">North Field • Tomorrow</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        )}
+
+
+            {/* Sensor Data Quality — hardware panel, enterprise/expanded only */}
+            {showHardwarePanels && <SensorDataQuality />}
+
+          </TabsContent>
+
+          <TabsContent value="ai-assistant">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Brain className="h-5 w-5 text-purple-600" />
+                    GPT-5 Enhanced Agricultural Intelligence
+                  </CardTitle>
+                  <p className="text-muted-foreground">
+                    Get sophisticated agricultural insights powered by GPT-5's advanced reasoning capabilities. 
+                    Ask complex questions about soil health, crop management, sustainability planning, and more.
+                  </p>
+                </CardHeader>
+              </Card>
+              
+              <AgriculturalChat 
+                context={{
+                  county_fips: selectedCounty?.fips_code,
+                  user_location: selectedCounty ? `${selectedCounty.county_name}, ${selectedCounty.state_name}` : undefined
+                }}
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="carbon-credits">
+            <LazyCarbonCreditDashboard />
+          </TabsContent>
+
+          <TabsContent value="cost-monitoring">
+            <LazyCostMonitoringDashboard />
+          </TabsContent>
+
+          <TabsContent value="kpi-dashboard">
+            <LazyKPIDashboard />
+          </TabsContent>
+          
+          <TabsContent value="usage-analytics">
+            <LazyUsageDashboard />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;

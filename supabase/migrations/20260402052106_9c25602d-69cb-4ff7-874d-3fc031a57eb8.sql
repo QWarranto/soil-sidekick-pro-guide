@@ -1,0 +1,2 @@
+ALTER TABLE public.mcp_tool_call_log ADD COLUMN IF NOT EXISTS correlation_id text;
+CREATE INDEX IF NOT EXISTS idx_mcp_tool_call_log_correlation ON public.mcp_tool_call_log (correlation_id) WHERE correlation_id IS NOT NULL;

@@ -1,0 +1,94 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/hooks/useAuth';
+import { Calendar, ArrowLeft, ListTodo } from 'lucide-react';
+import { CountyLookup } from '@/components/CountyLookup';
+import { SeasonalPlanningAssistant } from '@/components/SeasonalPlanningAssistant';
+import { useToast } from '@/hooks/use-toast';
+
+interface County {
+  id: string;
+  county_name: string;
+  state_name: string;
+  state_code: string;
+  fips_code: string;
+}
+
+const SeasonalPlanning = () => {
+  const { user, trialUser } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [selectedCounty, setSelectedCounty] = useState<County | null>(null);
+  const [soilData, setSoilData] = useState<any>(null);
+
+  const handleCountySelect = (county: County) => {
+    setSelectedCounty(county);
+    // In a real app, you might fetch soil data for the county here
+    // For now, we'll use mock data or pass null
+    setSoilData(null);
+    
+    toast({
+      title: "Location Selected",
+      description: `Selected ${county.county_name}, ${county.state_code} for seasonal planning`,
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-hero parallax-scroll">
+      {/* Header */}
+      <header className="border-b glass-effect sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => navigate('/task-manager')}>
+              <ListTodo className="h-4 w-4 mr-2" />
+              Task Manager
+            </Button>
+            <div className="flex items-center gap-2 floating-animation">
+              <Calendar className="h-6 w-6 text-green-600 pulse-glow" />
+              <span className="text-xl font-bold gradient-text">Seasonal Planning Assistant</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto space-y-6">
+          {/* Location Selection */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-green-600" />
+                Location Selection
+              </CardTitle>
+              <CardDescription>
+                Select your location to get region-specific seasonal planning recommendations
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <CountyLookup 
+                onCountySelect={handleCountySelect}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Seasonal Planning Assistant */}
+          <SeasonalPlanningAssistant 
+            location={selectedCounty || undefined}
+            soilData={soilData}
+          />
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default SeasonalPlanning;

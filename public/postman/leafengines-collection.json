@@ -1,0 +1,379 @@
+{
+  "info": {
+    "_postman_id": "leafengines-api-collection",
+    "name": "LeafEngines™ API Collection",
+    "description": "Complete API collection for LeafEngines Environmental Intelligence Platform.\n\n## Quick Start\n1. Set the `api_key` variable in your environment (or leave blank for sandbox)\n2. Set `base_url` to `https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1`\n3. Start testing!\n\n## Authentication\n- **Sandbox (No Auth)**: Use the Sandbox folder endpoints\n- **Production**: Add your API key to the `x-api-key` header\n\n## Rate Limits\n- Free: 10 req/min\n- Starter: 30 req/min\n- Pro: 100 req/min\n- Enterprise: 500 req/min",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "x-api-key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{api_key}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1"
+    },
+    {
+      "key": "sandbox_url",
+      "value": "https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/sandbox-demo"
+    },
+    {
+      "key": "api_key",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Sandbox (No Auth Required)",
+      "description": "Test endpoints without authentication. Uses demo data.",
+      "item": [
+        {
+          "name": "LeafEngines Query",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plant\": { \"common_name\": \"Tomato\" },\n  \"location\": { \"county_fips\": \"12086\" }\n}"
+            },
+            "url": {
+              "raw": "{{sandbox_url}}?endpoint=leafengines-query",
+              "host": ["{{sandbox_url}}"],
+              "query": [{ "key": "endpoint", "value": "leafengines-query" }]
+            }
+          }
+        },
+        {
+          "name": "Safe Identification",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"image_url\": \"https://example.com/plant.jpg\",\n  \"include_toxicity\": true\n}"
+            },
+            "url": {
+              "raw": "{{sandbox_url}}?endpoint=safe-identification",
+              "host": ["{{sandbox_url}}"],
+              "query": [{ "key": "endpoint", "value": "safe-identification" }]
+            }
+          }
+        },
+        {
+          "name": "Dynamic Care",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plant_identifier\": \"monstera\",\n  \"user_experience\": \"beginner\"\n}"
+            },
+            "url": {
+              "raw": "{{sandbox_url}}?endpoint=dynamic-care",
+              "host": ["{{sandbox_url}}"],
+              "query": [{ "key": "endpoint", "value": "dynamic-care" }]
+            }
+          }
+        },
+        {
+          "name": "Beginner Guidance",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"experience_level\": \"beginner\",\n  \"plant_type\": \"indoor\"\n}"
+            },
+            "url": {
+              "raw": "{{sandbox_url}}?endpoint=beginner-guidance",
+              "host": ["{{sandbox_url}}"],
+              "query": [{ "key": "endpoint", "value": "beginner-guidance" }]
+            }
+          }
+        },
+        {
+          "name": "Get Soil Data",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"county_fips\": \"12086\"\n}"
+            },
+            "url": {
+              "raw": "{{sandbox_url}}?endpoint=get-soil-data",
+              "host": ["{{sandbox_url}}"],
+              "query": [{ "key": "endpoint", "value": "get-soil-data" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Free Tier",
+      "description": "Endpoints available on the Free tier. Requires API key.",
+      "item": [
+        {
+          "name": "Get Soil Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"county_fips\": \"12086\"\n}"
+            },
+            "url": "{{base_url}}/get-soil-data"
+          }
+        },
+        {
+          "name": "County Lookup",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"term\": \"Miami-Dade\"\n}"
+            },
+            "url": "{{base_url}}/county-lookup"
+          }
+        },
+        {
+          "name": "LeafEngines Query",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plant\": { \"common_name\": \"Tomato\" },\n  \"location\": { \"county_fips\": \"12086\" }\n}"
+            },
+            "url": "{{base_url}}/leafengines-query"
+          }
+        },
+        {
+          "name": "Safe Identification",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"image_url\": \"https://example.com/plant.jpg\",\n  \"include_toxicity\": true\n}"
+            },
+            "url": "{{base_url}}/safe-identification"
+          }
+        },
+        {
+          "name": "Dynamic Care",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plant_identifier\": \"monstera\",\n  \"user_experience\": \"beginner\"\n}"
+            },
+            "url": "{{base_url}}/dynamic-care"
+          }
+        },
+        {
+          "name": "Beginner Guidance",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"experience_level\": \"beginner\",\n  \"plant_type\": \"indoor\"\n}"
+            },
+            "url": "{{base_url}}/beginner-guidance"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Starter Tier",
+      "description": "Endpoints available on the Starter tier and above.",
+      "item": [
+        {
+          "name": "Water Quality",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"county_fips\": \"12086\"\n}"
+            },
+            "url": "{{base_url}}/territorial-water-quality"
+          }
+        },
+        {
+          "name": "Planting Calendar",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"county_fips\": \"12086\",\n  \"crop_type\": \"corn\"\n}"
+            },
+            "url": "{{base_url}}/multi-parameter-planting-calendar"
+          }
+        },
+        {
+          "name": "Live Agricultural Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"county_fips\": \"12086\",\n  \"data_types\": [\"weather\", \"soil\"],\n  \"state_code\": \"FL\",\n  \"county_name\": \"Miami-Dade\"\n}"
+            },
+            "url": "{{base_url}}/live-agricultural-data"
+          }
+        },
+        {
+          "name": "Environmental Impact Engine",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"analysis_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"county_fips\": \"12086\",\n  \"soil_data\": {\n    \"ph_level\": 6.5,\n    \"organic_matter\": 3.2,\n    \"slope\": \"gentle\",\n    \"drainage\": \"good\"\n  }\n}"
+            },
+            "url": "{{base_url}}/environmental-impact-engine"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pro Tier",
+      "description": "Endpoints available on the Pro tier and above.",
+      "item": [
+        {
+          "name": "Agricultural Intelligence",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"county_fips\": \"12086\",\n  \"analysis_type\": \"crop_recommendation\"\n}"
+            },
+            "url": "{{base_url}}/agricultural-intelligence"
+          }
+        },
+        {
+          "name": "Carbon Credit Calculator",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"acreage\": 100,\n  \"practice_type\": \"cover_cropping\",\n  \"years\": 5\n}"
+            },
+            "url": "{{base_url}}/carbon-credit-calculator"
+          }
+        },
+        {
+          "name": "Satellite Environmental Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 25.7617,\n  \"longitude\": -80.1918\n}"
+            },
+            "url": "{{base_url}}/alpha-earth-environmental-enhancement"
+          }
+        },
+        {
+          "name": "Generate VRT Prescription",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field_id\": \"field-123\",\n  \"prescription_type\": \"nitrogen\",\n  \"target_yield\": 180\n}"
+            },
+            "url": "{{base_url}}/generate-vrt-prescription"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Enterprise Tier",
+      "description": "Endpoints available on the Enterprise tier only.",
+      "item": [
+        {
+          "name": "Visual Crop Analysis",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"image_url\": \"https://example.com/crop-photo.jpg\",\n  \"crop_type\": \"tomato\",\n  \"analysis_type\": \"health_assessment\"\n}"
+            },
+            "url": "{{base_url}}/visual-crop-analysis"
+          }
+        }
+      ]
+    }
+  ]
+}

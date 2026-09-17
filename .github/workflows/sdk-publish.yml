@@ -1,0 +1,85 @@
+name: SDK Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'SDK version to publish'
+        required: true
+        default: '3.0.0'
+  release:
+    types: [published]
+
+jobs:
+  publish-npm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+      - run: cd sdks/generated/typescript && npm ci && npm run build
+      - run: cd sdks/generated/typescript && npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-pypi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install build twine
+      - run: cd sdks/generated/python && python -m build
+      - run: twine upload sdks/generated/python/dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+
+  publish-rubygems:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+      - run: |
+          mkdir -p ~/.gem
+          echo ":rubygems_api_key: ${{ secrets.RUBYGEMS_API_KEY }}" > ~/.gem/credentials
+          chmod 600 ~/.gem/credentials
+      - run: cd sdks/generated/ruby && gem build *.gemspec
+      - run: cd sdks/generated/ruby && gem push *.gem
+
+  publish-maven:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - run: cd sdks/generated/java && mvn deploy -DskipTests
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+
+  publish-packagist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - run: cd sdks/generated/php && composer install --no-dev
+      # Packagist auto-updates from GitHub tags; manual push only needed for custom hosts
+      - run: echo "Packagist updates automatically on tag push"
+
+  publish-go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git tag "sdk-v${{ github.event.inputs.version || github.event.release.tag_name }}"
+          git push origin "sdk-v${{ github.event.inputs.version || github.event.release.tag_name }}"
