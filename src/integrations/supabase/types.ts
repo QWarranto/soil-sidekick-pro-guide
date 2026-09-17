@@ -1,0 +1,5935 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.5"
+  }
+  public: {
+    Tables: {
+      account_security: {
+        Row: {
+          account_locked: boolean | null
+          backup_codes_generated: boolean | null
+          created_at: string
+          email_encryption_version: number | null
+          encrypted_email: string | null
+          encrypted_recovery_email: string | null
+          failed_login_attempts: number | null
+          id: string
+          last_failed_login: string | null
+          last_suspicious_activity: string | null
+          lock_reason: string | null
+          locked_until: string | null
+          password_changed_at: string | null
+          password_strength_score: number | null
+          requires_password_change: boolean | null
+          security_questions: Json | null
+          suspicious_activity_count: number | null
+          trusted_devices: Json | null
+          two_factor_enabled: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_locked?: boolean | null
+          backup_codes_generated?: boolean | null
+          created_at?: string
+          email_encryption_version?: number | null
+          encrypted_email?: string | null
+          encrypted_recovery_email?: string | null
+          failed_login_attempts?: number | null
+          id?: string
+          last_failed_login?: string | null
+          last_suspicious_activity?: string | null
+          lock_reason?: string | null
+          locked_until?: string | null
+          password_changed_at?: string | null
+          password_strength_score?: number | null
+          requires_password_change?: boolean | null
+          security_questions?: Json | null
+          suspicious_activity_count?: number | null
+          trusted_devices?: Json | null
+          two_factor_enabled?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_locked?: boolean | null
+          backup_codes_generated?: boolean | null
+          created_at?: string
+          email_encryption_version?: number | null
+          encrypted_email?: string | null
+          encrypted_recovery_email?: string | null
+          failed_login_attempts?: number | null
+          id?: string
+          last_failed_login?: string | null
+          last_suspicious_activity?: string | null
+          lock_reason?: string | null
+          locked_until?: string | null
+          password_changed_at?: string | null
+          password_strength_score?: number | null
+          requires_password_change?: boolean | null
+          security_questions?: Json | null
+          suspicious_activity_count?: number | null
+          trusted_devices?: Json | null
+          two_factor_enabled?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      adapt_api_usage: {
+        Row: {
+          created_at: string
+          data_type: string
+          endpoint: string
+          error_message: string | null
+          id: string
+          integration_id: string | null
+          request_size_kb: number | null
+          request_type: string
+          response_time_ms: number | null
+          subscription_tier: string
+          success: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_type: string
+          endpoint: string
+          error_message?: string | null
+          id?: string
+          integration_id?: string | null
+          request_size_kb?: number | null
+          request_type: string
+          response_time_ms?: number | null
+          subscription_tier: string
+          success?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data_type?: string
+          endpoint?: string
+          error_message?: string | null
+          id?: string
+          integration_id?: string | null
+          request_size_kb?: number | null
+          request_type?: string
+          response_time_ms?: number | null
+          subscription_tier?: string
+          success?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "adapt_api_usage_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "adapt_integrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      adapt_field_boundaries: {
+        Row: {
+          adapt_field_id: string | null
+          area_acres: number | null
+          boundary_geometry: Json
+          created_at: string
+          crop_type: string | null
+          field_name: string
+          field_reference: string | null
+          id: string
+          integration_id: string | null
+          last_updated_external: string | null
+          planting_year: number | null
+          soil_type: string | null
+          sync_status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          adapt_field_id?: string | null
+          area_acres?: number | null
+          boundary_geometry: Json
+          created_at?: string
+          crop_type?: string | null
+          field_name: string
+          field_reference?: string | null
+          id?: string
+          integration_id?: string | null
+          last_updated_external?: string | null
+          planting_year?: number | null
+          soil_type?: string | null
+          sync_status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          adapt_field_id?: string | null
+          area_acres?: number | null
+          boundary_geometry?: Json
+          created_at?: string
+          crop_type?: string | null
+          field_name?: string
+          field_reference?: string | null
+          id?: string
+          integration_id?: string | null
+          last_updated_external?: string | null
+          planting_year?: number | null
+          soil_type?: string | null
+          sync_status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "adapt_field_boundaries_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "adapt_integrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      adapt_integrations: {
+        Row: {
+          created_at: string
+          encrypted_api_credentials: string | null
+          encryption_version: number | null
+          id: string
+          integration_name: string
+          integration_status: string
+          integration_type: string
+          last_sync_at: string | null
+          subscription_tier: string
+          sync_frequency: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          encrypted_api_credentials?: string | null
+          encryption_version?: number | null
+          id?: string
+          integration_name: string
+          integration_status?: string
+          integration_type: string
+          last_sync_at?: string | null
+          subscription_tier?: string
+          sync_frequency?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          encrypted_api_credentials?: string | null
+          encryption_version?: number | null
+          id?: string
+          integration_name?: string
+          integration_status?: string
+          integration_type?: string
+          last_sync_at?: string | null
+          subscription_tier?: string
+          sync_frequency?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      adapt_soil_exports: {
+        Row: {
+          created_at: string
+          export_data: Json
+          export_format: string
+          export_status: string
+          external_reference: string | null
+          file_path: string | null
+          id: string
+          integration_id: string | null
+          soil_analysis_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          export_data: Json
+          export_format?: string
+          export_status?: string
+          external_reference?: string | null
+          file_path?: string | null
+          id?: string
+          integration_id?: string | null
+          soil_analysis_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          export_data?: Json
+          export_format?: string
+          export_status?: string
+          external_reference?: string | null
+          file_path?: string | null
+          id?: string
+          integration_id?: string | null
+          soil_analysis_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "adapt_soil_exports_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "adapt_integrations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "adapt_soil_exports_soil_analysis_id_fkey"
+            columns: ["soil_analysis_id"]
+            isOneToOne: false
+            referencedRelation: "soil_analyses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_codes: {
+        Row: {
+          code: string
+          commission_rate: number
+          created_at: string
+          id: string
+          status: string
+          total_earnings: number
+          total_referrals: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          status?: string
+          total_earnings?: number
+          total_referrals?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          status?: string
+          total_earnings?: number
+          total_referrals?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      affiliate_payouts: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          payout_method: string
+          period_end: string
+          period_start: string
+          processed_at: string | null
+          referral_count: number
+          status: string
+          stripe_transfer_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          payout_method?: string
+          period_end: string
+          period_start: string
+          processed_at?: string | null
+          referral_count?: number
+          status?: string
+          stripe_transfer_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          payout_method?: string
+          period_end?: string
+          period_start?: string
+          processed_at?: string | null
+          referral_count?: number
+          status?: string
+          stripe_transfer_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      affiliate_referrals: {
+        Row: {
+          affiliate_code_id: string
+          attribution_date: string
+          commission_amount: number
+          commission_rate: number
+          created_at: string
+          id: string
+          last_commission_date: string | null
+          referred_user_id: string
+          status: string
+          subscription_amount: number
+          subscription_tier: string | null
+          updated_at: string
+        }
+        Insert: {
+          affiliate_code_id: string
+          attribution_date?: string
+          commission_amount?: number
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          last_commission_date?: string | null
+          referred_user_id: string
+          status?: string
+          subscription_amount?: number
+          subscription_tier?: string | null
+          updated_at?: string
+        }
+        Update: {
+          affiliate_code_id?: string
+          attribution_date?: string
+          commission_amount?: number
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          last_commission_date?: string | null
+          referred_user_id?: string
+          status?: string
+          subscription_amount?: number
+          subscription_tier?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_referrals_affiliate_code_id_fkey"
+            columns: ["affiliate_code_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      anonymous_api_usage: {
+        Row: {
+          client_ip_hash: string | null
+          created_at: string
+          endpoint_name: string
+          id: string
+          request_metadata: Json | null
+          request_origin: string | null
+          response_status: number | null
+          response_time_ms: number | null
+          user_agent: string | null
+        }
+        Insert: {
+          client_ip_hash?: string | null
+          created_at?: string
+          endpoint_name: string
+          id?: string
+          request_metadata?: Json | null
+          request_origin?: string | null
+          response_status?: number | null
+          response_time_ms?: number | null
+          user_agent?: string | null
+        }
+        Update: {
+          client_ip_hash?: string | null
+          created_at?: string
+          endpoint_name?: string
+          id?: string
+          request_metadata?: Json | null
+          request_origin?: string | null
+          response_status?: number | null
+          response_time_ms?: number | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      api_key_access_log: {
+        Row: {
+          access_time: string
+          api_key_id: string | null
+          endpoint: string | null
+          failure_reason: string | null
+          id: string
+          ip_address: unknown
+          rate_limited: boolean | null
+          request_size_bytes: number | null
+          response_time_ms: number | null
+          success: boolean
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          access_time?: string
+          api_key_id?: string | null
+          endpoint?: string | null
+          failure_reason?: string | null
+          id?: string
+          ip_address?: unknown
+          rate_limited?: boolean | null
+          request_size_bytes?: number | null
+          response_time_ms?: number | null
+          success: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          access_time?: string
+          api_key_id?: string | null
+          endpoint?: string | null
+          failure_reason?: string | null
+          id?: string
+          ip_address?: unknown
+          rate_limited?: boolean | null
+          request_size_bytes?: number | null
+          response_time_ms?: number | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_key_access_log_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "active_telegram_users"
+            referencedColumns: ["api_key_id"]
+          },
+          {
+            foreignKeyName: "api_key_access_log_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      api_key_requests: {
+        Row: {
+          admin_notes: string | null
+          company_name: string | null
+          created_at: string
+          expected_volume: string | null
+          id: string
+          request_status: string
+          requested_tier: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          updated_at: string
+          use_case: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          company_name?: string | null
+          created_at?: string
+          expected_volume?: string | null
+          id?: string
+          request_status?: string
+          requested_tier?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          updated_at?: string
+          use_case?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          company_name?: string | null
+          created_at?: string
+          expected_volume?: string | null
+          id?: string
+          request_status?: string
+          requested_tier?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          updated_at?: string
+          use_case?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      api_keys: {
+        Row: {
+          access_count: number | null
+          allowed_ips: string[] | null
+          channel: string | null
+          created_at: string | null
+          daily_ai_count: number | null
+          daily_data_count: number | null
+          daily_data_limit: number | null
+          expires_at: string | null
+          failed_attempts: number | null
+          id: string
+          is_active: boolean | null
+          is_locked: boolean | null
+          key_hash: string
+          key_hash_v2: string | null
+          key_name: string
+          last_access_ip: unknown
+          last_failed_attempt: string | null
+          last_reset_date: string | null
+          last_used_at: string | null
+          lock_reason: string | null
+          max_uses: number | null
+          monthly_alert_count: number | null
+          permissions: Json | null
+          rate_limit: number | null
+          rate_window_minutes: number | null
+          rotation_required: boolean | null
+          subscription_tier: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          access_count?: number | null
+          allowed_ips?: string[] | null
+          channel?: string | null
+          created_at?: string | null
+          daily_ai_count?: number | null
+          daily_data_count?: number | null
+          daily_data_limit?: number | null
+          expires_at?: string | null
+          failed_attempts?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_locked?: boolean | null
+          key_hash: string
+          key_hash_v2?: string | null
+          key_name: string
+          last_access_ip?: unknown
+          last_failed_attempt?: string | null
+          last_reset_date?: string | null
+          last_used_at?: string | null
+          lock_reason?: string | null
+          max_uses?: number | null
+          monthly_alert_count?: number | null
+          permissions?: Json | null
+          rate_limit?: number | null
+          rate_window_minutes?: number | null
+          rotation_required?: boolean | null
+          subscription_tier?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          access_count?: number | null
+          allowed_ips?: string[] | null
+          channel?: string | null
+          created_at?: string | null
+          daily_ai_count?: number | null
+          daily_data_count?: number | null
+          daily_data_limit?: number | null
+          expires_at?: string | null
+          failed_attempts?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_locked?: boolean | null
+          key_hash?: string
+          key_hash_v2?: string | null
+          key_name?: string
+          last_access_ip?: unknown
+          last_failed_attempt?: string | null
+          last_reset_date?: string | null
+          last_used_at?: string | null
+          lock_reason?: string | null
+          max_uses?: number | null
+          monthly_alert_count?: number | null
+          permissions?: Json | null
+          rate_limit?: number | null
+          rate_window_minutes?: number | null
+          rotation_required?: boolean | null
+          subscription_tier?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      api_tier_limits: {
+        Row: {
+          created_at: string | null
+          features: Json | null
+          id: string
+          max_concurrent_requests: number
+          requests_per_day: number
+          requests_per_hour: number
+          requests_per_minute: number
+          tier: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          features?: Json | null
+          id?: string
+          max_concurrent_requests: number
+          requests_per_day: number
+          requests_per_hour: number
+          requests_per_minute: number
+          tier: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          features?: Json | null
+          id?: string
+          max_concurrent_requests?: number
+          requests_per_day?: number
+          requests_per_hour?: number
+          requests_per_minute?: number
+          tier?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      asset_history: {
+        Row: {
+          asset_id: string
+          change_type: string
+          changed_by: string | null
+          created_at: string
+          id: string
+          new_data: Json | null
+          previous_data: Json | null
+          user_id: string
+          version: number | null
+        }
+        Insert: {
+          asset_id: string
+          change_type: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_data?: Json | null
+          previous_data?: Json | null
+          user_id: string
+          version?: number | null
+        }
+        Update: {
+          asset_id?: string
+          change_type?: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_data?: Json | null
+          previous_data?: Json | null
+          user_id?: string
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asset_history_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "managed_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      auth_security_log: {
+        Row: {
+          created_at: string
+          device_fingerprint: string | null
+          event_type: string
+          failure_reason: string | null
+          id: string
+          ip_address: unknown
+          location_data: Json | null
+          metadata: Json | null
+          risk_score: number | null
+          success: boolean
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          device_fingerprint?: string | null
+          event_type: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: unknown
+          location_data?: Json | null
+          metadata?: Json | null
+          risk_score?: number | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          device_fingerprint?: string | null
+          event_type?: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: unknown
+          location_data?: Json | null
+          metadata?: Json | null
+          risk_score?: number | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      bigfoot_autogen_queue: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          entity_type: string
+          error_message: string | null
+          fips_code: string | null
+          generated_page_id: string | null
+          id: string
+          mega_directory: string
+          priority: number
+          processing_time_ms: number | null
+          queued_at: string
+          source_data: Json | null
+          source_query_ids: string[] | null
+          started_at: string | null
+          state_code: string | null
+          status: string
+          target_slug: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          entity_type: string
+          error_message?: string | null
+          fips_code?: string | null
+          generated_page_id?: string | null
+          id?: string
+          mega_directory: string
+          priority?: number
+          processing_time_ms?: number | null
+          queued_at?: string
+          source_data?: Json | null
+          source_query_ids?: string[] | null
+          started_at?: string | null
+          state_code?: string | null
+          status?: string
+          target_slug: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          entity_type?: string
+          error_message?: string | null
+          fips_code?: string | null
+          generated_page_id?: string | null
+          id?: string
+          mega_directory?: string
+          priority?: number
+          processing_time_ms?: number | null
+          queued_at?: string
+          source_data?: Json | null
+          source_query_ids?: string[] | null
+          started_at?: string | null
+          state_code?: string | null
+          status?: string
+          target_slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bigfoot_autogen_queue_generated_page_id_fkey"
+            columns: ["generated_page_id"]
+            isOneToOne: false
+            referencedRelation: "directory_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      carbon_credit_transactions: {
+        Row: {
+          amount: number
+          blockchain_tx_hash: string | null
+          created_at: string
+          credit_id: string
+          from_user_id: string | null
+          id: string
+          price_per_credit: number | null
+          status: string
+          to_user_id: string | null
+          transaction_type: string
+        }
+        Insert: {
+          amount: number
+          blockchain_tx_hash?: string | null
+          created_at?: string
+          credit_id: string
+          from_user_id?: string | null
+          id?: string
+          price_per_credit?: number | null
+          status?: string
+          to_user_id?: string | null
+          transaction_type: string
+        }
+        Update: {
+          amount?: number
+          blockchain_tx_hash?: string | null
+          created_at?: string
+          credit_id?: string
+          from_user_id?: string | null
+          id?: string
+          price_per_credit?: number | null
+          status?: string
+          to_user_id?: string | null
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "carbon_credit_transactions_credit_id_fkey"
+            columns: ["credit_id"]
+            isOneToOne: false
+            referencedRelation: "carbon_credits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      carbon_credits: {
+        Row: {
+          blockchain_tx_hash: string | null
+          calculation_date: string
+          created_at: string
+          credits_earned: number
+          field_name: string
+          field_size_acres: number
+          id: string
+          metadata: Json | null
+          soil_organic_matter: number | null
+          updated_at: string
+          user_id: string
+          verification_status: string
+        }
+        Insert: {
+          blockchain_tx_hash?: string | null
+          calculation_date?: string
+          created_at?: string
+          credits_earned: number
+          field_name: string
+          field_size_acres: number
+          id?: string
+          metadata?: Json | null
+          soil_organic_matter?: number | null
+          updated_at?: string
+          user_id: string
+          verification_status?: string
+        }
+        Update: {
+          blockchain_tx_hash?: string | null
+          calculation_date?: string
+          created_at?: string
+          credits_earned?: number
+          field_name?: string
+          field_size_acres?: number
+          id?: string
+          metadata?: Json | null
+          soil_organic_matter?: number | null
+          updated_at?: string
+          user_id?: string
+          verification_status?: string
+        }
+        Relationships: []
+      }
+      client_telemetry_events: {
+        Row: {
+          api_key_prefix: string | null
+          api_key_tier: string | null
+          app_version: string | null
+          client_install_id: string | null
+          client_version: string | null
+          created_at: string
+          error_message: string | null
+          error_stack: string | null
+          event_id: string
+          event_name: string
+          event_type: string
+          id: string
+          ip_hash: string | null
+          latency_ms: number | null
+          metadata: Json | null
+          os: string | null
+          platform: string | null
+          properties: Json | null
+          runtime_version: string | null
+          severity: string | null
+          status_code: number | null
+          surface: string
+          timestamp: string
+          tool_name: string | null
+          user_id: string | null
+        }
+        Insert: {
+          api_key_prefix?: string | null
+          api_key_tier?: string | null
+          app_version?: string | null
+          client_install_id?: string | null
+          client_version?: string | null
+          created_at?: string
+          error_message?: string | null
+          error_stack?: string | null
+          event_id?: string
+          event_name?: string
+          event_type: string
+          id?: string
+          ip_hash?: string | null
+          latency_ms?: number | null
+          metadata?: Json | null
+          os?: string | null
+          platform?: string | null
+          properties?: Json | null
+          runtime_version?: string | null
+          severity?: string | null
+          status_code?: number | null
+          surface: string
+          timestamp?: string
+          tool_name?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          api_key_prefix?: string | null
+          api_key_tier?: string | null
+          app_version?: string | null
+          client_install_id?: string | null
+          client_version?: string | null
+          created_at?: string
+          error_message?: string | null
+          error_stack?: string | null
+          event_id?: string
+          event_name?: string
+          event_type?: string
+          id?: string
+          ip_hash?: string | null
+          latency_ms?: number | null
+          metadata?: Json | null
+          os?: string | null
+          platform?: string | null
+          properties?: Json | null
+          runtime_version?: string | null
+          severity?: string | null
+          status_code?: number | null
+          surface?: string
+          timestamp?: string
+          tool_name?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      compliance_audit_log: {
+        Row: {
+          actual_completion_date: string | null
+          compliance_domain: string
+          control_objective: string
+          corrective_actions: string[] | null
+          created_at: string
+          evidence_collected: Json | null
+          finding_status: string
+          id: string
+          responsible_party: string | null
+          risk_level: string | null
+          target_completion_date: string | null
+          test_procedure: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          actual_completion_date?: string | null
+          compliance_domain: string
+          control_objective: string
+          corrective_actions?: string[] | null
+          created_at?: string
+          evidence_collected?: Json | null
+          finding_status?: string
+          id?: string
+          responsible_party?: string | null
+          risk_level?: string | null
+          target_completion_date?: string | null
+          test_procedure?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          actual_completion_date?: string | null
+          compliance_domain?: string
+          control_objective?: string
+          corrective_actions?: string[] | null
+          created_at?: string
+          evidence_collected?: Json | null
+          finding_status?: string
+          id?: string
+          responsible_party?: string | null
+          risk_level?: string | null
+          target_completion_date?: string | null
+          test_procedure?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      comprehensive_audit_log: {
+        Row: {
+          changed_fields: string[] | null
+          compliance_tags: string[] | null
+          created_at: string
+          id: string
+          ip_address: unknown
+          metadata: Json | null
+          new_values: Json | null
+          old_values: Json | null
+          operation: string
+          record_id: string | null
+          retention_period: string | null
+          risk_level: string | null
+          session_id: string | null
+          table_name: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          changed_fields?: string[] | null
+          compliance_tags?: string[] | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown
+          metadata?: Json | null
+          new_values?: Json | null
+          old_values?: Json | null
+          operation: string
+          record_id?: string | null
+          retention_period?: string | null
+          risk_level?: string | null
+          session_id?: string | null
+          table_name: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          changed_fields?: string[] | null
+          compliance_tags?: string[] | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown
+          metadata?: Json | null
+          new_values?: Json | null
+          old_values?: Json | null
+          operation?: string
+          record_id?: string | null
+          retention_period?: string | null
+          risk_level?: string | null
+          session_id?: string | null
+          table_name?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      conversion_funnel: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          source_channel: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          source_channel?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          source_channel?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      correlation_edges: {
+        Row: {
+          causal_direction: string | null
+          co_occurrence_count: number
+          correlation_weight: number
+          created_at: string
+          fips_code: string | null
+          first_observed_at: string
+          id: string
+          is_significant: boolean
+          last_observed_at: string
+          observation_window_days: number
+          p_value: number | null
+          state_code: string | null
+          updated_at: string
+          variable_a: string
+          variable_b: string
+        }
+        Insert: {
+          causal_direction?: string | null
+          co_occurrence_count?: number
+          correlation_weight?: number
+          created_at?: string
+          fips_code?: string | null
+          first_observed_at?: string
+          id?: string
+          is_significant?: boolean
+          last_observed_at?: string
+          observation_window_days?: number
+          p_value?: number | null
+          state_code?: string | null
+          updated_at?: string
+          variable_a: string
+          variable_b: string
+        }
+        Update: {
+          causal_direction?: string | null
+          co_occurrence_count?: number
+          correlation_weight?: number
+          created_at?: string
+          fips_code?: string | null
+          first_observed_at?: string
+          id?: string
+          is_significant?: boolean
+          last_observed_at?: string
+          observation_window_days?: number
+          p_value?: number | null
+          state_code?: string | null
+          updated_at?: string
+          variable_a?: string
+          variable_b?: string
+        }
+        Relationships: []
+      }
+      cost_alerts: {
+        Row: {
+          alert_frequency: string
+          alert_name: string
+          created_at: string
+          current_amount: number
+          id: string
+          is_active: boolean
+          last_triggered_at: string | null
+          notification_emails: string[] | null
+          service_provider: string | null
+          threshold_amount: number
+          threshold_percentage: number
+          threshold_type: string
+          updated_at: string
+        }
+        Insert: {
+          alert_frequency?: string
+          alert_name: string
+          created_at?: string
+          current_amount?: number
+          id?: string
+          is_active?: boolean
+          last_triggered_at?: string | null
+          notification_emails?: string[] | null
+          service_provider?: string | null
+          threshold_amount: number
+          threshold_percentage?: number
+          threshold_type: string
+          updated_at?: string
+        }
+        Update: {
+          alert_frequency?: string
+          alert_name?: string
+          created_at?: string
+          current_amount?: number
+          id?: string
+          is_active?: boolean
+          last_triggered_at?: string | null
+          notification_emails?: string[] | null
+          service_provider?: string | null
+          threshold_amount?: number
+          threshold_percentage?: number
+          threshold_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      cost_tracking: {
+        Row: {
+          cost_usd: number
+          created_at: string
+          date_bucket: string
+          feature_name: string
+          hour_bucket: string
+          id: string
+          request_details: Json | null
+          service_provider: string
+          service_type: string
+          usage_count: number
+          user_id: string | null
+        }
+        Insert: {
+          cost_usd?: number
+          created_at?: string
+          date_bucket?: string
+          feature_name: string
+          hour_bucket?: string
+          id?: string
+          request_details?: Json | null
+          service_provider: string
+          service_type: string
+          usage_count?: number
+          user_id?: string | null
+        }
+        Update: {
+          cost_usd?: number
+          created_at?: string
+          date_bucket?: string
+          feature_name?: string
+          hour_bucket?: string
+          id?: string
+          request_details?: Json | null
+          service_provider?: string
+          service_type?: string
+          usage_count?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      counties: {
+        Row: {
+          county_name: string
+          created_at: string
+          fips_code: string
+          id: string
+          state_code: string
+          state_name: string
+        }
+        Insert: {
+          county_name: string
+          created_at?: string
+          fips_code: string
+          id?: string
+          state_code: string
+          state_name: string
+        }
+        Update: {
+          county_name?: string
+          created_at?: string
+          fips_code?: string
+          id?: string
+          state_code?: string
+          state_name?: string
+        }
+        Relationships: []
+      }
+      county_search_sessions: {
+        Row: {
+          created_at: string
+          database_results: Json | null
+          expires_at: string
+          external_results: Json | null
+          id: string
+          search_context: Json
+          selected_county: Json | null
+          session_token: string
+          state_transitions: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          database_results?: Json | null
+          expires_at?: string
+          external_results?: Json | null
+          id?: string
+          search_context: Json
+          selected_county?: Json | null
+          session_token: string
+          state_transitions?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          database_results?: Json | null
+          expires_at?: string
+          external_results?: Json | null
+          id?: string
+          search_context?: Json
+          selected_county?: Json | null
+          session_token?: string
+          state_transitions?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      data_classification: {
+        Row: {
+          access_logging_required: boolean | null
+          approval_required_for_access: boolean | null
+          classification_level: string
+          compliance_requirements: string[] | null
+          created_at: string
+          data_retention_days: number | null
+          encryption_required: boolean | null
+          id: string
+          table_name: string
+          updated_at: string
+        }
+        Insert: {
+          access_logging_required?: boolean | null
+          approval_required_for_access?: boolean | null
+          classification_level: string
+          compliance_requirements?: string[] | null
+          created_at?: string
+          data_retention_days?: number | null
+          encryption_required?: boolean | null
+          id?: string
+          table_name: string
+          updated_at?: string
+        }
+        Update: {
+          access_logging_required?: boolean | null
+          approval_required_for_access?: boolean | null
+          classification_level?: string
+          compliance_requirements?: string[] | null
+          created_at?: string
+          data_retention_days?: number | null
+          encryption_required?: boolean | null
+          id?: string
+          table_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      directory_pages: {
+        Row: {
+          canonical_url: string | null
+          content: Json
+          country_code: string | null
+          county_name: string | null
+          created_at: string
+          data_maturity: string
+          fips_code: string | null
+          id: string
+          is_indexable: boolean
+          is_published: boolean
+          last_source_query_at: string | null
+          layer_depth: number
+          mega_directory: string
+          meta_description: string | null
+          page_type: string
+          parent_hub_id: string | null
+          sitemap_priority: number
+          slug: string
+          source_query_count: number
+          state_code: string | null
+          summary_text: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          canonical_url?: string | null
+          content?: Json
+          country_code?: string | null
+          county_name?: string | null
+          created_at?: string
+          data_maturity?: string
+          fips_code?: string | null
+          id?: string
+          is_indexable?: boolean
+          is_published?: boolean
+          last_source_query_at?: string | null
+          layer_depth?: number
+          mega_directory: string
+          meta_description?: string | null
+          page_type: string
+          parent_hub_id?: string | null
+          sitemap_priority?: number
+          slug: string
+          source_query_count?: number
+          state_code?: string | null
+          summary_text?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          canonical_url?: string | null
+          content?: Json
+          country_code?: string | null
+          county_name?: string | null
+          created_at?: string
+          data_maturity?: string
+          fips_code?: string | null
+          id?: string
+          is_indexable?: boolean
+          is_published?: boolean
+          last_source_query_at?: string | null
+          layer_depth?: number
+          mega_directory?: string
+          meta_description?: string | null
+          page_type?: string
+          parent_hub_id?: string | null
+          sitemap_priority?: number
+          slug?: string
+          source_query_count?: number
+          state_code?: string | null
+          summary_text?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "directory_pages_parent_hub_id_fkey"
+            columns: ["parent_hub_id"]
+            isOneToOne: false
+            referencedRelation: "directory_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      directory_slug_rules: {
+        Row: {
+          auto_publish_threshold: number
+          content_template: Json
+          created_at: string
+          entity_type: string
+          example_slug: string
+          id: string
+          mega_directory: string
+          meta_pattern: string | null
+          slug_pattern: string
+          title_pattern: string
+          updated_at: string
+        }
+        Insert: {
+          auto_publish_threshold?: number
+          content_template?: Json
+          created_at?: string
+          entity_type: string
+          example_slug: string
+          id?: string
+          mega_directory: string
+          meta_pattern?: string | null
+          slug_pattern: string
+          title_pattern: string
+          updated_at?: string
+        }
+        Update: {
+          auto_publish_threshold?: number
+          content_template?: Json
+          created_at?: string
+          entity_type?: string
+          example_slug?: string
+          id?: string
+          mega_directory?: string
+          meta_pattern?: string | null
+          slug_pattern?: string
+          title_pattern?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      edge_function_logs: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          function_name: string
+          id: string
+          request_path: string | null
+          status_code: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          function_name: string
+          id?: string
+          request_path?: string | null
+          status_code?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          function_name?: string
+          id?: string
+          request_path?: string | null
+          status_code?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      endpoint_activity_snapshots: {
+        Row: {
+          avg_ms: number | null
+          channel: string
+          created_at: string
+          endpoint: string
+          failures: number
+          id: string
+          metadata: Json | null
+          p95_ms: number | null
+          rate_limited: number
+          requests: number
+          window_end: string
+          window_start: string
+        }
+        Insert: {
+          avg_ms?: number | null
+          channel: string
+          created_at?: string
+          endpoint: string
+          failures?: number
+          id?: string
+          metadata?: Json | null
+          p95_ms?: number | null
+          rate_limited?: number
+          requests?: number
+          window_end: string
+          window_start: string
+        }
+        Update: {
+          avg_ms?: number | null
+          channel?: string
+          created_at?: string
+          endpoint?: string
+          failures?: number
+          id?: string
+          metadata?: Json | null
+          p95_ms?: number | null
+          rate_limited?: number
+          requests?: number
+          window_end?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
+      endpoint_digest_log: {
+        Row: {
+          channels_summary: Json | null
+          created_at: string
+          error: string | null
+          id: string
+          recipients: string[]
+          sent_at: string
+          status: string
+          total_failures: number
+          total_rate_limited: number
+          total_requests: number
+          window_end: string
+          window_hours: number
+          window_start: string
+        }
+        Insert: {
+          channels_summary?: Json | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          recipients: string[]
+          sent_at?: string
+          status?: string
+          total_failures?: number
+          total_rate_limited?: number
+          total_requests?: number
+          window_end: string
+          window_hours: number
+          window_start: string
+        }
+        Update: {
+          channels_summary?: Json | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          recipients?: string[]
+          sent_at?: string
+          status?: string
+          total_failures?: number
+          total_rate_limited?: number
+          total_requests?: number
+          window_end?: string
+          window_hours?: number
+          window_start?: string
+        }
+        Relationships: []
+      }
+      environmental_impact_scores: {
+        Row: {
+          analysis_id: string | null
+          biodiversity_impact: string | null
+          carbon_footprint_score: number | null
+          contamination_risk: string | null
+          county_fips: string
+          created_at: string
+          eco_friendly_alternatives: Json | null
+          id: string
+          runoff_risk_score: number
+          updated_at: string
+          user_id: string
+          water_body_proximity: number | null
+        }
+        Insert: {
+          analysis_id?: string | null
+          biodiversity_impact?: string | null
+          carbon_footprint_score?: number | null
+          contamination_risk?: string | null
+          county_fips: string
+          created_at?: string
+          eco_friendly_alternatives?: Json | null
+          id?: string
+          runoff_risk_score: number
+          updated_at?: string
+          user_id: string
+          water_body_proximity?: number | null
+        }
+        Update: {
+          analysis_id?: string | null
+          biodiversity_impact?: string | null
+          carbon_footprint_score?: number | null
+          contamination_risk?: string | null
+          county_fips?: string
+          created_at?: string
+          eco_friendly_alternatives?: Json | null
+          id?: string
+          runoff_risk_score?: number
+          updated_at?: string
+          user_id?: string
+          water_body_proximity?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "environmental_impact_scores_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
+            referencedRelation: "soil_analyses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fields: {
+        Row: {
+          area_acres: number | null
+          boundary_coordinates: Json
+          created_at: string
+          crop_type: string | null
+          description: string | null
+          harvest_date: string | null
+          id: string
+          name: string
+          planting_date: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          area_acres?: number | null
+          boundary_coordinates: Json
+          created_at?: string
+          crop_type?: string | null
+          description?: string | null
+          harvest_date?: string | null
+          id?: string
+          name: string
+          planting_date?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          area_acres?: number | null
+          boundary_coordinates?: Json
+          created_at?: string
+          crop_type?: string | null
+          description?: string | null
+          harvest_date?: string | null
+          id?: string
+          name?: string
+          planting_date?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      fips_data_cache: {
+        Row: {
+          access_count: number | null
+          cache_key: string
+          cache_level: number
+          cached_data: Json
+          country_code: string | null
+          county_fips: string
+          coverage_tier: string | null
+          created_at: string
+          data_source: string
+          expires_at: string
+          id: string
+          last_accessed: string | null
+          location_geog: unknown
+          region: string | null
+          resolution_m: number | null
+          source: string | null
+        }
+        Insert: {
+          access_count?: number | null
+          cache_key: string
+          cache_level: number
+          cached_data: Json
+          country_code?: string | null
+          county_fips: string
+          coverage_tier?: string | null
+          created_at?: string
+          data_source: string
+          expires_at?: string
+          id?: string
+          last_accessed?: string | null
+          location_geog?: unknown
+          region?: string | null
+          resolution_m?: number | null
+          source?: string | null
+        }
+        Update: {
+          access_count?: number | null
+          cache_key?: string
+          cache_level?: number
+          cached_data?: Json
+          country_code?: string | null
+          county_fips?: string
+          coverage_tier?: string | null
+          created_at?: string
+          data_source?: string
+          expires_at?: string
+          id?: string
+          last_accessed?: string | null
+          location_geog?: unknown
+          region?: string | null
+          resolution_m?: number | null
+          source?: string | null
+        }
+        Relationships: []
+      }
+      geo_consumption_analytics: {
+        Row: {
+          consumption_frequency: number | null
+          county_fips: string
+          created_at: string
+          geographic_cluster: string | null
+          id: string
+          month_year: string
+          seasonal_pattern: Json | null
+          state_code: string
+          tier_progression_score: number | null
+          updated_at: string
+          upgrade_probability: number | null
+          usage_pattern: Json
+          user_id: string
+        }
+        Insert: {
+          consumption_frequency?: number | null
+          county_fips: string
+          created_at?: string
+          geographic_cluster?: string | null
+          id?: string
+          month_year?: string
+          seasonal_pattern?: Json | null
+          state_code: string
+          tier_progression_score?: number | null
+          updated_at?: string
+          upgrade_probability?: number | null
+          usage_pattern: Json
+          user_id: string
+        }
+        Update: {
+          consumption_frequency?: number | null
+          county_fips?: string
+          created_at?: string
+          geographic_cluster?: string | null
+          id?: string
+          month_year?: string
+          seasonal_pattern?: Json | null
+          state_code?: string
+          tier_progression_score?: number | null
+          updated_at?: string
+          upgrade_probability?: number | null
+          usage_pattern?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      kpi_history: {
+        Row: {
+          date_bucket: string
+          id: string
+          kpi_name: string
+          metadata: Json | null
+          recorded_at: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          date_bucket?: string
+          id?: string
+          kpi_name: string
+          metadata?: Json | null
+          recorded_at?: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          date_bucket?: string
+          id?: string
+          kpi_name?: string
+          metadata?: Json | null
+          recorded_at?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
+      kpi_targets: {
+        Row: {
+          created_at: string
+          id: string
+          kpi_name: string
+          target_period: string
+          target_value: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kpi_name: string
+          target_period: string
+          target_value: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kpi_name?: string
+          target_period?: string
+          target_value?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      managed_assets: {
+        Row: {
+          asset_type: string
+          canopy_spread_feet: number | null
+          common_name: string | null
+          condition_rating: string | null
+          created_at: string
+          custom_fields: Json | null
+          dbh_inches: number | null
+          external_id: string | null
+          geometry: Json | null
+          height_feet: number | null
+          id: string
+          is_deleted: boolean
+          is_public: boolean
+          last_inspection_date: string | null
+          last_synced_at: string | null
+          latitude: number | null
+          longitude: number | null
+          maintenance_priority: number | null
+          next_inspection_due: string | null
+          notes: string | null
+          risk_rating: string | null
+          species: string | null
+          sync_source: string | null
+          sync_status: string | null
+          updated_at: string
+          user_id: string
+          version: number
+        }
+        Insert: {
+          asset_type: string
+          canopy_spread_feet?: number | null
+          common_name?: string | null
+          condition_rating?: string | null
+          created_at?: string
+          custom_fields?: Json | null
+          dbh_inches?: number | null
+          external_id?: string | null
+          geometry?: Json | null
+          height_feet?: number | null
+          id?: string
+          is_deleted?: boolean
+          is_public?: boolean
+          last_inspection_date?: string | null
+          last_synced_at?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          maintenance_priority?: number | null
+          next_inspection_due?: string | null
+          notes?: string | null
+          risk_rating?: string | null
+          species?: string | null
+          sync_source?: string | null
+          sync_status?: string | null
+          updated_at?: string
+          user_id: string
+          version?: number
+        }
+        Update: {
+          asset_type?: string
+          canopy_spread_feet?: number | null
+          common_name?: string | null
+          condition_rating?: string | null
+          created_at?: string
+          custom_fields?: Json | null
+          dbh_inches?: number | null
+          external_id?: string | null
+          geometry?: Json | null
+          height_feet?: number | null
+          id?: string
+          is_deleted?: boolean
+          is_public?: boolean
+          last_inspection_date?: string | null
+          last_synced_at?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          maintenance_priority?: number | null
+          next_inspection_due?: string | null
+          notes?: string | null
+          risk_rating?: string | null
+          species?: string | null
+          sync_source?: string | null
+          sync_status?: string | null
+          updated_at?: string
+          user_id?: string
+          version?: number
+        }
+        Relationships: []
+      }
+      mcp_tool_call_log: {
+        Row: {
+          access_source: string | null
+          api_key_hash: string | null
+          client_instance_id: string | null
+          context_mode: string | null
+          correlation_id: string | null
+          created_at: string
+          downstream_endpoint: string | null
+          error_message: string | null
+          id: string
+          is_batch: boolean | null
+          is_initialize: boolean | null
+          is_list: boolean | null
+          jsonrpc_id: string | null
+          kv_cache_hint: string | null
+          preferred_model_tier: string | null
+          response_status: number | null
+          response_time_ms: number | null
+          sdk: string | null
+          source_ip: string | null
+          success: boolean
+          tool_arguments: Json | null
+          tool_name: string
+          user_agent: string | null
+        }
+        Insert: {
+          access_source?: string | null
+          api_key_hash?: string | null
+          client_instance_id?: string | null
+          context_mode?: string | null
+          correlation_id?: string | null
+          created_at?: string
+          downstream_endpoint?: string | null
+          error_message?: string | null
+          id?: string
+          is_batch?: boolean | null
+          is_initialize?: boolean | null
+          is_list?: boolean | null
+          jsonrpc_id?: string | null
+          kv_cache_hint?: string | null
+          preferred_model_tier?: string | null
+          response_status?: number | null
+          response_time_ms?: number | null
+          sdk?: string | null
+          source_ip?: string | null
+          success?: boolean
+          tool_arguments?: Json | null
+          tool_name: string
+          user_agent?: string | null
+        }
+        Update: {
+          access_source?: string | null
+          api_key_hash?: string | null
+          client_instance_id?: string | null
+          context_mode?: string | null
+          correlation_id?: string | null
+          created_at?: string
+          downstream_endpoint?: string | null
+          error_message?: string | null
+          id?: string
+          is_batch?: boolean | null
+          is_initialize?: boolean | null
+          is_list?: boolean | null
+          jsonrpc_id?: string | null
+          kv_cache_hint?: string | null
+          preferred_model_tier?: string | null
+          response_status?: number | null
+          response_time_ms?: number | null
+          sdk?: string | null
+          source_ip?: string | null
+          success?: boolean
+          tool_arguments?: Json | null
+          tool_name?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      model_benchmark_results: {
+        Row: {
+          benchmark_id: string
+          id: string
+          latency_ms: number | null
+          model_id: string
+          ran_at: string
+          raw_output: Json | null
+          score: number
+          tokens_used: number | null
+        }
+        Insert: {
+          benchmark_id: string
+          id?: string
+          latency_ms?: number | null
+          model_id: string
+          ran_at?: string
+          raw_output?: Json | null
+          score: number
+          tokens_used?: number | null
+        }
+        Update: {
+          benchmark_id?: string
+          id?: string
+          latency_ms?: number | null
+          model_id?: string
+          ran_at?: string
+          raw_output?: Json | null
+          score?: number
+          tokens_used?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "model_benchmark_results_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "model_capabilities"
+            referencedColumns: ["model_id"]
+          },
+        ]
+      }
+      model_capabilities: {
+        Row: {
+          active: boolean
+          api_key_env_var: string
+          base_url: string | null
+          context_window: number
+          created_at: string
+          deprecated: boolean
+          deprecation_note: string | null
+          display_name: string
+          id: string
+          input_cost_per_1m: number | null
+          latency_p50_ms: number | null
+          latency_p99_ms: number | null
+          model_id: string
+          output_cost_per_1m: number | null
+          provider: string
+          quality_ag_response: number | null
+          quality_intent_analysis: number | null
+          quality_overall: number | null
+          quality_reasoning_depth: number | null
+          quality_structured_json: number | null
+          release_date: string | null
+          routing_weight: number
+          supports_streaming: boolean
+          supports_structured_output: boolean
+          supports_tool_use: boolean
+          supports_vision: boolean
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          api_key_env_var?: string
+          base_url?: string | null
+          context_window?: number
+          created_at?: string
+          deprecated?: boolean
+          deprecation_note?: string | null
+          display_name: string
+          id?: string
+          input_cost_per_1m?: number | null
+          latency_p50_ms?: number | null
+          latency_p99_ms?: number | null
+          model_id: string
+          output_cost_per_1m?: number | null
+          provider: string
+          quality_ag_response?: number | null
+          quality_intent_analysis?: number | null
+          quality_overall?: number | null
+          quality_reasoning_depth?: number | null
+          quality_structured_json?: number | null
+          release_date?: string | null
+          routing_weight?: number
+          supports_streaming?: boolean
+          supports_structured_output?: boolean
+          supports_tool_use?: boolean
+          supports_vision?: boolean
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          api_key_env_var?: string
+          base_url?: string | null
+          context_window?: number
+          created_at?: string
+          deprecated?: boolean
+          deprecation_note?: string | null
+          display_name?: string
+          id?: string
+          input_cost_per_1m?: number | null
+          latency_p50_ms?: number | null
+          latency_p99_ms?: number | null
+          model_id?: string
+          output_cost_per_1m?: number | null
+          provider?: string
+          quality_ag_response?: number | null
+          quality_intent_analysis?: number | null
+          quality_overall?: number | null
+          quality_reasoning_depth?: number | null
+          quality_structured_json?: number | null
+          release_date?: string | null
+          routing_weight?: number
+          supports_streaming?: boolean
+          supports_structured_output?: boolean
+          supports_tool_use?: boolean
+          supports_vision?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      model_routing_log: {
+        Row: {
+          cost_usd: number | null
+          created_at: string
+          error_message: string | null
+          feature_name: string | null
+          id: string
+          input_tokens: number | null
+          intended_model: string | null
+          latency_ms: number | null
+          model_id: string
+          output_tokens: number | null
+          provider: string
+          success: boolean
+          task_type: string
+          user_id: string | null
+          was_fallback: boolean
+        }
+        Insert: {
+          cost_usd?: number | null
+          created_at?: string
+          error_message?: string | null
+          feature_name?: string | null
+          id?: string
+          input_tokens?: number | null
+          intended_model?: string | null
+          latency_ms?: number | null
+          model_id: string
+          output_tokens?: number | null
+          provider: string
+          success?: boolean
+          task_type: string
+          user_id?: string | null
+          was_fallback?: boolean
+        }
+        Update: {
+          cost_usd?: number | null
+          created_at?: string
+          error_message?: string | null
+          feature_name?: string | null
+          id?: string
+          input_tokens?: number | null
+          intended_model?: string | null
+          latency_ms?: number | null
+          model_id?: string
+          output_tokens?: number | null
+          provider?: string
+          success?: boolean
+          task_type?: string
+          user_id?: string | null
+          was_fallback?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "model_routing_log_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "model_capabilities"
+            referencedColumns: ["model_id"]
+          },
+          {
+            foreignKeyName: "model_routing_log_task_type_fkey"
+            columns: ["task_type"]
+            isOneToOne: false
+            referencedRelation: "model_task_types"
+            referencedColumns: ["task_type"]
+          },
+        ]
+      }
+      model_task_types: {
+        Row: {
+          created_at: string
+          display_name: string
+          fallback_chain: string[]
+          id: string
+          min_context_window: number
+          min_quality_overall: number
+          optimization_priority: string
+          requires_structured_output: boolean
+          requires_tool_use: boolean
+          requires_vision: boolean
+          task_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name: string
+          fallback_chain?: string[]
+          id?: string
+          min_context_window?: number
+          min_quality_overall?: number
+          optimization_priority?: string
+          requires_structured_output?: boolean
+          requires_tool_use?: boolean
+          requires_vision?: boolean
+          task_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          fallback_chain?: string[]
+          id?: string
+          min_context_window?: number
+          min_quality_overall?: number
+          optimization_priority?: string
+          requires_structured_output?: boolean
+          requires_tool_use?: boolean
+          requires_vision?: boolean
+          task_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      oauth_tokens: {
+        Row: {
+          api_key_hash: string | null
+          client_id: string
+          created_at: string | null
+          expires_at: string
+          jti: string
+          revoked: boolean
+          scope: string
+          user_id: string
+        }
+        Insert: {
+          api_key_hash?: string | null
+          client_id: string
+          created_at?: string | null
+          expires_at: string
+          jti: string
+          revoked?: boolean
+          scope?: string
+          user_id: string
+        }
+        Update: {
+          api_key_hash?: string | null
+          client_id?: string
+          created_at?: string | null
+          expires_at?: string
+          jti?: string
+          revoked?: boolean
+          scope?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      plant_query_history: {
+        Row: {
+          created_at: string
+          id: string
+          plant_name: string
+          query_details: Json | null
+          query_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          plant_name: string
+          query_details?: Json | null
+          query_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          plant_name?: string
+          query_details?: Json | null
+          query_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      planting_optimizations: {
+        Row: {
+          alternative_crops: Json | null
+          climate_factors: Json
+          county_fips: string
+          created_at: string
+          crop_type: string
+          id: string
+          optimal_planting_window: Json
+          risk_assessment: Json | null
+          soil_factors: Json
+          sustainability_score: number | null
+          updated_at: string
+          user_id: string
+          yield_prediction: number | null
+        }
+        Insert: {
+          alternative_crops?: Json | null
+          climate_factors: Json
+          county_fips: string
+          created_at?: string
+          crop_type: string
+          id?: string
+          optimal_planting_window: Json
+          risk_assessment?: Json | null
+          soil_factors: Json
+          sustainability_score?: number | null
+          updated_at?: string
+          user_id: string
+          yield_prediction?: number | null
+        }
+        Update: {
+          alternative_crops?: Json | null
+          climate_factors?: Json
+          county_fips?: string
+          created_at?: string
+          crop_type?: string
+          id?: string
+          optimal_planting_window?: Json
+          risk_assessment?: Json | null
+          soil_factors?: Json
+          sustainability_score?: number | null
+          updated_at?: string
+          user_id?: string
+          yield_prediction?: number | null
+        }
+        Relationships: []
+      }
+      prescription_maps: {
+        Row: {
+          analysis_method: string | null
+          application_type: string
+          applied_at: string | null
+          base_rate: number
+          confidence_score: number | null
+          created_at: string
+          crop_type: string | null
+          estimated_savings: number | null
+          export_format: string | null
+          exported_at: string | null
+          field_id: string | null
+          id: string
+          map_name: string
+          notes: string | null
+          rate_unit: string
+          soil_analysis_id: string | null
+          status: string
+          target_yield: number | null
+          total_zones: number
+          updated_at: string
+          user_id: string
+          zones: Json
+        }
+        Insert: {
+          analysis_method?: string | null
+          application_type: string
+          applied_at?: string | null
+          base_rate: number
+          confidence_score?: number | null
+          created_at?: string
+          crop_type?: string | null
+          estimated_savings?: number | null
+          export_format?: string | null
+          exported_at?: string | null
+          field_id?: string | null
+          id?: string
+          map_name: string
+          notes?: string | null
+          rate_unit: string
+          soil_analysis_id?: string | null
+          status?: string
+          target_yield?: number | null
+          total_zones?: number
+          updated_at?: string
+          user_id: string
+          zones: Json
+        }
+        Update: {
+          analysis_method?: string | null
+          application_type?: string
+          applied_at?: string | null
+          base_rate?: number
+          confidence_score?: number | null
+          created_at?: string
+          crop_type?: string | null
+          estimated_savings?: number | null
+          export_format?: string | null
+          exported_at?: string | null
+          field_id?: string | null
+          id?: string
+          map_name?: string
+          notes?: string | null
+          rate_unit?: string
+          soil_analysis_id?: string | null
+          status?: string
+          target_yield?: number | null
+          total_zones?: number
+          updated_at?: string
+          user_id?: string
+          zones?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescription_maps_field_id_fkey"
+            columns: ["field_id"]
+            isOneToOne: false
+            referencedRelation: "fields"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      privacy_aggregated_snapshots: {
+        Row: {
+          aggregation_scope: string
+          created_at: string
+          data_maturity: string
+          export_at: string | null
+          exported_to: string[] | null
+          fips_code: string | null
+          id: string
+          is_exportable: boolean
+          mega_directory_distribution: Json
+          query_type_distribution: Json
+          snapshot_date: string
+          soil_ph_range: Json | null
+          state_code: string | null
+          top_risk_signals: Json | null
+          top_species_requested: Json | null
+          total_queries: number
+          unique_query_hashes: number
+          water_quality_flags: Json | null
+        }
+        Insert: {
+          aggregation_scope: string
+          created_at?: string
+          data_maturity?: string
+          export_at?: string | null
+          exported_to?: string[] | null
+          fips_code?: string | null
+          id?: string
+          is_exportable?: boolean
+          mega_directory_distribution?: Json
+          query_type_distribution?: Json
+          snapshot_date: string
+          soil_ph_range?: Json | null
+          state_code?: string | null
+          top_risk_signals?: Json | null
+          top_species_requested?: Json | null
+          total_queries?: number
+          unique_query_hashes?: number
+          water_quality_flags?: Json | null
+        }
+        Update: {
+          aggregation_scope?: string
+          created_at?: string
+          data_maturity?: string
+          export_at?: string | null
+          exported_to?: string[] | null
+          fips_code?: string | null
+          id?: string
+          is_exportable?: boolean
+          mega_directory_distribution?: Json
+          query_type_distribution?: Json
+          snapshot_date?: string
+          soil_ph_range?: Json | null
+          state_code?: string | null
+          top_risk_signals?: Json | null
+          top_species_requested?: Json | null
+          total_queries?: number
+          unique_query_hashes?: number
+          water_quality_flags?: Json | null
+        }
+        Relationships: []
+      }
+      processed_updates: {
+        Row: {
+          chat_id: number | null
+          command: string | null
+          processed_at: string | null
+          telegram_id: number | null
+          update_id: number
+        }
+        Insert: {
+          chat_id?: number | null
+          command?: string | null
+          processed_at?: string | null
+          telegram_id?: number | null
+          update_id: number
+        }
+        Update: {
+          chat_id?: number | null
+          command?: string | null
+          processed_at?: string | null
+          telegram_id?: number | null
+          update_id?: number
+        }
+        Relationships: []
+      }
+      professional_info: {
+        Row: {
+          created_at: string | null
+          id: string
+          professional_entity: string
+          professional_name: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          professional_entity: string
+          professional_name: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          professional_entity?: string
+          professional_name?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          subscription_ends_at: string | null
+          subscription_starts_at: string | null
+          subscription_status: string | null
+          subscription_tier: string | null
+          trial_ends_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          subscription_ends_at?: string | null
+          subscription_starts_at?: string | null
+          subscription_status?: string | null
+          subscription_tier?: string | null
+          trial_ends_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          subscription_ends_at?: string | null
+          subscription_starts_at?: string | null
+          subscription_status?: string | null
+          subscription_tier?: string | null
+          trial_ends_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pwa_analytics: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          platform: string | null
+          timestamp: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          platform?: string | null
+          timestamp?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          platform?: string | null
+          timestamp?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      rate_limit_counters: {
+        Row: {
+          api_key_hash: string
+          request_count: number
+          window_start: number
+        }
+        Insert: {
+          api_key_hash: string
+          request_count?: number
+          window_start: number
+        }
+        Update: {
+          api_key_hash?: string
+          request_count?: number
+          window_start?: number
+        }
+        Relationships: []
+      }
+      rate_limit_tracking: {
+        Row: {
+          action: string | null
+          created_at: string | null
+          endpoint: string
+          id: string
+          identifier: string
+          request_count: number | null
+          window_end: string | null
+          window_start: string | null
+        }
+        Insert: {
+          action?: string | null
+          created_at?: string | null
+          endpoint: string
+          id?: string
+          identifier: string
+          request_count?: number | null
+          window_end?: string | null
+          window_start?: string | null
+        }
+        Update: {
+          action?: string | null
+          created_at?: string | null
+          endpoint?: string
+          id?: string
+          identifier?: string
+          request_count?: number | null
+          window_end?: string | null
+          window_start?: string | null
+        }
+        Relationships: []
+      }
+      seasonal_task_templates: {
+        Row: {
+          category: Database["public"]["Enums"]["task_category"]
+          created_at: string
+          description: string | null
+          estimated_duration_hours: number | null
+          id: string
+          priority: string | null
+          recommended_for_crops: string[] | null
+          task_name: string
+          typical_season: string | null
+          typical_timing_notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["task_category"]
+          created_at?: string
+          description?: string | null
+          estimated_duration_hours?: number | null
+          id?: string
+          priority?: string | null
+          recommended_for_crops?: string[] | null
+          task_name: string
+          typical_season?: string | null
+          typical_timing_notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["task_category"]
+          created_at?: string
+          description?: string | null
+          estimated_duration_hours?: number | null
+          id?: string
+          priority?: string | null
+          recommended_for_crops?: string[] | null
+          task_name?: string
+          typical_season?: string | null
+          typical_timing_notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      security_audit_log: {
+        Row: {
+          created_at: string
+          details: Json | null
+          event_type: string
+          id: string
+          ip_address: unknown
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      security_incidents: {
+        Row: {
+          created_at: string | null
+          endpoint: string | null
+          id: string
+          incident_details: Json | null
+          incident_type: string
+          request_payload: Json | null
+          resolved_at: string | null
+          response_status: number | null
+          severity: string
+          source_ip: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          endpoint?: string | null
+          id?: string
+          incident_details?: Json | null
+          incident_type: string
+          request_payload?: Json | null
+          resolved_at?: string | null
+          response_status?: number | null
+          severity: string
+          source_ip?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          endpoint?: string | null
+          id?: string
+          incident_details?: Json | null
+          incident_type?: string
+          request_payload?: Json | null
+          resolved_at?: string | null
+          response_status?: number | null
+          severity?: string
+          source_ip?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      security_monitoring: {
+        Row: {
+          auto_blocked: boolean | null
+          created_at: string
+          detection_rules: Json | null
+          id: string
+          investigation_status: string | null
+          mitigation_actions: Json | null
+          monitoring_type: string
+          target_ip: unknown
+          target_resource: string | null
+          target_user_id: string | null
+          threat_level: string
+          updated_at: string
+        }
+        Insert: {
+          auto_blocked?: boolean | null
+          created_at?: string
+          detection_rules?: Json | null
+          id?: string
+          investigation_status?: string | null
+          mitigation_actions?: Json | null
+          monitoring_type: string
+          target_ip?: unknown
+          target_resource?: string | null
+          target_user_id?: string | null
+          threat_level: string
+          updated_at?: string
+        }
+        Update: {
+          auto_blocked?: boolean | null
+          created_at?: string
+          detection_rules?: Json | null
+          id?: string
+          investigation_status?: string | null
+          mitigation_actions?: Json | null
+          monitoring_type?: string
+          target_ip?: unknown
+          target_resource?: string | null
+          target_user_id?: string | null
+          threat_level?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sensor_alerts: {
+        Row: {
+          acknowledged: boolean | null
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          alert_type: string
+          created_at: string | null
+          details: Json | null
+          device_id: string
+          id: string
+          message: string
+          severity: string
+          timestamp: string
+        }
+        Insert: {
+          acknowledged?: boolean | null
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type: string
+          created_at?: string | null
+          details?: Json | null
+          device_id: string
+          id?: string
+          message: string
+          severity: string
+          timestamp: string
+        }
+        Update: {
+          acknowledged?: boolean | null
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type?: string
+          created_at?: string | null
+          details?: Json | null
+          device_id?: string
+          id?: string
+          message?: string
+          severity?: string
+          timestamp?: string
+        }
+        Relationships: []
+      }
+      sensor_audit_log: {
+        Row: {
+          created_at: string | null
+          device_id: string
+          error_message: string | null
+          id: string
+          ingestion_id: string
+          processing_time_ms: number
+          readings_count: number | null
+          validation_status: string
+        }
+        Insert: {
+          created_at?: string | null
+          device_id: string
+          error_message?: string | null
+          id?: string
+          ingestion_id: string
+          processing_time_ms: number
+          readings_count?: number | null
+          validation_status: string
+        }
+        Update: {
+          created_at?: string | null
+          device_id?: string
+          error_message?: string | null
+          id?: string
+          ingestion_id?: string
+          processing_time_ms?: number
+          readings_count?: number | null
+          validation_status?: string
+        }
+        Relationships: []
+      }
+      sensor_calibration_log: {
+        Row: {
+          baseline_values: Json | null
+          calibration_interval_days: number
+          calibration_method: string | null
+          created_at: string
+          field_id: string | null
+          id: string
+          last_calibrated_at: string
+          sensor_id: string
+          sensor_type: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          baseline_values?: Json | null
+          calibration_interval_days?: number
+          calibration_method?: string | null
+          created_at?: string
+          field_id?: string | null
+          id?: string
+          last_calibrated_at?: string
+          sensor_id: string
+          sensor_type?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          baseline_values?: Json | null
+          calibration_interval_days?: number
+          calibration_method?: string | null
+          created_at?: string
+          field_id?: string | null
+          id?: string
+          last_calibrated_at?: string
+          sensor_id?: string
+          sensor_type?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sensor_data_quality: {
+        Row: {
+          confidence_factors: Json | null
+          confidence_score: number
+          created_at: string
+          days_since_calibration: number | null
+          drift_details: Json | null
+          drift_detected: boolean
+          drift_percentage: number | null
+          field_id: string | null
+          id: string
+          quality_grade: string
+          raw_values: Json
+          reading_timestamp: string
+          sensor_id: string
+          staleness_warning: boolean
+          user_id: string
+        }
+        Insert: {
+          confidence_factors?: Json | null
+          confidence_score?: number
+          created_at?: string
+          days_since_calibration?: number | null
+          drift_details?: Json | null
+          drift_detected?: boolean
+          drift_percentage?: number | null
+          field_id?: string | null
+          id?: string
+          quality_grade?: string
+          raw_values?: Json
+          reading_timestamp?: string
+          sensor_id: string
+          staleness_warning?: boolean
+          user_id: string
+        }
+        Update: {
+          confidence_factors?: Json | null
+          confidence_score?: number
+          created_at?: string
+          days_since_calibration?: number | null
+          drift_details?: Json | null
+          drift_detected?: boolean
+          drift_percentage?: number | null
+          field_id?: string | null
+          id?: string
+          quality_grade?: string
+          raw_values?: Json
+          reading_timestamp?: string
+          sensor_id?: string
+          staleness_warning?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sensor_devices: {
+        Row: {
+          battery_level: number | null
+          created_at: string | null
+          device_id: string
+          device_type: string
+          farm_id: string | null
+          firmware_version: string | null
+          id: string
+          last_seen_at: string | null
+          signal_strength: number | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          battery_level?: number | null
+          created_at?: string | null
+          device_id: string
+          device_type: string
+          farm_id?: string | null
+          firmware_version?: string | null
+          id?: string
+          last_seen_at?: string | null
+          signal_strength?: number | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          battery_level?: number | null
+          created_at?: string | null
+          device_id?: string
+          device_type?: string
+          farm_id?: string | null
+          firmware_version?: string | null
+          id?: string
+          last_seen_at?: string | null
+          signal_strength?: number | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sensor_devices_farm_id_fkey"
+            columns: ["farm_id"]
+            isOneToOne: false
+            referencedRelation: "fields"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sensor_readings: {
+        Row: {
+          confidence: number | null
+          device_id: string
+          id: string
+          metric: string
+          raw_data: Json | null
+          received_at: string | null
+          timestamp: string
+          unit: string
+          value: number
+        }
+        Insert: {
+          confidence?: number | null
+          device_id: string
+          id?: string
+          metric: string
+          raw_data?: Json | null
+          received_at?: string | null
+          timestamp: string
+          unit: string
+          value: number
+        }
+        Update: {
+          confidence?: number | null
+          device_id?: string
+          id?: string
+          metric?: string
+          raw_data?: Json | null
+          received_at?: string | null
+          timestamp?: string
+          unit?: string
+          value?: number
+        }
+        Relationships: []
+      }
+      soc2_compliance_checks: {
+        Row: {
+          check_name: string
+          check_type: string
+          compliance_score: number | null
+          created_at: string
+          details: Json | null
+          id: string
+          last_checked_at: string
+          next_check_at: string | null
+          remediation_actions: string[] | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          check_name: string
+          check_type: string
+          compliance_score?: number | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+          last_checked_at?: string
+          next_check_at?: string | null
+          remediation_actions?: string[] | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          check_name?: string
+          check_type?: string
+          compliance_score?: number | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+          last_checked_at?: string
+          next_check_at?: string | null
+          remediation_actions?: string[] | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      soil_analyses: {
+        Row: {
+          analysis_data: Json | null
+          county_fips: string
+          county_name: string
+          created_at: string
+          id: string
+          nitrogen_level: string | null
+          organic_matter: number | null
+          ph_level: number | null
+          phosphorus_level: string | null
+          potassium_level: string | null
+          property_address: string | null
+          recommendations: string | null
+          state_code: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analysis_data?: Json | null
+          county_fips: string
+          county_name: string
+          created_at?: string
+          id?: string
+          nitrogen_level?: string | null
+          organic_matter?: number | null
+          ph_level?: number | null
+          phosphorus_level?: string | null
+          potassium_level?: string | null
+          property_address?: string | null
+          recommendations?: string | null
+          state_code: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analysis_data?: Json | null
+          county_fips?: string
+          county_name?: string
+          created_at?: string
+          id?: string
+          nitrogen_level?: string | null
+          organic_matter?: number | null
+          ph_level?: number | null
+          phosphorus_level?: string | null
+          potassium_level?: string | null
+          property_address?: string | null
+          recommendations?: string | null
+          state_code?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      spatial_ref_sys: {
+        Row: {
+          auth_name: string | null
+          auth_srid: number | null
+          proj4text: string | null
+          srid: number
+          srtext: string | null
+        }
+        Insert: {
+          auth_name?: string | null
+          auth_srid?: number | null
+          proj4text?: string | null
+          srid: number
+          srtext?: string | null
+        }
+        Update: {
+          auth_name?: string | null
+          auth_srid?: number | null
+          proj4text?: string | null
+          srid?: number
+          srtext?: string | null
+        }
+        Relationships: []
+      }
+      subscribers: {
+        Row: {
+          created_at: string
+          encrypted_email: string | null
+          encrypted_stripe_customer_id: string | null
+          encryption_version: number | null
+          id: string
+          subscribed: boolean
+          subscription_end: string | null
+          subscription_interval: string | null
+          subscription_tier: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          encrypted_email?: string | null
+          encrypted_stripe_customer_id?: string | null
+          encryption_version?: number | null
+          id?: string
+          subscribed?: boolean
+          subscription_end?: string | null
+          subscription_interval?: string | null
+          subscription_tier?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          encrypted_email?: string | null
+          encrypted_stripe_customer_id?: string | null
+          encryption_version?: number | null
+          id?: string
+          subscribed?: boolean
+          subscription_end?: string | null
+          subscription_interval?: string | null
+          subscription_tier?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      subscription_usages: {
+        Row: {
+          action_type: string
+          county_fips: string | null
+          id: string
+          month_year: string
+          used_at: string
+          user_id: string
+        }
+        Insert: {
+          action_type?: string
+          county_fips?: string | null
+          id?: string
+          month_year?: string
+          used_at?: string
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          county_fips?: string | null
+          id?: string
+          month_year?: string
+          used_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      task_history: {
+        Row: {
+          completed_at: string
+          completion_notes: string | null
+          cost_incurred: number | null
+          created_at: string
+          id: string
+          outcome_rating: number | null
+          photos: Json | null
+          recommendations_for_next_time: string | null
+          user_id: string
+          user_task_id: string
+          weather_during_task: Json | null
+          what_didnt_work: string | null
+          what_worked: string | null
+          yield_notes: string | null
+        }
+        Insert: {
+          completed_at?: string
+          completion_notes?: string | null
+          cost_incurred?: number | null
+          created_at?: string
+          id?: string
+          outcome_rating?: number | null
+          photos?: Json | null
+          recommendations_for_next_time?: string | null
+          user_id: string
+          user_task_id: string
+          weather_during_task?: Json | null
+          what_didnt_work?: string | null
+          what_worked?: string | null
+          yield_notes?: string | null
+        }
+        Update: {
+          completed_at?: string
+          completion_notes?: string | null
+          cost_incurred?: number | null
+          created_at?: string
+          id?: string
+          outcome_rating?: number | null
+          photos?: Json | null
+          recommendations_for_next_time?: string | null
+          user_id?: string
+          user_task_id?: string
+          weather_during_task?: Json | null
+          what_didnt_work?: string | null
+          what_worked?: string | null
+          yield_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_history_user_task_id_fkey"
+            columns: ["user_task_id"]
+            isOneToOne: false
+            referencedRelation: "user_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      telegram_link: {
+        Row: {
+          api_key_id: string
+          created_at: string | null
+          first_name: string | null
+          id: string
+          is_active: boolean | null
+          language_code: string | null
+          last_name: string | null
+          link_code: string | null
+          link_code_expires_at: string | null
+          linked_user_id: string | null
+          telegram_id: number
+          updated_at: string | null
+          username: string | null
+        }
+        Insert: {
+          api_key_id: string
+          created_at?: string | null
+          first_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          language_code?: string | null
+          last_name?: string | null
+          link_code?: string | null
+          link_code_expires_at?: string | null
+          linked_user_id?: string | null
+          telegram_id: number
+          updated_at?: string | null
+          username?: string | null
+        }
+        Update: {
+          api_key_id?: string
+          created_at?: string | null
+          first_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          language_code?: string | null
+          last_name?: string | null
+          link_code?: string | null
+          link_code_expires_at?: string | null
+          linked_user_id?: string | null
+          telegram_id?: number
+          updated_at?: string | null
+          username?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telegram_link_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "active_telegram_users"
+            referencedColumns: ["api_key_id"]
+          },
+          {
+            foreignKeyName: "telegram_link_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      telegram_query_signals: {
+        Row: {
+          command: string
+          correlation_processed: boolean
+          county_name: string | null
+          created_at: string
+          directory_page_created: string | null
+          directory_page_updated: string | null
+          environmental_tags: string[] | null
+          fips_code: string | null
+          id: string
+          model_used: string | null
+          raw_input: string | null
+          response_latency_ms: number | null
+          response_success: boolean
+          risk_signals: string[] | null
+          species_requested: string | null
+          state_code: string | null
+          tier: string
+          tool_name: string | null
+          user_hash: string
+        }
+        Insert: {
+          command: string
+          correlation_processed?: boolean
+          county_name?: string | null
+          created_at?: string
+          directory_page_created?: string | null
+          directory_page_updated?: string | null
+          environmental_tags?: string[] | null
+          fips_code?: string | null
+          id?: string
+          model_used?: string | null
+          raw_input?: string | null
+          response_latency_ms?: number | null
+          response_success?: boolean
+          risk_signals?: string[] | null
+          species_requested?: string | null
+          state_code?: string | null
+          tier?: string
+          tool_name?: string | null
+          user_hash: string
+        }
+        Update: {
+          command?: string
+          correlation_processed?: boolean
+          county_name?: string | null
+          created_at?: string
+          directory_page_created?: string | null
+          directory_page_updated?: string | null
+          environmental_tags?: string[] | null
+          fips_code?: string | null
+          id?: string
+          model_used?: string | null
+          raw_input?: string | null
+          response_latency_ms?: number | null
+          response_success?: boolean
+          risk_signals?: string[] | null
+          species_requested?: string | null
+          state_code?: string | null
+          tier?: string
+          tool_name?: string | null
+          user_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telegram_query_signals_directory_page_created_fkey"
+            columns: ["directory_page_created"]
+            isOneToOne: false
+            referencedRelation: "directory_pages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "telegram_query_signals_directory_page_updated_fkey"
+            columns: ["directory_page_updated"]
+            isOneToOne: false
+            referencedRelation: "directory_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      telemetry_daily_summary: {
+        Row: {
+          avg_latency_ms: number | null
+          created_at: string | null
+          errors: number
+          p95_latency_ms: number | null
+          paid_conversion_pct: number | null
+          paywall_hits: number
+          success_rate_pct: number | null
+          summary_date: string
+          surface: string
+          tool_calls: number
+          top_error: string | null
+          top_tool: string | null
+          total_events: number
+          unique_users: number
+          updated_at: string | null
+        }
+        Insert: {
+          avg_latency_ms?: number | null
+          created_at?: string | null
+          errors?: number
+          p95_latency_ms?: number | null
+          paid_conversion_pct?: number | null
+          paywall_hits?: number
+          success_rate_pct?: number | null
+          summary_date: string
+          surface: string
+          tool_calls?: number
+          top_error?: string | null
+          top_tool?: string | null
+          total_events?: number
+          unique_users?: number
+          updated_at?: string | null
+        }
+        Update: {
+          avg_latency_ms?: number | null
+          created_at?: string | null
+          errors?: number
+          p95_latency_ms?: number | null
+          paid_conversion_pct?: number | null
+          paywall_hits?: number
+          success_rate_pct?: number | null
+          summary_date?: string
+          surface?: string
+          tool_calls?: number
+          top_error?: string | null
+          top_tool?: string | null
+          total_events?: number
+          unique_users?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      telemetry_rollout_milestones: {
+        Row: {
+          actual_completion_date: string | null
+          created_at: string
+          description: string | null
+          evidence_url: string | null
+          expected_user_impact: number | null
+          expected_user_impact_pct: number | null
+          id: string
+          milestone_key: string
+          notes: string | null
+          status: string
+          target_date: string
+          title: string
+          updated_at: string
+          week_label: string
+        }
+        Insert: {
+          actual_completion_date?: string | null
+          created_at?: string
+          description?: string | null
+          evidence_url?: string | null
+          expected_user_impact?: number | null
+          expected_user_impact_pct?: number | null
+          id?: string
+          milestone_key: string
+          notes?: string | null
+          status?: string
+          target_date: string
+          title: string
+          updated_at?: string
+          week_label: string
+        }
+        Update: {
+          actual_completion_date?: string | null
+          created_at?: string
+          description?: string | null
+          evidence_url?: string | null
+          expected_user_impact?: number | null
+          expected_user_impact_pct?: number | null
+          id?: string
+          milestone_key?: string
+          notes?: string | null
+          status?: string
+          target_date?: string
+          title?: string
+          updated_at?: string
+          week_label?: string
+        }
+        Relationships: []
+      }
+      trial_creation_rate_limit: {
+        Row: {
+          attempts: number
+          created_at: string
+          email_hash: string | null
+          id: string
+          ip_address: unknown
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          email_hash?: string | null
+          id?: string
+          ip_address: unknown
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          email_hash?: string | null
+          id?: string
+          ip_address?: unknown
+        }
+        Relationships: []
+      }
+      trial_users: {
+        Row: {
+          access_count: number
+          created_at: string
+          email_hash: string | null
+          first_trial_start: string | null
+          id: string
+          is_active: boolean
+          last_access: string | null
+          last_renewal_at: string | null
+          renewal_count: number | null
+          trial_end: string
+          trial_start: string
+          updated_at: string
+        }
+        Insert: {
+          access_count?: number
+          created_at?: string
+          email_hash?: string | null
+          first_trial_start?: string | null
+          id?: string
+          is_active?: boolean
+          last_access?: string | null
+          last_renewal_at?: string | null
+          renewal_count?: number | null
+          trial_end?: string
+          trial_start?: string
+          updated_at?: string
+        }
+        Update: {
+          access_count?: number
+          created_at?: string
+          email_hash?: string | null
+          first_trial_start?: string | null
+          id?: string
+          is_active?: boolean
+          last_access?: string | null
+          last_renewal_at?: string | null
+          renewal_count?: number | null
+          trial_end?: string
+          trial_start?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      usage_analytics: {
+        Row: {
+          action_type: string
+          created_at: string
+          date_bucket: string
+          duration_seconds: number | null
+          error_details: Json | null
+          feature_name: string
+          hour_bucket: string
+          id: string
+          metadata: Json | null
+          session_id: string
+          subscription_tier: string
+          success_rate: number | null
+          user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          date_bucket?: string
+          duration_seconds?: number | null
+          error_details?: Json | null
+          feature_name: string
+          hour_bucket?: string
+          id?: string
+          metadata?: Json | null
+          session_id: string
+          subscription_tier: string
+          success_rate?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          date_bucket?: string
+          duration_seconds?: number | null
+          error_details?: Json | null
+          feature_name?: string
+          hour_bucket?: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string
+          subscription_tier?: string
+          success_rate?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      usage_quotas: {
+        Row: {
+          created_at: string
+          feature_name: string
+          id: string
+          monthly_limit: number
+          tier: Database["public"]["Enums"]["subscription_tier"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          feature_name: string
+          id?: string
+          monthly_limit: number
+          tier: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          feature_name?: string
+          id?: string
+          monthly_limit?: number
+          tier?: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_feedback: {
+        Row: {
+          client_ip: unknown
+          created_at: string
+          feature_used: string | null
+          feedback_text: string | null
+          id: string
+          metadata: Json | null
+          page_context: string | null
+          rating: number
+          survey_type: string
+          user_id: string | null
+          would_recommend: boolean | null
+        }
+        Insert: {
+          client_ip?: unknown
+          created_at?: string
+          feature_used?: string | null
+          feedback_text?: string | null
+          id?: string
+          metadata?: Json | null
+          page_context?: string | null
+          rating: number
+          survey_type?: string
+          user_id?: string | null
+          would_recommend?: boolean | null
+        }
+        Update: {
+          client_ip?: unknown
+          created_at?: string
+          feature_used?: string | null
+          feedback_text?: string | null
+          id?: string
+          metadata?: Json | null
+          page_context?: string | null
+          rating?: number
+          survey_type?: string
+          user_id?: string | null
+          would_recommend?: boolean | null
+        }
+        Relationships: []
+      }
+      user_passkeys: {
+        Row: {
+          backed_up: boolean
+          counter: number
+          created_at: string
+          credential_id: string
+          device_type: string | null
+          id: string
+          last_used_at: string | null
+          nickname: string | null
+          public_key: string
+          transports: string[] | null
+          user_id: string
+        }
+        Insert: {
+          backed_up?: boolean
+          counter?: number
+          created_at?: string
+          credential_id: string
+          device_type?: string | null
+          id?: string
+          last_used_at?: string | null
+          nickname?: string | null
+          public_key: string
+          transports?: string[] | null
+          user_id: string
+        }
+        Update: {
+          backed_up?: boolean
+          counter?: number
+          created_at?: string
+          credential_id?: string
+          device_type?: string | null
+          id?: string
+          last_used_at?: string | null
+          nickname?: string | null
+          public_key?: string
+          transports?: string[] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_tasks: {
+        Row: {
+          actual_duration_hours: number | null
+          category: Database["public"]["Enums"]["task_category"]
+          completed_date: string | null
+          created_at: string
+          created_from_template_id: string | null
+          crops_involved: string[] | null
+          description: string | null
+          due_date: string | null
+          estimated_duration_hours: number | null
+          field_id: string | null
+          id: string
+          is_recurring: boolean | null
+          location_notes: string | null
+          parent_task_id: string | null
+          priority: string | null
+          recurrence_config: Json | null
+          recurrence_pattern:
+            | Database["public"]["Enums"]["recurrence_pattern"]
+            | null
+          scheduled_date: string | null
+          status: Database["public"]["Enums"]["task_status"]
+          task_name: string
+          updated_at: string
+          user_id: string
+          weather_conditions: Json | null
+        }
+        Insert: {
+          actual_duration_hours?: number | null
+          category: Database["public"]["Enums"]["task_category"]
+          completed_date?: string | null
+          created_at?: string
+          created_from_template_id?: string | null
+          crops_involved?: string[] | null
+          description?: string | null
+          due_date?: string | null
+          estimated_duration_hours?: number | null
+          field_id?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          location_notes?: string | null
+          parent_task_id?: string | null
+          priority?: string | null
+          recurrence_config?: Json | null
+          recurrence_pattern?:
+            | Database["public"]["Enums"]["recurrence_pattern"]
+            | null
+          scheduled_date?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          task_name: string
+          updated_at?: string
+          user_id: string
+          weather_conditions?: Json | null
+        }
+        Update: {
+          actual_duration_hours?: number | null
+          category?: Database["public"]["Enums"]["task_category"]
+          completed_date?: string | null
+          created_at?: string
+          created_from_template_id?: string | null
+          crops_involved?: string[] | null
+          description?: string | null
+          due_date?: string | null
+          estimated_duration_hours?: number | null
+          field_id?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          location_notes?: string | null
+          parent_task_id?: string | null
+          priority?: string | null
+          recurrence_config?: Json | null
+          recurrence_pattern?:
+            | Database["public"]["Enums"]["recurrence_pattern"]
+            | null
+          scheduled_date?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          task_name?: string
+          updated_at?: string
+          user_id?: string
+          weather_conditions?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_tasks_created_from_template_id_fkey"
+            columns: ["created_from_template_id"]
+            isOneToOne: false
+            referencedRelation: "seasonal_task_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_tasks_field_id_fkey"
+            columns: ["field_id"]
+            isOneToOne: false
+            referencedRelation: "fields"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_tasks_parent_task_id_fkey"
+            columns: ["parent_task_id"]
+            isOneToOne: false
+            referencedRelation: "user_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_usage: {
+        Row: {
+          created_at: string
+          feature_name: string
+          id: string
+          month_year: string
+          updated_at: string
+          usage_count: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feature_name: string
+          id?: string
+          month_year?: string
+          updated_at?: string
+          usage_count?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feature_name?: string
+          id?: string
+          month_year?: string
+          updated_at?: string
+          usage_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vendor_leads: {
+        Row: {
+          contacted_at: string | null
+          converted_at: string | null
+          created_at: string
+          directory_page_id: string | null
+          id: string
+          lead_price_cents: number
+          source_slug: string
+          status: string
+          trigger_signal: string | null
+          user_email: string | null
+          user_message: string | null
+          user_phone: string | null
+          vendor_id: string
+        }
+        Insert: {
+          contacted_at?: string | null
+          converted_at?: string | null
+          created_at?: string
+          directory_page_id?: string | null
+          id?: string
+          lead_price_cents: number
+          source_slug: string
+          status?: string
+          trigger_signal?: string | null
+          user_email?: string | null
+          user_message?: string | null
+          user_phone?: string | null
+          vendor_id: string
+        }
+        Update: {
+          contacted_at?: string | null
+          converted_at?: string | null
+          created_at?: string
+          directory_page_id?: string | null
+          id?: string
+          lead_price_cents?: number
+          source_slug?: string
+          status?: string
+          trigger_signal?: string | null
+          user_email?: string | null
+          user_message?: string | null
+          user_phone?: string | null
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_leads_directory_page_id_fkey"
+            columns: ["directory_page_id"]
+            isOneToOne: false
+            referencedRelation: "directory_pages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_leads_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendors: {
+        Row: {
+          business_name: string
+          city: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          directory_page_id: string | null
+          featured_until: string | null
+          fips_code: string | null
+          id: string
+          is_active: boolean
+          is_verified: boolean
+          lead_price_cents: number | null
+          leads_this_month: number
+          listing_tier: string
+          monthly_lead_limit: number | null
+          pay_per_lead_enabled: boolean
+          premium_features: Json | null
+          service_fips: string[] | null
+          service_states: string[] | null
+          slug: string
+          state_code: string | null
+          street_address: string | null
+          updated_at: string
+          vendor_category: string
+          website_url: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          business_name: string
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          directory_page_id?: string | null
+          featured_until?: string | null
+          fips_code?: string | null
+          id?: string
+          is_active?: boolean
+          is_verified?: boolean
+          lead_price_cents?: number | null
+          leads_this_month?: number
+          listing_tier?: string
+          monthly_lead_limit?: number | null
+          pay_per_lead_enabled?: boolean
+          premium_features?: Json | null
+          service_fips?: string[] | null
+          service_states?: string[] | null
+          slug: string
+          state_code?: string | null
+          street_address?: string | null
+          updated_at?: string
+          vendor_category: string
+          website_url?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          business_name?: string
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          directory_page_id?: string | null
+          featured_until?: string | null
+          fips_code?: string | null
+          id?: string
+          is_active?: boolean
+          is_verified?: boolean
+          lead_price_cents?: number | null
+          leads_this_month?: number
+          listing_tier?: string
+          monthly_lead_limit?: number | null
+          pay_per_lead_enabled?: boolean
+          premium_features?: Json | null
+          service_fips?: string[] | null
+          service_states?: string[] | null
+          slug?: string
+          state_code?: string | null
+          street_address?: string | null
+          updated_at?: string
+          vendor_category?: string
+          website_url?: string | null
+          zip_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendors_directory_page_id_fkey"
+            columns: ["directory_page_id"]
+            isOneToOne: false
+            referencedRelation: "directory_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      visual_analysis_results: {
+        Row: {
+          analysis_result: Json
+          analysis_type: string
+          confidence_score: number | null
+          created_at: string
+          crop_type: string | null
+          id: string
+          image_data: string | null
+          location_data: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analysis_result: Json
+          analysis_type: string
+          confidence_score?: number | null
+          created_at?: string
+          crop_type?: string | null
+          id?: string
+          image_data?: string | null
+          location_data?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analysis_result?: Json
+          analysis_type?: string
+          confidence_score?: number | null
+          created_at?: string
+          crop_type?: string | null
+          id?: string
+          image_data?: string | null
+          location_data?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      webauthn_challenges: {
+        Row: {
+          challenge: string
+          created_at: string
+          email: string | null
+          expires_at: string
+          id: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          challenge: string
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          id?: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          challenge?: string
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          id?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      active_telegram_users: {
+        Row: {
+          api_key_id: string | null
+          daily_ai_count: number | null
+          daily_data_count: number | null
+          first_name: string | null
+          last_name: string | null
+          last_reset_date: string | null
+          linked_user_id: string | null
+          subscription_tier: string | null
+          telegram_id: number | null
+          username: string | null
+        }
+        Relationships: []
+      }
+      cost_summary: {
+        Row: {
+          avg_cost_per_request: number | null
+          date_bucket: string | null
+          service_provider: string | null
+          service_type: string | null
+          total_cost: number | null
+          total_usage: number | null
+          unique_users: number | null
+        }
+        Relationships: []
+      }
+      developer_activity_daily: {
+        Row: {
+          activity_date: string | null
+          api_key_hash: string | null
+          distinct_client_instances: number | null
+          distinct_tools_used: number | null
+          failed_calls: number | null
+          p50_ms: number | null
+          p95_ms: number | null
+          sdk: string | null
+          source_channel: string | null
+          successful_calls: number | null
+          tools_used: string[] | null
+          total_calls: number | null
+        }
+        Relationships: []
+      }
+      environmental_data_cache: {
+        Row: {
+          access_count: number | null
+          cache_key: string | null
+          cache_level: number | null
+          cached_data: Json | null
+          country_code: string | null
+          county_fips: string | null
+          coverage_tier: string | null
+          created_at: string | null
+          data_source: string | null
+          expires_at: string | null
+          id: string | null
+          last_accessed: string | null
+          location_geog: unknown
+          region: string | null
+          resolution_m: number | null
+          source: string | null
+        }
+        Insert: {
+          access_count?: number | null
+          cache_key?: string | null
+          cache_level?: number | null
+          cached_data?: Json | null
+          country_code?: string | null
+          county_fips?: string | null
+          coverage_tier?: string | null
+          created_at?: string | null
+          data_source?: string | null
+          expires_at?: string | null
+          id?: string | null
+          last_accessed?: string | null
+          location_geog?: unknown
+          region?: string | null
+          resolution_m?: number | null
+          source?: string | null
+        }
+        Update: {
+          access_count?: number | null
+          cache_key?: string | null
+          cache_level?: number | null
+          cached_data?: Json | null
+          country_code?: string | null
+          county_fips?: string | null
+          coverage_tier?: string | null
+          created_at?: string | null
+          data_source?: string | null
+          expires_at?: string | null
+          id?: string | null
+          last_accessed?: string | null
+          location_geog?: unknown
+          region?: string | null
+          resolution_m?: number | null
+          source?: string | null
+        }
+        Relationships: []
+      }
+      geography_columns: {
+        Row: {
+          coord_dimension: number | null
+          f_geography_column: unknown
+          f_table_catalog: unknown
+          f_table_name: unknown
+          f_table_schema: unknown
+          srid: number | null
+          type: string | null
+        }
+        Relationships: []
+      }
+      geometry_columns: {
+        Row: {
+          coord_dimension: number | null
+          f_geometry_column: unknown
+          f_table_catalog: string | null
+          f_table_name: unknown
+          f_table_schema: unknown
+          srid: number | null
+          type: string | null
+        }
+        Insert: {
+          coord_dimension?: number | null
+          f_geometry_column?: unknown
+          f_table_catalog?: string | null
+          f_table_name?: unknown
+          f_table_schema?: unknown
+          srid?: number | null
+          type?: string | null
+        }
+        Update: {
+          coord_dimension?: number | null
+          f_geometry_column?: unknown
+          f_table_catalog?: string | null
+          f_table_name?: unknown
+          f_table_schema?: unknown
+          srid?: number | null
+          type?: string | null
+        }
+        Relationships: []
+      }
+      telemetry_dashboard: {
+        Row: {
+          avg_latency_ms: number | null
+          day: string | null
+          event_type: string | null
+          events: number | null
+          failures: number | null
+          first_event: string | null
+          last_event: string | null
+          p95_latency_ms: number | null
+          successes: number | null
+          surface: string | null
+          tier: string | null
+          tool_name: string | null
+          unique_users: number | null
+        }
+        Relationships: []
+      }
+      usage_summary: {
+        Row: {
+          action_type: string | null
+          avg_duration: number | null
+          avg_success_rate: number | null
+          date_bucket: string | null
+          event_count: number | null
+          feature_name: string | null
+          subscription_tier: string | null
+          unique_users: number | null
+        }
+        Relationships: []
+      }
+    }
+    Functions: {
+      _postgis_deprecate: {
+        Args: { newname: string; oldname: string; version: string }
+        Returns: undefined
+      }
+      _postgis_index_extent: {
+        Args: { col: string; tbl: unknown }
+        Returns: unknown
+      }
+      _postgis_pgsql_version: { Args: never; Returns: string }
+      _postgis_scripts_pgsql_version: { Args: never; Returns: string }
+      _postgis_selectivity: {
+        Args: { att_name: string; geom: unknown; mode?: string; tbl: unknown }
+        Returns: number
+      }
+      _postgis_stats: {
+        Args: { ""?: string; att_name: string; tbl: unknown }
+        Returns: string
+      }
+      _st_3dintersects: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      _st_contains: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      _st_containsproperly: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      _st_coveredby:
+        | { Args: { geog1: unknown; geog2: unknown }; Returns: boolean }
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      _st_covers:
+        | { Args: { geog1: unknown; geog2: unknown }; Returns: boolean }
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      _st_crosses: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      _st_dwithin: {
+        Args: {
+          geog1: unknown
+          geog2: unknown
+          tolerance: number
+          use_spheroid?: boolean
+        }
+        Returns: boolean
+      }
+      _st_equals: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      _st_intersects: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      _st_linecrossingdirection: {
+        Args: { line1: unknown; line2: unknown }
+        Returns: number
+      }
+      _st_longestline: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      _st_maxdistance: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      _st_orderingequals: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      _st_overlaps: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      _st_sortablehash: { Args: { geom: unknown }; Returns: number }
+      _st_touches: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      _st_voronoi: {
+        Args: {
+          clip?: unknown
+          g1: unknown
+          return_polygons?: boolean
+          tolerance?: number
+        }
+        Returns: unknown
+      }
+      _st_within: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      addauth: { Args: { "": string }; Returns: boolean }
+      addgeometrycolumn:
+        | {
+            Args: {
+              catalog_name: string
+              column_name: string
+              new_dim: number
+              new_srid_in: number
+              new_type: string
+              schema_name: string
+              table_name: string
+              use_typmod?: boolean
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              column_name: string
+              new_dim: number
+              new_srid: number
+              new_type: string
+              schema_name: string
+              table_name: string
+              use_typmod?: boolean
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              column_name: string
+              new_dim: number
+              new_srid: number
+              new_type: string
+              table_name: string
+              use_typmod?: boolean
+            }
+            Returns: string
+          }
+      can_use_feature: {
+        Args: { p_feature_name: string; p_user_id: string }
+        Returns: boolean
+      }
+      check_anonymous_feedback_rate_limit: {
+        Args: { client_ip_param: unknown }
+        Returns: boolean
+      }
+      check_cost_alerts: {
+        Args: never
+        Returns: {
+          alert_id: string
+          alert_name: string
+          current_amount: number
+          percentage_used: number
+          threshold_amount: number
+        }[]
+      }
+      check_password_strength: {
+        Args: { password_text: string }
+        Returns: number
+      }
+      check_payment_data_security_compliance: { Args: never; Returns: Json }
+      check_rls_compliance: {
+        Args: never
+        Returns: {
+          anonymous_policies_count: number
+          compliance_status: string
+          risk_level: string
+          rls_enabled: boolean
+          table_name: string
+        }[]
+      }
+      check_subscriber_security_compliance: { Args: never; Returns: Json }
+      check_trial_rate_limit: {
+        Args: {
+          check_email: string
+          check_ip: unknown
+          max_attempts?: number
+          window_minutes?: number
+        }
+        Returns: boolean
+      }
+      check_trial_rate_limit_secure: {
+        Args: {
+          check_email: string
+          check_ip: unknown
+          max_attempts?: number
+          window_minutes?: number
+        }
+        Returns: boolean
+      }
+      cleanup_old_telemetry_events: { Args: never; Returns: number }
+      cleanup_rate_limit_tracking: { Args: never; Returns: undefined }
+      create_trial_user: { Args: { trial_email: string }; Returns: string }
+      decrypt_email_v3: {
+        Args: { encrypted_email: string; encryption_key: string }
+        Returns: string
+      }
+      decrypt_sensitive_data_v3: {
+        Args: { encrypted_data: string; encryption_key: string }
+        Returns: string
+      }
+      disablelongtransactions: { Args: never; Returns: string }
+      do_daily_rollup: { Args: never; Returns: undefined }
+      dropgeometrycolumn:
+        | {
+            Args: {
+              catalog_name: string
+              column_name: string
+              schema_name: string
+              table_name: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              column_name: string
+              schema_name: string
+              table_name: string
+            }
+            Returns: string
+          }
+        | { Args: { column_name: string; table_name: string }; Returns: string }
+      dropgeometrytable:
+        | {
+            Args: {
+              catalog_name: string
+              schema_name: string
+              table_name: string
+            }
+            Returns: string
+          }
+        | { Args: { schema_name: string; table_name: string }; Returns: string }
+        | { Args: { table_name: string }; Returns: string }
+      enablelongtransactions: { Args: never; Returns: string }
+      encrypt_email_v3: {
+        Args: { email_to_encrypt: string; encryption_key: string }
+        Returns: string
+      }
+      encrypt_sensitive_data_v3: {
+        Args: { data_to_encrypt: string; encryption_key: string }
+        Returns: string
+      }
+      equals: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      flag_stale_model_scores: { Args: never; Returns: undefined }
+      generate_recurring_tasks: { Args: never; Returns: undefined }
+      generate_secure_session_token: { Args: never; Returns: string }
+      generate_soc2_compliance_report: { Args: never; Returns: Json }
+      geometry: { Args: { "": string }; Returns: unknown }
+      geometry_above: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_below: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_cmp: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      geometry_contained_3d: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_contains: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_contains_3d: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_distance_box: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      geometry_distance_centroid: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      geometry_eq: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_ge: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_gt: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_le: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_left: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_lt: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_overabove: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_overbelow: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_overlaps: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_overlaps_3d: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_overleft: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_overright: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_right: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_same: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_same_3d: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_within: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geomfromewkt: { Args: { "": string }; Returns: unknown }
+      get_cost_summary: {
+        Args: {
+          p_end_date?: string
+          p_service_provider?: string
+          p_start_date?: string
+        }
+        Returns: {
+          avg_cost_per_request: number
+          date_bucket: string
+          service_provider: string
+          service_type: string
+          total_cost: number
+          total_usage: number
+          unique_users: number
+        }[]
+      }
+      get_masked_subscription_data: {
+        Args: { target_user_id?: string }
+        Returns: {
+          created_at: string
+          encryption_version: number
+          id: string
+          masked_email: string
+          masked_stripe_id: string
+          subscribed: boolean
+          subscription_end: string
+          subscription_interval: string
+          subscription_tier: string
+          updated_at: string
+          user_id: string
+        }[]
+      }
+      get_recent_plant_queries: {
+        Args: { limit_count?: number; target_user_id?: string }
+        Returns: {
+          created_at: string
+          id: string
+          plant_name: string
+          query_details: Json
+          query_type: string
+        }[]
+      }
+      get_secure_account_security_info: {
+        Args: { target_user_id?: string }
+        Returns: {
+          account_locked: boolean
+          backup_codes_generated: boolean
+          created_at: string
+          email_encryption_version: number
+          failed_login_attempts: number
+          id: string
+          last_suspicious_activity: string
+          lock_reason: string
+          locked_until: string
+          masked_email: string
+          masked_recovery_email: string
+          password_changed_at: string
+          password_strength_score: number
+          requires_password_change: boolean
+          suspicious_activity_count: number
+          two_factor_enabled: boolean
+          updated_at: string
+          user_id: string
+        }[]
+      }
+      get_usage_summary: {
+        Args: {
+          p_end_date?: string
+          p_start_date?: string
+          p_subscription_tier?: string
+        }
+        Returns: {
+          action_type: string
+          avg_duration: number
+          avg_success_rate: number
+          date_bucket: string
+          event_count: number
+          feature_name: string
+          subscription_tier: string
+          unique_users: number
+        }[]
+      }
+      get_user_email_for_security: {
+        Args: { target_user_id: string }
+        Returns: string
+      }
+      get_user_email_secure: {
+        Args: { target_user_id?: string }
+        Returns: string
+      }
+      get_user_email_secure_only: {
+        Args: { target_user_id?: string }
+        Returns: string
+      }
+      get_user_email_securely: {
+        Args: { target_user_id?: string }
+        Returns: string
+      }
+      get_user_frequent_plants: {
+        Args: { limit_count?: number; target_user_id?: string }
+        Returns: {
+          last_queried: string
+          plant_name: string
+          query_count: number
+          query_types: string[]
+        }[]
+      }
+      gettransactionid: { Args: never; Returns: unknown }
+      handle_login_attempt: {
+        Args: {
+          attempt_success: boolean
+          client_ip?: unknown
+          failure_reason_text?: string
+          user_agent_string?: string
+          user_email: string
+        }
+        Returns: Json
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      hash_api_key_secure: { Args: { api_key: string }; Returns: string }
+      hash_email: { Args: { email_to_hash: string }; Returns: string }
+      increment_usage: {
+        Args: {
+          p_feature_name: string
+          p_increment?: number
+          p_user_id: string
+        }
+        Returns: boolean
+      }
+      invoke_bigfoot_autogen: { Args: never; Returns: undefined }
+      is_account_locked: { Args: { user_email: string }; Returns: boolean }
+      is_admin: { Args: { _user_id?: string }; Returns: boolean }
+      is_service_role: { Args: never; Returns: boolean }
+      is_trial_valid: { Args: { trial_email: string }; Returns: boolean }
+      is_trial_valid_by_hash: {
+        Args: { trial_email: string }
+        Returns: boolean
+      }
+      log_model_route: {
+        Args: {
+          p_cost_usd?: number
+          p_error_message?: string
+          p_feature_name?: string
+          p_input_tokens?: number
+          p_intended_model?: string
+          p_latency_ms?: number
+          p_model_id: string
+          p_output_tokens?: number
+          p_provider: string
+          p_success?: boolean
+          p_task_type: string
+          p_user_id?: string
+          p_was_fallback?: boolean
+        }
+        Returns: string
+      }
+      longtransactionsenabled: { Args: never; Returns: boolean }
+      migrate_account_security_emails: { Args: never; Returns: undefined }
+      migrate_subscriber_data_to_encrypted: { Args: never; Returns: number }
+      populate_geometry_columns:
+        | { Args: { tbl_oid: unknown; use_typmod?: boolean }; Returns: number }
+        | { Args: { use_typmod?: boolean }; Returns: string }
+      postgis_constraint_dims: {
+        Args: { geomcolumn: string; geomschema: string; geomtable: string }
+        Returns: number
+      }
+      postgis_constraint_srid: {
+        Args: { geomcolumn: string; geomschema: string; geomtable: string }
+        Returns: number
+      }
+      postgis_constraint_type: {
+        Args: { geomcolumn: string; geomschema: string; geomtable: string }
+        Returns: string
+      }
+      postgis_extensions_upgrade: { Args: never; Returns: string }
+      postgis_full_version: { Args: never; Returns: string }
+      postgis_geos_version: { Args: never; Returns: string }
+      postgis_lib_build_date: { Args: never; Returns: string }
+      postgis_lib_revision: { Args: never; Returns: string }
+      postgis_lib_version: { Args: never; Returns: string }
+      postgis_libjson_version: { Args: never; Returns: string }
+      postgis_liblwgeom_version: { Args: never; Returns: string }
+      postgis_libprotobuf_version: { Args: never; Returns: string }
+      postgis_libxml_version: { Args: never; Returns: string }
+      postgis_proj_version: { Args: never; Returns: string }
+      postgis_scripts_build_date: { Args: never; Returns: string }
+      postgis_scripts_installed: { Args: never; Returns: string }
+      postgis_scripts_released: { Args: never; Returns: string }
+      postgis_svn_version: { Args: never; Returns: string }
+      postgis_type_name: {
+        Args: {
+          coord_dimension: number
+          geomname: string
+          use_new_name?: boolean
+        }
+        Returns: string
+      }
+      postgis_version: { Args: never; Returns: string }
+      postgis_wagyu_version: { Args: never; Returns: string }
+      rate_limit_hit: {
+        Args: {
+          p_api_key_hash: string
+          p_max_requests: number
+          p_window_start: number
+        }
+        Returns: number
+      }
+      refresh_cost_summaries: { Args: never; Returns: undefined }
+      resolve_model: {
+        Args: {
+          p_feature_name?: string
+          p_task_type: string
+          p_user_id?: string
+        }
+        Returns: Json
+      }
+      rotate_api_key: {
+        Args: { new_key_hash: string; old_key_id: string }
+        Returns: string
+      }
+      sanitize_email_for_audit: {
+        Args: { email_address: string }
+        Returns: string
+      }
+      secure_get_subscriber_data: {
+        Args: { p_user_id: string }
+        Returns: {
+          created_at: string
+          email: string
+          id: string
+          stripe_customer_id: string
+          subscribed: boolean
+          subscription_end: string
+          subscription_interval: string
+          subscription_tier: string
+          updated_at: string
+          user_id: string
+        }[]
+      }
+      secure_upsert_subscriber: {
+        Args: {
+          p_email: string
+          p_stripe_customer_id?: string
+          p_subscribed?: boolean
+          p_subscription_end?: string
+          p_subscription_interval?: string
+          p_subscription_tier?: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
+      simple_email_mask: { Args: never; Returns: string }
+      st_3dclosestpoint: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_3ddistance: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      st_3dintersects: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      st_3dlongestline: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_3dmakebox: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_3dmaxdistance: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      st_3dshortestline: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_addpoint: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_angle:
+        | { Args: { line1: unknown; line2: unknown }; Returns: number }
+        | {
+            Args: { pt1: unknown; pt2: unknown; pt3: unknown; pt4?: unknown }
+            Returns: number
+          }
+      st_area:
+        | { Args: { geog: unknown; use_spheroid?: boolean }; Returns: number }
+        | { Args: { "": string }; Returns: number }
+      st_asencodedpolyline: {
+        Args: { geom: unknown; nprecision?: number }
+        Returns: string
+      }
+      st_asewkt: { Args: { "": string }; Returns: string }
+      st_asgeojson:
+        | {
+            Args: { geog: unknown; maxdecimaldigits?: number; options?: number }
+            Returns: string
+          }
+        | {
+            Args: { geom: unknown; maxdecimaldigits?: number; options?: number }
+            Returns: string
+          }
+        | {
+            Args: {
+              geom_column?: string
+              maxdecimaldigits?: number
+              pretty_bool?: boolean
+              r: Record<string, unknown>
+            }
+            Returns: string
+          }
+        | { Args: { "": string }; Returns: string }
+      st_asgml:
+        | {
+            Args: {
+              geog: unknown
+              id?: string
+              maxdecimaldigits?: number
+              nprefix?: string
+              options?: number
+            }
+            Returns: string
+          }
+        | {
+            Args: { geom: unknown; maxdecimaldigits?: number; options?: number }
+            Returns: string
+          }
+        | { Args: { "": string }; Returns: string }
+        | {
+            Args: {
+              geog: unknown
+              id?: string
+              maxdecimaldigits?: number
+              nprefix?: string
+              options?: number
+              version: number
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              geom: unknown
+              id?: string
+              maxdecimaldigits?: number
+              nprefix?: string
+              options?: number
+              version: number
+            }
+            Returns: string
+          }
+      st_askml:
+        | {
+            Args: { geog: unknown; maxdecimaldigits?: number; nprefix?: string }
+            Returns: string
+          }
+        | {
+            Args: { geom: unknown; maxdecimaldigits?: number; nprefix?: string }
+            Returns: string
+          }
+        | { Args: { "": string }; Returns: string }
+      st_aslatlontext: {
+        Args: { geom: unknown; tmpl?: string }
+        Returns: string
+      }
+      st_asmarc21: { Args: { format?: string; geom: unknown }; Returns: string }
+      st_asmvtgeom: {
+        Args: {
+          bounds: unknown
+          buffer?: number
+          clip_geom?: boolean
+          extent?: number
+          geom: unknown
+        }
+        Returns: unknown
+      }
+      st_assvg:
+        | {
+            Args: { geog: unknown; maxdecimaldigits?: number; rel?: number }
+            Returns: string
+          }
+        | {
+            Args: { geom: unknown; maxdecimaldigits?: number; rel?: number }
+            Returns: string
+          }
+        | { Args: { "": string }; Returns: string }
+      st_astext: { Args: { "": string }; Returns: string }
+      st_astwkb:
+        | {
+            Args: {
+              geom: unknown
+              prec?: number
+              prec_m?: number
+              prec_z?: number
+              with_boxes?: boolean
+              with_sizes?: boolean
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              geom: unknown[]
+              ids: number[]
+              prec?: number
+              prec_m?: number
+              prec_z?: number
+              with_boxes?: boolean
+              with_sizes?: boolean
+            }
+            Returns: string
+          }
+      st_asx3d: {
+        Args: { geom: unknown; maxdecimaldigits?: number; options?: number }
+        Returns: string
+      }
+      st_azimuth:
+        | { Args: { geog1: unknown; geog2: unknown }; Returns: number }
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: number }
+      st_boundingdiagonal: {
+        Args: { fits?: boolean; geom: unknown }
+        Returns: unknown
+      }
+      st_buffer:
+        | {
+            Args: { geom: unknown; options?: string; radius: number }
+            Returns: unknown
+          }
+        | {
+            Args: { geom: unknown; quadsegs: number; radius: number }
+            Returns: unknown
+          }
+      st_centroid: { Args: { "": string }; Returns: unknown }
+      st_clipbybox2d: {
+        Args: { box: unknown; geom: unknown }
+        Returns: unknown
+      }
+      st_closestpoint: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_collect: { Args: { geom1: unknown; geom2: unknown }; Returns: unknown }
+      st_concavehull: {
+        Args: {
+          param_allow_holes?: boolean
+          param_geom: unknown
+          param_pctconvex: number
+        }
+        Returns: unknown
+      }
+      st_contains: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      st_containsproperly: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      st_coorddim: { Args: { geometry: unknown }; Returns: number }
+      st_coveredby:
+        | { Args: { geog1: unknown; geog2: unknown }; Returns: boolean }
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      st_covers:
+        | { Args: { geog1: unknown; geog2: unknown }; Returns: boolean }
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      st_crosses: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      st_curvetoline: {
+        Args: { flags?: number; geom: unknown; tol?: number; toltype?: number }
+        Returns: unknown
+      }
+      st_delaunaytriangles: {
+        Args: { flags?: number; g1: unknown; tolerance?: number }
+        Returns: unknown
+      }
+      st_difference: {
+        Args: { geom1: unknown; geom2: unknown; gridsize?: number }
+        Returns: unknown
+      }
+      st_disjoint: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      st_distance:
+        | {
+            Args: { geog1: unknown; geog2: unknown; use_spheroid?: boolean }
+            Returns: number
+          }
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: number }
+      st_distancesphere:
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: number }
+        | {
+            Args: { geom1: unknown; geom2: unknown; radius: number }
+            Returns: number
+          }
+      st_distancespheroid: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      st_dwithin: {
+        Args: {
+          geog1: unknown
+          geog2: unknown
+          tolerance: number
+          use_spheroid?: boolean
+        }
+        Returns: boolean
+      }
+      st_equals: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      st_expand:
+        | { Args: { box: unknown; dx: number; dy: number }; Returns: unknown }
+        | {
+            Args: { box: unknown; dx: number; dy: number; dz?: number }
+            Returns: unknown
+          }
+        | {
+            Args: {
+              dm?: number
+              dx: number
+              dy: number
+              dz?: number
+              geom: unknown
+            }
+            Returns: unknown
+          }
+      st_force3d: { Args: { geom: unknown; zvalue?: number }; Returns: unknown }
+      st_force3dm: {
+        Args: { geom: unknown; mvalue?: number }
+        Returns: unknown
+      }
+      st_force3dz: {
+        Args: { geom: unknown; zvalue?: number }
+        Returns: unknown
+      }
+      st_force4d: {
+        Args: { geom: unknown; mvalue?: number; zvalue?: number }
+        Returns: unknown
+      }
+      st_generatepoints:
+        | { Args: { area: unknown; npoints: number }; Returns: unknown }
+        | {
+            Args: { area: unknown; npoints: number; seed: number }
+            Returns: unknown
+          }
+      st_geogfromtext: { Args: { "": string }; Returns: unknown }
+      st_geographyfromtext: { Args: { "": string }; Returns: unknown }
+      st_geohash:
+        | { Args: { geog: unknown; maxchars?: number }; Returns: string }
+        | { Args: { geom: unknown; maxchars?: number }; Returns: string }
+      st_geomcollfromtext: { Args: { "": string }; Returns: unknown }
+      st_geometricmedian: {
+        Args: {
+          fail_if_not_converged?: boolean
+          g: unknown
+          max_iter?: number
+          tolerance?: number
+        }
+        Returns: unknown
+      }
+      st_geometryfromtext: { Args: { "": string }; Returns: unknown }
+      st_geomfromewkt: { Args: { "": string }; Returns: unknown }
+      st_geomfromgeojson:
+        | { Args: { "": Json }; Returns: unknown }
+        | { Args: { "": Json }; Returns: unknown }
+        | { Args: { "": string }; Returns: unknown }
+      st_geomfromgml: { Args: { "": string }; Returns: unknown }
+      st_geomfromkml: { Args: { "": string }; Returns: unknown }
+      st_geomfrommarc21: { Args: { marc21xml: string }; Returns: unknown }
+      st_geomfromtext: { Args: { "": string }; Returns: unknown }
+      st_gmltosql: { Args: { "": string }; Returns: unknown }
+      st_hasarc: { Args: { geometry: unknown }; Returns: boolean }
+      st_hausdorffdistance: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      st_hexagon: {
+        Args: { cell_i: number; cell_j: number; origin?: unknown; size: number }
+        Returns: unknown
+      }
+      st_hexagongrid: {
+        Args: { bounds: unknown; size: number }
+        Returns: Record<string, unknown>[]
+      }
+      st_interpolatepoint: {
+        Args: { line: unknown; point: unknown }
+        Returns: number
+      }
+      st_intersection: {
+        Args: { geom1: unknown; geom2: unknown; gridsize?: number }
+        Returns: unknown
+      }
+      st_intersects:
+        | { Args: { geog1: unknown; geog2: unknown }; Returns: boolean }
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      st_isvaliddetail: {
+        Args: { flags?: number; geom: unknown }
+        Returns: Database["public"]["CompositeTypes"]["valid_detail"]
+        SetofOptions: {
+          from: "*"
+          to: "valid_detail"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      st_length:
+        | { Args: { geog: unknown; use_spheroid?: boolean }; Returns: number }
+        | { Args: { "": string }; Returns: number }
+      st_letters: { Args: { font?: Json; letters: string }; Returns: unknown }
+      st_linecrossingdirection: {
+        Args: { line1: unknown; line2: unknown }
+        Returns: number
+      }
+      st_linefromencodedpolyline: {
+        Args: { nprecision?: number; txtin: string }
+        Returns: unknown
+      }
+      st_linefromtext: { Args: { "": string }; Returns: unknown }
+      st_linelocatepoint: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      st_linetocurve: { Args: { geometry: unknown }; Returns: unknown }
+      st_locatealong: {
+        Args: { geometry: unknown; leftrightoffset?: number; measure: number }
+        Returns: unknown
+      }
+      st_locatebetween: {
+        Args: {
+          frommeasure: number
+          geometry: unknown
+          leftrightoffset?: number
+          tomeasure: number
+        }
+        Returns: unknown
+      }
+      st_locatebetweenelevations: {
+        Args: { fromelevation: number; geometry: unknown; toelevation: number }
+        Returns: unknown
+      }
+      st_longestline: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_makebox2d: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_makeline: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_makevalid: {
+        Args: { geom: unknown; params: string }
+        Returns: unknown
+      }
+      st_maxdistance: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      st_minimumboundingcircle: {
+        Args: { inputgeom: unknown; segs_per_quarter?: number }
+        Returns: unknown
+      }
+      st_mlinefromtext: { Args: { "": string }; Returns: unknown }
+      st_mpointfromtext: { Args: { "": string }; Returns: unknown }
+      st_mpolyfromtext: { Args: { "": string }; Returns: unknown }
+      st_multilinestringfromtext: { Args: { "": string }; Returns: unknown }
+      st_multipointfromtext: { Args: { "": string }; Returns: unknown }
+      st_multipolygonfromtext: { Args: { "": string }; Returns: unknown }
+      st_node: { Args: { g: unknown }; Returns: unknown }
+      st_normalize: { Args: { geom: unknown }; Returns: unknown }
+      st_offsetcurve: {
+        Args: { distance: number; line: unknown; params?: string }
+        Returns: unknown
+      }
+      st_orderingequals: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      st_overlaps: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      st_perimeter: {
+        Args: { geog: unknown; use_spheroid?: boolean }
+        Returns: number
+      }
+      st_pointfromtext: { Args: { "": string }; Returns: unknown }
+      st_pointm: {
+        Args: {
+          mcoordinate: number
+          srid?: number
+          xcoordinate: number
+          ycoordinate: number
+        }
+        Returns: unknown
+      }
+      st_pointz: {
+        Args: {
+          srid?: number
+          xcoordinate: number
+          ycoordinate: number
+          zcoordinate: number
+        }
+        Returns: unknown
+      }
+      st_pointzm: {
+        Args: {
+          mcoordinate: number
+          srid?: number
+          xcoordinate: number
+          ycoordinate: number
+          zcoordinate: number
+        }
+        Returns: unknown
+      }
+      st_polyfromtext: { Args: { "": string }; Returns: unknown }
+      st_polygonfromtext: { Args: { "": string }; Returns: unknown }
+      st_project: {
+        Args: { azimuth: number; distance: number; geog: unknown }
+        Returns: unknown
+      }
+      st_quantizecoordinates: {
+        Args: {
+          g: unknown
+          prec_m?: number
+          prec_x: number
+          prec_y?: number
+          prec_z?: number
+        }
+        Returns: unknown
+      }
+      st_reduceprecision: {
+        Args: { geom: unknown; gridsize: number }
+        Returns: unknown
+      }
+      st_relate: { Args: { geom1: unknown; geom2: unknown }; Returns: string }
+      st_removerepeatedpoints: {
+        Args: { geom: unknown; tolerance?: number }
+        Returns: unknown
+      }
+      st_segmentize: {
+        Args: { geog: unknown; max_segment_length: number }
+        Returns: unknown
+      }
+      st_setsrid:
+        | { Args: { geog: unknown; srid: number }; Returns: unknown }
+        | { Args: { geom: unknown; srid: number }; Returns: unknown }
+      st_sharedpaths: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_shortestline: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_simplifypolygonhull: {
+        Args: { geom: unknown; is_outer?: boolean; vertex_fraction: number }
+        Returns: unknown
+      }
+      st_split: { Args: { geom1: unknown; geom2: unknown }; Returns: unknown }
+      st_square: {
+        Args: { cell_i: number; cell_j: number; origin?: unknown; size: number }
+        Returns: unknown
+      }
+      st_squaregrid: {
+        Args: { bounds: unknown; size: number }
+        Returns: Record<string, unknown>[]
+      }
+      st_srid:
+        | { Args: { geog: unknown }; Returns: number }
+        | { Args: { geom: unknown }; Returns: number }
+      st_subdivide: {
+        Args: { geom: unknown; gridsize?: number; maxvertices?: number }
+        Returns: unknown[]
+      }
+      st_swapordinates: {
+        Args: { geom: unknown; ords: unknown }
+        Returns: unknown
+      }
+      st_symdifference: {
+        Args: { geom1: unknown; geom2: unknown; gridsize?: number }
+        Returns: unknown
+      }
+      st_symmetricdifference: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_tileenvelope: {
+        Args: {
+          bounds?: unknown
+          margin?: number
+          x: number
+          y: number
+          zoom: number
+        }
+        Returns: unknown
+      }
+      st_touches: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      st_transform:
+        | {
+            Args: { from_proj: string; geom: unknown; to_proj: string }
+            Returns: unknown
+          }
+        | {
+            Args: { from_proj: string; geom: unknown; to_srid: number }
+            Returns: unknown
+          }
+        | { Args: { geom: unknown; to_proj: string }; Returns: unknown }
+      st_triangulatepolygon: { Args: { g1: unknown }; Returns: unknown }
+      st_union:
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: unknown }
+        | {
+            Args: { geom1: unknown; geom2: unknown; gridsize: number }
+            Returns: unknown
+          }
+      st_voronoilines: {
+        Args: { extend_to?: unknown; g1: unknown; tolerance?: number }
+        Returns: unknown
+      }
+      st_voronoipolygons: {
+        Args: { extend_to?: unknown; g1: unknown; tolerance?: number }
+        Returns: unknown
+      }
+      st_within: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      st_wkbtosql: { Args: { wkb: string }; Returns: unknown }
+      st_wkttosql: { Args: { "": string }; Returns: unknown }
+      st_wrapx: {
+        Args: { geom: unknown; move: number; wrap: number }
+        Returns: unknown
+      }
+      track_api_cost: {
+        Args: {
+          p_cost_usd: number
+          p_feature_name: string
+          p_request_details?: Json
+          p_service_provider: string
+          p_service_type: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      track_usage_event: {
+        Args: {
+          p_action_type: string
+          p_duration_seconds?: number
+          p_error_details?: Json
+          p_feature_name: string
+          p_metadata?: Json
+          p_session_id: string
+          p_subscription_tier: string
+          p_success_rate?: number
+          p_user_id: string
+        }
+        Returns: string
+      }
+      unlock_account: { Args: { target_user_id: string }; Returns: boolean }
+      unlockrows: { Args: { "": string }; Returns: number }
+      update_trial_access: { Args: { trial_email: string }; Returns: boolean }
+      updategeometrysrid: {
+        Args: {
+          catalogn_name: string
+          column_name: string
+          new_srid_in: number
+          schema_name: string
+          table_name: string
+        }
+        Returns: string
+      }
+      validate_and_sanitize_input: {
+        Args: {
+          input_value: string
+          max_length?: number
+          validation_type?: string
+        }
+        Returns: string
+      }
+      validate_api_key: {
+        Args: { client_ip?: unknown; key_hash: string }
+        Returns: {
+          access_count: number
+          api_key_id: string
+          is_locked: boolean
+          is_valid: boolean
+          lock_reason: string
+          permissions: Json
+          rate_limit: number
+          rate_window_minutes: number
+          user_id: string
+        }[]
+      }
+      validate_api_key_with_tier: {
+        Args: { client_ip?: unknown; key_hash: string }
+        Returns: {
+          access_count: number
+          api_key_id: string
+          is_locked: boolean
+          is_valid: boolean
+          lock_reason: string
+          permissions: Json
+          rate_limit: number
+          rate_window_minutes: number
+          subscription_tier: string
+          user_id: string
+        }[]
+      }
+      validate_service_operation: { Args: never; Returns: boolean }
+      validate_session_token: { Args: { token: string }; Returns: boolean }
+      validate_subscription_service_operation: { Args: never; Returns: boolean }
+    }
+    Enums: {
+      app_role: "admin" | "moderator" | "user"
+      recurrence_pattern: "annual" | "seasonal" | "monthly" | "custom"
+      subscription_tier: "free" | "starter" | "pro" | "enterprise"
+      task_category:
+        | "soil_preparation"
+        | "planting"
+        | "fertilization"
+        | "irrigation"
+        | "pest_management"
+        | "harvesting"
+        | "equipment_maintenance"
+        | "cover_crops"
+        | "soil_testing"
+        | "record_keeping"
+        | "other"
+        | "scouting"
+      task_status:
+        | "pending"
+        | "in_progress"
+        | "completed"
+        | "skipped"
+        | "cancelled"
+    }
+    CompositeTypes: {
+      geometry_dump: {
+        path: number[] | null
+        geom: unknown
+      }
+      valid_detail: {
+        valid: boolean | null
+        reason: string | null
+        location: unknown
+      }
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never) = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never) = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+      recurrence_pattern: ["annual", "seasonal", "monthly", "custom"],
+      subscription_tier: ["free", "starter", "pro", "enterprise"],
+      task_category: [
+        "soil_preparation",
+        "planting",
+        "fertilization",
+        "irrigation",
+        "pest_management",
+        "harvesting",
+        "equipment_maintenance",
+        "cover_crops",
+        "soil_testing",
+        "record_keeping",
+        "other",
+        "scouting",
+      ],
+      task_status: [
+        "pending",
+        "in_progress",
+        "completed",
+        "skipped",
+        "cancelled",
+      ],
+    },
+  },
+} as const
