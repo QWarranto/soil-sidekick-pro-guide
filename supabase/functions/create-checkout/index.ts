@@ -97,7 +97,7 @@ requestHandler({
     logSafe("Price calculated", { plan, canonicalPlan, interval, amount });
 
     // Create Stripe checkout session
-    const origin = req.headers.get("origin") || "https://soilsidekick.com";
+    const origin = req.headers.get("origin") || "https://soilsidekickpro.com";
     
     const session = await stripe.checkout.sessions.create({
       customer: customerId,

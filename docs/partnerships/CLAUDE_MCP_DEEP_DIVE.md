@@ -37,7 +37,7 @@ No SDK install. No proxy. No glue code. Just one `mcpServers` entry.
 
 ```bash
 # 1. Get a free sandbox key
-open https://soilsidekick.com/api-keys
+open https://soilsidekickpro.com/api-keys
 
 # 2. Edit Claude config
 $EDITOR "~/Library/Application Support/Claude/claude_desktop_config.json"

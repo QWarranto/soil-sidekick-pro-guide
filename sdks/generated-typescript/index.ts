@@ -748,9 +748,9 @@ export class HttpClient<SecurityDataType = unknown> {
 /**
  * @title SoilSidekick Pro API
  * @version 1.2.0
- * @license Commercial License (https://soilsidekick.com/license)
+ * @license Commercial License (https://soilsidekickpro.com/license)
  * @baseUrl https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1
- * @contact SoilSidekick Support <support@soilsidekickpro.com> (https://soilsidekick.com/support)
+ * @contact SoilSidekick Support <support@soilsidekickpro.com> (https://soilsidekickpro.com/support)
  *
  * Agricultural intelligence and soil analysis API with tier-based access control.
  *

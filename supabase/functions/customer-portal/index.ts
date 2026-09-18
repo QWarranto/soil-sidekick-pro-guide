@@ -48,7 +48,7 @@ requestHandler({
     logSafe("Found Stripe customer", { customerId });
 
     // Create portal session
-    const origin = req.headers.get("origin") || "https://soilsidekick.com";
+    const origin = req.headers.get("origin") || "https://soilsidekickpro.com";
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: customerId,
       return_url: `${origin}/pricing`,

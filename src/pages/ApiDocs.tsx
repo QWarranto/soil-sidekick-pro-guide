@@ -53,12 +53,12 @@ export default function ApiDocs() {
                 <p className="text-sm font-semibold text-foreground">Base URL</p>
               </div>
               <div className="relative bg-slate-950 p-4">
-                <code className="text-sm text-green-400">https://api.soilsidekick.com/v1</code>
+                <code className="text-sm text-green-400">https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/</code>
                 <Button
                   variant="ghost"
                   size="sm"
                   className="absolute right-2 top-2"
-                  onClick={() => copyToClipboard("https://api.soilsidekick.com/v1", "base")}
+                  onClick={() => copyToClipboard("https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/", "base")}
                 >
                   {copiedEndpoint === "base" ? (
                     <CheckCircle2 className="h-4 w-4 text-green-500" />

@@ -64,13 +64,13 @@ This procedure establishes the process for detecting, responding to, and reporti
 
 **All staff must immediately report suspected breaches to:**
 - **Primary:** Data Protection Officer (DPO)
-- **Email:** dpo@soilsidekick.com
+- **Email:** dpo@soilsidekickpro.com
 - **Phone:** [DPO EMERGENCY NUMBER]
 - **Secondary:** Security Team Lead
 
 **Report via:**
 - Breach reporting hotline
-- Email to security@soilsidekick.com
+- Email to security@soilsidekickpro.com
 - In-person notification
 
 **Report even if:**

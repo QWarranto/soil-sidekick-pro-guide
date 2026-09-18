@@ -188,7 +188,7 @@ For each processing activity, identify lawful basis:
 - ✅ Source of data (if not collected from subject)
 
 **Last Updated:** _________________________  
-**Accessible At:** https://soilsidekick.com/privacy-policy
+**Accessible At:** https://soilsidekickpro.com/privacy-policy
 
 ### 7.2 Cookie Consent
 

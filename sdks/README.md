@@ -88,7 +88,7 @@ Retrieve EPA water quality data.
 ## 🔧 Configuration
 
 ### API Keys
-1. Sign up at [SoilSidekick Pro](https://soilsidekick.com)
+1. Sign up at [SoilSidekick Pro](https://soilsidekickpro.com)
 2. Generate API key in dashboard
 3. Configure in your application
 
@@ -139,6 +139,6 @@ SOFTWARE.
 
 ## 📞 Support
 
-- Documentation: [docs.soilsidekick.com]({{DOCS_URL}})
+- Documentation: [docs.soilsidekickpro.com]({{DOCS_URL}})
 - Issues: [GitHub Issues]({{ISSUES_URL}})
-- Email: support@soilsidekick.com
+- Email: support@soilsidekickpro.com
