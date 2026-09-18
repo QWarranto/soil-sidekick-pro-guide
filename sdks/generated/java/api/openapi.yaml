@@ -3,7 +3,7 @@ info:
   contact:
     email: support@soilsidekickpro.com
     name: SoilSidekick Support
-    url: https://soilsidekick.com/support
+    url: https://soilsidekickpro.com/support
   description: |
     Agricultural intelligence and soil analysis API with tier-based access control.
 
@@ -51,7 +51,7 @@ info:
     | **Heavy** | 5,000ms | 15,000ms | live-agricultural-data, generate-vrt-prescription |
   license:
     name: Commercial License
-    url: https://soilsidekick.com/license
+    url: https://soilsidekickpro.com/license
   title: SoilSidekick Pro API
   version: 3.0.0
 servers:

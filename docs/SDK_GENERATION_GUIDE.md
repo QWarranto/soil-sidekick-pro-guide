@@ -310,9 +310,9 @@ Auto-generated SDK documentation is available in each SDK's directory:
 ## Support
 
 For SDK issues or questions:
-- Email: sdk@soilsidekick.com
+- Email: sdk@soilsidekickpro.com
 - GitHub: https://github.com/soilsidekick/sdks
-- Documentation: https://docs.soilsidekick.com/sdk
+- Documentation: https://docs.leafengines.com/sdk
 
 ## CI/CD Integration
 

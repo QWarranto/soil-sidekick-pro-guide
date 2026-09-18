@@ -30,7 +30,7 @@ A SAR is a request by a data subject to obtain:
 ### 3.1 Valid Request Channels
 
 SARs can be received via:
-- Email to: privacy@soilsidekick.com
+- Email to: privacy@soilsidekickpro.com
 - Written letter to registered address
 - In-app support ticket marked "Data Access Request"
 - Verbal request (must be confirmed in writing)
@@ -494,7 +494,7 @@ This extension is permitted under Article 12(3) GDPR.
 ## 14. Contact Information
 
 **For SAR Requests:**
-- Email: privacy@soilsidekick.com
+- Email: privacy@soilsidekickpro.com
 - Address: [REGISTERED ADDRESS]
 
 **Data Protection Officer:**

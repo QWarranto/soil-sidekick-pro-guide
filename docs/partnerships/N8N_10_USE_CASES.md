@@ -4,7 +4,7 @@
 **Repository target:** `docs/partnerships/` companion to `N8N_DEEP_DIVE.md`
 **Last updated:** 2026-04-30
 
-10 production-ready workflows with measurable ROI for agricultural intelligence automation. Every use case works **today** using n8n's built-in HTTP Request node — no custom nodes, no approval process. Get a free sandbox key at `soilsidekick.com/api-keys` and start building in under 5 minutes.
+10 production-ready workflows with measurable ROI for agricultural intelligence automation. Every use case works **today** using n8n's built-in HTTP Request node — no custom nodes, no approval process. Get a free sandbox key at `soilsidekickpro.com/api-keys` and start building in under 5 minutes.
 
 | Tier | Endpoints | Use Cases | Combined Annual ROI |
 |------|-----------|-----------|---------------------|

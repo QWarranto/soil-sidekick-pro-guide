@@ -31,7 +31,7 @@ https://buy.stripe.com/fZu00j44C0Jp4Nc3syaMU0f
 
 ### 1. Get an API Key
 
-Register at [soilsidekick.com/api-keys](https://soilsidekick.com/api-keys) to receive a sandbox key (`ak_sandbox_*`) instantly.
+Register at [soilsidekickpro.com/api-keys](https://soilsidekickpro.com/api-keys) to receive a sandbox key (`ak_sandbox_*`) instantly.
 
 ### 2. Connect Your Agent
 
@@ -298,7 +298,7 @@ Full specification at: `https://soil-sidekick-pro-guide.lovable.app/openapi-spec
 
 ## Support
 
-- **Docs**: [soilsidekick.com/api-docs](https://soilsidekick.com/api-docs)
+- **Docs**: [soilsidekickpro.com/api-docs](https://soilsidekickpro.com/api-docs)
 - **Email**: support@soilsidekickpro.com
 - **Agent-specific issues**: agents@leafengines.com
 

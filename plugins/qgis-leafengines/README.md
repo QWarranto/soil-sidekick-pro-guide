@@ -151,6 +151,6 @@ zip -r leafengines-qgis-plugin.zip qgis-leafengines/ \
 
 ## Support
 
-- Documentation: [app.soilsidekick.com/api-docs](https://app.soilsidekick.com/api-docs)
+- Documentation: [app.soilsidekickpro.com/api-docs](https://app.soilsidekickpro.com/api-docs)
 - Issues: [github.com/leafengines/qgis-plugin/issues](https://github.com/leafengines/qgis-plugin/issues)
 - Email: support@soilsidekickpro.com

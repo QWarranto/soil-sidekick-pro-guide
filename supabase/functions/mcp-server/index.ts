@@ -617,14 +617,14 @@ function handleSafeIdentificationPreview(args: Record<string, unknown>) {
     safety_note: 'Plant not in local safety database. Exercise caution: do not consume any wild plant without expert identification. Consult a local extension service or certified forager.',
     confidence: 0.5,
     _free_preview: true,
-    _upgrade_url: 'https://soilsidekick.com/api-keys',
+    _upgrade_url: 'https://soilsidekickpro.com/api-keys',
     location_context: location || null,
   };
 
   return {
     ...result,
     _free_preview: true,
-    _upgrade_url: 'https://soilsidekick.com/api-keys',
+    _upgrade_url: 'https://soilsidekickpro.com/api-keys',
     location_context: location || null,
   };
 }
@@ -647,7 +647,7 @@ function handleWaterQualityPreview(args: Record<string, unknown>) {
       local_reports: `https://www.epa.gov/surf/yourwatershed?fips=${countyFips}`,
     },
     _free_preview: true,
-    _upgrade_url: 'https://soilsidekick.com/api-keys',
+    _upgrade_url: 'https://soilsidekickpro.com/api-keys',
   };
 }
 
@@ -701,7 +701,7 @@ function handleCarbonCreditsPreview(args: Record<string, unknown>) {
     ],
     verification_timeline: '12-36 months from practice start to credit issuance',
     _free_preview: true,
-    _upgrade_url: 'https://soilsidekick.com/api-keys',
+    _upgrade_url: 'https://soilsidekickpro.com/api-keys',
   };
 }
 
@@ -756,7 +756,7 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null, reqMeta?: R
         ],
         categories: ['agriculture', 'environmental', 'geospatial', 'sustainability', 'data-analysis', 'ai-optimization'],
         provider: 'LeafEngines™ by Soil Sidekick Pro',
-        homepage: 'https://soilsidekick.com',
+        homepage: 'https://soilsidekickpro.com',
         documentation: 'https://soil-sidekick-pro-guide.lovable.app/api-docs',
       },
     });
@@ -871,7 +871,7 @@ async function handleRpc(req: JsonRpcRequest, apiKey: string | null, reqMeta?: R
       return jsonRpcError(id ?? null, -32000,
         `Missing x-api-key header. The \`${toolName}\` tool requires an API key. ` +
         `Keyless tools you can call right now: county_lookup, get_soil_data, safe_identification, territorial_water_quality, carbon_credit_calculator, turbo_quant_capabilities. ` +
-        `Get a free key (500 req/mo) at https://soilsidekick.com/api-keys — then resend with header \`x-api-key: <your-key>\`.`);
+        `Get a free key (500 req/mo) at https://soilsidekickpro.com/api-keys — then resend with header \`x-api-key: <your-key>\`.`);
     }
 
     // Strip TurboQuant hint params before forwarding (they're metadata, not endpoint args)
