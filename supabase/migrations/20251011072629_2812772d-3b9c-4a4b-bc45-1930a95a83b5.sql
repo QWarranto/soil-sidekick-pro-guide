@@ -33,7 +33,7 @@ CREATE POLICY "Admins can view all PWA analytics"
     EXISTS (
       SELECT 1 FROM auth.users
       WHERE auth.users.id = auth.uid()
-      AND auth.users.email LIKE '%@soilsidekick.com'
+      AND auth.users.email LIKE '%@soilsidekickpro.com'
     )
   );
 

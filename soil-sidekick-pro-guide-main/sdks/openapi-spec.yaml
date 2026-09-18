@@ -51,10 +51,10 @@ info:
   contact:
     name: SoilSidekick Support
     email: support@soilsidekickpro.com
-    url: https://soilsidekick.com/support
+    url: https://soilsidekickpro.com/support
   license:
     name: Commercial License
-    url: https://soilsidekick.com/license
+    url: https://soilsidekickpro.com/license
 
 servers:
   - url: https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1

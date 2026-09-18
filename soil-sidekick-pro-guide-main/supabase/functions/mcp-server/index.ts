@@ -301,7 +301,7 @@ serve(async (req) => {
  id,
  error: {
  code: -32600,
- message: 'This tool requires an API key. Get one free at https://soilsidekick.com/api-keys'
+ message: 'This tool requires an API key. Get one free at https://soilsidekickpro.com/api-keys'
  }
  }),
  {
@@ -352,7 +352,7 @@ serve(async (req) => {
  ai_calls_limit: FREE_TIER_LIMITS.ai.daily,
  data_calls_remaining: FREE_TIER_LIMITS.data.daily - currentDataCount,
  },
- message: `${currentAiCount}/${FREE_TIER_LIMITS.identification.daily} identifications today. /soil still available! Upgrade at https://soilsidekick.com/api-keys`,
+ message: `${currentAiCount}/${FREE_TIER_LIMITS.identification.daily} identifications today. /soil still available! Upgrade at https://soilsidekickpro.com/api-keys`,
  }, null, 2)
  }]
  }
@@ -396,7 +396,7 @@ serve(async (req) => {
  data_calls_used: currentDataCount,
  data_calls_limit: FREE_TIER_LIMITS.data.daily,
  },
- message: `${currentDataCount}/${FREE_TIER_LIMITS.data.daily} data calls today. Reset at midnight UTC. Get unlimited access at https://soilsidekick.com/api-keys`,
+ message: `${currentDataCount}/${FREE_TIER_LIMITS.data.daily} data calls today. Reset at midnight UTC. Get unlimited access at https://soilsidekickpro.com/api-keys`,
  }, null, 2)
  }]
  }

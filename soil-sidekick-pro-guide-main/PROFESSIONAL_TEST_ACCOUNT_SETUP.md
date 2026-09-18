@@ -36,7 +36,7 @@ INSERT INTO profiles (
   updated_at
 ) VALUES (
   'test-professional-user',
-  'professional-test@soilsidekick.com',
+  'professional-test@soilsidekickpro.com',
   'professional',
   50,                    -- 50 API keys max
   10000,                 -- 10K API calls monthly
@@ -148,9 +148,9 @@ INSERT INTO carbon_credit_baselines (
 
 ```bash
 # 1. Test authentication with professional tier
-curl -X POST https://api.soilsidekick.com/trial-auth \
+curl -X POST https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/trial-auth \
   -H "Content-Type: application/json" \
-  -d '{"email": "professional-test@soilsidekick.com"}'
+  -d '{"email": "professional-test@soilsidekickpro.com"}'
 
 # Expected response:
 # {
@@ -169,7 +169,7 @@ curl -X POST https://api.soilsidekick.com/trial-auth \
 
 ```bash
 # 2. Test carbon credit calculator endpoint
-curl -X POST https://api.soilsidekick.com/carbon-credit-calculator \
+curl -X POST https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/carbon-credit-calculator \
   -H "Authorization: Bearer YOUR_PROFESSIONAL_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -196,7 +196,7 @@ curl -X POST https://api.soilsidekick.com/carbon-credit-calculator \
 
 ```bash
 # 3. Test advanced analytics endpoint
-curl -X POST https://api.soilsidekick.com/advanced-analytics \
+curl -X POST https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/advanced-analytics \
   -H "Authorization: Bearer YOUR_PROFESSIONAL_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -212,7 +212,7 @@ curl -X POST https://api.soilsidekick.com/advanced-analytics \
 ## 📊 Test Account Configuration
 
 ### Account Details
-- **Email**: `professional-test@soilsidekick.com`
+- **Email**: `professional-test@soilsidekickpro.com`
 - **Subscription Tier**: `professional`
 - **API Keys Limit**: 50
 - **Monthly API Calls**: 10,000
@@ -349,15 +349,15 @@ WHERE county_fips = '48453';
 ## 📞 Support and Escalation
 
 ### Internal Team Contacts
-- **QA Team**: qa@soilsidekick.com
-- **DevOps Team**: devops@soilsidekick.com
-- **Security Team**: security@soilsidekick.com
+- **QA Team**: qa@soilsidekickpro.com
+- **DevOps Team**: devops@soilsidekickpro.com
+- **Security Team**: security@soilsidekickpro.com
 
 ### Documentation Links
-- [API Documentation](https://docs.soilsidekick.com/api)
-- [Error Code Reference](https://docs.soilsidekick.com/errors)
-- [Professional Features Guide](https://docs.soilsidekick.com/professional)
-- [SOC 2 Compliance](https://docs.soilsidekick.com/compliance)
+- [API Documentation](https://docs.leafengines.com/api)
+- [Error Code Reference](https://docs.leafengines.com/errors)
+- [Professional Features Guide](https://docs.leafengines.com/professional)
+- [SOC 2 Compliance](https://docs.leafengines.com/compliance)
 
 ## 🎯 Success Metrics
 
