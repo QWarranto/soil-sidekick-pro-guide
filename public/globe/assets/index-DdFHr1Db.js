@@ -1595,7 +1595,7 @@ ${n}`:t}function Ote(e){return Object.fromEntries(Object.entries(e||{}).filter((
     </div>
   `,t.style.cssText=`
     position: absolute;
-    bottom: 32px;
+    bottom: 128px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
