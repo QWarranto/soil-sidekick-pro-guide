@@ -1577,7 +1577,7 @@ ${n}`:t}function Ote(e){return Object.fromEntries(Object.entries(e||{}).filter((
       <p style="margin: 0 0 16px 0; font-size: 14px; color: rgba(255,255,255,0.9); text-shadow: 0 1px 2px rgba(0,0,0,0.5);">
         7 countries. 12 partner networks. One platform.
       </p>
-      <a href="https://docs.leafengines.com" target="_parent" style="
+      <a href="https://soilcertify.com" target="_parent" style="
         background: linear-gradient(135deg, #00897B, #00695C);
         color: white;
         padding: 14px 32px;
