@@ -184,17 +184,17 @@ const turboQuantParams = {
   context_mode: {
     type: 'string',
     enum: ['standard', 'extended', 'maximum'],
-    description: 'TurboQuant context window mode. "standard" = ~4K tokens (default). "extended" = ~16K tokens (requires TQ-enabled runtime). "maximum" = ~24K tokens with KV cache persistence.',
+    description: 'Optional. How much history to consider. "standard" (default) for single questions, "extended" for multi-field or multi-crop comparisons, "maximum" for multi-year trends. Omit if unsure.',
   },
   kv_cache_hint: {
     type: 'string',
     enum: ['none', 'reuse', 'persist'],
-    description: 'KV cache strategy. "none" = fresh inference (default). "reuse" = reuse cached KV state for follow-up queries (40-60% faster). "persist" = persist KV cache across sessions for continuous analysis.',
+    description: 'Optional. "none" (default) for a new question, "reuse" for a follow-up about the same county (faster), "persist" for ongoing monitoring. Omit if unsure.',
   },
   preferred_model_tier: {
     type: 'string',
     enum: ['starter', 'professional', 'enterprise'],
-    description: 'Preferred local model tier for offline inference. Agents can hint at desired reasoning depth; server selects best available model for the tier.',
+    description: 'Optional. Preferred reasoning depth for offline inference; the server picks the best available model. Omit if unsure.',
   },
 };
 
@@ -203,7 +203,7 @@ const turboQuantParams = {
 const TOOLS = [
   {
     name: 'county_lookup',
-    description: 'Search for US counties by name, state, or FIPS code. Returns matching counties with FIPS codes, state names, and state codes. **Use when**: the user provides a place name, state, or partial location instead of a 5-digit FIPS code. Most other tools require a FIPS code, so call this first to resolve it. **Do NOT use** if you already have a valid 5-digit FIPS code. **Output**: JSON array of matches with `fips_code`, `county_name`, `state_name`, `state_code`.',
+    description: 'Resolve a US place name to a 5-digit county FIPS code. Start here whenever the user gives a county, city-level county name, or state instead of a FIPS code — every county-based tool needs one. Use when: you have a place name, not a FIPS code. Skip when: you already have a valid 5-digit FIPS. Input: term (county name, state name, or FIPS prefix; include the state to disambiguate, e.g. "Houston County, GA"). Returns: array of {fips_code, county_name, state_name, state_code}. If several match, ask the user or pick by state; if none match, retry with a shorter term.',
     keywords: ['county', 'FIPS', 'location', 'geocode', 'state', 'US geography', 'place name', 'county search', 'FIPS lookup', 'geolocation'],
     inputSchema: {
       type: 'object',
@@ -220,7 +220,7 @@ const TOOLS = [
   },
   {
     name: 'get_soil_data',
-    description: 'Retrieve USDA soil composition for a US county. Returns pH, N-P-K nutrients, organic matter %, drainage class, and texture. **Use when**: user asks about soil quality, land suitability, nutrient levels, or soil type for a specific location. **Do NOT use** for crop recommendations (use `agricultural_intelligence`) or environmental assessments (use `environmental_impact_analysis`). **Requires**: 5-digit FIPS code — call `county_lookup` first if you only have a place name. **Output**: JSON with numeric soil properties suitable for cross-county comparison.',
+    description: 'Get soil properties for a US county: pH, nitrogen/phosphorus/potassium, organic matter %, drainage class, texture. Use when: the user asks about soil quality, nutrients, soil type, or land suitability. Skip when: they want crop advice (agricultural_intelligence) or a full environmental assessment (environmental_impact_analysis). Requires: county_fips (5 digits, e.g. "13121"); call county_lookup first if you only have a place name. Returns: JSON of numeric soil values; its drainage and organic-matter fields can be passed straight into environmental_impact_analysis.soil_data.',
     keywords: ['soil', 'USDA', 'pH', 'nitrogen', 'phosphorus', 'potassium', 'NPK', 'organic matter', 'drainage', 'texture', 'soil test', 'land suitability', 'soil health', 'nutrient analysis'],
     inputSchema: {
       type: 'object',
@@ -236,7 +236,7 @@ const TOOLS = [
   },
   {
     name: 'agricultural_intelligence',
-    description: 'AI-powered agricultural analysis combining soil data, climate factors, and crop science. Provides planting recommendations, yield predictions, risk assessments, and sustainability scores. Supports TurboQuant extended context for multi-season analysis. **Use when**: user asks what to plant, expected yields, farming risks, or crop suitability for a location. **Do NOT use** for raw soil composition (use `get_soil_data`) or water quality (use `territorial_water_quality`). **Pair with**: `get_soil_data` for underlying soil details, `generate_vrt_prescription` for application rates. **TurboQuant**: Set `context_mode: "extended"` for multi-field comparisons; use `kv_cache_hint: "reuse"` for follow-up questions about the same county. **Requires**: county_fips (required), crop_type and question (optional). **Output**: JSON with recommendations, confidence scores, and data sources.',
+    description: 'Answer crop questions for a US county: what to plant, expected yield, farming risks, sustainability. Use when: the user asks what to grow, how a crop will do, or what risks to expect. Skip when: they want raw soil values (get_soil_data), water data (territorial_water_quality), or specific planting dates (planting_optimization). Requires: county_fips. Optional: crop_type (e.g. "corn"), question (the user\'s question in plain words — pass it through verbatim for best results). Returns: JSON with recommendations, confidence scores, and data sources. Advanced (optional, safe to omit): context_mode, kv_cache_hint.',
     keywords: ['agriculture', 'crop recommendation', 'yield prediction', 'farming', 'agronomy', 'crop science', 'planting advice', 'risk assessment', 'sustainability', 'precision agriculture', 'AI farming', 'TurboQuant'],
     inputSchema: {
       type: 'object',
@@ -261,7 +261,7 @@ const TOOLS = [
   },
   {
     name: 'territorial_water_quality',
-    description: 'Retrieve EPA water quality data for a US county. Returns contamination risk levels, water body proximity analysis, and parameter readings (nitrates, phosphorus, turbidity, etc.). **Use when**: user asks about water contamination, irrigation safety, drinking water risk, or environmental compliance for a location. **Do NOT use** for soil data (use `get_soil_data`) or broad environmental assessments (use `environmental_impact_analysis`). **Pair with**: `environmental_impact_analysis` for a complete environmental picture. **Requires**: 5-digit FIPS code. **Output**: JSON with risk categories, parameter readings, and regulatory context.',
+    description: 'Get water quality and contamination risk for a US county: risk level, nearby water bodies, readings such as nitrates, phosphorus, turbidity. Use when: the user asks about water contamination, irrigation or drinking-water safety, or water compliance. Skip when: they want soil data (get_soil_data) or a combined site assessment (environmental_impact_analysis). Requires: county_fips. Returns: JSON with risk categories, readings, and regulatory context.',
     keywords: ['water quality', 'EPA', 'contamination', 'nitrates', 'phosphorus', 'turbidity', 'irrigation', 'drinking water', 'runoff', 'water testing', 'environmental compliance', 'Clean Water Act'],
     inputSchema: {
       type: 'object',
@@ -277,7 +277,7 @@ const TOOLS = [
   },
   {
     name: 'safe_identification',
-    description: 'Identify a plant and flag toxic lookalikes with environmental context. Returns safety warnings, confidence scores, and habitat information. **Use when**: user asks to identify a plant, check if something is edible, or needs foraging safety information. **Do NOT use** for crop planning (use `agricultural_intelligence`). **Requires**: plant_name (required), location (optional for regional context). **Output**: JSON with identification, toxicity warnings, lookalike species, and confidence scores.',
+    description: 'Identify a plant by name and warn about toxic lookalikes. Use when: the user asks what a plant is, whether it is edible or poisonous, or wants foraging safety. Skip when: the question is about growing crops (agricultural_intelligence). Requires: plant_name (common or scientific). Optional: location (state or region) for regional lookalikes. Returns: JSON with identification, toxicity warnings, lookalike species, confidence. Always relay safety warnings to the user; never state a plant is safe to eat on low confidence.',
     keywords: ['plant identification', 'plant ID', 'toxic plants', 'edible plants', 'foraging', 'poisonous', 'lookalike species', 'botany', 'plant safety', 'mushroom identification', 'wild plants'],
     inputSchema: {
       type: 'object',
@@ -296,7 +296,7 @@ const TOOLS = [
   },
   {
     name: 'carbon_credit_calculator',
-    description: 'Calculate carbon credit potential for agricultural land based on field size, soil organic matter, and farming practices. Returns estimated credits (tonnes CO₂e), monetary value ($USD), verification timeline, and registry requirements. **Use when**: user asks about carbon credits, carbon offset revenue, sustainability incentives, or conservation practice ROI. **Do NOT use** for general environmental assessment (use `environmental_impact_analysis`). **Pair with**: `get_soil_data` to obtain current organic matter %. **Requires**: field_size_acres (required), soil_organic_matter and practice_type (optional). **Output**: JSON with credit estimates, dollar values, and verification steps.',
+    description: 'Estimate carbon credit potential and dollar value for a field. Use when: the user asks about carbon credits, offset revenue, or the payoff of a conservation practice. Skip when: they want a general environmental assessment (environmental_impact_analysis). Requires: field_size_acres. Optional: soil_organic_matter (percent, 0-100 — get it from get_soil_data if unknown), practice_type. Returns: JSON with estimated tonnes CO2e, USD value, verification timeline, registry requirements. Figures are estimates; present them as such.',
     keywords: ['carbon credits', 'carbon offset', 'CO2', 'greenhouse gas', 'sustainability', 'cover cropping', 'no-till', 'agroforestry', 'carbon sequestration', 'Verra', 'Gold Standard', 'climate finance', 'ESG'],
     inputSchema: {
       type: 'object',
@@ -320,14 +320,15 @@ const TOOLS = [
   },
   {
     name: 'generate_vrt_prescription',
-    description: 'Generate a variable rate technology (VRT) prescription map for precision agriculture. Creates zone-based application rates for fertilizer, seed, water, or pesticide based on soil variability across a field. **Use when**: user asks about precision application, variable rate seeding/fertilizing, or zone-based field management. **Do NOT use** for general crop advice (use `agricultural_intelligence`). **Pair with**: `get_soil_data` for soil baseline, `agricultural_intelligence` for crop-specific context. **Requires**: county_fips + application_type (required), crop_type and field_size_acres (optional). **Output**: JSON with zone boundaries, per-zone rates, rate units, and estimated input savings.',
+    description: 'Create a variable-rate prescription (per-zone application rates) for fertilizer, seed, water, or pesticide. Use when: the user asks about precision or variable-rate application, or zone-based field management. Skip when: they want general crop advice (agricultural_intelligence). Requires: county_fips, application_type. Optional: crop_type, field_size_acres. Returns: JSON with zones, per-zone rates with units, and estimated input savings.',
     keywords: ['VRT', 'variable rate', 'prescription map', 'precision agriculture', 'fertilizer rate', 'seeding rate', 'zone management', 'ISOBUS', 'site-specific management', 'input optimization'],
     inputSchema: {
       type: 'object',
       properties: {
         county_fips: {
           type: 'string',
-          description: '5-digit US county FIPS code'
+          pattern: '^[0-9]{5}$',
+          description: '5-digit US county FIPS code (e.g., "13153"). Use county_lookup if you only have a name.'
         },
         application_type: {
           type: 'string',
@@ -348,7 +349,7 @@ const TOOLS = [
   },
   {
     name: 'environmental_impact_analysis',
-    description: 'Patent-pending multi-source environmental impact assessment. Fuses USDA soil data, EPA water quality, NOAA climate data, and Google AlphaEarth satellite embeddings (64-dim Geo Foundation Model vectors at 10m resolution) into Environmental Compatibility Scores unavailable from any single public data source. Supports TurboQuant extended context for full-season environmental history in a single pass. Returns: runoff_risk (0-100), contamination_risk (low/med/high), biodiversity_impact, carbon_footprint_score, and satellite-derived vegetation health. **Use when**: user needs environmental due diligence, land purchase evaluation, regulatory pre-screening, or comprehensive site assessment. **Do NOT use** for soil-only queries (use `get_soil_data`) or water-only queries (use `territorial_water_quality`). **TurboQuant**: Set `context_mode: "maximum"` for multi-year trend analysis; use `kv_cache_hint: "persist"` for ongoing monitoring sessions. **Pair with**: `get_soil_data` for raw soil inputs, `territorial_water_quality` for water-specific detail, `carbon_credit_calculator` for monetization. **Requires**: county_fips + lat + lng + soil_data (required). **Output**: JSON with composite scores, risk categories, satellite health indices, and eco-friendly alternatives.',
+    description: 'Run a combined environmental assessment for a specific point: runoff risk, contamination risk, biodiversity impact, carbon footprint, and vegetation health. Use when: the user needs site due diligence, a land-purchase check, regulatory pre-screening, or a full site assessment. Skip when: the question is soil-only (get_soil_data) or water-only (territorial_water_quality). Requires: county_fips, lat, lng, soil_data. Typical sequence: county_lookup -> get_soil_data -> this tool, passing the soil result as soil_data. Optional: water_body_data {proximity_km}, analysis_id (any UUID; omit if none). Returns: JSON with runoff_risk (0-100), contamination_risk (low/medium/high), biodiversity_impact, carbon_footprint_score, vegetation health, and suggested alternatives.',
     keywords: ['environmental impact', 'EIA', 'due diligence', 'satellite', 'AlphaEarth', 'NDVI', 'runoff risk', 'biodiversity', 'contamination', 'land evaluation', 'site assessment', 'NEPA', 'sensor fusion', 'remote sensing', 'GIS', 'TurboQuant'],
     inputSchema: {
       type: 'object',
@@ -356,7 +357,7 @@ const TOOLS = [
         analysis_id: {
           type: 'string',
           format: 'uuid',
-          description: 'UUID for this analysis session'
+          description: 'Optional UUID to label this analysis; omit if you do not have one.'
         },
         county_fips: {
           type: 'string',
@@ -377,7 +378,7 @@ const TOOLS = [
         },
         soil_data: {
           type: 'object',
-          description: 'Soil composition data (drainage_class, slope_percentage, organic_matter_percentage, permeability)'
+          description: 'Soil values for the site: {drainage_class, slope_percentage, organic_matter_percentage, permeability}. Pass the get_soil_data result for the same county.'
         },
         water_body_data: {
           type: 'object',
@@ -390,7 +391,7 @@ const TOOLS = [
   },
   {
     name: 'planting_optimization',
-    description: 'AI-powered multi-parameter planting calendar that fuses soil composition, historical climate patterns, frost date models, and crop-specific phenology to generate optimal planting windows, yield predictions, sustainability scores, and risk assessments. Supports TurboQuant extended context for full-season history analysis. Returns proprietary timing recommendations unavailable from standard agricultural extension data. **Use when**: user asks when to plant, optimal planting dates, growing season timing, or yield forecasts for a specific crop and location. **Do NOT use** for general crop advice without timing focus (use `agricultural_intelligence`) or soil-only queries (use `get_soil_data`). **TurboQuant**: Set `context_mode: "extended"` for multi-crop rotation analysis; use `kv_cache_hint: "reuse"` for iterative planting scenario modeling. **Pair with**: `get_soil_data` for soil context, `carbon_credit_calculator` for sustainability ROI. **Requires**: county_fips + crop_type (required), field_size_acres and planting_year (optional). **Output**: JSON with optimal_window (start/end dates), yield_prediction (bushels/acre), sustainability_score (0-100), risk_factors array, and alternative crop suggestions.',
+    description: 'Find the best planting window and yield outlook for a crop in a US county. Use when: the user asks when to plant, best planting dates, or season timing (e.g. "when should I plant collards in Houston County, GA?"). Skip when: they want crop choice without timing (agricultural_intelligence) or soil values only (get_soil_data). Requires: county_fips, crop_type. Optional: field_size_acres, planting_year (defaults to the upcoming season). Returns: JSON with optimal_window {start, end}, yield_prediction (bushels/acre), sustainability_score (0-100), risk_factors, alternative crops. Advanced (optional, safe to omit): context_mode, kv_cache_hint.',
     keywords: ['planting calendar', 'planting date', 'frost date', 'growing season', 'phenology', 'yield forecast', 'crop timing', 'GDD', 'growing degree days', 'season planning', 'climate adaptation', 'TurboQuant'],
     inputSchema: {
       type: 'object',
@@ -410,7 +411,7 @@ const TOOLS = [
         },
         planting_year: {
           type: 'integer',
-          description: 'Target planting year'
+          description: 'Target planting year (e.g., 2027). Defaults to the upcoming season.'
         },
         ...turboQuantParams,
       },
@@ -419,7 +420,7 @@ const TOOLS = [
   },
   {
     name: 'turbo_quant_capabilities',
-    description: 'Query TurboQuant runtime capabilities, supported model tiers, memory profiles, and context window configurations. Returns hardware requirements for each model tier, available context modes, and performance benchmarks. **Use when**: agent needs to determine which model tier or context mode to request for a given hardware profile, or to display TurboQuant availability to end users. **Do NOT use** for agricultural data queries. **No authentication required**. **Output**: JSON with supported models (RAM requirements, KV cache sizes, context token limits), context modes, runtime options, and performance benefits.',
+    description: 'List offline/on-device model tiers and their hardware needs. Use when: you must choose a model tier or context_mode for a device, or show offline availability to a user. Skip for any farming or soil question. No authentication needed. Optional: device_ram_gb (filters to tiers that fit), runtime. Returns: JSON with model tiers (RAM, context limits), context modes, and runtimes.',
     keywords: ['TurboQuant', 'capabilities', 'hardware', 'model tier', 'KV cache', 'context window', 'memory profile', 'runtime', 'WebGPU', 'WASM', 'offline', 'performance', 'benchmarks'],
     inputSchema: {
       type: 'object',
