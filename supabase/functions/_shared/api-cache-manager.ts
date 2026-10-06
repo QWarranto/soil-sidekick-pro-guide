@@ -11,13 +11,16 @@
  */
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { computeVolatilityTTL, type VolatilityTTLConfig } from './volatility-ttl.ts';
 
 export interface CacheOptions {
   provider: string;
   key: string;
-  ttl: number; // Time to live in milliseconds
+  ttl: number; // Time to live in milliseconds (used when no volatility config)
   staleWhileRevalidate?: boolean; // Return stale data while fetching fresh
   countyFips?: string;
+  /** When set, expiration = max(min_ttl, base_ttl × (1 − α × volatility)). */
+  volatility?: VolatilityTTLConfig;
 }
 
 export class APICacheManager {
@@ -244,7 +247,15 @@ export class APICacheManager {
   /** Options-based upsert (used internally by getOrFetch). */
   private async setWithOptions(options: CacheOptions, data: any): Promise<void> {
     const cacheKey = this.generateCacheKey(options);
-    this.setMemoryCache(cacheKey, data, options.ttl);
+    let ttl = options.ttl;
+    if (options.volatility) {
+      const v = options.volatility;
+      let score = 0;
+      try { score = v.volatilityOf(data); } catch { score = 0; }
+      ttl = computeVolatilityTTL(v.baseTtlMs, v.minTtlMs, v.alpha, score);
+      console.log(`[Cache] Volatility TTL ${options.provider}/${options.key}: volatility=${score.toFixed(3)} alpha=${v.alpha} ttl_ms=${ttl}`);
+    }
+    this.setMemoryCache(cacheKey, data, ttl);
     try {
       await this.supabase
         .from('fips_data_cache')
@@ -254,7 +265,7 @@ export class APICacheManager {
           county_fips: options.countyFips || 'global',
           cached_data: data,
           cache_level: 1,
-          expires_at: new Date(Date.now() + options.ttl).toISOString(),
+          expires_at: new Date(Date.now() + ttl).toISOString(),
           access_count: 1,
           last_accessed: new Date().toISOString(),
           created_at: new Date().toISOString()
