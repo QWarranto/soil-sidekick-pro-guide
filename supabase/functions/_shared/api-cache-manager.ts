@@ -161,7 +161,9 @@ export class APICacheManager {
 
       if (dbCached && !error) {
         console.log(`[Cache] Database HIT: ${options.provider}/${options.key}`);
-        this.setMemoryCache(cacheKey, dbCached.cached_data, options.ttl);
+        // Honor the stored expiration (may be volatility-derived), not the default TTL
+        const remaining = new Date(dbCached.expires_at).getTime() - Date.now();
+        this.setMemoryCache(cacheKey, dbCached.cached_data, Math.max(1_000, remaining));
 
         await this.supabase
           .from('fips_data_cache')
