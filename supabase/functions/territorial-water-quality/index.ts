@@ -1,6 +1,7 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 import { rateLimiter, exponentialBackoff, API_PROVIDERS } from '../_shared/api-rate-limiter.ts';
 import { APICacheManager } from '../_shared/api-cache-manager.ts';
+import { waterQualityVolatility } from '../_shared/volatility-ttl.ts';
 
 // Security utilities (inline)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -219,14 +220,20 @@ Deno.serve(async (req) => {
     // Determine territory type and regulatory framework
     const territoryInfo = getTerritoryInfo(state_code);
     
-    // Use cache manager with aggressive caching (24 hour TTL)
+    // Volatility-adaptive cache: ttl = max(1h, 24h × (1 − 0.75 × volatility))
     const { data: waterQualityData, fromCache, cacheLevel } = await cacheManager.getOrFetch(
       {
         provider: 'EPA_WQP',
         key: `water_quality_${fips_code}_${state_code}`,
-        ttl: 24 * 60 * 60 * 1000, // 24 hours
+        ttl: 24 * 60 * 60 * 1000, // base TTL (24 hours)
         staleWhileRevalidate: true, // Serve stale while fetching fresh
         countyFips: fips_code,
+        volatility: {
+          baseTtlMs: 24 * 60 * 60 * 1000,
+          minTtlMs: 60 * 60 * 1000,
+          alpha: 0.75,
+          volatilityOf: waterQualityVolatility,
+        },
       },
       async () => {
         // Check rate limits before calling EPA API

@@ -4,6 +4,8 @@ import { validateInput, environmentalImpactSchema } from '../_shared/validation.
 import { trackExternalAPICost } from '../_shared/cost-tracker.ts';
 import { safeExternalCall } from '../_shared/graceful-degradation.ts';
 import { parseTQHeaders, hasTQHeaders } from '../_shared/turbo-quant.ts';
+import { APICacheManager } from '../_shared/api-cache-manager.ts';
+import { getWaterBodyData } from '../_shared/wqp-water-bodies.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -32,20 +34,22 @@ Deno.serve(async (req) => {
 
     console.log(`Environmental impact assessment for analysis ${analysis_id} in county ${county_fips}`);
 
-    // Fetch water body data with graceful degradation
+    // Real-time EPA Water Quality Portal surface-water data (volatility-adaptive cache),
+    // with graceful degradation to a regional estimate if WQP is unreachable
     const water_body_data = await safeExternalCall(
       'epa',
       async () => {
-        // Primary: Try EPA water proximity API
-        return await fetchWaterProximityData(county_fips);
+        const { data, fromCache, cacheLevel } = await getWaterBodyData(
+          wqpCache, county_fips,
+          { latitude: soil_data?.latitude, longitude: soil_data?.longitude },
+        );
+        console.log(`[Impact] WQP water bodies: ${fromCache ? `cache (${cacheLevel})` : 'fresh'} distance=${data.distance_miles}mi`);
+        return data;
       },
-      async () => {
-        // Fallback: Use estimated data
-        return { distance_miles: getEstimatedWaterProximity(county_fips) };
-      }
+      async () => ({ distance_miles: getEstimatedWaterProximity(county_fips), source: 'regional_estimate' })
     );
 
-    // Calculate runoff risk score
+    // Calculate runoff risk score (uses WQP proximity + measured nutrient loading)
     const runoffRisk = calculateRunoffRisk(soil_data, water_body_data);
     
     // Determine water body proximity
@@ -96,6 +100,7 @@ Deno.serve(async (req) => {
     return {
       impact_assessment: impactScore,
       detailed_analysis: {
+        water_body_data,
         runoff_risk: runoffRisk,
         contamination_assessment: contaminationRisk,
         eco_alternatives: ecoAlternatives,
@@ -124,11 +129,10 @@ function getEstimatedWaterProximity(county_fips: string): number {
   return waterProximityByState[stateCode] || 6.5;
 }
 
-// Placeholder for actual EPA API call
-async function fetchWaterProximityData(county_fips: string): Promise<any> {
-  // In production, this would call EPA water proximity API
-  return { distance_miles: getEstimatedWaterProximity(county_fips) };
-}
+const wqpCache = new APICacheManager(
+  Deno.env.get('SUPABASE_URL')!,
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+);
 
 function calculateRunoffRisk(soil_data: any, water_body_data?: any): any {
   const ph = soil_data.ph_level || 7.0;
@@ -172,6 +176,13 @@ function calculateRunoffRisk(soil_data: any, water_body_data?: any): any {
   if (proximity < 0.5) baseScore += 20;
   else if (proximity < 1.0) baseScore += 15;
   else if (proximity < 2.0) baseScore += 10;
+
+  // Measured nutrient loading in nearby surface water (EPA WQP)
+  const nitrate = water_body_data?.mean_nitrate_mg_l;
+  const phosphorus = water_body_data?.mean_phosphorus_mg_l;
+  if (typeof nitrate === 'number') { if (nitrate > 10) baseScore += 15; else if (nitrate > 3) baseScore += 8; }
+  if (typeof phosphorus === 'number') { if (phosphorus > 0.1) baseScore += 10; else if (phosphorus > 0.05) baseScore += 5; }
+  
   
   const finalScore = Math.min(Math.max(baseScore, 0), 100);
   
