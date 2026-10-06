@@ -100,6 +100,7 @@ Deno.serve(async (req) => {
     return {
       impact_assessment: impactScore,
       detailed_analysis: {
+        water_body_data,
         runoff_risk: runoffRisk,
         contamination_assessment: contaminationRisk,
         eco_alternatives: ecoAlternatives,
