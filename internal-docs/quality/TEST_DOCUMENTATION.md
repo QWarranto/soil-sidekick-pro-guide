@@ -1,4 +1,6 @@
 # SoilSidekick Pro - Test Documentation
+> **Historical reference — status reviewed 2026-10-31.** Current validation is in [Test Documentation](../testing/TEST_DOCUMENTATION.md). Examples below are not executed results or certification evidence.
+
 # LeafEngines™ B2B API Platform
 
 ## Version: 2.1

@@ -1,4 +1,6 @@
 # Product Requirements Document (PRD)
+> **Historical reference — status reviewed 2026-10-31.** Current requirements are in [PRODUCT_REQUIREMENTS.md](./PRODUCT_REQUIREMENTS.md). The older text below is retained as history, not current capability, pricing, certification or patent evidence.
+
 ## SoilSidekick Pro - Agricultural Intelligence Platform
 ## LeafEngines™ B2B API Platform
 
