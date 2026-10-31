@@ -1,4 +1,6 @@
 # SoilSidekick Pro - Operational & Maintenance Documentation
+> **Historical reference — status reviewed 2026-10-31.** Use [current Operations and Maintenance](./OPERATIONS_MAINTENANCE.md). Old SQL examples, schedules, certification, staffing and rollback statements below require verification and must not be treated as current runbooks.
+
 # LeafEngines™ B2B API Platform
 
 ## Version: 2.1

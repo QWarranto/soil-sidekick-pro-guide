@@ -1,159 +1,65 @@
 # Product Requirements Document (PRD)
 
-**Product:** SoilSidekick Pro® / LeafEngines™ Agricultural Intelligence Platform
-**Version:** 3.1.0
-**Last updated:** 2026-07-03
-**Owner:** Product — SoilTech Suite, Inc.
-**Status:** Approved for GA
+**Classification: Internal Only**
+**Documentation revision:** 2026-10-31
+**Last updated:** 2026-10-31
+**Owner:** Product
+**Status:** Source-reviewed; operational/release approval not inferred
 
----
+## 1. Product and audience
 
-## 1. Executive Summary
+SoilSidekick Pro provides soil analysis, location-based crop and planting guidance, seasonal planning, environmental context and AI assistance. SoilCertify supplies complementary source-linked soil/site reports and map-ready information. LeafEngines exposes integration services through REST, MCP and generated SDKs. Recommendations are agronomic context, not verified yield, insurance coverage, damage or claim decisions.
 
-SoilSidekick Pro is a patent-protected agricultural intelligence platform that fuses USDA SSURGO soil data, EPA water quality feeds, NOAA weather, Google Earth Engine (AlphaEarth) satellite embeddings, and on-device sensor fusion to deliver ground-truthed field-level insights. The platform is delivered as a hosted web application, a multi-channel API (REST + MCP), auto-generated SDKs across six languages, and native integrations for QGIS, n8n, Node-RED, ClawHub, and Claude.
+Target audiences include growers, consultants, GIS users, developers and enterprise evaluators. OEM/defense use cases remain subject to their own hardware and safety acceptance gates; no universal autonomy assurance follows from an API integration.
 
-The 3.1.0 release adds first-class **managed asset CRUD** and **OGC WFS export**, promoting the product from a read-only intelligence service to a full GIS system-of-record for point, polygon, and sensor assets.
+## 2. Source-implemented capability inventory
 
-## 2. Vision & Positioning
-
-> "Space gives the picture. We give the truth."
-
-LeafEngines positions itself as the **survival / trust layer for physical AI** — the offline-first, GPS-independent verification substrate that makes autonomous physical systems safe to operate in disconnected, contested, or GPS-denied environments (agriculture, mining, forestry, defense, disaster response). The horizontal PNT market opportunity is estimated at $1.2T.
-
-## 3. Target Users & Personas
-
-| Persona | Primary Need | Success Metric |
-|---|---|---|
-| Precision-Ag Agronomist | County-level soil analysis, VRT prescriptions | Report generated < 30 s |
-| Agricultural Consultant | Client-ready PDF, planting calendars | ≥ 172% resale margin |
-| Enterprise OEM (Skyline, John Deere) | Sub-100 ms sensor ingestion at 100k msg/min | 99.9% uptime, < 100 ms p95 |
-| Developer / AI Engineer | MCP tools, SDKs, offline inference | Time-to-first-call < 5 min |
-| Government / Defense | Assured PNT, offline operation, audit trail | 500 m write-inhibition enforced |
-| Hobbyist / Consumer | Plant identification, care schedules | Free tier without signup |
-
-## 4. Product Pillars
-
-1. **Data Integrity First** — 500 m positional-uncertainty write-inhibition; V3 AES-256 PII encryption; data-quality envelope on every response.
-2. **Offline Survival Layer** — Service Worker v3 app shell, Capacitor write queue, WebGPU local Gemma inference (< 100 ms).
-3. **Horizontal Distribution** — Nine channels: web, direct API, MCP, ClawHub, Claude Skill, n8n, Node-RED, QGIS plugin, Telegram bot.
-4. **Permissive Freemium Funnel** — `x-free-tier: true` and `leaf-test-370df0a2e62e` keyless discovery; auto-upgrade at 500 / 5k / 25k call thresholds.
-5. **Compliance-Grade Governance** — SOC 2 Type 1, ISA TRAQ, GMP, FDA, CEJST alignment.
-
-## 5. In-Scope Functional Requirements (v3.1.0)
-
-### 5.1 Soil & Environmental Intelligence
-- USDA SSURGO composition, pH, NPK, drainage, texture for any US county
-- EPA Water Quality Portal (400+ agencies), NOAA weather integration
-- Environmental Compatibility Score (patent-pending)
-- Carbon Credit Calculator, VRT prescription generator
-- AlphaEarth 64-dim semantic embeddings @ 10 m pixel resolution
-
-### 5.2 Managed Assets (NEW in 3.1.0)
-- `listAssets`, `createAsset`, `updateAsset`, `deleteAsset` (soft-delete)
-- Idempotency-Key header on create
-- Optimistic locking via `If-Match` matching `version`
-- Full audit history in `asset_history` table
-
-### 5.3 WFS Export (NEW in 3.1.0)
-- `GetCapabilities` (unauthenticated) and `GetFeature` (API key required)
-- Output: GeoJSON (default) or GML via `outputFormat`
-- `bbox` filtering, `limit` up to 5000
-
-### 5.4 AI Services
-- GPT-5 chat, agricultural intelligence, seasonal planning
-- Smart report summaries, visual crop analysis
-- Local Gemma routing with TurboQuant KV-cache 6× memory compression
-
-### 5.5 Consumer Plant Care API v2
-- Safe identification with jurisdiction-scoped chemical warnings
-- Dynamic care variables, progressive-jargon endpoints
-- Localized safety limits from FIPS regulatory cache
-
-### 5.6 Sensor & OEM Integration
-- MQTT ingestion, CAN Bus, URLLC, ISOBUS-XML (ADAPT 1.0)
-- 0-100 (A-F) data-quality score with drift detection
-- HMAC / mTLS with 5 s TTL for OEM telemetry
-
-### 5.7 Auth & Billing
-- Supabase Auth + JWT; `app.` subdomain required for authenticated routes
-- SHA-256 hashed API keys (`SS_API_{prefix}_2025`)
-- Stripe metered billing via `stripe-usage-sync`
-- Founders Program auto-upgrade thresholds
-
-## 6. Out of Scope (v3.1.0)
-- Multi-tenant white-label console (deferred to 3.2)
-- Non-US SSURGO equivalents (EU LUCAS deferred)
-- Real-time collaborative field editing
-- Native iOS/Android apps outside Capacitor wrapper
-
-## 7. Non-Functional Requirements
-
-| Category | Target |
+| Area | Current source and limitation |
 |---|---|
-| API p95 latency | < 300 ms (cloud), < 100 ms (local WebGPU) |
-| Availability | 99.9% monthly |
-| Data residency | US-East (primary), configurable enterprise |
-| Concurrent connections | 50 per edge function, 100k msg/min telemetry |
-| PII encryption | AES-256 V3 at rest, TLS 1.3 in transit |
-| Positional integrity | Write-inhibited > 500 m uncertainty |
-| Offline mode | 100% read-only core, queued writes |
+| Soil/county | USDA/SDA integration, FIPS lookup and regional degradation; county estimates are not laboratory site measurements |
+| Crop guidance | Planting calendar, agricultural intelligence and seasonal planning; qualified review required |
+| Environment/water | WQP-derived observations and cached water-quality analysis; monitoring-station proximity, not validated water-body boundary distance |
+| Satellite | Satellite context and embeddings; pixel size is not combined-report accuracy |
+| Assets/GIS | Managed asset CRUD/history and WFS export paths; concurrency, key verification and polygon interoperability require further validation |
+| AI | Hosted AI and browser-local text generation; device/runtime/model availability conditions apply |
+| VRT | Hosted AI-generated JSON, predefined/uniform fallbacks and illustrative geometries; not approved operational prescriptions |
+| Offline | Cached shell, conditional initialized local reasoning and queued writes; new cloud data/AI requires connectivity |
+| Channels | Web, REST, MCP, QGIS and integration packages; registry/release availability checked independently |
 
-## 8. Pricing Tiers
+## 3. Mandatory integrity and safety requirements
 
-| Tier | Price | Calls | Notes |
-|---|---|---|---|
-| Free | $0 | Test key + `x-free-tier` | Soil, county, TurboQuant |
-| Hobby (SSP) | — | Consumer | Renamed from legacy |
-| Starter | $149/mo | 10k | Founder locked |
-| Grower (SSP) | — | Consumer | Renamed |
-| Pro | $499/mo | 35k | |
-| Pro (SSP) | — | Consumer | Renamed |
-| Enterprise | $1,999/mo | 175k+ | SLA + white-label |
-| Enterprise Bundle | $3,499/mo | 685k | Max volume OEM |
+- STRICTLY prohibit database persistence when positional uncertainty exceeds 500m. This is a requirement, not a proven universal control: offline replay and managed-asset writes currently lack an explicit uncertainty check in the inspected paths.
+- Preserve validly authenticated advisory requests through non-critical upstream failures with labeled degraded data and error triage. This permissiveness does not authorize unsafe operational payloads, unauthenticated access or bypass of the positional-write prohibition.
+- Keep advisory, simulation and approved operational output distinct. Trusted geometry, non-overlap, compatible units, application limits, freshness, provenance and human review are acceptance requirements for operational prescriptions.
+- Require manufacturer-specific import/conformance testing and HIL plus Engineering/Safety sign-off before safety-critical OEM operation.
+- Assess encryption, RLS/grants and log redaction in the deployed environment; do not equate source or monitoring with independent certification.
 
-## 9. Success Metrics (North-Star KPIs)
+## 4. Cache and proposed AI changes
 
-- 750+ active developers globally (achieved June 2026)
-- A-Excellent MCP World verified rating (achieved)
-- < 100 ms p95 for local WebGPU inference
-- < 1000 ms fuzzy county search (pg_trgm GIN)
-- Zero PII plaintext leaks (V3 encryption enforced)
-- ≥ 90% offline sync success on reconnect
+The adaptive TTL formula exists for two water-related paths; its volatility is measurement-derived, not geographic/source-derived. Hierarchical FIPS caching still uses fixed windows. Request-driven refresh can serve stale data on failure; a bounded stale-data policy remains corrective work.
 
-## 10. Constraints & Assumptions
-- Lovable Cloud (Supabase) is the sole managed backend
-- Client-side app is React 18 + Vite 5 + Tailwind v3 + TypeScript 5
-- WebGPU limited to Chromium 121+; degraded to WASM elsewhere
-- Free tier bypasses JWT via `x-free-tier` header for `get-soil-data` and `county-lookup`
-- Authenticated endpoints require `app.` subdomain
+October 30 controller schema/specification files are completed design artifacts, explicitly not implemented. Proposed local structured output must be proven on one supported browser engine and validated independently. Keep hosted AI available during evaluation. Do not promise deterministic agronomic content, universal speedup or automatic equipment readiness.
 
-## 11. Release Milestones
+## 5. Plans and quotas
 
-| Release | Date | Highlights |
-|---|---|---|
-| 3.0.0 | 2026-06-25 | Initial GA of 6-language SDK |
-| 3.1.0 | 2026-07-02 | Managed Assets CRUD + WFS Export |
-| 3.2.0 | 2026-Q4 | White-label console, EU LUCAS |
-| 4.0.0 | 2027-Q2 | Defense DV005 GA, ARL-hardened PNT |
+Consumer plans: Hobby $29/month, Grower $79/month, Pro $149/month. LeafEngines API plans: Free, Starter $149/month, Pro $499/month, Enterprise $1,999/month. Prices describe the recorded plan structure, not a verification of active Stripe settings. Endpoint/key/partner entitlements are separate from client configuration; use `src/lib/sdk-tier-limits.ts` for the client category map, then verify server enforcement.
 
-## 12. Dependencies
-- Google Earth Engine (AlphaEarth)
-- USDA SSURGO, EPA WQP, NOAA
-- Stripe (metered billing)
-- Supabase (Postgres, Auth, Edge Functions, Storage)
-- Lovable AI Gateway (GPT-5, Gemma routing)
-- Composio (partner API, 10k req/hr)
+## 6. Nonfunctional acceptance targets
 
-## 13. Risks (see Risk Doc for full analysis)
-- WebGPU browser fragmentation
-- Satellite feed outages (AlphaEarth)
-- GHSA advisories on transitive deps (mitigated via automated scan)
-- Free-tier abuse (mitigated via anonymous_api_usage IP-hash quota)
+| Requirement | Status |
+|---|---|
+| Lightweight local AI summary <100ms on accelerated target hardware | Target; WASM is degraded, not SLA-equivalent |
+| L1 cache hit <25ms; impact <2s; recommendation/carbon <3s; multi-agency <5s | Targets needing scoped measurement |
+| Online endpoints approximately 1–3s target band | Endpoint-specific, not a universal achieved percentile |
+| 50 concurrent edge requests / 2MB payload budget | Design constraints; use pagination/chunking |
+| Offline reliable replay, identity isolation and >500m write inhibition | End-to-end release gates, not proved by unit mocks |
 
-## 14. Approvals
-| Role | Name | Date |
-|---|---|---|
-| Product Lead | — | 2026-07-03 |
-| Engineering Lead | — | 2026-07-03 |
-| Security Officer | — | 2026-07-03 |
-| Legal | — | 2026-07-03 |
+## 7. Evidence, distribution and roadmap
+
+QGIS plugin evidence reported October 22: 1,010 downloads since April 5, 2026; authorized headline 1,000+ across 50+ countries. Country detail is approximate and downloads are not unique users or ArcGIS adoption.
+
+Next work: safety controls and provenance first; cache lifecycle/unit normalization and contract reconciliation second; one local structured-generation prototype third; device benchmarks/context-cache/VLM pilots after that. These are priorities, not promised release dates. Old GA labels and empty approval rows do not constitute new release approval.
+
+## Evidence and revision record
+
+See [the October 31 review](../operations/DOCUMENTATION_REFRESH_2026-10-31.md) for the source inventory, executed validation, historical dates and outstanding compensations. This documentation revision does not deploy code or change a patent filing.

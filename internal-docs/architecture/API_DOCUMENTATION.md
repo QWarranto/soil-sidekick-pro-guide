@@ -1,4 +1,6 @@
 # SoilSidekick Pro API Documentation
+> **Historical reference — status reviewed 2026-10-31.** Use [current API Documentation](../../docs/api/API_DOCUMENTATION.md) and the current endpoint source. Old authentication, response, quota and certification assertions below are not a current contract.
+
 # LeafEngines™ B2B API Platform
 
 ## Version: 2.2

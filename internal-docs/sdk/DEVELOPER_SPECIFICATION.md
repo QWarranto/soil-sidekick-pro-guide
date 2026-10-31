@@ -1,4 +1,6 @@
 # SoilSidekick Pro - Comprehensive Developer Specification for IP Analysis
+> **Internal historical reference — status reviewed 2026-10-31.** Current integration guidance is in [Developer Specifications](../../docs/sdk/DEVELOPER_SPECIFICATIONS.md). See [the October 31 review](../operations/DOCUMENTATION_REFRESH_2026-10-31.md) for corrections to cache, local structured-output, safety and patent assertions. Historical claims below do not establish current operation or patentability.
+
 # LeafEngines™ B2B API Platform
 
 ## Executive Summary

@@ -1,206 +1,105 @@
 # API Documentation
 
-**API Version:** 3.1.0
-**OpenAPI Spec:** `openapi-spec.yaml`
-**Base URL (prod):** `https://app.soilsidekickpro.com/api`
-**Base URL (sandbox):** `https://sandbox.leafengines.com/api`
-**Last updated:** 2026-07-03
+**Last updated:** 2026-10-31
+**Documentation revision:** October 31, 2026
 
----
+**OpenAPI version in checkout:** 3.1.0  
+**Declared function base URL:** `https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1`
 
-## 1. Authentication
+## 1. Scope and authentication
 
-| Method | Header | Use |
+Use the declared function base URL plus the function name. The authenticated application/dashboard is `https://app.soilsidekickpro.com`. Do not assume an `/api/soil` gateway or sandbox alias is equivalent without checking its configuration.
+
+| Method | Header | Scope |
 |---|---|---|
-| API Key | `x-api-key: <key>` | SDK, MCP, QGIS, integrations |
-| Free Tier | `x-free-tier: true` | Whitelisted endpoints only |
-| JWT | `Authorization: Bearer <token>` | Web app users |
+| API key | `x-api-key: <issued key>` | Endpoint/key-specific entitlements |
+| Public discovery | `x-free-tier: true` | Explicitly enabled endpoints; not all API operations |
+| App session | `Authorization: Bearer <session token>` | Endpoints accepting user sessions |
 
-Test key: `leaf-test-370df0a2e62e`.
-Authenticated endpoints require the `app.` subdomain.
+`get-soil-data` and `county-lookup` support keyless discovery. Other public modes are endpoint-specific. Invalid credentials must not be assumed to fall back to public access. Use issued keys rather than relying on one historical key prefix. Confirm quota/auth behavior for the exact endpoint and account.
 
-## 2. Envelope
+## 2. Core function names
 
-Successful responses:
-```json
-{
-  "data": { ... },
-  "meta": {
-    "request_id": "req_01H...",
-    "source": "USDA-SSURGO-2025",
-    "freshness_hours": 12,
-    "confidence": 0.94,
-    "cached": false
-  }
-}
-```
-
-Errors:
-```json
-{ "error": { "code": "...", "message": "...", "hint": "...", "request_id": "..." } }
-```
-
-## 3. Common Headers
-
-**Request**
-- `x-api-key`, `x-free-tier`, `x-request-id`
-- `Idempotency-Key` (POST /assets)
-- `If-Match` (PATCH /assets)
-- `x-tq-context-mode`, `x-tq-kv-cache-hint`, `x-tq-model-tier`
-
-**Response**
-- `x-ratelimit-limit`, `x-ratelimit-remaining`, `x-ratelimit-reset`
-- `x-response-time-ms`
-- `Sunset` (deprecation)
-
-## 4. Endpoints
-
-### 4.1 Soil Analysis
-```
-GET  /soil?fips=48113&depth=30
-GET  /planting-calendar?fips=48113&crop=corn
-GET  /live-ag?lat=&lon=
-```
-
-### 4.2 Water Quality
-```
-GET /water-quality?lat=&lon=&radius_km=
-GET /territorial-water?state=TX
-```
-
-### 4.3 AI Services
-```
-POST /chat            { messages: [...] }
-POST /seasonal        { field_id: "..." }
-POST /summary         { report_id: "..." }
-POST /visual          multipart/form-data image
-```
-
-### 4.4 Environmental
-```
-GET  /impact?lat=&lon=
-POST /alpha-earth     { bbox, date_range }
-```
-
-### 4.5 Carbon
-```
-POST /carbon-credits  { field_id, practice }
-```
-
-### 4.6 Geographic
-```
-GET /county-lookup?q=Travis&state=TX     # free tier
-GET /reverse-geocode?lat=&lon=
-```
-
-### 4.7 Satellite / VRT
-```
-POST /vrt   { field_id, target_yield }
-```
-
-### 4.8 TurboQuant
-```
-GET /turboquant-check    # device capability probe
-```
-
-### 4.9 Consumer Plant Care
-```
-POST /plant/id       multipart image
-GET  /plant/care?species=&region=
-```
-
-### 4.10 Managed Assets (NEW 3.1.0)
-```
-GET    /assets?id=&type=&limit=&cursor=
-POST   /assets                     Idempotency-Key
-PATCH  /assets?id=                 If-Match: <version>
-DELETE /assets?id=                 (soft delete)
-```
-
-**ManagedAsset schema (abridged)**
-```json
-{
-  "id": "uuid",
-  "asset_type": "point|polygon|sensor",
-  "name": "string",
-  "geometry": { /* GeoJSON */ },
-  "properties": { },
-  "version": 1,
-  "is_deleted": false,
-  "created_at": "...",
-  "updated_at": "..."
-}
-```
-
-### 4.11 WFS Export (NEW 3.1.0)
-```
-GET /wfs?request=GetCapabilities                    # public
-GET /wfs?request=GetFeature
-        &typeName=leafengines:managed_assets
-        &bbox=minLon,minLat,maxLon,maxLat
-        &limit=1000
-        &outputFormat=application/json|gml
-```
-
-### 4.12 MCP JSON-RPC 2.0
-```
-POST /mcp    { "jsonrpc":"2.0","method":"tools/call","params":{...},"id":1 }
-```
-
-## 5. Rate Limits
-
-| Tier | RPS | Monthly |
+| Function | Method | Purpose |
 |---|---|---|
-| Free | 2 | 500 |
-| Starter | 20 | 10k |
-| Pro | 100 | 35k |
-| Enterprise | 500+ | 175k+ |
+| `get-soil-data` | POST | County soil information |
+| `county-lookup` | POST | County/FIPS discovery |
+| `territorial-water-quality` | POST | Water observations and analysis |
+| `multi-parameter-planting-calendar` | POST | Crop planting guidance |
+| `agricultural-intelligence` | POST | Agricultural AI questions |
+| `environmental-impact-engine` | POST | Environmental context |
+| `seasonal-planning-assistant` | POST | Seasonal guidance |
+| `smart-report-summary` | POST | Report summary |
+| `generate-vrt-prescription` | POST | Review-required prescription draft |
+| `assets-crud` | GET / POST / PATCH / DELETE | Managed records |
+| `wfs-export` | GET | GIS feature export |
+| `mcp-server` | POST | JSON-RPC MCP |
 
-429 responses include `Retry-After`.
+Additional endpoints and schemas are in the checked-in OpenAPI specification and interactive reference. Model/provider names and package versions are not API stability guarantees.
 
-## 6. Errors
+## 3. Soil example
 
-| Code | HTTP | Meaning |
-|---|---|---|
-| `AUTH_MISSING` | 401 | No credential |
-| `AUTH_INVALID` | 403 | Bad key/JWT |
-| `SUBDOMAIN_REQUIRED` | 403 | Use `app.` |
-| `RATE_LIMITED` | 429 | Slow down |
-| `IDEMPOTENCY_CONFLICT` | 409 | Same key, different payload |
-| `ASSET_VERSION_MISMATCH` | 412 | Stale `If-Match` |
-| `POSITION_UNCERTAIN` | 422 | > 500 m; write inhibited |
-| `PAYLOAD_TOO_LARGE` | 413 | > 2 MB edge limit |
-| `UPSTREAM_UNAVAILABLE` | 503 | External data source |
+```bash
+curl \
+  'https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/get-soil-data' \
+  -H 'Content-Type: application/json' \
+  -H 'x-free-tier: true' \
+  --data '{"county_fips":"48453","county_name":"Travis County","state_code":"TX"}'
+```
 
-## 7. Idempotency
+FIPS is a five-character string; do not drop leading zeroes. Territorial-water inputs include `fips_code`, `state_code` and `admin_unit_name`; planting-calendar inputs use `county_fips` and `crop_type`, not `crop`. Inspect each function's current contract rather than copying unrelated examples.
 
-Include `Idempotency-Key: <uuid v4>` on `POST /assets`. Duplicate requests within 24 h return the original 201.
+## 4. Responses and errors
 
-## 8. Optimistic Locking
-`PATCH /assets` requires `If-Match: <version>` matching the current version. Mismatch → 412; refetch and retry.
+Responses are endpoint-specific. Soil can return `soilAnalysis` and `cache_info`; assets return `{ "data": ... }`; WFS returns GeoJSON/XML. A universal `{data, meta}` or structured error envelope is not guaranteed. Consume returned provenance/fallback indicators when available; do not manufacture missing confidence values.
 
-## 9. Pagination
-Cursor-based: `?cursor=<opaque>&limit=<n>`; `meta.next_cursor` in response when more pages exist.
+Treat 401/403 as authentication/authorization failures, 429 as quota/rate limiting, and retry transient upstream errors only with bounded backoff. Some advisory endpoints return degraded data successfully. A successful response is not proof of agronomic or operational correctness.
 
-## 10. Webhooks (Enterprise)
-- HMAC-signed with `x-le-signature`
-- 5 s replay window
-- Retry with exponential backoff up to 24 h
+## 5. Managed assets — current behavior
 
-## 11. Deprecation Policy
-- Announce via `Sunset` header 6 months ahead
-- Major bumps use `/v4` prefix
-- Non-breaking additions land in minor releases
+- GET returns non-deleted owner records, capped at 1000; `id` selects a record. No cursor contract is established here.
+- POST may accept `Idempotency-Key`. An existing owner/key record returns 200 with `idempotent: true`; new creation returns 201. Do not rely on a documented 24-hour dedup window or atomic concurrent-create protection.
+- PATCH requires `id`. Supplied `If-Match` mismatch currently returns 409, not 412; the header is optional in the handler. No guaranteed atomic compare-and-swap.
+- DELETE soft-deletes; history records are attempted. No guaranteed 30-day restore service follows.
+- Key-validation compatibility and server-side integrity controls require environment verification before critical use.
 
-## 12. Versioned Change Log
-See root `CHANGELOG.md`; 3.1.0 adds Managed Assets and WFS Export.
+## 6. WFS
 
-## 13. Try It Out
-- Interactive docs: `https://app.soilsidekickpro.com/api-docs`
-- Postman collection: `https://docs.leafengines.com/postman`
-- OpenAPI JSON: `https://app.soilsidekickpro.com/api/openapi.json`
+```text
+GET /wfs-export?request=GetCapabilities
+GET /wfs-export?request=GetFeature&limit=1000&outputFormat=geojson
+```
 
-## 14. Support
-- Developer forum: GitHub Discussions
-- Email: `support@soilsidekickpro.com`
-- Enterprise: `enterprise@soilsidekickpro.com`
+Capabilities are public; features require an authorized key. Prefer the `x-api-key` header, not credentials in URLs. Maximum source cap is 5000. Bbox filtering is coordinate-based after retrieval; do not assume complete polygon-intersection queries. GML output is point-oriented. OGC format support does not establish certification or interoperability with every GIS workflow.
+
+## 7. Quotas
+
+Current client configuration (not proof of server enforcement):
+
+| Tier | Requests/min | Requests/hour | Requests/day | Concurrent |
+|---|---:|---:|---:|---:|
+| Free | 10 | 100 | 1000 | 2 |
+| Starter | 60 | 1500 | 15000 | 5 |
+| Pro | 250 | 6000 | 65000 | 15 |
+| Enterprise | 800 | 20000 | 290000 | 50 |
+
+Monthly category allocations in that configuration:
+
+| Tier | Commoditized | Enhanced | Proprietary | Exclusive |
+|---|---:|---:|---:|---:|
+| Free | 1000 | 0 | 0 | 0 |
+| Starter | 20000 | 15000 | 7500 | 4000 |
+| Pro | 80000 | 60000 | 30000 | 17000 |
+| Enterprise | 400000 | 250000 | 120000 | 80000 |
+
+Allocations do not by themselves grant endpoint access. Server, issued-key, partner, sandbox and browser-tool limits can differ; rely on enforced account entitlements and returned headers where present. Old OpenAPI quota prose may lag these client values.
+
+## 8. Data and operational limitations
+
+EPA information represents available monitoring observations, potentially cached or historical, not continuous real-time site measurements. Station proximity and regional estimates are not verified shoreline distance. Missing nutrient results do not establish uncontaminated water; unit/source completeness needs review.
+
+Satellite pixel dimensions are not site-report accuracy. Generated crop guidance and VRT drafts require agronomic review; illustrative/fallback zones and exports are not equipment-operation approval. Local AI depends on initialized device/model support; cloud APIs require connectivity.
+
+## 9. Integration references
+
+Use [Developer Specifications](/docs/sdk/developer-specifications), [MCP reference](/docs/mcp-server-specification), [User Documentation](/docs/user/user-documentation) and the application's `/api-docs` reference. The October 31 date is this documentation revision, not a new API deployment or universal live contract test.

@@ -1,135 +1,57 @@
-# Operations & Maintenance Documentation
+# Operational and Maintenance Documentation
 
-**Version:** 3.1.0
-**Last updated:** 2026-07-03
-**Owner:** SRE / Platform
+**Classification: Internal Only**
+**Documentation revision:** 2026-10-31
+**Last updated:** 2026-10-31
+**Owner:** Platform / Operations
+**Status:** Source-reviewed; operational/release approval not inferred
 
----
+## 1. Service inventory
 
-## 1. Purpose
+React/Vite hosted web application; Supabase Postgres/Auth/Storage and Deno edge functions; Lovable AI Gateway; Stripe; upstream USDA/EPA/weather/satellite services. PHP is a distributed client SDK, not a server-side component of this application.
 
-Runbooks and SOPs for operating, monitoring, and maintaining the SoilSidekick Pro platform in production.
+Application entry: app.soilsidekickpro.com. Public docs: docs.leafengines.com. Sandbox and direct function URLs are separate surfaces. Staging, monitoring integrations, on-call staffing and provider configuration must be verified rather than inferred from prior runbook examples.
 
-## 2. Service Inventory
+## 2. Change and deployment runbook
 
-| Service | Provider | Criticality |
-|---|---|---|
-| Web app | Lovable / CDN | P1 |
-| Edge functions | Supabase Edge (Deno) | P0 |
-| Postgres | Supabase | P0 |
-| Storage | Supabase | P1 |
-| AI Gateway | Lovable AI | P1 |
-| Stripe | Stripe | P1 (billing) |
-| GEE / AlphaEarth | Google | P2 |
+1. Scope the affected source/contracts, secrets, risks and rollback limitations.
+2. Run relevant tests and docs exposure checks; record skipped credential-dependent tests.
+3. Apply approved function/web/database changes through their respective deployment paths.
+4. Verify the deployed central flow using a real authorized account/input and read the result back.
+5. Inspect runtime/network errors and measured latency; update docs and change records.
 
-## 3. Environments
-- **Production** — `app.soilsidekickpro.com`
-- **Sandbox** — `sandbox.leafengines.com`
-- **Staging** — `staging.app.soilsidekickpro.com`
-- **Preview** — auto-provisioned per PR
+A docs-only refresh does not deploy functions or prove the published site changed. Do not use fictional SQL helpers, scheduled jobs or one-click database rollback as established procedures.
 
-## 4. Deployment Process
-1. PR → CI (lint, tsgo, vitest, security scan)
-2. Merge → Lovable auto-deploys preview
-3. Publish → propagates to production
-4. Post-deploy smoke tests (Playwright)
-5. Sentry / logs monitored for 30 min
+## 3. Water/cache incident runbook
 
-Database migrations follow the four-step contract (CREATE → GRANT → RLS → POLICY). Approved via `supabase--migration` tool.
+Inspect the provider, cache key, stored expires_at, actual observation/retrieval times, cache level and volatility/ttl logs without PII. Confirm whether the path is fixed-window or adaptive. Cache MISS refresh is request-driven; background refresh and stale fallback can retain old data. Validate persisted expiration separately from a successful-looking log.
 
-## 5. Monitoring
+For empty stations/results or source failure, report missing coverage, station/density distance method, failed nutrient retrieval and regional fallback distinctly. Do not infer clean water from absent readings. Escalate unit inconsistencies and unbounded stale use; these controls are corrective work, not already fixed.
 
-| Signal | Source | Threshold |
-|---|---|---|
-| Edge fn p95 latency | edge_function_logs | > 300 ms |
-| Error rate | supabase logs | > 1% |
-| DB CPU | supabase | > 75% |
-| Storage bucket size | supabase | > 80% quota |
-| Stripe sync lag | stripe-usage-sync logs | > 5 min |
-| MCP tool abuse | mcp_tool_call_log | anomaly |
-| Sensor drift | sensor_data_quality | score < 60 |
-| Cost | cost_alerts | > budget |
+## 4. AI/controller incident runbook
 
-## 6. Alerting
-- PagerDuty for P0/P1
-- Slack `#ops-alerts` for P2+
-- Weekly digest of `endpoint_digest_log`
-- MCP audit anomalies → security channel
+For local failure, inspect browser/device/model availability; cloud fallback requires network and applicable privacy approval. Do not promise full offline cloud-data access. For VRT failures, inspect method (AI, rule-based, uniform) and geometry; treat generated exports as review-required, not equipment-ready. Do not load placeholder zones or demo identities into operational controllers. Require agronomist review, independent validation, vendor import and HIL before operation.
 
-## 7. On-Call
-- Primary + secondary rotation, weekly
-- Escalation: Primary → Secondary (15 min) → Eng Lead (30 min) → CTO (60 min)
-- Runbook link required in every alert
+## 5. Offline and positional incidents
 
-## 8. Runbooks
+Preserve queued entries and inspect replay errors/table identity. Do not repeatedly replay creates assuming exactly-once delivery. The >500m write prohibition is mandatory; inspected sync and asset entry points lack explicit enforcement, so treat this as an open high-priority integrity gap. A UI warning alone is not a persistence control.
 
-### 8.1 Edge Function Down
-1. Check `supabase--edge_function_logs`
-2. Redeploy latest good SHA if regression suspected
-3. Enable graceful UI degradation (regional estimates)
-4. Post status page update
+## 6. Security, billing and dependencies
 
-### 8.2 Database Slow
-1. `supabase--slow_queries`
-2. Check RLS policy explains
-3. Add missing GIN/GIST index if fuzzy/spatial
-4. Scale read replica if sustained
+Keep APP_ENCRYPTION_KEY/provider keys in Supabase Secrets and rotate with an approved migration/re-encryption procedure. Confirm field coverage, successful rotation and grants in the actual environment. Never print secrets or store private keys in source. Reconcile usage and Stripe events with bounded replay/idempotency rather than blindly repeating charges.
 
-### 8.3 Stripe Sync Failure
-1. Inspect `stripe-usage-sync` logs
-2. Replay last hour from usage_analytics
-3. Notify finance if > 4 h lag
+PHP client dependency floors are Guzzle ^7.9, PSR-7 ^2.7, PHPUnit ^10.5 (development) and PHP ^8.1. Composer/PHP execution is not validated here; dependency floors alone do not certify the SDK safe or published.
 
-### 8.4 Free Tier Abuse
-1. `anonymous_api_usage` shows IP-hash spike
-2. Tighten quota via `api_tier_limits`
-3. Block IP hash if malicious pattern
+## 7. SLOs, backups and incident communications
 
-### 8.5 Sensor Ingest Backlog
-1. Check Redis Stream lag
-2. Scale consumer group
-3. If sustained, throttle upstream via HMAC 5s TTL
+99.9% availability, <300ms general API p95 aspiration and recovery objectives are targets/contract-dependent, not current measured facts. Confirm backup/PITR retention, regions, restore procedures and actual incident escalation contacts from provider settings and contracts. Do not infer PagerDuty, Slack, Sentry, WORM storage, automatic failover or restore-drill execution from this document.
 
-### 8.6 Local LLM Regression
-1. Verify WebGPU compatibility per `mem://constraints/webgpu-preview-limitations`
-2. Fall back to Lovable AI Gateway via smart router
-3. Ship hotfix if model file mis-hashed
+Breach notification timing depends on jurisdiction, awareness and risk; legal must determine authority/customer notices. Preserve evidence and use approved communication channels. Maintenance windows, freeze exceptions and personnel approvals require an actual change record.
 
-## 9. Backups & DR
-- Postgres PITR 7 days
-- Nightly logical backup to encrypted storage
-- Quarterly restore drill; RTO 4 h / RPO 15 min
-- URLLC nodes target sub-minute per `mem://operations/5g-mec-recovery-targets`
+## 8. Routine review
 
-## 10. Secret & Key Management
-- Supabase Vault for `APP_ENCRYPTION_KEY`, provider keys
-- Quarterly rotation (see Security Doc)
-- No `.env` in repo; ephemeral env only for scripts
+Review dependency advisories, live RLS/grants, redaction, source freshness, cache behavior, quotas/billing and restore evidence. Public document publication requires allowlist and content review. Keep internal procedures/internal IP out of public docs.
 
-## 11. Capacity Planning
-- Reviewed monthly against `telemetry_daily_summary`
-- Scale plan for 2× projected peak
+## Evidence and revision record
 
-## 12. Maintenance Windows
-- Non-critical: Sunday 06:00-08:00 UTC
-- Emergency: any time with status page + email notice
-
-## 13. Change Freeze Policy
-- Freeze during Black Friday, harvest peak (Sep 1 – Oct 15)
-- Only P0 fixes allowed
-
-## 14. Incident Post-Mortems
-- Required for P0/P1
-- Blameless template in `docs/operations/incident-template.md`
-- Root causes tracked in Jira
-
-## 15. Housekeeping Tasks
-- Weekly: log rotation, cost review
-- Monthly: expired key cleanup, RLS audit
-- Quarterly: key rotation, DR drill, dependency audit
-- Annually: SOC 2 audit, pen test
-
-## 16. Contacts
-- SRE: sre@soilsidekickpro.com
-- Security: security@soilsidekickpro.com
-- Support: support@soilsidekickpro.com
+See [the October 31 review](../operations/DOCUMENTATION_REFRESH_2026-10-31.md) for the source inventory, executed validation, historical dates and outstanding compensations. This documentation revision does not deploy code or change a patent filing.

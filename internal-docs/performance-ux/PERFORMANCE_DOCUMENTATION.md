@@ -1,133 +1,55 @@
 # Performance Documentation
 
-**Version:** 3.1.0
-**Last updated:** 2026-07-03
+**Classification: Internal Only**
+**Documentation revision:** 2026-10-31
+**Last updated:** 2026-10-31
+**Owner:** Platform / AI / Quality
+**Status:** Source-reviewed; operational/release approval not inferred
 
----
+## 1. Targets, not validated October SLAs
 
-## 1. Performance Objectives
+| Operation | Acceptance target |
+|---|---|
+| Lightweight local AI summary on WebGPU/native acceleration | <100ms |
+| L1 cache hit | <25ms |
+| Environmental impact assessment | <2s |
+| Recommendation including carbon analysis | <3s |
+| Multi-agency integration | <5s |
+| Online API operations | Endpoint-specific approximately 1–3s |
+| Fuzzy county lookup | <1000ms |
+| Telemetry scale | 100,000 messages/min target |
 
-| Path | Metric | Target |
-|---|---|---|
-| Public API | p50 latency | < 120 ms |
-| Public API | p95 latency | < 300 ms |
-| Public API | p99 latency | < 800 ms |
-| Local WebGPU LLM | p95 inference | < 100 ms |
-| Fuzzy county search | p95 | < 1000 ms |
-| Sensor ingestion | Throughput | 100,000 msg/min |
-| Web LCP | Median | < 2.5 s |
-| Web INP | Median | < 200 ms |
-| Availability | Monthly | ≥ 99.9% |
-| Error rate | Rolling 5 min | < 0.5% |
+General cloud p95 <300ms, web LCP <2.5s, INP <200ms and 99.9% monthly availability remain aspirations unless tied to scoped monitoring. Earlier February baselines are historical, not October measurements. No hardware/production performance benchmark was run in this refresh.
 
-## 2. Baselines
-Recorded in `load-tests/BASELINE_METRICS.md`. Baselines refreshed after every major release.
+## 2. Cache behavior
 
-## 3. Load Testing
+| Path | Current policy |
+|---|---|
+| Hierarchical FIPS | Fixed county 1h / state 6h / region 24h / national 7d |
+| Territorial water quality | Adaptive shared memory/DB cache |
+| WQP surface-water helper | Adaptive shared memory/DB cache |
+| Other direct caches / SDK / SW | Endpoint/client-specific; not automatically adaptive |
 
-Tools: **k6** scripts in `load-tests/scripts/`.
+Adaptive TTL is `round(max(min_ttl, base_ttl × (1 − clamp(alpha) × clamp(volatility))))`. Current water parameters (24h base, 1h floor, alpha 0.75) yield 6–24h. Volatility is measured contaminant/pooled nutrient spread, not temporal change, geographic scope or source characteristics. Expiration is attempted in DB and remaining lifetime transferred to memory.
 
-Key scenarios:
-- `test-soil-data.js` — steady 200 VU, 5 min
-- `test-county-lookup.js` — spike 500 VU
-- `test-sub-100ms-latency.js` — local inference SLA
-- `test-agricultural-intelligence.js` — mixed workload
-- `test-gpt5-chat.js` — AI streaming latency
-- `test-territorial-water-quality.js`
-- `test-visual-crop-analysis.js`
-- `test-cost-monitoring.js`
+Fresh hits bypass refresh; requests trigger refresh after misses/expiry. Stale-while-revalidate and fetch-failure stale fallback mean TTL is not a guarantee that every response is younger than TTL. No precise expiry-time upstream scheduler is established. Explicit stale-age bounds and cache lifecycle/persistence tests remain required.
 
-Pass criteria: p95 within SLA; error rate < 0.5%; no memory growth on Postgres.
+## 3. AI benchmarking
 
-## 4. Latency Budgeting
+Separate cold download/initialization, time-to-first-token, total generation, output tokens, concurrency, memory and battery. Record model/dtype/backend/hardware/browser/version and fixed task/input. Sub-100ms lightweight summary target is not unrestricted full-text inference on every device. WASM is degraded and cannot be labeled equivalent to hardware acceleration.
 
-Illustrative for `GET /soil`:
-```
-Client TLS      20 ms
-Edge routing    10 ms
-Function boot   15 ms (warm) / 300 ms (cold)
-DB query        40 ms
-Response gen    15 ms
-Network back    30 ms
------------------------
-Warm total     ~130 ms  (< 300 ms p95 target)
-```
+Function-call capability flags, TurboQuant estimates/simulations and external engine benchmarks do not establish real KV compression, browser strict decoding or universal 50% speed gains here. HTTP k6 does not benchmark local token generation. October 30 structured-generation design must first be implemented/proven, then measured.
 
-## 5. Caching
+## 4. Upstream and capacity effects
 
-| Layer | Cache | TTL |
-|---|---|---|
-| CDN | County lookup, public docs | 5 min |
-| Edge fn | FIPS data | 60 min |
-| DB | `fips_data_cache` materialized | Nightly |
-| SDK | Configurable (`off\|memory\|disk\|hybrid`) | Client-defined |
-| Client | SW v3 App Shell | Immutable |
+WQP observations may predate retrieval by years. First-ten-station/500-value caps and missing/unnormalized units affect correctness as well as cost. Station proximity is not water-body geometry. Measure cache hit/miss/fallback separately from provider and AI latency.
 
-## 6. Database Performance
-- pg_trgm GIN on `counties.name` for < 1000 ms fuzzy search
-- GIST on `managed_assets.geom` for WFS bbox
-- Partitioning on high-volume telemetry
-- Read replicas for analytics
-- `pgvector` HNSW for embedding search
+Respect 2MB/50-request edge design budgets with pagination/chunking; do not assert Redis backpressure, deployed partitions/replicas or warmers without evidence. Client quotas are not edge-service capacity.
 
-## 7. Edge Function Constraints & Mitigations
-- 50 concurrent — mitigate with streaming + queue backpressure
-- 2 MB payload — chunked embeddings, pagination
-- Cold starts — hot-path warmers, connection pooling
+## 5. Regression evidence
 
-## 8. AI Performance
-- Cloud GPT-5: p95 < 2.5 s streaming first token
-- Local Gemma (WebGPU): p95 < 100 ms first token on Chromium 121+ M1/M2 class
-- TurboQuant KV cache: 6× memory compression
-- Router chooses local when SLA-bound and privacy flagged
+Five TTL arithmetic tests and 34 mocked cache/sync tests passed October 31. They are correctness checks, not latency/scale results. Future benchmarks must retain timestamp, revision, device/environment, workload, load window, p50/p95/p99/error counts and exclusions. Alert/bundle/regression thresholds require configured gates and measurements before reporting enforcement.
 
-## 9. Frontend Performance
-- Route-level lazy loading (see `docs/LAZY_LOADING.md`)
-- Skeleton loaders on data views
-- Image optimization (`docs/IMAGE_OPTIMIZATION.md`)
-- Bundle budgets: initial JS < 250 KB gzipped
+## Evidence and revision record
 
-## 10. Observability
-
-Signals emitted:
-- `edge_function_logs.duration_ms`
-- `endpoint_activity_snapshots`
-- `telemetry_daily_summary`
-- Web vitals via `client_telemetry_events`
-
-Dashboards:
-- Overview (RPS, error rate, latency)
-- Per-endpoint drill-down
-- AI cost & latency
-- Sensor ingest lag
-
-## 11. Alerting Thresholds
-
-| Alert | Trigger | Severity |
-|---|---|---|
-| p95 > 300 ms sustained 5 min | edge fn | P2 |
-| Error rate > 1% | rolling 5 min | P1 |
-| Cold-start rate > 20% | 15 min | P2 |
-| DB CPU > 75% | 10 min | P1 |
-| Sensor lag > 30 s | continuous | P1 |
-| Cost > 120% budget | daily | P2 |
-
-## 12. Capacity Planning
-- Reviewed monthly
-- Scale plan for 2× projected peak
-- Redis stream shards added at > 60% utilization
-
-## 13. Regression Guardrails
-- Perf tests block merge on p95 regression > 10%
-- Bundle size guard blocks > +5 KB gzipped
-- DB explain review required on new queries
-
-## 14. Continuous Improvement
-- Quarterly perf review with product & SRE
-- Post-mortem for any SLA breach
-- KPI history in `kpi_history` table
-
-## 15. Related
-- Systems Architecture
-- Test Documentation
-- Operations & Maintenance
+See [the October 31 review](../operations/DOCUMENTATION_REFRESH_2026-10-31.md) for the source inventory, executed validation, historical dates and outstanding compensations. This documentation revision does not deploy code or change a patent filing.

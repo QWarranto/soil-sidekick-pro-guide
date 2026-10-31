@@ -1,167 +1,53 @@
 # Test Documentation
 
-**Version:** 3.1.0
-**Last updated:** 2026-07-03
+**Classification: Internal Only**
+**Documentation revision:** 2026-10-31
+**Last updated:** 2026-10-31
+**Owner:** Quality / Engineering
+**Status:** Source-reviewed; operational/release approval not inferred
 
----
+## 1. Strategy and evidence levels
 
-## 1. Testing Strategy
+Unit/integration, contract, authenticated end-to-end, load, security and HIL validation are distinct gates. Coverage goals of >=80% overall and complete security-critical rule coverage are targets, not current measured coverage. Existing test examples and workflow definitions do not prove execution.
 
-Five test tiers, gated in CI:
+The root package has no test script; use the actual Vitest runner for selected tests. Deno tests cover shared edge logic. Endpoint regression and docs-allowlist workflows are present. Nightly load, weekly HIL, staging resets and accessibility certification are not verified here.
 
-1. **Unit** — Vitest, isolated pure functions/hooks
-2. **Integration** — Vitest + Supabase mocks (`src/test/mocks/supabase.ts`)
-3. **Contract** — OpenAPI spec ↔ SDK codegen round-trip
-4. **End-to-End** — Playwright against `sandbox.leafengines.com`
-5. **Load** — k6 scripts under `load-tests/scripts/`
+## 2. Executed October 31 checks
 
-Coverage target: **≥ 80% lines**, **100% for security-critical modules** (`api_keys`, RLS helpers, encryption, dead-reckoning uncertainty gate).
-
-## 2. Frameworks & Tools
-
-| Purpose | Tool | Version |
+| Command | Result | Scope |
 |---|---|---|
-| Unit / Integration | Vitest | ^4.1.9 |
-| React Testing | @testing-library/react | latest |
-| E2E | Playwright | bundled |
-| API Contract | openapi-diff | pinned |
-| Load | k6 | 0.50+ |
-| Type-check | tsgo | latest |
-| Lint | eslint (flat config) | latest |
+| `deno test supabase/functions/_shared/volatility-ttl.test.ts` | 5 passed / 0 failed | Formula, floor, clamp, constant CV |
+| `bunx vitest run src/services/__tests__/offlineDataSync.test.ts src/test/fipsCache.test.ts` | 34 passed / 0 failed | Mocked sync/table behavior and FIPS cache simulation |
 
-## 3. Directory Layout
+These runs do not prove deployed cache persistence/expiry, WQP response correctness, 500m write inhibition, local browser inference, controller safety or exact-once replay. Docs exposure and rendered public-page checks are recorded in the review after execution.
 
-```
-src/test/                    # setup, helpers, fixtures
-src/hooks/__tests__/         # hook-level unit tests
-src/services/__tests__/      # service tests (offlineDataSync)
-src/utils/*.test.ts          # utility tests
-load-tests/scripts/          # k6 load scripts
-tests/fixtures/              # golden files (skyline mmwave)
-plugins/qgis-leafengines/test_wfs_plugin.py
-```
+## 3. Required cache tests
 
-## 4. Naming Conventions
-- `*.test.ts` / `*.test.tsx` for unit
-- `*.spec.ts` for E2E under `e2e/`
-- `test-*.js` for k6
+- Persist the derived expiration and honor it on fresh DB-to-memory reads.
+- Exercise before/at/after expiry, stale revalidation, failed refresh and bounded stale fallback.
+- Separate fixed hierarchical windows from adaptive water paths.
+- Verify current parameters produce 24h at volatility 0, 15h at 0.5 and 6h at 1; the 1h floor is not reached with alpha 0.75.
+- Validate water-volatility inputs, source-unit normalization and missing-data behavior; geographic/source-derived volatility is not implemented.
 
-## 5. Test Environments
+## 4. Critical safety and contract tests still required
 
-| Env | URL | Data | Reset |
-|---|---|---|---|
-| Local | `localhost:8080` | seeded | on demand |
-| CI (Vitest) | in-memory | mocked | per run |
-| Sandbox | `sandbox.leafengines.com` | deterministic | nightly |
-| Staging | `staging.app.soilsidekickpro.com` | scrubbed prod | weekly |
+- >500m must prevent persistence at admission, replay, direct client and server writes. Test 499/500/501m and unknown/non-finite uncertainty according to approved boundary policy; model unreliable >=500m is distinct from the strict >500m persistence rule.
+- VRT must not substitute unrelated geometry or label overlapping duplicate zones operationally valid. Test bounds, ring closure, topology, coverage, non-overlap, units, rate limits and missing-data abstention.
+- Validate chosen controller schema, timestamps, irrigation totals/durations and adapter conversions independently; then require manufacturer imports/HIL. Function-calling support is not a decoding test.
+- Managed-assets source currently returns 200 on repeated idempotency, 409 on supplied stale If-Match, with no proven atomic lock/24h expiry. Test actual behavior plus required concurrency repair separately.
+- WFS must distinguish point bbox filtering/GML from polygon intersection/full OGC conformance. Verify owner isolation and key hashing against deployed credentials.
+- Auth errors remain errors; do not silently downgrade invalid paid keys to free access. Validate each endpoint/credential mode separately.
 
-## 6. Critical Test Cases
+## 5. Offline, security and performance
 
-### 6.1 Security
-- RLS enforced on `api_keys`, `model_benchmark_results`, `vendor_leads`
-- `telegram-uploads` bucket rejects anonymous INSERT
-- `has_role` prevents privilege escalation
-- SHA-256 API key hashing round-trip
+Use the offline beta plan: prime shell/model online; disable network; navigate; queue permitted writes; test initialized local generation; restore connectivity; verify persisted readback and replay identity; inspect PII handling. A mock queue pass is not this end-to-end result.
 
-### 6.2 Assets CRUD (3.1.0)
-- Idempotency-Key returns identical 201 within 24 h
-- If-Match mismatch → 412
-- Soft delete preserves history
-- RLS isolates owners
+Security validation includes live grants/RLS, service-role ownership, encrypted-field coverage, secret custody, sessions, OAuth scopes and log redaction. Do not assert certification from tests. Benchmark acceleration with fixed hardware/browser/model/output length; HTTP k6 or simulated WebGPU results do not measure local inference.
 
-### 6.3 WFS Export
-- Unauth GetCapabilities returns valid XML
-- GetFeature respects `bbox` and 5000 `limit` cap
-- outputFormat=gml validates against WFS 2.0 XSD
+## 6. Regression and records
 
-### 6.4 Offline / Dead Reckoning
-- Uncertainty > 500 m blocks DB write
-- Sync executor idempotent under duplicate replays
-- Service Worker v3 hydrates app shell offline
+Endpoint regression workflow covers soil, territorial water and planting calendar with public/anon/API-key/invalid-key modes; paid checks can be skipped without a configured credential. Record skips explicitly. Use sanitized fixtures; never commit PII/secrets. Store coverage records in internal-docs/testing, not public docs. Every result needs revision, environment, date, input/fixtures, command, counts and limitations.
 
-### 6.5 Performance
-- County fuzzy search p95 < 1000 ms
-- Local Gemma inference p95 < 100 ms on target hardware
-- Edge fn respects 50 concurrency & 2 MB payload
+## Evidence and revision record
 
-## 7. Load Test Baselines
-
-Baseline metrics recorded in `load-tests/BASELINE_METRICS.md`. Key scripts:
-
-- `test-soil-data.js` — 200 VU, 5 min
-- `test-county-lookup.js` — fuzzy search saturation
-- `test-sub-100ms-latency.js` — local inference SLA
-- `test-agricultural-intelligence.js`, `test-gpt5-chat.js`
-- `test-cost-monitoring.js` — Stripe sync path
-
-Pass criteria: p95 within SLA, error rate < 0.5%.
-
-## 8. Regression Suite
-- Runs on every PR touching `supabase/functions/**`, `src/**`, `openapi-spec.yaml`
-- Full k6 nightly against sandbox
-- Weekly HIL (Hardware-in-the-Loop) for OEM safety paths
-
-### 8.1 Public Tool Endpoint Regression (CI, every deploy)
-
-Workflow: `.github/workflows/endpoint-regression.yml` — push to `main`, PRs touching `supabase/functions/**` or `supabase/config.toml`, nightly 06:17 UTC, plus manual dispatch. One matrix job per endpoint.
-
-| Bot command | Function | Test file |
-|---|---|---|
-| `/soil` | `get-soil-data` | `supabase/functions/get-soil-data/regression_test.ts` |
-| `/water` | `territorial-water-quality` | `supabase/functions/territorial-water-quality/regression_test.ts` |
-| `/planning-calendar` | `multi-parameter-planting-calendar` | `supabase/functions/multi-parameter-planting-calendar/regression_test.ts` |
-
-Shared helpers: `supabase/functions/_shared/regression-helpers.ts` (call modes: `keyless`, `anon`, `apikey`, `bad-apikey`).
-
-Assertions per endpoint:
-- **Keyless** (Telegram bot / MCP free tier) → 200 with payload, never 401/500
-- **Anon key** → 200 free tier
-- **Invalid `ak_` key** → 401 (never silently downgraded to free tier)
-- **Valid `ak_` key** → 200 (skipped unless `REGRESSION_API_KEY` secret is set)
-- **Param contract guards** — water requires `fips_code`/`state_code`/`admin_unit_name`; calendar requires `crop_type` (not `crop`); soil rejects non-5-digit FIPS
-- **Roll-forward guard** — calendar windows must resolve to a future date
-- **CORS preflight** → 200 with `Access-Control-Allow-Origin`
-
-CI secrets: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (required), `REGRESSION_API_KEY` (optional).
-
-## 9. QA Sandbox Rules
-- Test keys are hardcoded and public — never gate real data
-- Mocks are deterministic (see `mem://quality/sdk-qa-sandbox-api`)
-- Rate limit: 10k req/hr per test key
-
-## 10. Offline Beta Test Plan
-Eight-step sequence (`mem://quality/offline-resilience-beta-test-plan`):
-1. Load app online, prime SW cache
-2. Kill network
-3. Navigate all core routes
-4. Queue writes
-5. Attempt local LLM query
-6. Restore network
-7. Verify sync executor drains queue
-8. Verify no plaintext PII leaked
-
-## 11. Accessibility
-- WCAG 2.1 AA
-- Automated axe-core scan on every PR
-- Manual keyboard + screen reader sweep quarterly
-
-## 12. Bug Triage
-- Critical (P0): security, data loss → same-day patch
-- High (P1): broken flow → next release
-- Medium (P2): degraded UX → next minor
-- Low (P3): cosmetic → backlog
-
-## 13. Test Data Management
-- Sanitized fixtures only in repo
-- Real PII strictly prohibited outside prod
-- Fixtures under `tests/fixtures/`
-
-## 14. Metrics & Reporting
-- Coverage report in `docs/TEST_COVERAGE_REPORT.md`
-- Flaky test dashboard reviewed weekly
-- Historical trend stored in `kpi_history`
-
-## 15. Related Documents
-- Developer Specifications
-- Performance Documentation
-- Security Documentation
+See [the October 31 review](../operations/DOCUMENTATION_REFRESH_2026-10-31.md) for the source inventory, executed validation, historical dates and outstanding compensations. This documentation revision does not deploy code or change a patent filing.
