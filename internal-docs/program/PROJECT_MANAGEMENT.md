@@ -1,153 +1,53 @@
 # Project Management Documentation
 
-**Version:** 3.1.0
-**Last updated:** 2026-07-03
+**Classification: Internal Only**
+**Documentation revision:** 2026-10-31
+**Last updated:** 2026-10-31
+**Owner:** Product / Engineering
+**Status:** Source-reviewed; operational/release approval not inferred
 
----
+## 1. Delivery and accountability
 
-## 1. Purpose
+Use feature planning and incident work with explicit owners and acceptance evidence. Prior Scrum/Kanban cadence, Jira/Linear/Slack/PagerDuty/CAB staffing and velocity were process proposals; this checkout does not verify their execution. Do not invent personnel approvals or treat blank approval tables as sign-off.
 
-Describes how work is planned, tracked, and delivered on the SoilSidekick Pro / LeafEngines platform.
+## 2. Current work classification
 
-## 2. Delivery Model
-
-Hybrid Scrum + Kanban:
-- **Scrum** for feature work (2-week sprints)
-- **Kanban** for platform / on-call / incident response
-- Continuous deployment; feature flags for gated rollout
-
-## 3. Team Structure
-
-| Team | Focus | Lead |
-|---|---|---|
-| Product | Roadmap, PRDs, discovery | Product Lead |
-| Platform | Edge fns, DB, infra | Eng Lead |
-| Frontend | Web app, PWA, mobile shell | FE Lead |
-| AI | LLM routing, embeddings, TurboQuant | AI Lead |
-| SDK | Codegen, six languages, MCP | SDK Lead |
-| Data / Sensor | Ingestion, quality, OEM | Data Lead |
-| SRE | Ops, monitoring, on-call | SRE Lead |
-| Security & Compliance | Audit, RLS, incident response | Security Lead |
-| Growth | Marketing, community, docs | Growth Lead |
-
-## 4. Roles & RACI
-
-| Activity | Product | Eng | SRE | Security | Legal |
-|---|---|---|---|---|---|
-| PRD | A/R | C | I | C | I |
-| Design / TDD | C | A/R | C | C | I |
-| Release | I | R | A | C | I |
-| Incident | I | R | A/R | R | I |
-| Compliance audit | C | C | I | A/R | R |
-
-## 5. Roadmap
-
-| Quarter | Theme | Highlights |
-|---|---|---|
-| 2026-Q3 | Assets & GIS interop | 3.1.0 shipped (Assets, WFS) |
-| 2026-Q4 | White-label & EU | 3.2 console, EU LUCAS data |
-| 2027-Q1 | Defense hardening | DV005 GA prep |
-| 2027-Q2 | 4.0 GA | ARL-hardened PNT, new base path |
-
-Master timeline: `MASTER_TIMELINE.md`.
-
-## 6. Ceremonies
-
-| Ceremony | Cadence | Owner |
-|---|---|---|
-| Sprint planning | Bi-weekly | Team lead |
-| Daily stand-up | Daily | Team |
-| Sprint review | End of sprint | Product |
-| Retro | End of sprint | Team lead |
-| Roadmap review | Monthly | Product Lead |
-| Ops review | Weekly | SRE |
-| Security review | Monthly | Security Lead |
-| CAB | Weekly / on-demand | Change Manager |
-
-## 7. Tools
-
-| Purpose | Tool |
+| Workstream | Status as of October 31 |
 |---|---|
-| Backlog | Linear / Jira |
-| Docs | Markdown in repo + docs.leafengines.com |
-| Design | Figma |
-| Comms | Slack |
-| Incident | PagerDuty + Statuspage |
-| CI/CD | GitHub Actions + Lovable |
-| Metrics | Supabase + internal dashboards |
+| Existing app, REST/MCP, asset/GIS and local text paths | Source implemented; availability tested per environment |
+| Adaptive water TTL and WQP linkage | Source reviewed; arithmetic tests rerun; earlier October deployment record distinct |
+| PHP client dependency cleanup | Source floors checked; Composer/registry validation outstanding |
+| Controller schema/specification | October 30 design artifacts; local strict-generation integration not implemented |
+| All 13 system-document categories | October 31 source-based revision; not a product release |
+| White-label/EU/defense future milestones | Prior roadmap intent; no automatic completed status or committed dates |
 
-## 8. Estimation
-- Story points (Fibonacci 1-13)
-- Rolling velocity per team
-- Confidence tag (H/M/L)
+## 3. Recommended sequence and dependencies
 
-## 9. Definition of Ready
-- User story with acceptance criteria
-- Design attached (if UI)
-- Dependencies identified
-- Estimate + owner
+1. Engineering/Safety: uncertain-write enforcement, trusted VRT geometry, independent payload validation and operation approval boundaries.
+2. Data/Platform: WQP units/completeness and distance semantics, bounded stale data and cache lifecycle proof.
+3. API/Security: quota/key/asset/OpenAPI reconciliation, live grants and OAuth-scope validation.
+4. AI: prove one local schema-constrained path alongside hosted generation, with explicit abstention and validated adapters.
+5. Quality/OEM: hardware/browser benchmarks and manufacturer-specific imports/HIL before operational claims.
+6. Legal/Compliance: original disclosure/Remarks alignment and independent assurance evidence before public claims.
 
-## 10. Definition of Done
-- Code merged, CI green
-- Tests added (unit + integration)
-- Docs updated (README, CHANGELOG, relevant `docs/`)
-- Feature flag configured
-- Monitoring / alerts added
-- Security review if applicable
-- Deployed to prod behind flag
+No dates or completion promises are assigned without owner capacity, dependencies and external approvals.
 
-## 11. Reporting
-- Weekly status to leadership
-- Monthly KPI review (`kpi_history`)
-- Quarterly business review
+## 4. Definition of ready and done
 
-## 12. Budget & Cost
-- Cloud spend tracked in `cost_tracking`
-- Alerts on 80% burn
-- Monthly finance review
+Ready: scoped requirement, evidence/source, owner, dependencies, risk, test plan and rollback. Done: implementation when requested, concrete tests, authorized central-flow readback, deployment evidence for releases, updated public/internal docs, relevant security/safety/counsel approval and explicit unresolved limitations. Design-only and docs-only work are recorded as such.
 
-## 13. Vendor Management
-- Approved vendor list in `vendors` table
-- Renewal calendar 60-day heads-up
-- Sub-processor changes trigger DPA update
+## 5. Documentation ownership
 
-## 14. Documentation Ownership
-- Each doc has a named owner in front matter
-- Reviewed at least annually
-- Stale flag if untouched > 12 months
+Use the canonical 13-document inventory in the October 31 review. Keep old references clearly historical. Documentation revisions do not alter SDK version numbers or filing dates. Public docs require allowlist plus factual/confidentiality review; internal strategies, risk/security and IP mechanisms remain internal. Never place internal RFCs/ADRs under public docs.
 
-## 15. Onboarding
-- 30-60-90 plan template
-- Repo tour, architecture read-out
-- Shadow on-call in week 2
-- First PR within week 1
+## 6. Metrics and commercial evidence
 
-## 16. Community & OSS Governance
-- CoC in repo
-- OSS licenses: Apache 2.0 / MIT
-- Contributor guide in `docs/open-source/CONTRIBUTING.md`
+Track delivery failure, recovery, feature validation coverage and stale docs as measured results, not previously asserted achievements. QGIS 1,010 downloads as of October 22 is a dated counter, not active developer/customer counts; 50+ country detail is approximate. Budgets, insurance, SLA credits and staffing require business records rather than repository inference.
 
-## 17. Partnerships
-Documented playbook per partner in `docs/partnerships/`. Canonical template: `COMPOSIO_ENTERPRISE_ONBOARDING.md` — copy & swap front matter for new partners.
+## 7. Escalation and approvals
 
-## 18. Metrics That Matter
+Safety/integrity to accountable engineering/safety leadership; identity/privacy to security; patent/regulatory interpretation to Igor/legal. This documentation refresh neither approves a USPTO amendment nor closes listed engineering gaps.
 
-| Metric | Target |
-|---|---|
-| Deploy frequency | ≥ daily |
-| Lead time for change | ≤ 2 days |
-| Change failure rate | ≤ 5% |
-| MTTR | ≤ 60 min |
-| Sprint completion | ≥ 85% |
-| Bug escape rate | ≤ 2% |
-| Doc coverage of features | 100% |
+## Evidence and revision record
 
-## 19. Risks & Escalation
-See Risk Assessment. Escalation path:
-Team Lead → Eng Lead → CTO → CEO / Board (for score ≥ 20).
-
-## 20. Related Documents
-- Change Management
-- Operations & Maintenance
-- Risk Assessment
-- Product Requirements
+See [the October 31 review](../operations/DOCUMENTATION_REFRESH_2026-10-31.md) for the source inventory, executed validation, historical dates and outstanding compensations. This documentation revision does not deploy code or change a patent filing.

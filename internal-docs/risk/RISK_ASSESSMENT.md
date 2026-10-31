@@ -1,93 +1,45 @@
-# Risk Assessment & Mitigation
+# Risk Assessment and Mitigation Documentation
 
-**Version:** 3.1.0
-**Last updated:** 2026-07-03
-**Owner:** Risk & Compliance
-
----
+**Classification: Internal Only**
+**Documentation revision:** 2026-10-31
+**Last updated:** 2026-10-31
+**Owner:** Risk / Engineering / Compliance
+**Status:** Source-reviewed; operational/release approval not inferred
 
 ## 1. Methodology
 
-Risks scored on Likelihood (1-5) × Impact (1-5) → Risk Score (1-25).
-Categories: Technical, Security, Operational, Compliance, Financial, Strategic.
-Reviewed quarterly; critical risks (score ≥ 15) reviewed monthly.
+Prioritize by safety, confidentiality, integrity and operational impact. Previous likelihood/impact numbers were planning estimates, not measured probabilities. This review uses qualitative priorities pending owner scoring. Proposed controls do not close a risk.
 
-## 2. Risk Register
+## 2. Current risk register
 
-| ID | Category | Risk | L | I | Score | Mitigation | Owner |
-|---|---|---|---|---|---|---|---|
-| R01 | Security | RLS misconfiguration exposes tenant data | 2 | 5 | 10 | Security scan every PR; RLS unit tests; annual pen test | Security |
-| R02 | Security | API key theft / abuse | 3 | 4 | 12 | SHA-256 hashing, rotation, `api_key_access_log`, IP anomaly alerts | Security |
-| R03 | Security | Vulnerable transitive dependency (e.g., protobufjs) | 3 | 4 | 12 | Weekly scan, auto PRs, patched to safe versions | Platform |
-| R04 | Technical | WebGPU browser fragmentation degrades local LLM | 4 | 3 | 12 | Cloud fallback via smart router; capability probe on load | AI |
-| R05 | Technical | AlphaEarth / GEE outage | 2 | 3 | 6 | Graceful UI degradation, regional estimate cache | Platform |
-| R06 | Technical | Edge fn 2 MB payload / 50-conc limits | 3 | 3 | 9 | Streaming + pagination + Redis backpressure | Platform |
-| R07 | Data | Positional error corrupts DB | 3 | 5 | 15 | 500 m write-inhibition lock (patented) | Platform |
-| R08 | Data | Sensor drift undetected | 3 | 4 | 12 | Quality score, drift detection, HIL validation | OEM |
-| R09 | Ops | Stripe sync lag / billing mismatch | 2 | 4 | 8 | Replay tools, daily reconciliation, alert on > 5 min lag | Finance |
-| R10 | Ops | Free-tier abuse | 4 | 2 | 8 | IP-hash quotas, `anonymous_api_usage` monitoring | Platform |
-| R11 | Ops | Offline sync data loss | 2 | 5 | 10 | Capacitor Preferences queue, idempotent executor, tests | Platform |
-| R12 | Compliance | GDPR / CCPA breach notification miss | 2 | 5 | 10 | 72 h workflow, audit logs, DPA training | Legal |
-| R13 | Compliance | SOC 2 lapse | 2 | 5 | 10 | Continuous control monitors, annual audit | Compliance |
-| R14 | Financial | Cost overrun on AI Gateway | 3 | 4 | 12 | Cost alerts, tier-based routing, local Gemma fallback | Finance |
-| R15 | Strategic | Competitor undercutting free tier | 3 | 3 | 9 | Distribution moat (9 channels), patents, offline USP | Product |
-| R16 | Strategic | Google GEE T&C change | 2 | 4 | 8 | Alternative satellite feeds evaluated (ESA, Planet) | Product |
-| R17 | Compliance | Marketing exposes patented algorithm details | 2 | 4 | 8 | Marketing secrecy rule (`mem://strategy/patent-secrecy-in-marketing-materials`) | Marketing |
-| R18 | Security | Prompt injection via user content in LLM | 4 | 3 | 12 | System-prompt hardening, tool allowlist, MCP audit governance | AI |
-| R19 | Technical | SDK generation regression | 2 | 3 | 6 | Contract tests, OpenAPI diff gate | SDK |
-| R20 | Ops | Supabase edge cold starts | 3 | 2 | 6 | Warmers on hot paths | SRE |
+| Risk | Priority | Source-backed status and mitigation required |
+|---|---|---|
+| Uncertain positional persistence | Critical | >500m prohibition required; sync/asset paths lack explicit checks. Enforce admission/replay/server gates and bypass tests |
+| Unsafe VRT/controller output | Critical | Fixed/duplicate geometry, fallback rates and export placeholders. Independent geometry/domain validation, abstention, human approval, vendor/HIL testing |
+| Record/product patent mismatch | High | Measurement-derived volatility differs from scope/source assertions; later design not earlier operation. Preserve dates and obtain Igor's review |
+| Misleading water observations | High | Monitoring-station/density distance, missing units/results and stale observations. Normalize, disclose and bound degraded use |
+| Tenant/auth/key mismatch | High | RLS/service-role ownership and direct key lookups need live verification. Trace grants, hash handling, scopes and invalid-key behavior |
+| Unsupported security/compliance claims | High | Monitors/source are not audit reports. Require certification, settings, contracts and scoped assurance evidence |
+| Offline loss/duplicate replay | High | Ten-table executor exists; exactly-once and universal write gate not proved. Test force-close, reconnect, duplicate creates and readback |
+| Prompt/tool injection | High | Untrusted input may influence output. Strict permissions, independent validation, redaction and controlled tool use |
+| Local model availability/latency | Medium | Browser/runtime/weights/GPU constraints. Capability tests and measured accelerated/degraded behavior |
+| Quota/SDK contract drift | Medium | Client maps/OpenAPI/server/key limits differ. Reconcile per endpoint and registry artifact, test actual imports |
+| Provider/edge limits | Medium | Upstream outages; 50-request/2MB budgets. Pagination, chunking, bounded advisory degradation |
+| Billing/dependency risks | Medium | Usage replay and stale client floors. Reconciliation/idempotency, dependency audit and PHP execution validation |
+| Public exposure | High | Allowlist limits inclusion; content still needs secrecy review. Keep internal records out of docs/public |
 
-## 3. Critical Risk Deep Dives
+## 3. Integrity and insurance boundaries
 
-### R07 — Positional Corruption
-Ground truth is core value. Mitigations:
-- Uncertainty gate at 500 m (write-inhibition)
-- Complementary filter + adaptive stride
-- Kalman gate on fusion
-- IP-protected; database enforced
+Position uncertainty is meters, not validated 0–1 cryptographic location truth. Sensor continuity/timestamps do not prove an event, spoof prevention or fraud reduction. Satellite 10m pixels do not imply 10m report accuracy; soil fallback may be coarser. Do not claim automated loss verification, underwriting decisions or 90% analyst savings without measured evidence.
 
-### R12 — Regulatory Breach Notification
-- 72 h GDPR clock from awareness
-- Runbook in `docs/security/`
-- Automated incident timer on Sentry escalation
+## 4. Compensations and release gates
 
-### R18 — Prompt Injection
-- MCP tool allowlist per API key
-- Redaction of PII in prompts
-- Response validators on structured tools
+Maintain advisory/simulation/operational separation, independent validation, meaningful provenance, human approval, target-specific HIL and bounded degradation. These are required compensations, not implemented controls. Permissive advisory APIs never authorize uncertain writes or unsafe operational commands.
 
-## 4. Risk Appetite
+## 5. Governance
 
-| Category | Appetite |
-|---|---|
-| Security | Very low |
-| Compliance | Very low |
-| Data integrity | Very low |
-| Technical | Moderate |
-| Financial | Moderate |
-| Strategic | Moderate to high |
+Assign engineering/security/data/AI/legal owners before closing actions. Escalate critical integrity or safety gaps immediately to accountable leads. Reassess after each corrective change with executed evidence. Cyber insurance, liability caps, SLA credits and regulatory notification processes are contract-dependent and not confirmed by this checkout.
 
-## 5. Review Cadence
-- Quarterly full review
-- Monthly for score ≥ 15
-- Ad-hoc on incident, new feature, or vendor change
+## Evidence and revision record
 
-## 6. Escalation
-- Score 15-19 → Eng Lead
-- Score 20-25 → CTO + Board briefing
-
-## 7. Insurance & Contractual Transfer
-- Cyber liability policy in force
-- Enterprise contracts include liability caps
-- SLA credits for downtime
-
-## 8. Business Continuity
-- DR plan documented in Operations
-- Backups + PITR + quarterly restore
-- Alternate provider evaluation biennial
-
-## 9. Related Documents
-- Security Documentation
-- Compliance & Legal
-- Operations & Maintenance
-- Performance Documentation
+See [the October 31 review](../operations/DOCUMENTATION_REFRESH_2026-10-31.md) for the source inventory, executed validation, historical dates and outstanding compensations. This documentation revision does not deploy code or change a patent filing.

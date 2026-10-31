@@ -1,124 +1,47 @@
 # Change Management Documentation
 
-**Version:** 3.1.0
-**Last updated:** 2026-07-03
+**Classification: Internal Only**
+**Documentation revision:** 2026-10-31
+**Last updated:** 2026-10-31
+**Owner:** Engineering / Change owner
+**Status:** Source-reviewed; operational/release approval not inferred
 
----
+## 1. Purpose and process status
 
-## 1. Purpose
+Provide traceable proposals, reviews, tests, deployments, rollbacks and communication. Roles/cadences below are required process assignments, not proof of a staffed CAB, configured branch protection or historical sign-off.
 
-Defines the process for proposing, reviewing, approving, deploying, and communicating changes to the SoilSidekick Pro platform. Ensures safety, traceability, and rollback capability.
+| Change | Required review |
+|---|---|
+| Documentation/presentation | Content owner; confidentiality review for public material |
+| Feature/API/cache | Engineering, contract and relevant product review |
+| Identity/data integrity/security | Engineering + security; migration/grants review |
+| Safety-critical OEM/autonomy | Engineering + Safety Officer; HIL release evidence |
+| Patent/legal statement | Counsel approval; separate from engineering release |
 
-## 2. Change Categories
+## 2. Change record
 
-| Type | Examples | Approval |
-|---|---|---|
-| Standard | Copy tweak, image swap, doc edit | 1 reviewer |
-| Normal | New feature, bug fix, schema addition | 2 reviewers + eng lead |
-| Major | Breaking API change, framework upgrade, security-critical | Change Advisory Board (CAB) |
-| Emergency | Security patch, P0 outage fix | CTO + Security lead |
+Capture purpose, source revision, affected contracts, implementation status, risk, test/rollback plan, owner, approvals, deployment evidence and post-deploy readback. Internal RFCs/ADRs belong under internal-docs, not public docs. Never infer implementation date from document date or describe a design artifact as deployed.
 
-## 3. Roles
+## 3. October reconciliation
 
-- **Requester** — engineer proposing the change
-- **Reviewers** — code owners of touched paths
-- **Change Manager** — schedules & tracks
-- **CAB** — CTO, Eng Lead, Security, Product for majors
-- **Release Captain** — owns the deploy window
+The October 6 adaptive water-cache deployment is a prior reported engineering event; this revision reruns arithmetic tests and reviews source, not that deployment. October 30 schema/spec files are design-only. October 31 updates all 13 documentation categories without runtime fixes or new legal filings.
 
-## 4. Lifecycle
+Explicitly record the remaining scope/source-volatility mismatch, WQP station-distance/unit caveats, local strict-decoding gap and VRT/controller safety limitations. Preserve original filing dates and evidence; do not backdate upgrades to satisfy prosecution statements.
 
-```
-Idea → Design/RFC → PR → Review → CI/Tests → Staging → CAB (if major) → Prod → Post-deploy verify → Communication
-```
+## 4. Contract and publication gates
 
-## 5. Request for Change (RFC)
-Required for Normal+ changes. Template:
-1. Motivation & user story
-2. Design summary
-3. API / schema impact
-4. Migration plan
-5. Rollback plan
-6. Risk assessment
-7. Test plan
-8. Owner & timeline
+Update machine-readable and human contracts together when behavior changes, but a documentation refresh alone must not alter the OpenAPI contract or regenerate a claimed release. Actual behavior currently differs from old asset idempotency/If-Match/cursor examples and quota prose; treat reconciliation as separate engineering work.
 
-Stored in `docs/rfcs/` numbered sequentially.
+Publish customer-facing docs only through the existing allowlist/generated import boundary and content review. Internal docs remain internal. docs:check verifies exposure structure, not factual accuracy, certification or patent secrecy of every sentence.
 
-## 6. Database Migrations
-- Single migration per change; four-step contract (CREATE → GRANT → RLS → POLICY)
-- Approved via `supabase--migration`
-- Reversible where possible; irreversible flagged and CAB-approved
-- Backfill in idempotent chunks
+## 5. Validation and deployment
 
-## 7. Feature Flags
-- Every risky new feature ships behind a flag
-- Rollout: 1% → 10% → 50% → 100% over ≥ 5 days
-- Flags reviewed monthly; stale flags removed
+Run selective tests, authenticated central-flow verification and applicable source/provider checks. Retain executed results and skips; do not mark demo/mock/signed-out flows as production proof. Deployment of web, edge functions and migrations are distinct steps. Flag irreversible changes and test bounded rollback/forward-fix before execution; do not promise automatic data reversal.
 
-## 8. Deployment Windows
-- Standard: any weekday 10:00–16:00 UTC
-- Emergency: 24×7
-- Freeze: Black Friday, harvest peak (Sep 1 – Oct 15)
+## 6. Completion and communication
 
-## 9. Rollback
-- All deploys immutable; previous SHA one click away
-- DB rollbacks via reversal migration
-- If irreversible, forward-fix within 15 min or trigger DR
+A change is done only for its stated scope. Distinguish source implemented, executed validation, deployment unverified, proposal and external approval. SLA targets, maintenance windows, rollout percentages, CAB tools and response timelines require approved operational evidence rather than copied boilerplate. Safety/counsel findings remain open until accountable reviewers resolve them.
 
-## 10. Communication
+## Evidence and revision record
 
-| Change | Channel | Lead time |
-|---|---|---|
-| Standard | Slack `#releases` | Same-day |
-| Normal | Slack + email digest | 24 h |
-| Major | Blog post + email + status | 7 days |
-| Emergency | Status page + email | Immediate |
-
-## 11. Changelog Discipline
-- `CHANGELOG.md` updated in same PR that changes behavior
-- Categorized: Added / Changed / Deprecated / Removed / Fixed / Security
-- SDK release notes auto-generated by publish workflow
-
-## 12. Sunset & Deprecation
-- 6-month `Sunset` header on deprecated endpoints
-- Announced in changelog, docs, and email
-- Removed only in major version bump
-
-## 13. API Contract Reviews
-- OpenAPI diff on every PR
-- Breaking change detection blocks merge unless CAB-approved
-- SDKs regenerated on merge
-
-## 14. Metrics & Reporting
-- Change failure rate (target ≤ 5%)
-- Mean time to recover (target ≤ 60 min)
-- Deployment frequency (target ≥ daily)
-- Lead time for change (target ≤ 2 days)
-
-## 15. Audit
-- All merges tied to a PR with review record
-- All prod deploys logged in `edge_function_logs` metadata
-- Retention: 400 days minimum
-
-## 16. Tooling
-- GitHub PRs + branch protection
-- Lovable auto-deploy pipeline
-- Supabase migration tool for DB
-- Sentry for runtime error tracking
-- Statuspage.io for user-facing status
-
-## 17. Post-Deploy Verification
-Checklist:
-- [ ] Smoke tests passed
-- [ ] Error rate steady
-- [ ] Latency within SLA
-- [ ] Cost within budget
-- [ ] No new security alerts
-- [ ] Docs updated
-- [ ] Changelog entry present
-
-## 18. Related Documents
-- Risk Assessment
-- Operations & Maintenance
-- Security Documentation
+See [the October 31 review](../operations/DOCUMENTATION_REFRESH_2026-10-31.md) for the source inventory, executed validation, historical dates and outstanding compensations. This documentation revision does not deploy code or change a patent filing.
