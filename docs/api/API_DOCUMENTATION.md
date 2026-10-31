@@ -40,7 +40,11 @@ Additional endpoints and schemas are in the checked-in OpenAPI specification and
 ## 3. Soil example
 
 ```bash
-curl 'https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/get-soil-data'   -H 'Content-Type: application/json'   -H 'x-free-tier: true'   --data '{"county_fips":"48453","county_name":"Travis County","state_code":"TX"}'
+curl \
+  'https://wzgnxkoeqzvueypwzvyn.supabase.co/functions/v1/get-soil-data' \
+  -H 'Content-Type: application/json' \
+  -H 'x-free-tier: true' \
+  --data '{"county_fips":"48453","county_name":"Travis County","state_code":"TX"}'
 ```
 
 FIPS is a five-character string; do not drop leading zeroes. Territorial-water inputs include `fips_code`, `state_code` and `admin_unit_name`; planting-calendar inputs use `county_fips` and `crop_type`, not `crop`. Inspect each function's current contract rather than copying unrelated examples.

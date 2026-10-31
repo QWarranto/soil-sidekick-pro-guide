@@ -60,7 +60,10 @@ Legacy PRD, internal IP-oriented developer specification, older internal API ref
 
 - `deno test supabase/functions/_shared/volatility-ttl.test.ts`: **5 passed, 0 failed**.
 - `bunx vitest run src/services/__tests__/offlineDataSync.test.ts src/test/fipsCache.test.ts`: **34 passed, 0 failed** across two files. These use mocks/simulations; they do not prove live persistence, exactly-once delivery, 500m enforcement or browser offline operation.
-- Documentation exposure and browser rendering checks are recorded in the closing validation section after execution.
+- `bun run docs:check`: passed; **65 allowlisted documents**, with no new public inclusions.
+- Date-marker inspection: all **13 canonical documents** display **2026-10-31**; revised public documents contain no internal cache formula or application-number details.
+- Playwright: all four revised public docs (API, developer, user, compliance/legal) rendered the updated date at their existing `/docs/...` pages. Internal architecture URL redirected to `/docs`, confirming it was not publicly routable. Document-content screenshots were inspected; the long soil example was subsequently split across lines. Unrelated background network activity required using DOM-ready navigation rather than network-idle waiting.
+- Preview compilation reported **build OK** after the document changes. This is not a production publication or verification of authenticated product flows; only documentation was changed.
 
 ## Proposed design artifacts acknowledged
 
