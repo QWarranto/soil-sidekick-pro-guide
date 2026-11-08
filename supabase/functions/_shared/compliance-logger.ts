@@ -3,7 +3,7 @@
  * Activates and manages the comprehensive audit log infrastructure
  */
 
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 export interface ComplianceLogEntry {
   table_name: string;

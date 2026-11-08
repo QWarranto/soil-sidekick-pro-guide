@@ -3,7 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import {
   generateAuthenticationOptions,
   verifyAuthenticationResponse,
-} from 'https://esm.sh/@simplewebauthn/server@10.0.1';
+} from 'https://esm.sh/@simplewebauthn/server@13.1.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',

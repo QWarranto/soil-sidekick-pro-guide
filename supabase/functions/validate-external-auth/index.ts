@@ -16,7 +16,7 @@ import { requestHandler } from '../_shared/request-handler.ts';
 import { externalAuthSchema } from '../_shared/validation.ts';
 import { logSafe, logError } from '../_shared/logging-utils.ts';
 import { logSecurityEvent } from '../_shared/security-utils.ts';
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 // HMAC signature verification
 async function verifyHmacSignature(

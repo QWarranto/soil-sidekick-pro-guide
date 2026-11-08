@@ -1,4 +1,4 @@
-import { createClient } from "npm:@supabase/supabase-js@2.57.2";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -160,13 +160,13 @@ Deno.serve(async (req) => {
         if (error) throw error;
 
         // Update affiliate totals
-        await supabase.rpc('increment_affiliate_stats', {
+        const { error: statsError } = await supabase.rpc('increment_affiliate_stats', {
           p_code_id: affiliate_code_id,
           p_earnings: commissionAmount,
-        }).catch(() => {
-          // Fallback: manual update
-          console.log('RPC not available, skipping stats update');
         });
+        if (statsError) {
+          console.log('RPC not available, skipping stats update');
+        }
 
         return new Response(JSON.stringify({ referral: data }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },

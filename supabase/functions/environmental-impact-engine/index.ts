@@ -1,4 +1,4 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { createClient } from 'npm:@supabase/supabase-js@2'
 import { requestHandler } from '../_shared/request-handler.ts';
 import { validateInput, environmentalImpactSchema } from '../_shared/validation.ts';
 import { trackExternalAPICost } from '../_shared/cost-tracker.ts';

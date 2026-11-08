@@ -18,7 +18,7 @@ import {
   validateSecureTrialToken 
 } from '../_shared/trial-validation.ts';
 import { logSafe, logError } from '../_shared/logging-utils.ts';
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 // Service role client for trial operations
 const getServiceClient = () => createClient(

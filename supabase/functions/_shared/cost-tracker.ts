@@ -3,7 +3,7 @@
  * Integrates cost tracking for all external API calls
  */
 
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 // Cost rates per provider (updated as of 2025)
 export const COST_RATES = {

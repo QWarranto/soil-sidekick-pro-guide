@@ -5,7 +5,7 @@
  * Updated: December 3, 2025 - Phase 2A migration for payment functions
  */
 
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 import { logSafe, logError, sanitizeError } from './logging-utils.ts';
 import { logSecurityEvent, authenticateUser, getSecurityHeaders } from './security-utils.ts';
 import { rateLimiter, loadMonitor } from './api-rate-limiter.ts';

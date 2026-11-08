@@ -1,4 +1,4 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 import { validateInput, agriculturalIntelligenceSchema } from '../_shared/validation.ts';
 import { trackOpenAICost, trackExternalAPICost } from '../_shared/cost-tracker.ts';
 import { logComplianceAudit, logExternalAPICall } from '../_shared/compliance-logger.ts';

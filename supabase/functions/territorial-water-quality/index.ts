@@ -1,4 +1,4 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { createClient } from 'npm:@supabase/supabase-js@2'
 import { rateLimiter, exponentialBackoff, API_PROVIDERS } from '../_shared/api-rate-limiter.ts';
 import { APICacheManager } from '../_shared/api-cache-manager.ts';
 import { waterQualityVolatility } from '../_shared/volatility-ttl.ts';

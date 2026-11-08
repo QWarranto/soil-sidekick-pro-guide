@@ -1,4 +1,4 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { createClient } from 'npm:@supabase/supabase-js@2'
 import { rateLimiter, exponentialBackoff } from '../_shared/api-rate-limiter.ts';
 import { withTimingHeaders, logResponseTime } from '../_shared/response-timing.ts';
 import { soilDataSchema, validateInput } from '../_shared/validation.ts';

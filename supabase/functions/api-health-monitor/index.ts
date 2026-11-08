@@ -1,4 +1,4 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 import { rateLimiter, API_PROVIDERS } from '../_shared/api-rate-limiter.ts';
 import { loadMonitor } from '../_shared/load-monitor.ts';
 

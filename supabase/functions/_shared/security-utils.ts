@@ -217,7 +217,7 @@ export async function logApiKeyAccess(params: {
   rateLimited?: boolean;
 }): Promise<void> {
   try {
-    const { createClient } = await import('jsr:@supabase/supabase-js@2');
+    const { createClient } = await import('npm:@supabase/supabase-js@2');
     const serviceClient = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -315,7 +315,7 @@ async function validateApiKeyAuth(
   let failureReason: string | null = null;
 
   try {
-    const { createClient } = await import('jsr:@supabase/supabase-js@2');
+    const { createClient } = await import('npm:@supabase/supabase-js@2');
     const serviceClient = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
