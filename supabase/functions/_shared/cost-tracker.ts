@@ -3,7 +3,7 @@
  * Integrates cost tracking for all external API calls
  */
 
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 // Cost rates per provider (updated as of 2025)
 export const COST_RATES = {
@@ -32,6 +32,12 @@ export const COST_RATES = {
   census: {
     'api-request': 0, // Free API
   },
+  internal: {
+    'computation': 0,
+  },
+  lovable_ai: {
+    'chat-completion': 0,
+  },
   supabase: {
     'database-query': 0.0001,
     'function-invocation': 0.00002,
@@ -48,6 +54,8 @@ export interface CostTrackingOptions {
   outputTokens?: number;
   usageAmount?: number;
   requestDetails?: any;
+  /** Explicit cost override for flat-rate internal or gateway calls */
+  costUsd?: number;
 }
 
 /**
@@ -58,14 +66,14 @@ export async function trackCost(
   options: CostTrackingOptions
 ): Promise<{ success: boolean; cost_usd: number }> {
   try {
-    const { provider, serviceType, featureName, userId, inputTokens, outputTokens, usageAmount, requestDetails } = options;
+    const { provider, serviceType, featureName, userId, inputTokens, outputTokens, usageAmount, requestDetails, costUsd } = options;
 
     // Calculate cost
     let cost_usd = 0;
     const serviceRates = COST_RATES[provider];
 
     if (serviceRates) {
-      const rate = serviceRates[serviceType as keyof typeof serviceRates];
+      const rate: any = (serviceRates as Record<string, unknown>)[serviceType];
       
       if (typeof rate === 'number') {
         // Simple per-request pricing
@@ -76,6 +84,9 @@ export async function trackCost(
         const outputCost = (outputTokens || 0) / 1000 * rate.output;
         cost_usd = inputCost + outputCost;
       }
+    }
+    if (typeof costUsd === 'number') {
+      cost_usd = costUsd;
     }
 
     // Track in database

@@ -1,4 +1,4 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 import { validateInput, agriculturalIntelligenceSchema } from '../_shared/validation.ts';
 import { trackOpenAICost, trackExternalAPICost } from '../_shared/cost-tracker.ts';
 import { logComplianceAudit, logExternalAPICall } from '../_shared/compliance-logger.ts';
@@ -293,8 +293,8 @@ Deno.serve(async (req) => {
       model,
       featureName: 'agricultural-intelligence',
       userId: user.id,
-      inputTokens: response.usage?.input_tokens || 0,
-      outputTokens: response.usage?.output_tokens || 0,
+      inputTokens: (response as any).usage?.input_tokens || 0,
+      outputTokens: (response as any).usage?.output_tokens || 0,
     });
 
     // Log API call for compliance
@@ -329,7 +329,7 @@ Deno.serve(async (req) => {
       headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, 'agricultural-intelligence'),
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in agricultural intelligence:', error);
 
     if (isValidationError(error)) {
@@ -415,7 +415,7 @@ async function analyzeIntent(query: string, apiKey: string) {
   
   try {
     return JSON.parse(data.choices[0].message.content);
-  } catch (e) {
+  } catch (e: any) {
     return {
       intent: 'general_question',
       confidence: 0.5,
@@ -515,7 +515,7 @@ async function gatherRelevantData(intentAnalysis: any, context: any, supabase: a
           data.satellite_enhancement = enhancedResponse.data;
           data.sources.push('AlphaEarth Satellite Intelligence');
         }
-      } catch (e) {
+      } catch (e: any) {
         console.log('Satellite enhancement not available:', e.message);
       }
     }
@@ -537,12 +537,12 @@ async function gatherRelevantData(intentAnalysis: any, context: any, supabase: a
           data.sources.push(...liveSources);
           console.log(`Live agricultural data integrated from: ${liveSources.join(', ')}`);
         }
-      } catch (e) {
+      } catch (e: any) {
         console.log('Live agricultural data not available:', e.message);
       }
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error gathering data:', error);
   }
 

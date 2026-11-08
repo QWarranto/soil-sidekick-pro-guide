@@ -290,7 +290,7 @@ Deno.serve(async (req) => {
       }
     );
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("LeafEngines query error:", error);
     
     await logSecurityEvent(supabaseClient, {

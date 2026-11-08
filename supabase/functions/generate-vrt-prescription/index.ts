@@ -54,12 +54,12 @@ requestHandler({
     }
 
     // Generate AI-powered prescription zones with graceful degradation
-    const aiResult = await withFallback({
+    const aiResult = await withFallback<any>({
       primary: () => generateAIPrescription(field, soilData, applicationType, cropType, baseRate, rateUnit, targetYield),
       fallback: () => generateFallbackPrescription(field, applicationType, baseRate),
       defaultValue: generateDefaultPrescription(field, applicationType, baseRate),
-      maxRetries: 2,
-      retryDelayMs: 1000,
+      retries: 2,
+      retryDelay: 1000,
     });
 
     // Create geometric zones from field boundary
@@ -101,12 +101,12 @@ requestHandler({
 
     // Track cost for AI call
     await trackCost(supabaseClient, {
-      service_provider: 'lovable_ai_gateway',
-      service_type: 'vrt_prescription_generation',
-      cost_usd: aiResult.method === 'ai_generated' ? 0.02 : 0.001,
-      feature_name: 'generate-vrt-prescription',
-      user_id: user.id,
-      request_details: {
+      provider: 'lovable_ai',
+      serviceType: 'chat-completion',
+      costUsd: aiResult.method === 'ai_generated' ? 0.02 : 0.001,
+      featureName: 'generate-vrt-prescription',
+      userId: user.id,
+      requestDetails: {
         field_id: fieldId,
         application_type: applicationType,
         method: aiResult.method,

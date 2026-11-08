@@ -1,4 +1,4 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { createClient } from 'npm:@supabase/supabase-js@2'
 import { rateLimiter, exponentialBackoff, API_PROVIDERS } from '../_shared/api-rate-limiter.ts';
 import { APICacheManager } from '../_shared/api-cache-manager.ts';
 import { waterQualityVolatility } from '../_shared/volatility-ttl.ts';
@@ -96,7 +96,7 @@ async function authenticateUser(supabase: any, request: Request): Promise<{ user
     }
 
     return { user };
-  } catch (error) {
+  } catch (error: any) {
     return { user: FREE_TIER_USER };
   }
 }
@@ -121,7 +121,7 @@ async function validateApiKey(supabase: any, apiKey: string): Promise<{ user: an
       return { user: null, error: 'API key has expired' };
     }
     return { user: { id: keyData.user_id, subscription_tier: keyData.subscription_tier } };
-  } catch (err) {
+  } catch (err: any) {
     return { user: null, error: 'API key validation failed' };
   }
 }
@@ -251,7 +251,7 @@ Deno.serve(async (req) => {
           );
           rateLimiter.recordSuccess('EPA_WQP');
           return data;
-        } catch (error) {
+        } catch (error: any) {
           rateLimiter.recordFailure('EPA_WQP', error as Error);
           throw error;
         }
@@ -289,7 +289,7 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in territorial-water-quality function:', error);
     
     // Log security event
@@ -406,7 +406,7 @@ async function generateTerritorialWaterData(
         regulatory_authority: territoryInfo.regulatory_authority,
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn(`Failed to fetch real water quality data for ${admin_unit_name}: ${error.message}`);
   }
 
@@ -740,7 +740,7 @@ async function logWaterQualityUsage(supabase: any, fips_code: string, state_code
         county_fips: fips_code,
         user_id: user_id
       });
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Failed to log water quality usage:', error);
   }
 }

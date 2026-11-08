@@ -12,7 +12,7 @@
 import { requestHandler } from '../_shared/request-handler.ts';
 import { securityMonitoringSchema } from '../_shared/validation.ts';
 import { logSafe, logError, sanitizeError } from '../_shared/logging-utils.ts';
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 requestHandler({
   // Requires authentication - only authenticated users can view security metrics
@@ -152,7 +152,7 @@ function generateSecurityMetrics(logs: any[]) {
   }, {} as Record<string, { count: number; events: string[] }>);
 
   const topIPs = Object.entries(ipAnalysis)
-    .map(([ip, data]) => ({
+    .map(([ip, data]: [string, any]) => ({
       ip,
       event_count: data.count,
       unique_event_types: [...new Set(data.events)].length,

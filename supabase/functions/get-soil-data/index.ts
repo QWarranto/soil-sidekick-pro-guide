@@ -1,4 +1,4 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { createClient } from 'npm:@supabase/supabase-js@2'
 import { rateLimiter, exponentialBackoff } from '../_shared/api-rate-limiter.ts';
 import { withTimingHeaders, logResponseTime } from '../_shared/response-timing.ts';
 import { soilDataSchema, validateInput } from '../_shared/validation.ts';
@@ -180,7 +180,7 @@ Deno.serve(async (req) => {
       } else {
         user = authResult.user;
         authMethod = req.headers.get('x-api-key')?.startsWith('ak_') ? 'api_key' : 'jwt';
-        console.log(`Authenticated via ${authMethod} for user ${user.id}`);
+        console.log(`Authenticated via ${authMethod} for user ${user?.id}`);
       }
     }
 
@@ -196,7 +196,7 @@ Deno.serve(async (req) => {
         user_agent: req.headers.get('user-agent'),
         request_origin: req.headers.get('origin') || req.headers.get('referer'),
         request_metadata: { county_fips, free_tier: true },
-      }).then(() => {}).catch(() => {});
+      }).then(() => {}, () => {});
     }
 
     const userId = user?.id || null;

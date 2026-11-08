@@ -43,7 +43,7 @@ export type ResponseTimeCategory = keyof typeof RESPONSE_TIME_TARGETS;
  */
 export function getResponseTimeCategory(endpoint: string): ResponseTimeCategory {
   for (const [category, config] of Object.entries(RESPONSE_TIME_TARGETS)) {
-    if (config.endpoints.includes(endpoint)) {
+    if ((config.endpoints as readonly string[]).includes(endpoint)) {
       return category as ResponseTimeCategory;
     }
   }

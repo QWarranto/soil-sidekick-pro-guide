@@ -10,7 +10,7 @@
  *   getStats()                                     → { memorySize, databaseSize, hitRate }
  */
 
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 import { computeVolatilityTTL, type VolatilityTTLConfig } from './volatility-ttl.ts';
 
 export interface CacheOptions {

@@ -97,7 +97,7 @@ Deno.serve(async (req) => {
           }
         );
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('API key management error:', error);
     
     await logSecurityIncident(supabase, {
@@ -136,7 +136,7 @@ async function handleGetApiKeys(user: any) {
         headers: getSecurityHeaders(corsHeaders)
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Failed to fetch API keys: ${error.message}`);
   }
 }
@@ -225,7 +225,7 @@ async function handleCreateApiKey(user: any, req: Request) {
         headers: getSecurityHeaders(corsHeaders)
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Failed to create API key: ${error.message}`);
   }
 }
@@ -298,7 +298,7 @@ async function handleUpdateApiKey(user: any, req: Request, url: URL) {
         headers: getSecurityHeaders(corsHeaders)
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Failed to update API key: ${error.message}`);
   }
 }
@@ -340,7 +340,7 @@ async function handleDeleteApiKey(user: any, req: Request, url: URL) {
         headers: getSecurityHeaders(corsHeaders)
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Failed to delete API key: ${error.message}`);
   }
 }

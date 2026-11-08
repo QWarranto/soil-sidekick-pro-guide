@@ -4,8 +4,8 @@
  */
 
 export interface FallbackOptions {
-  primary: () => Promise<any>;
-  fallback?: () => Promise<any>;
+  primary: () => any;
+  fallback?: () => any;
   defaultValue?: any;
   retries?: number;
   retryDelay?: number;

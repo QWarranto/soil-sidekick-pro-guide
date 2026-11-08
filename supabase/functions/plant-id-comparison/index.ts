@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2";
 import { authenticateApiKey, logSecurityEvent, createSecureResponse } from "../_shared/security-utils.ts";
 
 const corsHeaders = {
@@ -190,7 +190,7 @@ Use a confidence value between 0.5 and 0.95 based on how certain you are.`
         } else {
           console.error("No JSON found in baseline response");
         }
-      } catch (e) {
+      } catch (e: any) {
         console.error("Baseline parse error:", e);
       }
     }
@@ -262,7 +262,7 @@ Use a confidence value between 0.5 and 0.95 based on how certain you are.`
         } else {
           console.error("Geocode API error:", geocodeResponse.status);
         }
-      } catch (e) {
+      } catch (e: any) {
         console.error("Environmental data fetch error:", e);
       }
     }
@@ -395,7 +395,7 @@ IDENTIFICATION confidence should be 0.85-0.98 when the plant is clearly visible.
         } else {
           console.error("No JSON found in enhanced response");
         }
-      } catch (e) {
+      } catch (e: any) {
         console.error("Enhanced parse error:", e);
       }
     }
@@ -468,7 +468,7 @@ IDENTIFICATION confidence should be 0.85-0.98 when the plant is clearly visible.
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Plant ID comparison error:", error);
     
     await logSecurityEvent(supabase, {

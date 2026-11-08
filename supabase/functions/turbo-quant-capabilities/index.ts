@@ -5,7 +5,7 @@ requestHandler({
   requireAuth: false,
   requireSubscription: false,
   handler: async (ctx) => {
-    const body = ctx.validatedData || {};
+    const body: any = await ctx.req.clone().json().catch(() => ({}));
     const capabilities = resolveCapabilities({
       device_memory_gb: body.device_memory_gb,
       has_webgpu: body.has_webgpu,

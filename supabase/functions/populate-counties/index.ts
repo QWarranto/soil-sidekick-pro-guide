@@ -1,4 +1,4 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { createClient } from 'npm:@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -233,7 +233,7 @@ Deno.serve(async (req) => {
       .select('fips_code');
 
     const existingFips = new Set(existingCounties?.map(c => c.fips_code) || []);
-    const newCounties = countyRecords.filter(county => !existingFips.has(county.fips_code));
+    const newCounties = countyRecords.filter((county: any) => !existingFips.has(county.fips_code));
 
     console.log(`[populate-counties] Inserting ${newCounties.length} new counties...`);
 

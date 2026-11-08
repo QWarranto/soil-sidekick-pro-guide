@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createClient } from 'npm:@supabase/supabase-js@2'
 import { corsHeaders } from '../_shared/cors.ts'
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!
@@ -331,7 +331,7 @@ Deno.serve(async (req) => {
       data_type: 'iso_xml_v43',
       subscription_tier: 'api',
       success: true,
-    }).catch(() => {}) // non-blocking
+    }).then(() => {}, () => {}) // non-blocking
 
     if (format === 'json') {
       return new Response(

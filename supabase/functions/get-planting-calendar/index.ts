@@ -3,7 +3,7 @@
 // or absence of Authorization. Returns crop-specific window + zone + frost + tips.
 // Upsell fields hint at what Hobby/Grower/Pro tiers unlock (yield, risk, sustainability).
 
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',

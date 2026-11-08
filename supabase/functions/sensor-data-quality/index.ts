@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
 
     // Support single reading or batch
     const isBatch = Array.isArray(rawInput);
-    const readings = isBatch ? rawInput : [rawInput];
+    const readings: unknown[] = isBatch ? (rawInput as unknown[]) : [rawInput];
 
     const results: QualityAssessment[] = [];
 
@@ -123,7 +123,7 @@ Deno.serve(async (req) => {
 });
 
 async function assessDataQuality(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string,
   reading: SensorReading
 ): Promise<QualityAssessment> {
@@ -183,7 +183,7 @@ async function assessDataQuality(
     .limit(20);
 
   if (recentReadings && recentReadings.length >= 5) {
-    const driftResult = detectDrift(reading.readings, recentReadings.map(r => r.raw_values as Record<string, number>));
+    const driftResult = detectDrift(reading.readings, recentReadings.map((r: any) => r.raw_values as Record<string, number>));
     if (driftResult.detected) {
       driftDetected = true;
       driftPercentage = driftResult.maxDrift;

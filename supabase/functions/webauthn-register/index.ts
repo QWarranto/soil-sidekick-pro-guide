@@ -3,7 +3,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import {
   generateRegistrationOptions,
   verifyRegistrationResponse,
-} from 'https://esm.sh/@simplewebauthn/server@10.0.1';
+} from 'https://esm.sh/@simplewebauthn/server@13.1.1';
+import type { AuthenticatorTransportFuture } from 'https://esm.sh/@simplewebauthn/server@13.1.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -66,7 +67,7 @@ Deno.serve(async (req) => {
         },
         excludeCredentials: (existing ?? []).map((c) => ({
           id: c.credential_id,
-          transports: c.transports as AuthenticatorTransport[] | undefined,
+          transports: c.transports as AuthenticatorTransportFuture[] | undefined,
         })),
       });
 

@@ -3,7 +3,7 @@
  * x-api-key auth. Returns caller's own assets scoped via api_keys.user_id.
  * GeoJSON default, GML optional. Bbox filter. OGC GetCapabilities unauthenticated.
  */
-import { createClient } from "npm:@supabase/supabase-js@2.57.2";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

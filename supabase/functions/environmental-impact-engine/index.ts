@@ -1,4 +1,4 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { createClient } from 'npm:@supabase/supabase-js@2'
 import { requestHandler } from '../_shared/request-handler.ts';
 import { validateInput, environmentalImpactSchema } from '../_shared/validation.ts';
 import { trackExternalAPICost } from '../_shared/cost-tracker.ts';
@@ -12,24 +12,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-tq-context-mode, x-tq-kv-cache-hint, x-tq-model-tier',
 }
 
-Deno.serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  return requestHandler({
-    functionName: 'environmental-impact-engine',
-    requireAuth: true,
-    requireSubscription: true,
-    validationSchema: environmentalImpactSchema,
-    rateLimitPerHour: 100,
-    logCost: {
-      provider: 'usda',
-      serviceType: 'environmental-analysis',
-    },
-  }, async (ctx) => {
-    const { supabase, user, validatedData } = ctx;
+requestHandler({
+  requireAuth: true,
+  requireSubscription: true,
+  useServiceRole: true,
+  validationSchema: environmentalImpactSchema,
+  endpointName: 'environmental-impact-engine',
+  handler: async (ctx) => {
+    const { supabaseClient: supabase, user, validatedData } = ctx;
     const { analysis_id, county_fips, soil_data, proposed_treatments = [] } = validatedData;
 
     console.log(`Environmental impact assessment for analysis ${analysis_id} in county ${county_fips}`);
@@ -114,7 +104,7 @@ Deno.serve(async (req) => {
         geographic_contamination_modeling: true
       }
     };
-  })(req);
+  },
 });
 
 // Helper function to estimate water proximity when EPA API unavailable

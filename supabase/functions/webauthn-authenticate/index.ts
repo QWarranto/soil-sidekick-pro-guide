@@ -3,7 +3,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import {
   generateAuthenticationOptions,
   verifyAuthenticationResponse,
-} from 'https://esm.sh/@simplewebauthn/server@10.0.1';
+} from 'https://esm.sh/@simplewebauthn/server@13.1.1';
+import type { AuthenticatorTransportFuture } from 'https://esm.sh/@simplewebauthn/server@13.1.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -30,7 +31,7 @@ Deno.serve(async (req) => {
 
     if (step === 'options') {
       const email = (body.email ?? '').toString().toLowerCase().trim();
-      let allowCredentials: { id: string; transports?: AuthenticatorTransport[] }[] = [];
+      let allowCredentials: { id: string; transports?: AuthenticatorTransportFuture[] }[] = [];
       let userId: string | null = null;
 
       if (email) {
@@ -44,7 +45,7 @@ Deno.serve(async (req) => {
             .eq('user_id', u.id);
           allowCredentials = (keys ?? []).map((k) => ({
             id: k.credential_id,
-            transports: (k.transports ?? undefined) as AuthenticatorTransport[] | undefined,
+            transports: (k.transports ?? undefined) as AuthenticatorTransportFuture[] | undefined,
           }));
         }
       }
@@ -107,7 +108,7 @@ Deno.serve(async (req) => {
           id: passkey.credential_id,
           publicKey: passkey.public_key,
           counter: Number(passkey.counter),
-          transports: (passkey.transports ?? undefined) as AuthenticatorTransport[] | undefined,
+          transports: (passkey.transports ?? undefined) as AuthenticatorTransportFuture[] | undefined,
         },
       });
 

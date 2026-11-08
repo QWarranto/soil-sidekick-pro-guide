@@ -1,5 +1,5 @@
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2";
 import { authenticateApiKey, logSecurityEvent } from "../_shared/security-utils.ts";
 
 const corsHeaders = {
@@ -200,7 +200,7 @@ Style: Clean infographic, professional business presentation quality, 16:9 aspec
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Image generation error:", error);
     
     await logSecurityEvent(supabase, {

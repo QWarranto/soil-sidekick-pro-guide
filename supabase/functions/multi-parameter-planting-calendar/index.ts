@@ -377,7 +377,7 @@ function assessPlantingRisks(crop_type: string, soil_factors: any, climate_facto
 }
 
 function findAlternativeCrops(soil_factors: any, climate_factors: any, sustainability_goals: any): any {
-  const alternatives = [];
+  const alternatives: any[] = [];
   
   const cropDatabase = [
     { name: 'corn', soil_ph_range: [6.0, 6.8], drainage: 'good', sustainability: 0.6 },

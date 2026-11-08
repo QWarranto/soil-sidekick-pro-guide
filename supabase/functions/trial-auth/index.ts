@@ -18,7 +18,7 @@ import {
   validateSecureTrialToken 
 } from '../_shared/trial-validation.ts';
 import { logSafe, logError } from '../_shared/logging-utils.ts';
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 // Service role client for trial operations
 const getServiceClient = () => createClient(
@@ -89,7 +89,7 @@ requestHandler({
           usage_count: 1,
           cost_usd: 0,
           request_details: { email_domain: email.split('@')[1] },
-        }).catch(() => {}); // Non-blocking
+        }).then(() => {}, () => {}); // Non-blocking
 
         return {
           sessionToken: secureToken,

@@ -6,7 +6,7 @@ export interface SecurityLogEntry {
   ip_address?: string;
   user_agent?: string;
   details?: any;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity?: 'low' | 'medium' | 'high' | 'critical';
 }
 
 export interface SecurityIncident {
@@ -83,7 +83,7 @@ export async function logSecurityEvent(
         ip_address,
         user_agent,
         details: event.details,
-        severity: event.severity
+        severity: event.severity ?? 'low'
       });
   } catch (logError) {
     // Don't throw on logging errors, just console log
@@ -217,7 +217,7 @@ export async function logApiKeyAccess(params: {
   rateLimited?: boolean;
 }): Promise<void> {
   try {
-    const { createClient } = await import('jsr:@supabase/supabase-js@2');
+    const { createClient } = await import('npm:@supabase/supabase-js@2');
     const serviceClient = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -315,7 +315,7 @@ async function validateApiKeyAuth(
   let failureReason: string | null = null;
 
   try {
-    const { createClient } = await import('jsr:@supabase/supabase-js@2');
+    const { createClient } = await import('npm:@supabase/supabase-js@2');
     const serviceClient = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!

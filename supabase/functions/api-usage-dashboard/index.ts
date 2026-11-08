@@ -1,4 +1,4 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 import { corsHeaders } from '../_shared/cors.ts';
 import { withTimingHeaders, logResponseTime } from '../_shared/response-timing.ts';
 
@@ -180,7 +180,7 @@ Deno.serve(async (req) => {
       headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, 'api-usage-dashboard')
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Usage dashboard error:', error);
     logResponseTime('api-usage-dashboard', startTime, false);
 

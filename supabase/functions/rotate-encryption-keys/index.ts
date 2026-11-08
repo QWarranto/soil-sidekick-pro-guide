@@ -4,7 +4,7 @@
  * Requires admin authentication
  */
 
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 import { corsHeaders } from '../_shared/cors.ts';
 
 Deno.serve(async (req) => {
@@ -140,7 +140,7 @@ Deno.serve(async (req) => {
 
         if (updateErr) throw updateErr;
         reEncrypted++;
-      } catch (e) {
+      } catch (e: any) {
         failed++;
         errors.push(`${sub.id}: ${e.message}`);
       }
@@ -159,7 +159,7 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -109,7 +109,7 @@ function sendTelemetry(entry: ToolCallAudit) {
       jsonrpc_id: entry.jsonrpc_id ?? null,
       is_batch: entry.is_batch ?? false,
       correlation_id: entry.correlation_id ?? null,
-      source: entry.source ?? 'unknown',
+      source: entry.access_source ?? 'unknown',
       success: entry.success,
     },
   };
