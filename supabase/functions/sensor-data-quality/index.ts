@@ -183,7 +183,7 @@ async function assessDataQuality(
     .limit(20);
 
   if (recentReadings && recentReadings.length >= 5) {
-    const driftResult = detectDrift(reading.readings, recentReadings.map(r => r.raw_values as Record<string, number>));
+    const driftResult = detectDrift(reading.readings, recentReadings.map((r: any) => r.raw_values as Record<string, number>));
     if (driftResult.detected) {
       driftDetected = true;
       driftPercentage = driftResult.maxDrift;
