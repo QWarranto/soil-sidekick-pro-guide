@@ -77,7 +77,7 @@ export function sanitizeError(error: any): object {
 /**
  * Safe error logging
  */
-export function logError(context: string, error: any) {
+export function logError(context: string, error?: any) {
   const env = Deno.env.get('DENO_DEPLOYMENT_ID') ? 'PROD' : 'DEV';
   const sanitized = sanitizeError(error);
   console.error(`[${env}] ERROR in ${context}:`, sanitized);

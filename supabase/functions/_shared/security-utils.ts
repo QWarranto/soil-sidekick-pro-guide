@@ -6,7 +6,7 @@ export interface SecurityLogEntry {
   ip_address?: string;
   user_agent?: string;
   details?: any;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity?: 'low' | 'medium' | 'high' | 'critical';
 }
 
 export interface SecurityIncident {
@@ -83,7 +83,7 @@ export async function logSecurityEvent(
         ip_address,
         user_agent,
         details: event.details,
-        severity: event.severity
+        severity: event.severity ?? 'low'
       });
   } catch (logError) {
     // Don't throw on logging errors, just console log

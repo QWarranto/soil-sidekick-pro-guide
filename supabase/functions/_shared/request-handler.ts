@@ -8,7 +8,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { logSafe, logError, sanitizeError } from './logging-utils.ts';
 import { logSecurityEvent, authenticateUser, getSecurityHeaders } from './security-utils.ts';
-import { rateLimiter, loadMonitor } from './api-rate-limiter.ts';
+import { rateLimiter } from './api-rate-limiter.ts';
 import { withTimingHeaders, logResponseTime } from './response-timing.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
@@ -20,7 +20,7 @@ const corsHeaders = {
 export interface RequestHandlerConfig<T = any> {
   requireAuth?: boolean;
   requireSubscription?: boolean | 'starter' | 'professional' | 'enterprise';
-  validationSchema?: z.ZodSchema<T>;
+  validationSchema?: z.ZodType<T, z.ZodTypeDef, unknown>;
   rateLimit?: {
     requests: number;
     windowMs: number;
