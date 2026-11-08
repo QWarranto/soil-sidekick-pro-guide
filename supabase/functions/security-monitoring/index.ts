@@ -152,7 +152,7 @@ function generateSecurityMetrics(logs: any[]) {
   }, {} as Record<string, { count: number; events: string[] }>);
 
   const topIPs = Object.entries(ipAnalysis)
-    .map(([ip, data]) => ({
+    .map(([ip, data]: [string, any]) => ({
       ip,
       event_count: data.count,
       unique_event_types: [...new Set(data.events)].length,

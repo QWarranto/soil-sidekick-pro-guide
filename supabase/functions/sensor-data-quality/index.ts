@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
 
     // Support single reading or batch
     const isBatch = Array.isArray(rawInput);
-    const readings = isBatch ? rawInput : [rawInput];
+    const readings: unknown[] = isBatch ? (rawInput as unknown[]) : [rawInput];
 
     const results: QualityAssessment[] = [];
 
@@ -123,7 +123,7 @@ Deno.serve(async (req) => {
 });
 
 async function assessDataQuality(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string,
   reading: SensorReading
 ): Promise<QualityAssessment> {

@@ -341,7 +341,7 @@ async function handleGetThreatSummary() {
       high_incidents: incidents.filter(i => i.severity === 'high').length,
       medium_incidents: incidents.filter(i => i.severity === 'medium').length,
       low_incidents: incidents.filter(i => i.severity === 'low').length,
-      incident_types: {}
+      incident_types: {} as Record<string, number>
     };
 
     // Count by incident type

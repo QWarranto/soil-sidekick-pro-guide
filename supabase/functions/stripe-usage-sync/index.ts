@@ -97,7 +97,7 @@ async function handleSetup(stripe: Stripe) {
   try {
     // Check if meter already exists
     const existingMeters = await stripe.billing.meters.list({ limit: 10 });
-    const existing = existingMeters.data.find(m => m.event_name === 'leafengines_api_call');
+    const existing = existingMeters.data.find((m: any) => m.event_name === 'leafengines_api_call');
 
     if (existing) {
       logStep('Meter already exists', { meterId: existing.id });

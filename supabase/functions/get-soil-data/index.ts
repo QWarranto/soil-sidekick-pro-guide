@@ -180,7 +180,7 @@ Deno.serve(async (req) => {
       } else {
         user = authResult.user;
         authMethod = req.headers.get('x-api-key')?.startsWith('ak_') ? 'api_key' : 'jwt';
-        console.log(`Authenticated via ${authMethod} for user ${user.id}`);
+        console.log(`Authenticated via ${authMethod} for user ${user?.id}`);
       }
     }
 

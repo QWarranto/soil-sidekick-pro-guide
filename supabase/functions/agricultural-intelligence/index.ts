@@ -293,8 +293,8 @@ Deno.serve(async (req) => {
       model,
       featureName: 'agricultural-intelligence',
       userId: user.id,
-      inputTokens: response.usage?.input_tokens || 0,
-      outputTokens: response.usage?.output_tokens || 0,
+      inputTokens: (response as any).usage?.input_tokens || 0,
+      outputTokens: (response as any).usage?.output_tokens || 0,
     });
 
     // Log API call for compliance
