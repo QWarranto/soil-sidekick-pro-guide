@@ -9,6 +9,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const logStep = (step: string, details?: unknown) => {
+  console.log(`[COST-MONITORING] ${step}`, details ?? '');
+};
+
 const actionSchema = z.object({
   action: z.enum(['track_cost', 'track_usage', 'get_cost_summary', 'get_user_costs']),
 });
@@ -51,7 +55,7 @@ Deno.serve(async (req) => {
         const serviceRates = COST_RATES[service_provider as keyof typeof COST_RATES];
         
         if (serviceRates) {
-          const rate = serviceRates[service_type as keyof typeof serviceRates];
+          const rate: any = (serviceRates as Record<string, unknown>)[service_type];
           if (typeof rate === 'number') {
             cost_usd = rate * usage_amount;
           } else if (typeof rate === 'object' && rate.input) {
@@ -65,7 +69,7 @@ Deno.serve(async (req) => {
         logStep('Calculated cost', { service_provider, service_type, usage_amount, cost_usd });
 
         // Track the cost
-        const { data: trackingData, error: trackingError } = await supabaseClient.rpc('track_api_cost', {
+        const { data: trackingData, error: trackingError } = await supabase.rpc('track_api_cost', {
           p_service_provider: service_provider,
           p_service_type: service_type,
           p_cost_usd: cost_usd,
@@ -77,7 +81,7 @@ Deno.serve(async (req) => {
         if (trackingError) throw new Error(`Cost tracking error: ${trackingError.message}`);
 
         // Check for cost alerts
-        const { data: alerts, error: alertsError } = await supabaseClient.rpc('check_cost_alerts');
+        const { data: alerts, error: alertsError } = await supabase.rpc('check_cost_alerts');
         if (alertsError) {
           logStep('Alert check error', alertsError);
         } else if (alerts && alerts.length > 0) {
@@ -125,7 +129,7 @@ Deno.serve(async (req) => {
       case 'track_usage': {
         const { session_id, feature_name, action_type, subscription_tier, duration_seconds, success_rate, error_details, metadata } = body;
         
-        const { data: analyticsData, error: analyticsError } = await supabaseClient.rpc('track_usage_event', {
+        const { data: analyticsData, error: analyticsError } = await supabase.rpc('track_usage_event', {
           p_user_id: user.id,
           p_session_id: session_id,
           p_feature_name: feature_name,
@@ -152,7 +156,7 @@ Deno.serve(async (req) => {
         const { start_date, end_date, service_provider } = body;
         
         // Only admins can access cost summaries
-        const { data: userRoles, error: rolesError } = await supabaseClient
+        const { data: userRoles, error: rolesError } = await supabase
           .from('user_roles')
           .select('role')
           .eq('user_id', user.id);
@@ -161,7 +165,7 @@ Deno.serve(async (req) => {
           throw new Error('Access denied. Admin privileges required.');
         }
 
-        const { data: costSummary, error: summaryError } = await supabaseClient.rpc('get_cost_summary', {
+        const { data: costSummary, error: summaryError } = await supabase.rpc('get_cost_summary', {
           p_start_date: start_date,
           p_end_date: end_date,
           p_service_provider: service_provider
@@ -182,7 +186,7 @@ Deno.serve(async (req) => {
         // Users can view their own cost data
         const { start_date, end_date } = body;
         
-        const { data: userCosts, error: costsError } = await supabaseClient
+        const { data: userCosts, error: costsError } = await supabase
           .from('cost_tracking')
           .select('*')
           .eq('user_id', user.id)
