@@ -161,7 +161,7 @@ Deno.serve(async (req) => {
           .select('role')
           .eq('user_id', user.id);
 
-        if (rolesError || !userRoles.some(r => r.role === 'admin')) {
+        if (rolesError || !userRoles.some((r: any) => r.role === 'admin')) {
           throw new Error('Access denied. Admin privileges required.');
         }
 
