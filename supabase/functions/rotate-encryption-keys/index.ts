@@ -140,7 +140,7 @@ Deno.serve(async (req) => {
 
         if (updateErr) throw updateErr;
         reEncrypted++;
-      } catch (e) {
+      } catch (e: any) {
         failed++;
         errors.push(`${sub.id}: ${e.message}`);
       }
@@ -159,7 +159,7 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

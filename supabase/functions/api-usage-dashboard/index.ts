@@ -180,7 +180,7 @@ Deno.serve(async (req) => {
       headers: withTimingHeaders({ ...corsHeaders, 'Content-Type': 'application/json' }, startTime, 'api-usage-dashboard')
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Usage dashboard error:', error);
     logResponseTime('api-usage-dashboard', startTime, false);
 

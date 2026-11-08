@@ -125,7 +125,7 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in visual-crop-analysis:', error);
 
     await logComplianceAudit(supabase, {
@@ -265,7 +265,7 @@ async function logAnalysisUsage(
         county_fips: location?.county_fips,
         used_at: new Date().toISOString(),
       });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to log usage:', error);
     // Don't throw - this is non-critical
   }

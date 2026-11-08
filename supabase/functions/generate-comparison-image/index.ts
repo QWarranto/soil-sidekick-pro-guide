@@ -200,7 +200,7 @@ Style: Clean infographic, professional business presentation quality, 16:9 aspec
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Image generation error:", error);
     
     await logSecurityEvent(supabase, {

@@ -249,7 +249,7 @@ requestHandler({
         usage_count: 1,
         cost_usd: 0,
         request_details: { provider, email_domain: email.split('@')[1] },
-      }).catch(() => {});
+      }).then(() => {}, () => {});
 
       logSafe('External auth validated successfully', { email, provider, userId });
 
@@ -261,7 +261,7 @@ requestHandler({
         ...(isLegacyToken ? { warning: 'Legacy token format deprecated. Migrate to HMAC signatures.' } : {}),
       };
 
-    } catch (error) {
+    } catch (error: any) {
       logError('External auth user creation', error);
       
       await logSecurityEvent(ctx.supabaseClient, {

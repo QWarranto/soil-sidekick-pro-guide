@@ -88,12 +88,12 @@ requestHandler({
 
     // Track cost for this calculation
     await trackCost(supabaseClient, {
-      service_provider: 'internal',
-      service_type: 'carbon_credit_calculation',
-      cost_usd: 0.01, // Minimal internal cost for calculation
-      feature_name: 'carbon-credit-calculator',
-      user_id: user.id,
-      request_details: {
+      provider: 'internal',
+      serviceType: 'computation',
+      costUsd: 0.01, // Minimal internal cost for calculation
+      featureName: 'carbon-credit-calculator',
+      userId: user.id,
+      requestDetails: {
         field_size_acres: validatedData.field_size_acres,
         credits_earned: calculation.credits_earned,
         duration_ms: Date.now() - startTime,

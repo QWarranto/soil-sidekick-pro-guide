@@ -86,11 +86,11 @@ async function generateTerritorialAnalytics(
   }
 
   // Generate analytics with graceful degradation
-  const territorialCoverage = await withFallback(
-    () => generateTerritorialCoverage(supabase),
-    () => ({ error: 'Coverage data unavailable', total_territories: 0 }),
-    'Territorial Coverage'
-  );
+  const territorialCoverage = await withFallback({
+    primary: () => generateTerritorialCoverage(supabase),
+    fallback: () => ({ error: 'Coverage data unavailable', total_territories: 0 }),
+    retries: 1,
+  });
   
   const waterQualityMetrics = generateWaterQualityMetrics(territory_type);
   const regionalInsights = generateRegionalInsights(epa_region);

@@ -122,7 +122,7 @@ Deno.serve(async (req) => {
       }
     );
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Threat detection error:', error);
     
     await logSecurityIncident(supabase, {
@@ -361,7 +361,7 @@ async function handleGetThreatSummary() {
         headers: getSecurityHeaders(corsHeaders)
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Failed to get threat summary: ${error.message}`);
   }
 }
@@ -412,7 +412,7 @@ async function handleThreatAnalysis(req: Request) {
         headers: getSecurityHeaders(corsHeaders)
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Failed to analyze threats: ${error.message}`);
   }
 }

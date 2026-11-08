@@ -196,7 +196,7 @@ Deno.serve(async (req) => {
         user_agent: req.headers.get('user-agent'),
         request_origin: req.headers.get('origin') || req.headers.get('referer'),
         request_metadata: { county_fips, free_tier: true },
-      }).then(() => {}).catch(() => {});
+      }).then(() => {}, () => {});
     }
 
     const userId = user?.id || null;
